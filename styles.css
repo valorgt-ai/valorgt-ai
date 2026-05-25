@@ -2392,6 +2392,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 /* Gestor de Activos */
+.gestor-activos-card {
+    min-height: 410px;
+    display: flex;
+    flex-direction: column;
+}
+.gestor-activos-card .assets-scroll-area {
+    flex-grow: 1;
+}
 .assets-scroll-area {
     max-height: 520px;
     overflow-y: auto;
