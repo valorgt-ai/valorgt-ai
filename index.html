@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ValorGT AI - Plataforma de Inteligencia Inmobiliaria, tasación con Inteligencia Artificial, mapas de calor y análisis hipotecario para Guatemala y Latinoamérica.">
+    <title>ValorGT AI | Inteligencia Inmobiliaria Futurista</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS (Mapas) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Estilos Personalizados -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="cyber-theme">
+    <div class="app-container">
+        <!-- BARRA LATERAL (SIDEBAR) -->
+        <aside class="sidebar">
+            <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()" title="Colapsar menú">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <div class="logo-pulse"></div>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-title">VALOR<span class="highlight">GT</span></span>
+                    <span class="brand-subtitle">INTELLIGENCE NODE</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button id="nav-btn-dashboard" class="nav-item active" onclick="switchView('dashboard')">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Tasa Inteligente</span>
+                </button>
+                <button id="nav-btn-heatmap" class="nav-item" onclick="switchView('heatmap')">
+                    <i data-lucide="map-pin"></i>
+                    <span>Radar de Calor</span>
+                </button>
+                <button id="nav-btn-catalog" class="nav-item" onclick="switchView('catalog')">
+                    <i data-lucide="compass"></i>
+                    <span>Catálogo General</span>
+                </button>
+                <button id="nav-btn-mortgage" class="nav-item" onclick="switchView('mortgage')">
+                    <i data-lucide="calculator"></i>
+                    <span>Simulador Hipotecario</span>
+                </button>
+                <button id="nav-btn-investor" class="nav-item" onclick="switchView('investor')">
+                    <i data-lucide="trending-up"></i>
+                    <span>Terminal de Inversión</span>
+                </button>
+                <button id="nav-btn-portfolio" class="nav-item" onclick="switchView('portfolio')">
+                    <i data-lucide="wallet"></i>
+                    <span>Portafolio IA</span>
+                </button>
+                <button id="nav-btn-commercial" class="nav-item" onclick="switchView('commercial')">
+                    <i data-lucide="briefcase"></i>
+                    <span>Gestión Comercial</span>
+                </button>
+                <button id="nav-btn-admin" class="nav-item" onclick="switchView('admin')" style="display: none;">
+                    <i data-lucide="shield-alert"></i>
+                    <span>Consola Global Admin</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="connection-status">
+                    <span class="status-dot green"></span>
+                    <span class="status-text">SECURE CORE V4.12</span>
+                </div>
+                <div class="system-time" id="system-time">--:--:--</div>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <!-- CABECERA SUPERIOR (HEADER) -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 class="page-title" id="page-title">Valuador Inmobiliario IA</h1>
+                    <span class="sub-title" id="page-subtitle">Análisis predictivo de propiedades con redes neuronales</span>
+                </div>
+                <div class="header-right">
+                    <!-- Selector de Moneda -->
+                    <div class="currency-toggle-wrapper">
+                        <span class="toggle-label">MONEDA</span>
+                        <div class="currency-toggle" id="currency-toggle" onclick="toggleCurrency()">
+                            <span class="currency-option active" id="curr-gtq">GTQ (Q)</span>
+                            <span class="currency-option" id="curr-usd">USD ($)</span>
+                        </div>
+                    </div>
+                    <!-- Estado de Carga -->
+                    <div class="hud-stat">
+                        <span class="hud-label">SISTEMA</span>
+                        <span class="hud-value glowing-cyan">ONLINE</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- VISTAS CONTENEDORAS -->
+            <div class="view-viewport">
+                
+                <!-- VISTA 1: DASHBOARD DE VALUACIÓN -->
+                <section id="view-dashboard" class="app-view active">
+                    
+                    <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
+                    <div class="featured-header">
+                        <div class="fh-left">
+                            <span class="hud-label-small">PORTADA DE PORTAFOLIO</span>
+                            <h3 class="section-title-premium">Escaparate Premium Patrocinado</h3>
+                        </div>
+                        <div class="fh-right">
+                            <span class="hud-caption">Haz clic en "AUTOTASAR" para cargar los parámetros en el motor de IA</span>
+                        </div>
+                    </div>
+                    
+                    <div class="featured-properties-deck" id="featured-properties-deck">
+                        <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
+                    </div>
+
+                    <div class="deck-cta-container">
+                        <button type="button" class="btn-glowing-cta" onclick="switchView('catalog')">
+                            <span>EXPLORAR CATÁLOGO COMPLETO</span>
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        
+                        <!-- Panel de Entrada de Datos -->
+                        <div class="card glassmorphism input-panel">
+                            <div class="card-header">
+                                <div class="header-icon"><i data-lucide="sliders"></i></div>
+                                <h2>Parámetros de la Propiedad</h2>
+                            </div>
+                            <form id="valuation-form" onsubmit="calculateValuation(event)">
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label for="prop-location">Ubicación / Zona de Ciudad de Guatemala</label>
+                                        <select id="prop-location" required onchange="updateSuggestedValues()">
+                                            <option value="" disabled selected>Selecciona una ubicación...</option>
+                                            <option value="zona10">Ciudad de Guatemala - Zona 10 (Zona Viva)</option>
+                                            <option value="zona14">Ciudad de Guatemala - Zona 14 (La Cañada / Américas)</option>
+                                            <option value="zona15">Ciudad de Guatemala - Zona 15 (Vista Hermosa)</option>
+                                            <option value="zona16">Ciudad de Guatemala - Zona 16 (Cayalá / Lomas)</option>
+                                            <option value="zona4">Ciudad de Guatemala - Zona 4 (Cantón Exposición)</option>
+                                            <option value="carretera">Carretera a El Salvador (Km 10 - Km 17)</option>
+                                            <option value="fraijanes">Fraijanes (Km 18 - Km 25, Condominios)</option>
+                                            <option value="mixco">Mixco (San Cristóbal / Blvd. Principal)</option>
+                                            <option value="antigua">Antigua Guatemala (Sacatepéquez)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prop-type">Tipo de Inmueble</label>
+                                        <select id="prop-type" required>
+                                            <option value="apartamento" selected>Apartamento</option>
+                                            <option value="casa">Casa</option>
+                                            <option value="terreno">Terreno</option>
+                                            <option value="comercial">Comercial / Oficina</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prop-finishes">Calidad de Acabados</label>
+                                        <select id="prop-finishes" required onchange="updateSuggestedValues()">
+                                            <option value="standard" selected>Estándar (Q7,300/m²)</option>
+                                            <option value="luxury">Lujo (Q9,000/m²)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prop-size">Área Construida (m²)</label>
+                                        <div class="input-with-unit">
+                                            <input type="number" id="prop-size" min="20" max="2000" value="120" required>
+                                            <span class="unit-badge">m²</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prop-garden">Área de Jardín (m²)</label>
+                                        <div class="input-with-unit">
+                                            <input type="number" id="prop-garden" min="0" max="1000" value="0" required>
+                                            <span class="unit-badge">m²</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prop-rooms">Habitaciones</label>
+                                        <input type="number" id="prop-rooms" min="0" max="10" value="3" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prop-bathrooms">Baños</label>
+                                        <input type="number" id="prop-bathrooms" min="0" max="10" step="0.5" value="2.5" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prop-parkings">Vehículos Techados</label>
+                                        <input type="number" id="prop-parkings" min="0" max="8" value="2" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Calibración Táctica</label>
+                                        <div class="hud-mini-info font-mono" style="background: rgba(0,240,255,0.02); border: 1px dashed rgba(0,240,255,0.25); border-radius: 6px; padding: 10px; font-size: 0.65rem; color: var(--cyan); display: flex; align-items: center; gap: 6px; height: 42px; box-sizing: border-box;">
+                                            <i data-lucide="info" style="width: 14px; height: 14px; flex-shrink: 0;"></i>
+                                            <span>La IA pondera el metraje y los acabados según el sector.</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label>Distribución Especial</label>
+                                        <div class="amenities-grid" style="grid-template-columns: 1fr 1fr;">
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="prop-study" value="study">
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="book-open" class="tiny-icon"></i> Estudio Privado</span>
+                                            </label>
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="prop-family-room" value="family-room">
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="users" class="tiny-icon"></i> Sala Familiar</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    
+                                    <!-- Amenidades Modernas -->
+                                    <div class="form-group full-width">
+                                        <label>Amenidades y Equipamiento</label>
+                                        <div class="amenities-grid">
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="amenity-pool" value="pool">
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="droplet" class="tiny-icon"></i> Piscina / Jacuzzi</span>
+                                            </label>
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="amenity-gym" value="gym">
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="dumbbell" class="tiny-icon"></i> Gimnasio Equipado</span>
+                                            </label>
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="amenity-security" value="security" checked>
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="shield" class="tiny-icon"></i> Seguridad 24/7</span>
+                                            </label>
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="amenity-rooftop" value="rooftop">
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="sunset" class="tiny-icon"></i> Rooftop / BBQ</span>
+                                            </label>
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="amenity-smart" value="smart">
+                                                <span class="checkmark"></span>
+                                                <span class="label-text"><i data-lucide="cpu" class="tiny-icon"></i> Automatización / Domótica</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subida de Fotos IA Visual -->
+                                    <div class="form-group full-width">
+                                        <label>Análisis de Acabados por IA Visual (Opcional)</label>
+                                        <div class="photo-upload-zone" id="photo-dropzone">
+                                            <input type="file" id="photo-input" accept="image/*" class="hidden-file-input" onchange="handlePhotoUpload(event)">
+                                            <div class="upload-content" id="upload-prompt">
+                                                <i data-lucide="camera" class="upload-icon"></i>
+                                                <p class="upload-title">Arrastra o selecciona fotos del inmueble</p>
+                                                <p class="upload-subtitle">Nuestra IA detectará acabados, remodelaciones e iluminación</p>
+                                            </div>
+                                            <div class="upload-preview hidden" id="upload-preview-container">
+                                                <img src="" id="uploaded-img-preview" alt="Vista previa de propiedad">
+                                                <div class="laser-scanner" id="laser-scanner"></div>
+                                                <div class="scan-overlay">
+                                                    <span class="scan-status" id="scan-status-text">ESCANEO IA EN PROCESO...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block glowing-effect" id="calculate-btn">
+                                    <i data-lucide="sparkles"></i> VALORAR INMUEBLE CON IA
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Panel de Resultados (Dashboard de Valuación) -->
+                        <div class="valuation-results" id="valuation-results-section">
+                            <!-- Estado Vacío (Antes de tasar) -->
+                            <div class="card glassmorphism empty-results" id="empty-results-card">
+                                <div class="empty-icon-wrapper">
+                                    <div class="radar-scan"></div>
+                                    <i data-lucide="cpu" class="empty-icon"></i>
+                                </div>
+                                <h3>Esperando Parámetros</h3>
+                                <p>Ingresa los detalles de la propiedad y haz clic en "VALORAR INMUEBLE CON IA" para activar el núcleo analítico de ValorGT AI.</p>
+                            </div>
+
+                            <!-- Resultados Activos (Ocultos inicialmente) -->
+                            <div class="results-active hidden" id="results-active-container">
+                                <!-- Fila Principal: Valor Estimado -->
+                                <div class="card glassmorphism main-value-card">
+                                    <div class="glitch-bg"></div>
+                                    <div class="card-tag">VALOR DE MERCADO ESTIMADO</div>
+                                    <div class="main-valuation-display">
+                                        <span class="currency-symbol" id="val-curr-symbol">Q</span>
+                                        <span class="value-amount" id="val-estimated-price">0,000,000</span>
+                                    </div>
+                                    <div class="market-range-bar-wrapper">
+                                        <div class="range-labels">
+                                            <span id="val-range-low">Q0.0M</span>
+                                            <span>RANGO DE CONFIANZA</span>
+                                            <span id="val-range-high">Q0.0M</span>
+                                        </div>
+                                        <div class="range-track">
+                                            <div class="range-fill" id="range-fill-indicator"></div>
+                                            <div class="range-pointer" id="range-pointer"></div>
+                                        </div>
+                                    </div>
+                                    <div class="micro-stats">
+                                        <div class="mstat">
+                                            <span class="ms-lbl">Precio por m²</span>
+                                            <span class="ms-val font-mono" id="val-price-m2">Q0,000 / m²</span>
+                                        </div>
+                                        <div class="mstat border-l">
+                                            <span class="ms-lbl">Plusvalía Proyectada (1a)</span>
+                                            <span class="ms-val text-green font-mono" id="val-plusvalia-pct">+0.0%</span>
+                                        </div>
+                                        <div class="mstat border-l">
+                                            <span class="ms-lbl">Score de Demanda</span>
+                                            <span class="ms-val text-cyan font-mono" id="val-demand-score">Alto</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 2: IA Explanativa e IA Visual -->
+                                <div class="results-subgrid">
+                                    <!-- Explicación de IA -->
+                                    <div class="card glassmorphism ai-explanation-card">
+                                        <div class="card-header">
+                                            <div class="header-icon cyan"><i data-lucide="bot"></i></div>
+                                            <h2>ValorGT AI Analyst</h2>
+                                        </div>
+                                        <div class="ai-chat-bubble">
+                                            <div class="typing-indicator" id="ai-typing">
+                                                <span></span><span></span><span></span>
+                                            </div>
+                                            <div class="ai-response-text hidden" id="ai-response-text">
+                                                <!-- Llenado dinámicamente -->
+                                            </div>
+                                        </div>
+                                        <!-- Tabs de Análisis Explicativo -->
+                                        <div class="ai-tabs">
+                                            <button class="ai-tab active" onclick="switchAiTab('ventajas')" id="tab-ventajas">Ventajas</button>
+                                            <button class="ai-tab" onclick="switchAiTab('riesgos')" id="tab-riesgos">Riesgos</button>
+                                            <button class="ai-tab" onclick="switchAiTab('decision')" id="tab-decision">Sugerencia IA</button>
+                                        </div>
+                                        <div class="ai-tab-content" id="ai-tab-content-text">
+                                            Seleccione una pestaña para ver el desglose estratégico del sistema.
+                                        </div>
+                                    </div>
+
+                                    <!-- Análisis Visual de IA (si hay foto) o Métricas de Zona -->
+                                    <div class="card glassmorphism visual-ai-feedback-card">
+                                        <div class="card-header">
+                                            <div class="header-icon green"><i data-lucide="eye"></i></div>
+                                            <h2>Detección de Acabados IA</h2>
+                                        </div>
+                                        <div class="visual-ai-content" id="visual-ai-idle">
+                                            <div class="placeholder-icon-pulse"><i data-lucide="focus"></i></div>
+                                            <p class="help-text">Sube una fotografía en el panel de parámetros para activar el analizador de materiales y acabados de lujo.</p>
+                                        </div>
+                                        <div class="visual-ai-content hidden" id="visual-ai-active">
+                                            <ul class="detected-materials-list" id="detected-materials-list">
+                                                <!-- Rellenado dinámicamente -->
+                                            </ul>
+                                            <div class="ai-adjustment-hud">
+                                                <span>Ajuste por Acabados:</span>
+                                                <span class="hud-adjust-val text-green" id="photo-valuation-adjustment">+0.0%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fila 3: Gráfico de Proyección e Indicadores -->
+                                <div class="card glassmorphism chart-card">
+                                    <div class="card-header">
+                                        <div class="header-icon"><i data-lucide="line-chart"></i></div>
+                                        <h2>Proyección Histórica y Futura de Plusvalía</h2>
+                                    </div>
+                                    <div class="chart-container">
+                                        <canvas id="valuationHistoryChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- VISTA 2: MAPA DE CALOR FUTURISTA -->
+                <section id="view-heatmap" class="app-view">
+                    <div class="heatmap-layout">
+                        <!-- Mapa Contenedor -->
+                        <div class="map-wrapper card glassmorphism">
+                            <div id="heatmap-map"></div>
+                            <!-- Leyenda flotante en el mapa -->
+                            <div class="map-legend glassmorphism">
+                                <h4>Índice de Crecimiento</h4>
+                                <div class="legend-scale">
+                                    <div class="scale-item"><span class="legend-color red"></span><span>Alta Plusvalía (>9% ROI)</span></div>
+                                    <div class="scale-item"><span class="legend-color orange"></span><span>Crecimiento Activo (7-9%)</span></div>
+                                    <div class="scale-item"><span class="legend-color yellow"></span><span>Estable (5-7%)</span></div>
+                                    <div class="scale-item"><span class="legend-color green"></span><span>Oportunidad Inversión</span></div>
+                                    <div class="scale-item"><span class="legend-color blue"></span><span>Económico / Consolidado</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar del Mapa -->
+                        <div class="heatmap-sidebar">
+                            <!-- NUEVA CARD: GPS & ANÁLISIS DE COORDENADAS -->
+                            <div class="card glassmorphism gps-search-card">
+                                <div class="card-header">
+                                    <div class="header-icon cyan"><i data-lucide="compass"></i></div>
+                                    <h2>GPS & Vector de Coordenadas</h2>
+                                </div>
+                                <div class="live-coords-bar font-mono">
+                                    <div class="beacon-pulse-mini"></div>
+                                    <span>RADAR: </span>
+                                    <span class="coords-val text-cyan" id="radar-lat">14.5956</span>, 
+                                    <span class="coords-val text-cyan" id="radar-lng">-90.4851</span>
+                                </div>
+                                
+                                <form id="gps-search-form" onsubmit="locateCoordinates(event)">
+                                    <div class="gps-inputs-grid">
+                                        <div class="form-group">
+                                            <label for="gps-input-lat">Latitud</label>
+                                            <input type="number" id="gps-input-lat" min="14.0000" max="15.0000" step="0.0001" value="14.5986" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="gps-input-lng">Longitud</label>
+                                            <input type="number" id="gps-input-lng" min="-91.0000" max="-90.0000" step="0.0001" value="-90.5085" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block font-mono" style="padding: 8px 12px; font-size: 0.75rem; margin-top: 10px;">
+                                        <i data-lucide="scan"></i> ESCANEAR VECTOR
+                                    </button>
+                                </form>
+                                
+                                <!-- Diagnóstico de Coordenada Personalizada -->
+                                <div id="gps-custom-diagnostic" class="gps-diagnostic-hud hidden">
+                                    <h4 class="font-mono text-cyan" style="font-size: 0.65rem; margin-top: 12px; border-top: 1px dashed var(--border-light); padding-top: 10px;">TELEMETRÍA IA PERSONALIZADA:</h4>
+                                    <p id="gps-diagnostic-text" class="hud-opinion" style="font-size: 0.7rem; line-height: 1.4; margin-top: 6px; color: var(--text-secondary);"></p>
+                                </div>
+                            </div>
+
+                            <!-- CARD DE TELEMETRÍA DE ZONA -->
+                            <div class="card glassmorphism zone-info-card">
+                                <div class="card-header">
+                                    <div class="header-icon green"><i data-lucide="target"></i></div>
+                                    <h2>Telemetría del Sector</h2>
+                                </div>
+                                <p class="help-text" id="map-instructions">Mueve el mapa o haz clic en un nodo de calor para extraer las lecturas predictivas de ValorGT AI.</p>
+                                
+                                <div id="map-zone-details" class="zone-details-active hidden">
+                                    <h3 class="zone-title" id="map-zone-title">Zona 10 - La Cañada</h3>
+                                    <div class="metric-hud-grid">
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">Precio Promedio m²</span>
+                                            <span class="hud-box-val font-mono" id="map-zone-price-m2">Q14,500</span>
+                                        </div>
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">Retorno de Alquiler (ROI)</span>
+                                            <span class="hud-box-val text-green font-mono" id="map-zone-roi">8.4%</span>
+                                        </div>
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">Demanda Inmobiliaria</span>
+                                            <span class="hud-box-val text-cyan font-mono" id="map-zone-demand">Muy Alta</span>
+                                        </div>
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">Crecimiento 5 Años</span>
+                                            <span class="hud-box-val text-green font-mono" id="map-zone-growth">+34%</span>
+                                        </div>
+                                    </div>
+                                    <div class="zone-trend-hud">
+                                        <h4>Análisis del Vector IA:</h4>
+                                        <p id="map-zone-ia-opinion" class="hud-opinion">Zona con altísima demanda corporativa y de perfiles ejecutivos. Altas tasas de capitalización en proyectos verticales.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <!-- Tarjetas de Oportunidad Destacadas -->
+                            <div class="card glassmorphism investor-alerts-card">
+                                <div class="card-header">
+                                    <div class="header-icon green"><i data-lucide="activity"></i></div>
+                                    <h2>Señales de Arbitraje</h2>
+                                </div>
+                                <div class="arbitrage-signals-list">
+                                    <div class="signal-item">
+                                        <span class="signal-badge danger">ALTA PLUSVALÍA</span>
+                                        <span class="signal-name">Preventa Zona 4</span>
+                                        <span class="signal-desc">Retornos proyectados del 9.8% anual en apartamentos de 1 Habitación.</span>
+                                    </div>
+                                    <div class="signal-item">
+                                        <span class="signal-badge success">OPORTUNIDAD</span>
+                                        <span class="signal-name">Reventa Zona 15</span>
+                                        <span class="signal-desc">Unidad 180m² en Vista Hermosa II listada 15% bajo valor de mercado IA.</span>
+                                    </div>
+                                    <div class="signal-item">
+                                        <span class="signal-badge info">CRECIMIENTO</span>
+                                        <span class="signal-name">Carretera a El Salvador</span>
+                                        <span class="signal-desc">Aumento del 12% en alquiler de bodegas industriales / residenciales cerrados.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VISTA 3: SIMULADOR HIPOTECARIO -->
+                <section id="view-mortgage" class="app-view">
+                    <div class="mortgage-layout">
+                        <!-- Columna de Sliders de Entrada -->
+                        <div class="card glassmorphism mortgage-inputs">
+                            <div class="card-header">
+                                <div class="header-icon"><i data-lucide="percent"></i></div>
+                                <h2>Configuración del Financiamiento</h2>
+                            </div>
+                            
+                            <div class="sliders-wrapper">
+                                <div class="slider-group">
+                                    <div class="slider-labels">
+                                        <span class="lbl-text">Valor de la Propiedad</span>
+                                        <span class="slider-value-display font-mono" id="mval-prop-display">Q1,500,000</span>
+                                    </div>
+                                    <input type="range" id="mval-prop-slider" min="150000" max="8000000" step="50000" value="1500000" oninput="updateMortgageValues()">
+                                </div>
+
+                                <div class="slider-group">
+                                    <div class="slider-labels">
+                                        <span class="lbl-text">Enganche Obligatorio (Enganche)</span>
+                                        <span class="slider-value-display font-mono" id="mval-down-display">Q300,000 (20%)</span>
+                                    </div>
+                                    <input type="range" id="mval-down-slider" min="10" max="90" step="5" value="20" oninput="updateMortgageValues()">
+                                </div>
+
+                                <div class="slider-group">
+                                    <div class="slider-labels">
+                                        <span class="lbl-text">Plazo del Crédito (Años)</span>
+                                        <span class="slider-value-display font-mono" id="mval-term-display">20 Años</span>
+                                    </div>
+                                    <input type="range" id="mval-term-slider" min="5" max="30" step="5" value="20" oninput="updateMortgageValues()">
+                                </div>
+
+                                <div class="slider-group">
+                                    <div class="slider-labels">
+                                        <span class="lbl-text">Tasa de Interés Anual FHA / Bancaria</span>
+                                        <span class="slider-value-display font-mono" id="mval-rate-display">7.50%</span>
+                                    </div>
+                                    <input type="range" id="mval-rate-slider" min="5.00" max="15.00" step="0.25" value="7.50" oninput="updateMortgageValues()">
+                                </div>
+                            </div>
+
+                            <!-- Selector de Entidad Bancaria de Guatemala -->
+                            <div class="bank-selector-wrapper">
+                                <h3>Perfiles de Tasas en Guatemala</h3>
+                                <div class="bank-grid">
+                                    <button class="bank-btn active" onclick="selectBank('bi', 7.26)">
+                                        <span class="bank-name">Banco Industrial</span>
+                                        <span class="bank-rate">Tasa FHA ~ 7.26%</span>
+                                    </button>
+                                    <button class="bank-btn" onclick="selectBank('bac', 7.50)">
+                                        <span class="bank-name">BAC Credomatic</span>
+                                        <span class="bank-rate">Tasa Comercial ~ 7.50%</span>
+                                    </button>
+                                    <button class="bank-btn" onclick="selectBank('banrural', 8.00)">
+                                        <span class="bank-name">Banrural</span>
+                                        <span class="bank-rate">Tasa Vivienda ~ 8.00%</span>
+                                    </button>
+                                    <button class="bank-btn" onclick="selectBank('gyt', 7.40)">
+                                        <span class="bank-name">G&T Continental</span>
+                                        <span class="bank-rate">Tasa Especial ~ 7.40%</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna de Resultados HUD Financieros -->
+                        <div class="mortgage-outputs">
+                            <!-- Cuota Mensual -->
+                            <div class="card glassmorphism main-payment-card glowing-cyan-border">
+                                <div class="payment-title">CUOTA MENSUAL ESTIMADA</div>
+                                <div class="payment-display font-mono">
+                                    <span class="curr" id="m-curr-sym">Q</span>
+                                    <span class="amt" id="m-monthly-payment">9,870.50</span>
+                                </div>
+                                <div class="payment-subtitle">
+                                    *Estimación de cuota nivelada (capital + interés), excluyendo seguros obligatorios de vida y daños FHA.
+                                </div>
+                            </div>
+
+                            <!-- Desglose de Números HUD -->
+                            <div class="card glassmorphism mortgage-stats-card">
+                                <div class="card-header">
+                                    <div class="header-icon"><i data-lucide="wallet"></i></div>
+                                    <h2>Resumen del Crédito Hipotecario</h2>
+                                </div>
+                                <div class="hud-stats-list">
+                                    <div class="hud-stat-item">
+                                        <span class="hud-item-lbl">Valor de Propiedad</span>
+                                        <span class="hud-item-val font-mono" id="mstat-prop-val">Q1,500,000</span>
+                                    </div>
+                                    <div class="hud-stat-item">
+                                        <span class="hud-item-lbl">Monto del Enganche</span>
+                                        <span class="hud-item-val font-mono text-cyan" id="mstat-down-val">Q300,000</span>
+                                    </div>
+                                    <div class="hud-stat-item">
+                                        <span class="hud-item-lbl">Capital a Financiar</span>
+                                        <span class="hud-item-val font-mono" id="mstat-loan-val">Q1,200,000</span>
+                                    </div>
+                                    <div class="hud-stat-item">
+                                        <span class="hud-item-lbl">Total de Intereses a Pagar</span>
+                                        <span class="hud-item-val font-mono text-red" id="mstat-total-interest">Q1,168,920</span>
+                                    </div>
+                                    <div class="hud-stat-item border-top">
+                                        <span class="hud-item-lbl">Ingreso Mínimo Requerido</span>
+                                        <span class="hud-item-val font-mono text-green" id="mstat-income-required">Q29,611</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recomendación IA Financiera -->
+                            <div class="card glassmorphism mortgage-recommendation-card">
+                                <div class="card-header">
+                                    <div class="header-icon green"><i data-lucide="shield-check"></i></div>
+                                    <h2>Análisis de Viabilidad Hipotecaria IA</h2>
+                                </div>
+                                <div class="recommendation-content">
+                                    <div class="viability-gauge-wrapper">
+                                        <div class="viability-badge" id="m-viability-badge">SANO</div>
+                                        <span class="gauge-caption">Relación Cuota/Ingreso: 33%</span>
+                                    </div>
+                                    <p id="m-ia-recommendation-text" class="recommendation-text">
+                                        El financiamiento es viable basándose en el perfil estándar bancario de Guatemala. Con una cuota proyectada sana, se recomienda optar por tasas reguladas FHA que garantizan estabilidad a largo plazo.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VISTA 4: TERMINAL DE INVERSIÓN -->
+                <section id="view-investor" class="app-view">
+                    <div class="investor-grid">
+                        <!-- Resumen del Mercado Guatemalteco -->
+                        <div class="card glassmorphism investor-summary-card">
+                            <div class="card-header">
+                                <div class="header-icon cyan"><i data-lucide="globe"></i></div>
+                                <h2>Indicadores Generales Inmobiliarios (Guatemala 2026)</h2>
+                            </div>
+                            <div class="market-ticker">
+                                <div class="ticker-box">
+                                    <span class="tick-lbl">TASA DE INTERÉS FHA PROMEDIO</span>
+                                    <span class="tick-val font-mono text-cyan">7.35% <i data-lucide="trending-down" class="inline-icon"></i></span>
+                                </div>
+                                <div class="ticker-box">
+                                    <span class="tick-lbl">CRECIMIENTO ANUAL IPV (CIVIL)</span>
+                                    <span class="tick-val font-mono text-green">+8.42% <i data-lucide="trending-up" class="inline-icon"></i></span>
+                                </div>
+                                <div class="ticker-box">
+                                    <span class="tick-lbl">DEMANDA DE COMPRA VERTICAL</span>
+                                    <span class="tick-val font-mono text-green">+14.2% <i data-lucide="trending-up" class="inline-icon"></i></span>
+                                </div>
+                                <div class="ticker-box font-mono">
+                                    <span class="tick-lbl">INFLACIÓN ANUAL SECTOR</span>
+                                    <span class="tick-val text-red">4.12% <i data-lucide="activity" class="inline-icon"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico ROI de Alquiler vs Crecimiento por Zona -->
+                        <div class="card glassmorphism chart-card-investor">
+                            <div class="card-header">
+                                <div class="header-icon"><i data-lucide="bar-chart-2"></i></div>
+                                <h2>Comparativa de Rendimiento por Zonas (ROI vs Plusvalía)</h2>
+                            </div>
+                            <div class="chart-container-large">
+                                <canvas id="investorComparisonChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Zonas con estilo Terminal Bloomberg -->
+                        <div class="card glassmorphism terminal-table-card">
+                            <div class="card-header">
+                                <div class="header-icon"><i data-lucide="list"></i></div>
+                                <h2>Telemetrías Inmobiliarias - Ciudad de Guatemala</h2>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="terminal-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Zona / Segmento</th>
+                                            <th>Precio Promedio m²</th>
+                                            <th>Tasa Alquiler (ROI)</th>
+                                            <th>Plusvalía (1 Año)</th>
+                                            <th>Índice de Liquidez</th>
+                                            <th>Recomendación IA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="terminal-table-body">
+                                        <!-- Cargado dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Terminal de Noticias de Mercado en Tiempo Real -->
+                        <div class="card glassmorphism terminal-news-card">
+                            <div class="card-header">
+                                <div class="header-icon"><i data-lucide="terminal"></i></div>
+                                <h2>Feed de Inteligencia de Mercado (ValorGT Live)</h2>
+                            </div>
+                            <div class="news-console" id="news-console">
+                                <!-- Llenado dinámicamente con logs de simulación -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VISTA 5: PORTAFOLIO INMOBILIARIO IA -->
+                <section id="view-portfolio" class="app-view">
+                    <!-- CABECERA DE GAMIFICACIÓN -->
+                    <div class="portfolio-header-hud">
+                        <div class="ph-left">
+                            <span class="hud-label-small">TELEMETRÍA PATRIMONIAL</span>
+                            <div class="investor-rank-badge font-mono" id="portfolio-investor-badge">
+                                <i data-lucide="award" class="purple-icon"></i>
+                                <span class="badge-lbl">RANGO:</span>
+                                <span id="portfolio-investor-rank" class="badge-val text-purple">Generador de Flujo</span>
+                            </div>
+                        </div>
+                        <div class="ph-right">
+                            <span class="hud-caption text-purple"><i data-lucide="shield-check" class="tiny-icon inline"></i> SISTEMA DE RIQUEZA ACTIVO V4.12</span>
+                        </div>
+                    </div>
+
+                    <!-- HUD DE KPIS PRINCIPALES -->
+                    <div class="portfolio-kpis-grid">
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl" id="lbl-total-value">VALOR TOTAL</span>
+                                <i data-lucide="home" class="kpi-mini-icon"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-cyan" id="pkpi-total-value">Q0</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl" id="lbl-total-debt">DEUDA TOTAL</span>
+                                <i data-lucide="trending-down" class="kpi-mini-icon text-red"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-red" id="pkpi-total-debt">Q0</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl" id="lbl-total-equity">EQUITY TOTAL</span>
+                                <i data-lucide="shield" class="kpi-mini-icon text-green"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-green" id="pkpi-total-equity">Q0</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl" id="lbl-total-rent">RENTAS TOTALES</span>
+                                <i data-lucide="arrow-up-right" class="kpi-mini-icon text-cyan"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-cyan" id="pkpi-total-rent">Q0/mes</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl" id="lbl-total-payments">CUOTAS TOTALES</span>
+                                <i data-lucide="arrow-down-right" class="kpi-mini-icon text-red"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-red" id="pkpi-total-payments">Q0/mes</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl" id="lbl-net-cashflow">FLUJO NETO</span>
+                                <i data-lucide="dollar-sign" class="kpi-mini-icon text-green"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-green" id="pkpi-net-cashflow">Q0/mes</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">ROI PROMEDIO</span>
+                                <i data-lucide="percent" class="kpi-mini-icon text-green"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-green" id="pkpi-avg-roi">0%</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">PLUSVALÍA PROY.</span>
+                                <i data-lucide="trending-up" class="kpi-mini-icon text-cyan"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-cyan" id="pkpi-avg-plusvalia">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- GRID SUPERIOR (2 COLUMNAS ANCHAS) -->
+                    <div class="portfolio-grid-upper">
+                        
+                        <!-- COLUMNA 1: GESTOR DE ACTIVOS -->
+                        <div class="portfolio-column assets-column">
+                            <div class="card glassmorphism col-card">
+                                <div class="card-header border-purple">
+                                    <div class="header-icon purple"><i data-lucide="building"></i></div>
+                                    <h2>Gestor de Activos</h2>
+                                    <span class="item-count font-mono" id="portfolio-assets-count">0 ACTIVOS</span>
+                                </div>
+                                
+                                <div class="assets-scroll-area" id="portfolio-assets-list">
+                                    <!-- Propiedades cargadas dinámicamente -->
+                                </div>
+                            </div>
+
+                            <!-- CARD: AGREGAR NUEVO ACTIVO -->
+                            <div class="card glassmorphism col-card form-card">
+                                <div class="card-header border-purple">
+                                    <div class="header-icon purple"><i data-lucide="plus-circle"></i></div>
+                                    <h2>Adquirir Nuevo Activo</h2>
+                                </div>
+                                <form id="portfolio-add-form" onsubmit="addAssetToPortfolio(event)">
+                                    <div class="form-grid">
+                                        <div class="form-group full-width">
+                                            <label for="p-add-title">Nombre del Activo / Dirección</label>
+                                            <input type="text" id="p-add-title" placeholder="Ej. Apartamento Zona 14 Las Américas" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="p-add-location">Ubicación / Sector</label>
+                                            <select id="p-add-location" required>
+                                                <option value="" disabled selected>Selecciona sector...</option>
+                                                <option value="zona10">Zona 10</option>
+                                                <option value="zona14">Zona 14</option>
+                                                <option value="zona15">Zona 15</option>
+                                                <option value="zona16">Zona 16</option>
+                                                <option value="zona4">Zona 4</option>
+                                                <option value="carretera">Carretera a El Salvador</option>
+                                                <option value="fraijanes">Fraijanes</option>
+                                                <option value="mixco">Mixco</option>
+                                                <option value="antigua">Antigua Guatemala</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="p-add-type">Tipo de Activo</label>
+                                            <select id="p-add-type" required>
+                                                <option value="apartamento" selected>Apartamento</option>
+                                                <option value="casa">Casa</option>
+                                                <option value="comercial">Local Comercial</option>
+                                                <option value="oficina">Oficina</option>
+                                                <option value="terreno">Terreno</option>
+                                                <option value="bodega">Bodega</option>
+                                                <option value="beachhouse">Casa de Playa</option>
+                                                <option value="airbnb">Airbnb Ready</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="p-add-buyvalue">Valor de Compra</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="p-add-buyvalue" min="2000" max="100000000" value="200000" required>
+                                                <span class="unit-badge" id="p-add-buyvalue-unit">$</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="p-add-rent">Renta Mensual Estimada</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="p-add-rent" min="0" max="1000000" value="1500" required>
+                                                <span class="unit-badge" id="p-add-rent-unit">$</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group full-width" style="border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 5px;">
+                                            <label class="checkbox-container">
+                                                <input type="checkbox" id="p-add-has-mortgage" onchange="toggleMortgageInputs(this.checked)">
+                                                <span class="checkmark border-purple"></span>
+                                                <span class="label-text">¿Adquirido con Financiamiento / Hipoteca?</span>
+                                            </label>
+                                        </div>
+
+                                        <div id="mortgage-fields-container" class="form-grid full-width hidden">
+                                            <div class="form-group">
+                                                <label for="p-add-mortgagedebt">Monto del Crédito</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="p-add-mortgagedebt" min="1000" max="90000000" value="160000">
+                                                    <span class="unit-badge" id="p-add-mortgagedebt-unit">$</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-mortgagepayment">Cuota Mensual</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="p-add-mortgagepayment" min="10" max="1000000" value="1100">
+                                                    <span class="unit-badge" id="p-add-mortgagepayment-unit">$</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-mortgagerate">Tasa de Interés (%)</label>
+                                                <input type="number" id="p-add-mortgagerate" min="1" max="30" step="0.05" value="7.25">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-mortgageterm">Plazo de Hipoteca (Años)</label>
+                                                <input type="number" id="p-add-mortgageterm" min="5" max="35" step="5" value="20">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="p-add-maintenance">Mantenimiento Mensual</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="p-add-maintenance" min="0" max="100000" value="120">
+                                                <span class="unit-badge" id="p-add-maintenance-unit">$</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="p-add-taxes">Impuestos Mensuales (IUSI)</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="p-add-taxes" min="0" max="100000" value="40">
+                                                <span class="unit-badge" id="p-add-taxes-unit">$</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block glowing-effect-purple" style="margin-top: 15px;">
+                                        <i data-lucide="plus-circle"></i> AGREGAR ACTIVO AL PORTAFOLIO
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 2: GRÁFICOS Y PROYECCIONES -->
+                        <div class="portfolio-column charts-column">
+                            <!-- CARD: PROYECCIÓN A PLAZO -->
+                            <div class="card glassmorphism col-card">
+                                <div class="card-header border-purple">
+                                    <div class="header-icon purple"><i data-lucide="bar-chart-3"></i></div>
+                                    <h2>Proyección de Riqueza y Amortización</h2>
+                                    <div class="projection-toggles">
+                                        <button class="proj-toggle-btn active" id="p-proj-0" onclick="switchPortfolioProjection(0)">Actual</button>
+                                        <button class="proj-toggle-btn" id="p-proj-1" onclick="switchPortfolioProjection(1)">1A</button>
+                                        <button class="proj-toggle-btn" id="p-proj-5" onclick="switchPortfolioProjection(5)">5A</button>
+                                        <button class="proj-toggle-btn" id="p-proj-10" onclick="switchPortfolioProjection(10)">10A</button>
+                                        <button class="proj-toggle-btn" id="p-proj-20" onclick="switchPortfolioProjection(20)">20A</button>
+                                    </div>
+                                </div>
+                                <div class="chart-container-portfolio">
+                                    <canvas id="portfolioGrowthChart"></canvas>
+                                </div>
+                                <div class="projection-stats font-mono">
+                                    <div class="pstat">
+                                        <span class="ps-lbl">Equity Proyectado:</span>
+                                        <span class="ps-val text-green" id="p-proj-equity-val">Q0</span>
+                                    </div>
+                                    <div class="pstat border-l">
+                                        <span class="ps-lbl">Deuda Restante:</span>
+                                        <span class="ps-val text-red" id="p-proj-debt-val">Q0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD: DISTRIBUCIÓN -->
+                            <div class="card glassmorphism col-card">
+                                <div class="card-header border-purple">
+                                    <div class="header-icon purple"><i data-lucide="pie-chart"></i></div>
+                                    <h2>Distribución de Activos Inmobiliarios</h2>
+                                </div>
+                                <div class="chart-container-portfolio" style="height: 220px;">
+                                    <canvas id="portfolioDistributionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- GRID INFERIOR (BAJAMOS EL ASESOR IA PARA MAS AMPLITUD) -->
+                    <div class="portfolio-grid-lower">
+                        
+                        <!-- CARD: ASESOR ESTRATÉGICO IA -->
+                        <div class="card glassmorphism col-card">
+                            <div class="card-header border-purple">
+                                <div class="header-icon purple"><i data-lucide="bot"></i></div>
+                                <h2>Asesor Patrimonial IA</h2>
+                            </div>
+                            
+                            <div class="ai-console-wrapper">
+                                <!-- CAPACIDAD DE CRÉDITO HUD -->
+                                <div class="credit-capacity-box">
+                                    <div class="cap-title">Capacidad Adicional de Crédito</div>
+                                    <div class="cap-val font-mono text-purple" id="p-ai-credit-capacity">Q0 / mes</div>
+                                    <div class="cap-desc">Soportada por tu flujo neto actual ajustada a regulaciones bancarias.</div>
+                                </div>
+
+                                <div class="ai-opinion-feed" id="portfolio-ai-console">
+                                    <!-- Respuestas de asesoramiento en tiempo real -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD: CAMINO A LA LIBERTAD FINANCIERA -->
+                        <div class="card glassmorphism col-card freedom-card">
+                            <div class="card-header border-purple">
+                                <div class="header-icon purple"><i data-lucide="sparkles"></i></div>
+                                <h2>Camino a la Libertad Financiera</h2>
+                            </div>
+                            
+                            <div class="freedom-content-wrapper">
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label for="p-freedom-budget">Presupuesto de Vida Deseado (Mensual)</label>
+                                    <div class="input-with-unit">
+                                        <input type="number" id="p-freedom-budget" min="100" max="2500000" value="4000" oninput="updatePortfolioCalculations()">
+                                        <span class="unit-badge" id="p-freedom-budget-unit">$</span>
+                                    </div>
+                                </div>
+
+                                <div class="freedom-progress-wrapper">
+                                    <div class="freedom-percentage-ring">
+                                        <svg class="ring-svg" width="120" height="120">
+                                            <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                                            <circle class="ring-fill" cx="60" cy="60" r="50" id="freedom-progress-ring-circle"></circle>
+                                        </svg>
+                                        <div class="ring-center font-mono">
+                                            <span class="pct-num" id="freedom-pct-val">0%</span>
+                                            <span class="pct-lbl">LIBRE</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="freedom-stats font-mono">
+                                    <div class="fstat">
+                                        <span class="fs-lbl">Flujo Pasivo Neto:</span>
+                                        <span class="fs-val text-green" id="freedom-cashflow-val">Q0</span>
+                                    </div>
+                                    <div class="fstat">
+                                        <span class="fs-lbl">Meta Patrimonial:</span>
+                                        <span class="fs-val text-purple" id="freedom-target-equity">Q0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- SECCIÓN: MAPA DE CALOR Y BALIZAS DE ACTIVOS -->
+                    <div class="card glassmorphism portfolio-map-card">
+                        <div class="card-header border-purple">
+                            <div class="header-icon purple"><i data-lucide="map"></i></div>
+                            <h2>Mapa de Geolocalización y Nodos del Portafolio</h2>
+                        </div>
+                        <div class="map-layout-portfolio">
+                            <div class="map-wrapper card glassmorphism" style="height: 440px;">
+                                <div id="portfolio-map" style="height: 100%;"></div>
+                            </div>
+                            <div class="map-signals-sidebar">
+                                <h3 class="font-mono text-purple" style="font-size: 0.75rem; margin-bottom: 8px;">SEÑALES DEL VECTOR INMOBILIARIO</h3>
+                                <div class="arbitrage-signals-list" id="portfolio-map-signals">
+                                    <!-- Señales geográficas basadas en los activos agregados -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VISTA 6: GESTIÓN COMERCIAL & B2B SaaS -->
+                <section id="view-commercial" class="app-view">
+                    
+                    <!-- ACCESO B2B: LOGIN GATE -->
+                    <div id="commercial-login-gate" class="commercial-login-container font-mono">
+                        <div class="card glassmorphism login-card" style="width: 420px; margin: 50px auto; padding: 25px; position: relative;">
+                            <div class="login-card-glow" style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0, 240, 255, 0.04) 0%, transparent 70%); pointer-events: none;"></div>
+                            
+                            <div class="login-header" style="text-align: center; margin-bottom: 20px;">
+                                <div class="login-lock-halo" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);">
+                                    <i data-lucide="shield-check" class="text-cyan" style="width: 24px; height: 24px; color: var(--cyan);"></i>
+                                </div>
+                                <h3 class="font-mono" style="font-size: 0.95rem; font-weight: bold; color: var(--text-primary);">SISTEMA INMOBILIARIO B2B SaaS</h3>
+                                <p class="text-muted" style="font-size: 0.6rem; margin-top: 4px;">ACCESO EXCLUSIVO PARA AGENTES AFILIADOS</p>
+                            </div>
+
+                            <!-- PESTAÑAS DE ACCESO / REGISTRO -->
+                            <div class="login-tabs" style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px;">
+                                <button type="button" class="login-tab active" id="login-tab-signin" onclick="switchLoginTab('signin')" style="flex: 1; padding: 10px; background: none; border: none; color: var(--cyan); border-bottom: 2px solid var(--cyan); font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.3s; outline: none;">ACCESO AGENTE</button>
+                                <button type="button" class="login-tab" id="login-tab-signup" onclick="switchLoginTab('signup')" style="flex: 1; padding: 10px; background: none; border: none; color: var(--text-secondary); border-bottom: 2px solid transparent; font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; cursor: pointer; transition: all 0.3s; outline: none;">REGISTRAR NUEVO</button>
+                            </div>
+
+                            <!-- FORMULARIO 1: INICIAR SESIÓN (YA SUSCRITO) -->
+                            <form id="commercial-login-form" class="commercial-form" onsubmit="authenticateCommercialAgent(event)" style="display: flex; flex-direction: column; gap: 15px;">
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-login-user">Usuario / Email Corporativo</label>
+                                    <input type="email" id="com-login-user" placeholder="agente@valorgt.com" required style="padding: 10px; font-size: 0.8rem;">
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-login-pass">Clave de Encriptación</label>
+                                    <input type="password" id="com-login-pass" placeholder="••••••••" required style="padding: 10px; font-size: 0.8rem;">
+                                </div>
+
+                                <div class="demo-credentials font-mono" style="border: 1px dashed rgba(0,240,255,0.3); background: rgba(0,240,255,0.05); color: var(--cyan); font-size: 0.65rem; border-radius: 6px; padding: 10px; line-height: 1.4;">
+                                    <span style="font-weight: bold; display: block; margin-bottom: 2px;">🔑 CREDENCIALES DEMO (YA SUSCRITOS):</span>
+                                    Usuario: <strong style="text-decoration: underline;">agente@valorgt.com</strong> o <strong style="text-decoration: underline;">roberto@inversionesrv.com</strong><br>
+                                    Clave: <strong style="text-decoration: underline;">valorgt</strong>
+                                </div>
+
+                                <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 10px; font-weight: bold; padding: 12px;">
+                                    <i data-lucide="key-round" style="width: 14px; height: 14px;"></i> INICIAR SESIÓN B2B
+                                </button>
+                            </form>
+
+                            <!-- FORMULARIO 2: REGISTRO DE NUEVO USUARIO -->
+                            <form id="commercial-signup-form" class="commercial-form hidden" onsubmit="handleRegistrationFormSubmit(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-name">Nombre Completo</label>
+                                    <input type="text" id="com-signup-name" placeholder="Ej. Carlos Mendoza" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-company">Empresa / Inmobiliaria</label>
+                                    <input type="text" id="com-signup-company" placeholder="Ej. MultiBienes S.A." required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-nit">NIT Comercial</label>
+                                    <input type="text" id="com-signup-nit" placeholder="Ej. 8493021-9" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-phone">Teléfono de Contacto</label>
+                                    <input type="tel" id="com-signup-phone" placeholder="Ej. 5002-8593" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-email">Usuario / Email Corporativo</label>
+                                    <input type="email" id="com-signup-email" placeholder="carlos@multibienes.com" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-pass">Clave de Acceso</label>
+                                    <input type="password" id="com-signup-pass" placeholder="••••••••" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+
+                                <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; font-weight: bold; padding: 12px; background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%);">
+                                    <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> REGISTRARSE Y CONTINUAR
+                                </button>
+                            </form>
+
+                            <!-- Pantalla de escaneo de seguridad durante el login -->
+                            <div id="login-scanning-overlay" class="login-scanner hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5,6,8,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; border-radius: 12px; padding: 20px;">
+                                <div class="neon-spinner" style="width: 50px; height: 50px;"></div>
+                                <p style="margin-top: 20px; font-size: 0.7rem; color: var(--neon-emerald); font-weight: bold; text-shadow: 0 0 10px var(--neon-emerald-glow); text-align: center; line-height: 1.4;">
+                                    ANALIZANDO CANAL DE ACCESO...<br>
+                                    <span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">Verificando credenciales criptográficas</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACCESO B2B: PANTALLA DE PAGO DE SUSCRIPCIÓN (NUEVO USUARIO) -->
+                    <div id="commercial-signup-payment-gate" class="commercial-login-container font-mono hidden" style="flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 30px; min-height: auto;">
+                        <h2 style="font-size: 1.3rem; font-weight: bold; color: var(--cyan); text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); text-align: center; margin-bottom: 5px;">PASARELA DE PAGO SAAS CORPORATIVO</h2>
+                        <p class="text-muted" style="font-size: 0.7rem; text-align: center; margin-bottom: 25px;">SELECCIONA UN PLAN Y CONTRASTA TU FIRMA DIGITAL PARA ACTIVAR EL NODO</p>
+                        
+                        <div class="payment-setup-layout" style="display: flex; gap: 30px; width: 100%; max-width: 950px; flex-wrap: wrap; justify-content: center;">
+                            <!-- Selección de Plan -->
+                            <div class="plan-selection-column" style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
+                                <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">1. SELECCIONAR NIVEL DE SUSCRIPCIÓN</h3>
+                                
+                                <div class="pricing-card" id="signup-plan-basico" onclick="selectSignupPlan('basico', 49)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
+                                        <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">BÁSICO</span>
+                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Agente Individual</span>
+                                    </div>
+                                    <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: var(--neon-blue);">
+                                        <span class="plan-currency-sym">Q</span><span id="signup-price-basico">381</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                    </div>
+                                </div>
+
+                                <div class="pricing-card active-plan" id="signup-plan-pro" onclick="selectSignupPlan('pro', 149)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
+                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.5rem; padding: 1px 6px;">RECOMENDADO</div>
+                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
+                                        <span class="plan-badge">PRO</span>
+                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Inmobiliaria Pro</span>
+                                    </div>
+                                    <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: var(--cyan);">
+                                        <span class="plan-currency-sym">Q</span><span id="signup-price-pro">1,159</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                    </div>
+                                </div>
+
+                                <div class="pricing-card" id="signup-plan-vip" onclick="selectSignupPlan('vip', 399)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
+                                        <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">VIP</span>
+                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Desarrollador VIP</span>
+                                    </div>
+                                    <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: #bf5af2;">
+                                        <span class="plan-currency-sym">Q</span><span id="signup-price-vip">3,104</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formulario de Pago y Credit Card Preview -->
+                            <div class="payment-fields-column" style="flex: 1.2; min-width: 380px; display: flex; flex-direction: column; gap: 15px;">
+                                <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">2. DATOS DE FACTURACIÓN Y PASARELA</h3>
+                                
+                                <div class="card glassmorphism" style="padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); width: 100%; box-sizing: border-box; position: relative;">
+                                    
+                                    <!-- Formularios Principales del Pago -->
+                                    <div id="signup-payment-form-view">
+                                        <!-- CC Preview Card -->
+                                        <div class="credit-card-preview" style="height: 150px; margin-bottom: 15px;">
+                                            <div class="cc-bg-pattern"></div>
+                                            <div class="cc-header">
+                                                <div class="cc-chip"></div>
+                                                <i data-lucide="wifi" class="cc-wifi"></i>
+                                            </div>
+                                            <div class="cc-number" id="signup-card-num-preview" style="font-size: 0.95rem; margin: 10px 0;">•••• •••• •••• ••••</div>
+                                            <div class="cc-footer">
+                                                <div>
+                                                    <span class="cc-lbl">TARJETAHABIENTE</span>
+                                                    <span class="cc-val" id="signup-card-name-preview" style="font-size: 0.55rem;">NOMBRE APELLIDO</span>
+                                                </div>
+                                                <div>
+                                                    <span class="cc-lbl">VENCE</span>
+                                                    <span class="cc-val" id="signup-card-expiry-preview" style="font-size: 0.55rem;">MM/AA</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <form id="signup-cc-form" onsubmit="processSignupSubscriptionPayment(event)" style="display: flex; flex-direction: column; gap: 10px;">
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
+                                                <label for="signup-cc-num" style="font-size: 0.65rem;">Número de Tarjeta de Crédito / Débito</label>
+                                                <input type="text" id="signup-cc-num" placeholder="4000 1234 5678 9010" maxlength="19" required oninput="formatSignupCardNumber(this)" style="padding: 8px; font-size: 0.75rem;">
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
+                                                <label for="signup-cc-name" style="font-size: 0.65rem;">Nombre del Tarjetahabiente (como figura en tarjeta)</label>
+                                                <input type="text" id="signup-cc-name" placeholder="JUAN MENDOZA" required oninput="updateSignupCardName(this)" style="padding: 8px; font-size: 0.75rem;">
+                                            </div>
+                                            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
+                                                    <label for="signup-cc-expiry" style="font-size: 0.65rem;">Fecha de Vencimiento</label>
+                                                    <input type="text" id="signup-cc-expiry" placeholder="MM/AA" maxlength="5" required oninput="formatSignupExpiry(this)" style="padding: 8px; font-size: 0.75rem; text-align: center;">
+                                                </div>
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
+                                                    <label for="signup-cc-cvv" style="font-size: 0.65rem;">CVV / Clave</label>
+                                                    <input type="password" id="signup-cc-cvv" placeholder="•••" maxlength="4" required style="padding: 8px; font-size: 0.75rem; text-align: center;">
+                                                </div>
+                                            </div>
+
+                                            <div class="payment-summary font-mono" style="margin-top: 10px; padding: 10px; border-radius: 6px;">
+                                                <div class="summary-line">
+                                                    <span>Concepto:</span>
+                                                    <span id="signup-payment-concept-lbl">Suscripción Inmobiliaria Pro</span>
+                                                </div>
+                                                <div class="summary-line font-bold" style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px; margin-top: 5px;">
+                                                    <span>Total a Debitar:</span>
+                                                    <span class="text-cyan" id="signup-payment-total-lbl">Q1,159.00</span>
+                                                </div>
+                                            </div>
+
+                                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                                <button type="button" class="btn btn-outline" onclick="cancelSignupPayment()" style="flex: 1; padding: 10px; font-size: 0.7rem; font-weight: bold; border-color: rgba(255,255,255,0.1); color: var(--text-secondary);">
+                                                    CANCELAR
+                                                </button>
+                                                <button type="submit" class="btn-commercial btn-commercial-cyan" style="flex: 2; padding: 10px; font-size: 0.75rem; font-weight: bold;">
+                                                    AUTORIZAR Y PAGAR
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <!-- Pantalla de Cargando Transacción -->
+                                    <div id="signup-payment-loading-view" class="payment-state-view hidden">
+                                        <div class="processing-spinner-wrap">
+                                            <div class="neon-spinner" style="filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.4)); border-top-color: var(--cyan);"></div>
+                                            <div class="spinner-core"></div>
+                                        </div>
+                                        <h4 style="margin-top: 20px; font-size: 0.85rem; font-weight: bold; color: var(--cyan);">PROCESANDO SUSCRIPCIÓN SAAS</h4>
+                                        <div class="payment-status-console font-mono" id="signup-payment-status-logs" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 10px; font-size: 0.55rem; line-height: 1.5; text-align: left; height: 95px; overflow-y: auto; margin-top: 15px; box-sizing: border-box;">
+                                            <!-- Logs bancarios en tiempo real -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Pantalla de Éxito del Pago -->
+                                    <div id="signup-payment-success-view" class="payment-state-view hidden" style="padding: 15px 5px;">
+                                        <div class="success-icon-badge" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 240, 255, 0.35); margin-bottom: 15px;">
+                                            <i data-lucide="check-circle-2" class="text-cyan" style="width: 28px; height: 28px; color: var(--cyan);"></i>
+                                        </div>
+                                        <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.25);">SUSCRIPCIÓN ACTIVA</h4>
+                                        <p style="font-size: 0.65rem; color: var(--text-secondary); text-align: center; margin-top: 5px; max-width: 320px;">Tu cuenta ha sido verificada en la red y tu firma criptográfica de socio ha sido firmada digitalmente.</p>
+                                        
+                                        <!-- Recibo Digital -->
+                                        <div class="receipt-card font-mono" style="width: 100%; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; padding: 10px; background: rgba(0,0,0,0.2); font-size: 0.6rem; margin-top: 15px; box-sizing: border-box; text-align: left;">
+                                            <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                                                <span class="r-lbl">Código de Autorización:</span>
+                                                <span class="r-val" id="signup-receipt-auth-code" style="color: var(--cyan); font-weight: bold;">#AUT-849204</span>
+                                            </div>
+                                            <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                                                <span class="r-lbl">Referencia Bancaria:</span>
+                                                <span class="r-val" id="signup-receipt-ref-code">#REF-85028503</span>
+                                            </div>
+                                            <div class="receipt-row" style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px;">
+                                                <span class="r-lbl">Monto Cobrado:</span>
+                                                <span class="r-val text-cyan" id="signup-receipt-amount-val">Q1,159.00</span>
+                                            </div>
+                                        </div>
+
+                                        <button class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 20px; font-weight: bold;" onclick="enterPersonalDashboardAfterPayment()">
+                                            <i data-lucide="layout-dashboard"></i> INGRESAR AL DASHBOARD PERSONAL
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MÓDULO INTERNO DEL DASHBOARD COMERCIAL (Se muestra al autenticarse) -->
+                    <div id="commercial-dashboard-area" class="hidden">
+                        <!-- CABECERA DE TELEMETRÍA COMERCIAL -->
+                        <div class="portfolio-header-hud">
+                            <div class="ph-left">
+                                <span class="hud-label-small">CONSOLA DE CONTROL COMERCIAL B2B</span>
+                                <div class="investor-rank-badge font-mono" id="commercial-saas-badge" style="border-color: var(--cyan); gap: 6px; padding: 4px 10px; background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);">
+                                    <i data-lucide="briefcase" style="color: var(--cyan); width: 14px; height: 14px;"></i>
+                                    <span class="badge-lbl">PLAN DE SOCIO:</span>
+                                    <span id="commercial-partner-level" class="badge-val" style="color: var(--cyan); text-shadow: 0 0 10px rgba(0, 240, 255, 0.35);">Inmobiliaria Pro</span>
+                                    <button class="btn-logout font-mono" onclick="logoutCommercialAgent()" title="Cerrar Sesión B2B" style="background: rgba(255,55,95,0.15); border: 1px solid var(--red); color: var(--red); border-radius: 4px; padding: 2px 6px; font-size: 0.55rem; cursor: pointer; margin-left: 8px; font-weight: bold; transition: var(--transition-smooth); display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="log-out" style="width: 10px; height: 10px;"></i> SALIR
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="ph-right" style="display: none;">
+                                <span id="saas-billing-val" style="display: none;">Q1,159.00</span>
+                                <span id="saas-listings-count" style="display: none;">0</span>
+                                <span id="saas-impressions-count" style="display: none;">12,450</span>
+                            </div>
+                        </div>
+
+                        <!-- NUEVA GRILLA DE TARJETAS KPI PREMIUM B2B -->
+                        <div class="portfolio-kpis-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 15px; gap: 15px; margin-bottom: 20px;">
+                            <!-- KPI 1: Facturación SaaS -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="line-chart" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Facturación SaaS</span>
+                                    <span class="kpi-value-text" id="saas-billing-val-card">Q1,159.22</span>
+                                    <span class="kpi-sub-text">💳 PLAN PRO ACTIVO</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                            
+                            <!-- KPI 2: Propiedades Propias -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="home" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Propiedades Propias</span>
+                                    <span class="kpi-value-text" id="saas-listings-count-card">0</span>
+                                    <span class="kpi-sub-text">🏠 INVENTARIO LIVE</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                            
+                            <!-- KPI 3: Tráfico e Impresiones -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="eye" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Tráfico e Impresiones</span>
+                                    <span class="kpi-value-text" id="saas-impressions-count-card">12,450</span>
+                                    <span class="kpi-sub-text">📈 +24% ESTE MES</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                            
+                            <!-- KPI 4: USDT Cartera (Airdrops) -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="coins" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Cartera USDT (Airdrops)</span>
+                                    <span class="kpi-value-text" id="saas-usdt-balance-card">100.00 USDT</span>
+                                    <span class="kpi-sub-text">🔗 ON-CHAIN LEDGER</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                        </div>
+
+                    <!-- GRID PRINCIPAL DE GESTIÓN (FILA SUPERIOR) -->
+                    <div class="commercial-grid-upper">
+                        <!-- COLUMNA 1: MI PERFIL + CONSOLA DE TRANSFERENCIA USDT -->
+                        <div class="commercial-column-flex">
+                            <!-- MI PERFIL PROFESIONAL Y MEMBRESÍA SaaS -->
+                            <div class="card glassmorphism border-cyan" style="border-left: 3px solid var(--cyan); border-color: rgba(0, 240, 255, 0.2) !important;">
+                                <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;">
+                                    <div class="header-icon cyan" style="background: rgba(0, 240, 255, 0.1) !important; color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="user"></i></div>
+                                    <h2>Mi Perfil Profesional y Membresía B2B</h2>
+                                </div>
+                                <div class="commercial-section-body" id="b2b-profile-card-body" style="padding: 15px 5px;">
+                                    <!-- Poblado dinámicamente con los datos de sesión del agente -->
+                                </div>
+                            </div>
+
+                            <!-- CONSOLA DE TRANSFERENCIA USDT BLOCKCHAIN -->
+                            <div class="card glassmorphism border-cyan" style="border-left: 3px solid var(--cyan); border-color: rgba(0, 240, 255, 0.2) !important;">
+                                <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;">
+                                    <div class="header-icon cyan" style="background: rgba(0, 240, 255, 0.1) !important; color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="send"></i></div>
+                                    <h2>Transferencia de USDT (Airdrops)</h2>
+                                </div>
+                                <div class="commercial-section-body font-mono">
+                                    <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Transfiere fondos de tu cartera USDT a otros agentes registrados de forma instantánea usando únicamente su correo electrónico corporativo.</p>
+                                    
+                                    <form id="b2b-usdt-transfer-form" class="commercial-form" onsubmit="executeB2bUsdtTransfer(event)">
+                                        <div class="form-row-2">
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="usdt-recipient-email" style="font-size: 0.75rem;">Email del Destinatario</label>
+                                                <input type="email" id="usdt-recipient-email" placeholder="ej: ana@estevezinmobiliaria.com" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="usdt-transfer-amount" style="font-size: 0.75rem;">Monto USDT</label>
+                                                <input type="number" id="usdt-transfer-amount" placeholder="Monto" min="1" step="0.01" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; text-align: center;">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn-commercial btn-commercial-cyan" style="background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%); color: #fff; font-weight: bold; width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; transition: var(--transition-smooth); text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                                            <i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i> EJECUTAR TRANSFERENCIA ON-CHAIN
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 2: TABLA DE PLANES PREMIUM B2B -->
+                        <div class="card glassmorphism">
+                            <div class="card-header border-cyan">
+                                <div class="header-icon cyan"><i data-lucide="shield-check"></i></div>
+                                <h2>Suscripciones Corporativas ValorGT AI</h2>
+                            </div>
+                            <div class="commercial-section-body">
+                                <p class="saas-desc font-mono" style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;">Escala la operativa de tu inmobiliaria con acceso ilimitado a nuestro motor predictivo B2B SaaS, modelos de valoración FHA e inyección directa en portadas premium.</p>
+                                
+                                <div class="saas-pricing-grid">
+                                    <!-- Plan 1: Básico -->
+                                    <div class="pricing-card" id="plan-card-basico">
+                                        <div class="plan-header">
+                                            <span class="plan-badge">BÁSICO</span>
+                                            <h3 class="plan-title">Agente Individual</h3>
+                                        </div>
+                                        <div class="plan-price font-mono">
+                                            <span class="plan-currency-sym" id="price-sym-basico">Q</span>
+                                            <span class="plan-price-num" id="price-num-basico" data-usd="49" data-gtq="381">381</span>
+                                            <span class="plan-period">/mes</span>
+                                        </div>
+                                        <ul class="plan-features font-mono">
+                                            <li><i data-lucide="check"></i> 5 Publicaciones</li>
+                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
+                                            <li><i data-lucide="x" class="text-red"></i> PDF Marca blanca</li>
+                                            <li><i data-lucide="x" class="text-red"></i> 10% Desc. Pauta</li>
+                                        </ul>
+                                        <button class="btn-plan-action" id="btn-plan-basico" onclick="openPlanPayment('basico')">Cambiar Plan</button>
+                                    </div>
+
+                                    <!-- Plan 2: Pro (Por Defecto) -->
+                                    <div class="pricing-card active-plan" id="plan-card-pro">
+                                        <div class="active-ribbon">RECOMENDADO</div>
+                                        <div class="plan-header">
+                                            <span class="plan-badge">PRO</span>
+                                            <h3 class="plan-title">Inmobiliaria Pro</h3>
+                                        </div>
+                                        <div class="plan-price font-mono">
+                                            <span class="plan-currency-sym" id="price-sym-pro">Q</span>
+                                            <span class="plan-price-num" id="price-num-pro" data-usd="149" data-gtq="1159">1,159</span>
+                                            <span class="plan-period">/mes</span>
+                                        </div>
+                                        <ul class="plan-features font-mono">
+                                            <li><i data-lucide="check"></i> 25 Publicaciones</li>
+                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
+                                            <li><i data-lucide="check"></i> PDF Marca blanca</li>
+                                            <li><i data-lucide="check"></i> 20% Desc. Pauta</li>
+                                        </ul>
+                                        <button class="btn-plan-action" id="btn-plan-pro" onclick="openPlanPayment('pro')">Plan Activo</button>
+                                    </div>
+
+                                    <!-- Plan 3: VIP -->
+                                    <div class="pricing-card" id="plan-card-vip">
+                                        <div class="plan-header">
+                                            <span class="plan-badge">VIP</span>
+                                            <h3 class="plan-title">Desarrollador VIP</h3>
+                                        </div>
+                                        <div class="plan-price font-mono">
+                                            <span class="plan-currency-sym" id="price-sym-vip">Q</span>
+                                            <span class="plan-price-num" id="price-num-vip" data-usd="399" data-gtq="3104">3,104</span>
+                                            <span class="plan-period">/mes</span>
+                                        </div>
+                                        <ul class="plan-features font-mono">
+                                            <li><i data-lucide="check"></i> ILIMITADO</li>
+                                            <li><i data-lucide="check"></i> Acceso API Directa</li>
+                                            <li><i data-lucide="check"></i> Soporte VIP 24/7</li>
+                                            <li><i data-lucide="check"></i> 40% Desc. Pauta</li>
+                                        </ul>
+                                        <button class="btn-plan-action" id="btn-plan-vip" onclick="openPlanPayment('vip')">Cambiar Plan</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRID PRINCIPAL DE GESTIÓN (FILA INFERIOR) -->
+                    <div class="commercial-grid-lower" style="margin-top: 20px;">
+                        <!-- COLUMNA 1: PUBLICAR NUEVA PROPIEDAD -->
+                        <div class="card glassmorphism">
+                            <div class="card-header border-cyan">
+                                <div class="header-icon cyan"><i data-lucide="home"></i></div>
+                                <h2>Terminal de Publicaciones (Subir Propiedad)</h2>
+                            </div>
+                            <div class="commercial-section-body">
+                                <form id="publish-property-form" class="commercial-form font-mono" onsubmit="publishAgentProperty(event)">
+                                    <div class="form-row-3">
+                                        <div class="input-group">
+                                            <label for="pub-title">Título de la Publicación</label>
+                                            <input type="text" id="pub-title" placeholder="Ej: Penthouse Moderno en Zona 14 con Vistas" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-category">Categoría Inmobiliaria</label>
+                                            <select id="pub-category" required>
+                                                <option value="Apartamento" selected>Apartamento</option>
+                                                <option value="Casa">Casa</option>
+                                                <option value="Local">Local / Oficina</option>
+                                                <option value="Bodega">Bodega</option>
+                                                <option value="Terreno">Terreno</option>
+                                            </select>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-type">Esquema Comercial</label>
+                                            <select id="pub-type" required>
+                                                <option value="Venta" selected>En Venta</option>
+                                                <option value="Renta">En Renta</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row-3">
+                                        <div class="input-group">
+                                            <label for="pub-location">Zona de Ubicación</label>
+                                            <select id="pub-location" required>
+                                                <option value="zona14" selected>Zona 14 (La Cañada / Américas)</option>
+                                                <option value="zona10">Zona 10 (Design Center / Geminis)</option>
+                                                <option value="zona16">Zona 16 (Cayalá / Jacarandas)</option>
+                                                <option value="zona15">Zona 15 (Vista Hermosa / Trébol)</option>
+                                                <option value="antigua">Antigua Guatemala (Centro Histórico)</option>
+                                            </select>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-price">Precio del Activo</label>
+                                            <div class="input-with-unit">
+                                                <span class="input-unit pub-currency-unit">Q</span>
+                                                <input type="number" id="pub-price" placeholder="425000" required>
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-size">Metros Cuadrados (M²)</label>
+                                            <input type="number" id="pub-size" placeholder="185" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row-4">
+                                        <div class="input-group">
+                                            <label for="pub-beds">Habitaciones</label>
+                                            <input type="number" id="pub-beds" placeholder="3" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-baths">Baños</label>
+                                            <input type="number" id="pub-baths" placeholder="2.5" step="0.5" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-parks">Parqueos</label>
+                                            <input type="number" id="pub-parks" placeholder="2" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="pub-photo">Imagen de Galería</label>
+                                            <select id="pub-photo">
+                                                <option value="propiedad_demo.png" selected>Apartamento Moderno (Demo)</option>
+                                                <option value="prop_zona14.png">Premium Zona 14</option>
+                                                <option value="prop_zona10.png">Corporate Zona 10</option>
+                                                <option value="prop_zona16.png">Exclusive Zona 16</option>
+                                                <option value="prop_antigua.png">Histórica Antigua</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2" style="margin-top: 10px; margin-bottom: 12px;">
+                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                             <label for="pub-lat" style="font-size: 0.75rem;">Coordenada Latitud (GPS)</label>
+                                             <input type="number" id="pub-lat" placeholder="Ej: 14.5828" step="0.0001" min="14.0" max="15.0" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
+                                         </div>
+                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                             <label for="pub-lng" style="font-size: 0.75rem;">Coordenada Longitud (GPS)</label>
+                                             <input type="number" id="pub-lng" placeholder="Ej: -90.5147" step="0.0001" min="-91.0" max="-90.0" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
+                                         </div>
+                                    </div>
+                                    <button type="submit" class="btn-commercial btn-commercial-cyan">
+                                        <i data-lucide="plus-circle"></i> Publicar Listado en Inventario
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 2: PAUTA DE PUBLICIDAD Y DESTACADOS -->
+                        <div class="card glassmorphism">
+                            <div class="card-header border-cyan">
+                                <div class="header-icon cyan"><i data-lucide="sparkles"></i></div>
+                                <h2>Pauta de Publicidad & Inyección en Portada</h2>
+                            </div>
+                            <div class="commercial-section-body">
+                                <p class="saas-desc font-mono" style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;">Consigue 10x más leads. Destaca tus propiedades subidas directamente en el carrusel principal de <strong>Tasa Inteligente</strong>. Aparecerá primero en fila con un halo neón premium y la etiqueta <strong>"PATROCINADO"</strong>.</p>
+                                
+                                <form id="promo-ad-form" class="commercial-form font-mono" onsubmit="promotePropertyOnCover(event)">
+                                    <div class="form-row-2">
+                                        <div class="input-group">
+                                            <label for="promo-property-select">Seleccionar Propiedad Subida</label>
+                                            <select id="promo-property-select" required>
+                                                <option value="" disabled selected>-- No has subido propiedades aún --</option>
+                                            </select>
+                                        </div>
+                                        <div class="input-group">
+                                            <label for="promo-zone-select">Sector de Portada Destacada</label>
+                                            <select id="promo-zone-select" required>
+                                                <option value="zona14" selected>Zona 14 (La Cañada / Américas)</option>
+                                                <option value="zona10">Zona 10 (Design Center / Geminis)</option>
+                                                <option value="zona16">Zona 16 (Cayalá / Jacarandas)</option>
+                                                <option value="zona15">Zona 15 (Vista Hermosa / Trébol)</option>
+                                                <option value="antigua">Antigua Guatemala (Centro Histórico)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="input-group">
+                                            <label for="promo-budget">Presupuesto de Campaña (Pauta Única)</label>
+                                            <div class="input-with-unit">
+                                                <span class="input-unit promo-currency-unit">Q</span>
+                                                <input type="number" id="promo-budget" value="450" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Clics & Conversión Estimada</label>
+                                            <div class="ad-metric font-mono" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.25); text-align: center; color: var(--neon-blue); font-size: 0.8rem; font-weight: bold;">
+                                                <span id="promo-estimated-clicks">350 - 620 Clics</span> <span style="font-size: 0.65rem; color: var(--text-muted); display: block; font-weight: normal;">(Alto Tránsito de Inversionistas)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn-commercial btn-commercial-cyan" id="btn-promote-property" style="background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%); margin-top: 10px;" disabled>
+                                        <i data-lucide="zap"></i> Pagar Pauta y Publicar en Portada
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FILA INFERIOR ADICIONAL: INVENTARIO DE PROPIEDADES B2B -->
+                    <div class="card glassmorphism b2b-inventory-card" style="margin-top: 20px; min-height: auto !important;">
+                        <div class="card-header border-cyan" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="header-icon cyan"><i data-lucide="folder-heart"></i></div>
+                                <h2>Mis Propiedades Publicadas B2B</h2>
+                            </div>
+                            
+                            <!-- Filtros interactivos por Categoría -->
+                            <div class="inventory-filters font-mono" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="btn-inv-filter active" onclick="filterB2bInventory('todos')">Todos</button>
+                                <button class="btn-inv-filter" onclick="filterB2bInventory('Casa')">Casas</button>
+                                <button class="btn-inv-filter" onclick="filterB2bInventory('Apartamento')">Apartamentos</button>
+                                <button class="btn-inv-filter" onclick="filterB2bInventory('Local')">Locales</button>
+                                <button class="btn-inv-filter" onclick="filterB2bInventory('Bodega')">Bodegas</button>
+                                <button class="btn-inv-filter" onclick="filterB2bInventory('Terreno')">Terrenos</button>
+                            </div>
+                        </div>
+
+                        <div class="commercial-section-body" style="padding: 15px; min-height: auto !important;">
+                            <!-- Lista vacía de inicio -->
+                            <div id="b2b-inventory-empty" class="font-mono text-center" style="padding: 40px 10px; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; text-align: center; width: 100%;">
+                                <i data-lucide="cloud-off" style="width: 40px; height: 40px; stroke-width: 1.5; color: var(--text-secondary); margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
+                                <h4 style="font-weight: bold; font-size: 0.85rem; color: var(--text-secondary);">No hay listados en tu inventario comercial</h4>
+                                <p style="font-size: 0.65rem; margin-top: 5px;">Completa el formulario superior para publicar tu primer activo inmobiliario.</p>
+                            </div>
+
+                            <!-- Grid dinámico de tarjetas de inventario -->
+                            <div id="b2b-inventory-grid" class="b2b-inventory-grid font-mono hidden" style="width: 100%;">
+                                <!-- Insertadas dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    </div> <!-- Cierre de #commercial-dashboard-area -->
+                </section>
+
+                <!-- MODAL DE PAGO FICTICIO B2B -->
+                <div id="commercial-payment-modal" class="payment-modal-overlay">
+                    <div class="payment-modal-card glassmorphism">
+                        <div class="modal-card-glow"></div>
+                        <button class="modal-close-btn" onclick="closePaymentModal()">&times;</button>
+                        
+                        <div class="modal-header-payment">
+                            <i data-lucide="shield-check" class="text-cyan" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(0,240,255,0.5));"></i>
+                            <h3 class="font-mono" style="margin-top: 10px;">Pasarela de Pago Segura (B2B SaaS)</h3>
+                            <p class="font-mono text-muted" style="font-size: 0.6rem; margin-top: 4px;">ENLACE ENCRIPTADO CON HASH SHA-256 Y CERTIFICADO PCI-DSS</p>
+                        </div>
+
+                        <!-- VISTA 1: FORMULARIO DE TARJETA -->
+                        <div id="payment-view-form">
+                            <!-- Visualización de la Tarjeta de Crédito 3D/Neón -->
+                            <div class="credit-card-preview font-mono">
+                                <div class="cc-bg-pattern"></div>
+                                <div class="cc-header">
+                                    <span class="cc-chip"></span>
+                                    <i data-lucide="wifi" class="cc-wifi"></i>
+                                </div>
+                                <div class="cc-number" id="card-num-preview">•••• •••• •••• ••••</div>
+                                <div class="cc-footer">
+                                    <div class="cc-holder-wrap">
+                                        <span class="cc-lbl">CARDHOLDER</span>
+                                        <span class="cc-val" id="card-name-preview">NOMBRE APELLIDO</span>
+                                    </div>
+                                    <div class="cc-expiry-wrap">
+                                        <span class="cc-lbl">EXPIRES</span>
+                                        <span class="cc-val" id="card-expiry-preview">MM/AA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form id="saas-card-form" class="commercial-form font-mono" onsubmit="processB2bPayment(event)">
+                                <div class="input-group">
+                                    <label for="cc-num">Número de Tarjeta</label>
+                                    <input type="text" id="cc-num" placeholder="4000 1234 5678 9010" maxlength="19" required oninput="formatCardNumber(this)">
+                                </div>
+                                <div class="input-group">
+                                    <label for="cc-name">Nombre Impreso</label>
+                                    <input type="text" id="cc-name" placeholder="JUAN PEREZ" required oninput="updateCardName(this)">
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="input-group">
+                                        <label for="cc-expiry">Vencimiento</label>
+                                        <input type="text" id="cc-expiry" placeholder="12/28" maxlength="5" required oninput="formatExpiry(this)">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="cc-cvv">CVV</label>
+                                        <input type="password" id="cc-cvv" placeholder="•••" maxlength="3" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-summary font-mono">
+                                    <div class="summary-line">
+                                        <span>Concepto:</span>
+                                        <span id="payment-concept-label" class="text-purple">Suscripción Inmobiliaria Pro</span>
+                                    </div>
+                                    <div class="summary-line font-bold" style="font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 8px;">
+                                        <span>Total a Cobrar:</span>
+                                        <span id="payment-total-label" class="text-cyan">Q1,159.00</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 15px; font-weight: bold; background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%); border: none;">
+                                    <i data-lucide="lock"></i> PROCESAR PAGO SEGURO
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- VISTA 2: PROCESANDO DE SEGURIDAD -->
+                        <div id="payment-view-loading" class="payment-state-view hidden">
+                            <div class="processing-spinner-wrap">
+                                <div class="neon-spinner"></div>
+                                <div class="spinner-core"></div>
+                            </div>
+                            <h4 class="font-mono" style="margin-top: 20px; font-size: 0.85rem; text-align: center;">AUTORIZANDO TRANSACCIÓN...</h4>
+                            <div class="progress-log font-mono" id="payment-status-logs" style="margin-top: 15px; font-size: 0.65rem; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; background: rgba(0,0,0,0.4); text-align: left; max-height: 100px; overflow-y: auto;">
+                                <p class="text-muted">> Iniciando canal seguro SSL...</p>
+                                <p class="text-muted">> Conectando al API de Visa/Mastercard...</p>
+                            </div>
+                        </div>
+
+                        <!-- VISTA 3: TRANSACCIÓN EXITOSA -->
+                        <div id="payment-view-success" class="payment-state-view hidden font-mono">
+                            <div class="success-icon-wrap" style="text-align: center;">
+                                <i data-lucide="check-circle" class="text-cyan" style="width: 50px; height: 50px; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.35));"></i>
+                            </div>
+                            <h3 class="text-cyan" style="margin-top: 15px; font-size: 1.1rem; text-align: center; text-shadow: 0 0 10px rgba(0, 240, 255, 0.25);">¡TRANSACCIÓN APROBADA!</h3>
+                            <p class="text-muted" style="font-size: 0.7rem; margin-top: 5px; text-align: center;">El cobro se ha procesado con éxito y tu cuenta comercial ha sido actualizada.</p>
+                            
+                            <div class="payment-receipt" style="margin-top: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 10px; font-size: 0.75rem;">
+                                <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="r-lbl">Autorización:</span>
+                                    <span class="r-val" id="receipt-auth-code">#AUT-74920</span>
+                                </div>
+                                <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="r-lbl">Referencia:</span>
+                                    <span class="r-val" id="receipt-ref-code">#REF-85028503</span>
+                                </div>
+                                <div class="receipt-row" style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px;">
+                                    <span class="r-lbl">Monto Cobrado:</span>
+                                    <span class="r-val text-cyan" id="receipt-amount-val">Q1,159.00</span>
+                                </div>
+                            </div>
+
+                            <button class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 20px;" onclick="closePaymentModal()">
+                                <i data-lucide="check"></i> Finalizar y Regresar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 7: BUSCADOR & CATÁLOGO GENERAL DE INMUEBLES -->
+                <section id="view-catalog" class="app-view">
+                    
+                    <!-- ENCABEZADO Y CONTROLES DEL BUSCADOR -->
+                    <div class="featured-header">
+                        <div class="fh-left">
+                            <span class="hud-label-small">EXPLORADOR INMOBILIARIO B2C</span>
+                            <h3 class="section-title-premium">Buscador y Catálogo de Propiedades</h3>
+                        </div>
+                        <div class="fh-right" style="display: flex; align-items: center; gap: 15px;">
+                            <!-- Selector Rápido de Zona para el Catálogo -->
+                            <div class="catalog-zone-selector" style="display: flex; align-items: center; gap: 8px;">
+                                <label for="catalog-zone-select" class="hud-label-small" style="margin-bottom: 0;">ZONA:</label>
+                                <select id="catalog-zone-select" onchange="renderCatalogProperties()" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: var(--cyan); font-family: var(--font-mono); outline: none; cursor: pointer; transition: all 0.3s;">
+                                    <option value="zona10">Zona 10 (Zona Viva)</option>
+                                    <option value="zona14" selected>Zona 14 (Américas)</option>
+                                    <option value="zona15">Zona 15 (Vista Hermosa)</option>
+                                    <option value="zona16">Zona 16 (Cayalá)</option>
+                                    <option value="zona4">Zona 4 (Hub Tecnológico)</option>
+                                    <option value="carretera">Carretera a El Salvador</option>
+                                    <option value="fraijanes">Fraijanes</option>
+                                    <option value="mixco">Mixco (San Cristóbal)</option>
+                                    <option value="antigua">Antigua Guatemala</option>
+                                </select>
+                            </div>
+                            <span class="hud-caption font-mono text-cyan" id="catalog-results-counter">CARGANDO ACTIVOS...</span>
+                        </div>
+                    </div>
+
+                    <!-- FILTROS DE NAVEGACIÓN B2C (CATEGORÍA & ESQUEMA COMERCIAL) -->
+                    <div class="b2c-filters-bar glassmorphism" style="margin-top: 15px;">
+                        <div class="b2c-filter-group categories">
+                            <span class="filter-label"><i data-lucide="tag" class="tiny-icon"></i> CATEGORÍA:</span>
+                            <div class="b2c-filter-pills" id="b2c-category-filters">
+                                <button class="btn-b2c-filter active" onclick="filterB2cCategory('todos')">Todos</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cCategory('casa')">Casas</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cCategory('apartamento')">Apartamentos</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cCategory('local')">Locales</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cCategory('bodega')">Bodegas</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cCategory('terreno')">Terrenos</button>
+                            </div>
+                        </div>
+                        <div class="b2c-filter-group schemes">
+                            <span class="filter-label"><i data-lucide="key" class="tiny-icon"></i> ESQUEMA:</span>
+                            <div class="b2c-filter-pills" id="b2c-type-filters">
+                                <button class="btn-b2c-filter active" onclick="filterB2cType('todos')">Todos</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cType('venta')">Solo Venta</button>
+                                <button class="btn-b2c-filter" onclick="filterB2cType('renta')">Solo Renta</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NUEVOS FILTROS AVANZADOS B2C (BÚSQUEDA Y PRECIO) -->
+                    <div class="b2c-filters-bar glassmorphism" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 12px 20px;">
+                        <div class="b2c-filter-group" style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <span class="filter-label" style="flex-shrink: 0;"><i data-lucide="search" class="tiny-icon"></i> BUSCAR:</span>
+                            <input type="text" id="catalog-search-input" placeholder="Buscar por título..." oninput="renderCatalogProperties()" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 6px 12px; font-size: 0.75rem; color: #fff; width: 100%; outline: none; transition: all 0.3s; box-sizing: border-box;">
+                        </div>
+                        <div class="b2c-filter-group" style="display: flex; align-items: center; gap: 10px; justify-content: flex-end; width: 100%;">
+                            <span class="filter-label" style="flex-shrink: 0;"><i data-lucide="dollar-sign" class="tiny-icon"></i> RANGO PRECIO:</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="number" id="catalog-price-min" placeholder="Mínimo" oninput="renderCatalogProperties()" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 6px 8px; font-size: 0.75rem; color: #fff; width: 90px; text-align: center; outline: none; transition: all 0.3s;">
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">-</span>
+                                <input type="number" id="catalog-price-max" placeholder="Máximo" oninput="renderCatalogProperties()" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 6px 8px; font-size: 0.75rem; color: #fff; width: 90px; text-align: center; outline: none; transition: all 0.3s;">
+                                <span class="unit-badge promo-currency-unit" style="font-size: 0.75rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono);">Q</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="catalog-properties-grid" id="catalog-properties-grid">
+                        <!-- Todos los activos que coincidan con la búsqueda se cargarán dinámicamente aquí -->
+                    </div>
+                </section>
+
+                <!-- VISTA 8: CONSOLA DE ADMINISTRADOR CENTRAL (ADMIN CONTROL PANEL) -->
+                <section id="view-admin" class="app-view">
+                    <!-- CABECERA TELEMETRÍA ADMIN -->
+                    <div class="featured-header">
+                        <div class="fh-left">
+                            <span class="hud-label-small">SISTEMA CORE DE TELEMETRÍA</span>
+                            <h3 class="section-title-premium" style="color: var(--red); text-shadow: 0 0 10px rgba(255, 55, 95, 0.35);">Consola de Administración Central</h3>
+                        </div>
+                        <div class="fh-right" style="display: flex; align-items: center; gap: 15px;">
+                            <div class="investor-rank-badge font-mono" style="border-color: var(--red); color: var(--red); box-shadow: 0 0 8px rgba(255, 55, 95, 0.2);">
+                                <i data-lucide="shield-alert" style="width: 14px; height: 14px;"></i>
+                                <span class="badge-lbl">NIVEL ACCESO:</span>
+                                <span class="badge-val">ROOT / ADMIN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI GRID DE ADMINISTRACIÓN -->
+                    <div class="portfolio-kpis-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 15px;">
+                        <div class="kpi-card glassmorphism border-red" style="border-left: 3px solid var(--red);">
+                            <div class="kpi-header">
+                                <span class="kpi-lbl">Facturación SaaS Total</span>
+                                <i data-lucide="line-chart" class="kpi-mini-icon text-red"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-red" id="admin-total-revenue">Q0</span>
+                        </div>
+                        <div class="kpi-card glassmorphism border-red" style="border-left: 3px solid var(--red);">
+                            <div class="kpi-header">
+                                <span class="kpi-lbl">Suscriptores SaaS Activos</span>
+                                <i data-lucide="users" class="kpi-mini-icon text-red"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-red" id="admin-total-subscribers">0 Agentes</span>
+                        </div>
+                        <div class="kpi-card glassmorphism border-red" style="border-left: 3px solid var(--red);">
+                            <div class="kpi-header">
+                                <span class="kpi-lbl">Campañas de Pauta Activas</span>
+                                <i data-lucide="award" class="kpi-mini-icon text-red"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-red" id="admin-total-campaigns">0 Pautas</span>
+                        </div>
+                        <div class="kpi-card glassmorphism border-red" style="border-left: 3px solid var(--red);">
+                            <div class="kpi-header">
+                                <span class="kpi-lbl">Integridad Servidores Core</span>
+                                <i data-lucide="cpu" class="kpi-mini-icon text-red"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-red">99.98% / ONLINE</span>
+                        </div>
+                    </div>
+
+                    <!-- GRID CENTRAL ADMINISTRATIVO (2 COLUMNAS) -->
+                    <div class="portfolio-grid-upper" style="margin-top: 20px;">
+                        <!-- COLUMNA 1: AUDITORÍA Y LISTA DE AGENTES -->
+                        <div class="portfolio-column assets-column" style="flex: 1.4;">
+                            <div class="card glassmorphism col-card" style="min-height: 480px;">
+                                <div class="card-header border-red" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon red"><i data-lucide="folder-key"></i></div>
+                                    <h2>Auditoría de Agentes y Membresías</h2>
+                                    <span class="item-count font-mono" id="admin-agents-count">0 AGENTES</span>
+                                </div>
+
+                                <div class="commercial-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="commercial-table font-mono" style="font-size: 0.7rem;">
+                                        <thead>
+                                            <tr>
+                                                <th>AGENTE / EMPRESA</th>
+                                                <th>PLAN</th>
+                                                <th>CONTACTO</th>
+                                                <th>ESTADO</th>
+                                                <th>OPERACIÓN TÁCTICA</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-agents-table-body">
+                                            <!-- Poblado dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA 2: LOGS DE SEGURIDAD Y AJUSTES CORE -->
+                        <div class="portfolio-column charts-column" style="flex: 1;">
+                            <!-- CARD: PLATFORM SECURITY LOGS -->
+                            <div class="card glassmorphism col-card">
+                                <div class="card-header border-red" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon red"><i data-lucide="activity"></i></div>
+                                    <h2>Logs del Sistema y Auditoría de Red</h2>
+                                </div>
+                                <div class="ai-opinion-feed font-mono" id="admin-security-logs" style="height: 180px; font-size: 0.6rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; line-height: 1.4; overflow-y: auto; text-align: left;">
+                                    <!-- Cargado con logs de simulación en tiempo real -->
+                                </div>
+                            </div>
+
+                            <!-- CARD: AJUSTES CORE HOLOGRÁFICOS -->
+                            <div class="card glassmorphism col-card">
+                                <div class="card-header border-red">
+                                    <div class="header-icon red"><i data-lucide="sliders"></i></div>
+                                    <h2>Calibración y Filtros del Core IA</h2>
+                                </div>
+                                <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px; padding: 15px 0;">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="admin-toggle-maintenance" onchange="toggleAdminMaintenance(this.checked)">
+                                        <span class="checkmark border-red" style="border-color: rgba(255, 55, 95, 0.45);"></span>
+                                        <span class="label-text">Activar Modo Mantenimiento en Red</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="admin-toggle-pci" checked onchange="toggleAdminPCIDSS(this.checked)">
+                                        <span class="checkmark border-red" style="border-color: rgba(255, 55, 95, 0.45);"></span>
+                                        <span class="label-text">Forzar Cifrado de Datos PCI-DSS</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="admin-toggle-speculation" checked onchange="toggleAdminSpeculation(this.checked)">
+                                        <span class="checkmark border-red" style="border-color: rgba(255, 55, 95, 0.45);"></span>
+                                        <span class="label-text">Calibración Especulativa de Plusvalía (+1.5% global)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS (Mapas) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Chart.js (Gráficos) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Scripts del Proyecto -->
+    <script src="mockData.js"></script>
+    <script src="charts.js"></script>
+    <script src="map.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
