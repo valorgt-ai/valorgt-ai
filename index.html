@@ -989,7 +989,28 @@
                 </section>
 
                 <!-- VISTA 5: PORTAFOLIO INMOBILIARIO IA -->
-                <section id="view-portfolio" class="app-view">
+                <section id="view-portfolio" class="app-view" style="position: relative;">
+                    <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
+                    <div id="portfolio-trial-badge" class="font-mono hidden" style="position: absolute; top: 12px; right: 20px; z-index: 1000; background: rgba(5,6,8,0.85); border: 1px solid #bf5af2; border-radius: 30px; padding: 6px 14px; display: flex; align-items: center; gap: 8px; font-size: 0.68rem; font-weight: bold; color: #fff; box-shadow: 0 0 10px rgba(191,90,242,0.3); text-shadow: 0 0 5px rgba(255,255,255,0.8);">
+                        <span class="neon-purple-pulse" style="width: 8px; height: 8px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 8px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
+                        <span>VISTA PREVIA MOCK: <span id="portfolio-trial-timer-lbl" style="color: #bf5af2;">60s</span></span>
+                    </div>
+
+                    <!-- MÁSCARA BLOQUEADORA DE PORTAFOLIO EXPIRADA -->
+                    <div id="portfolio-trial-blocker" class="hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 6, 8, 0.95); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; border-radius: 12px; padding: 30px; text-align: center;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #bf5af2; background: rgba(191,90,242,0.05); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(191,90,242,0.4); margin-bottom: 20px; animation: pulse-shadow 2.5s infinite;">
+                            <i data-lucide="lock" style="width: 36px; height: 36px; color: #bf5af2;"></i>
+                        </div>
+                        <h3 style="font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 10px; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">🔒 VISTA PREVIA EXPIRADA</h3>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-secondary); max-width: 460px; line-height: 1.5; margin-bottom: 24px; text-align: center;">
+                            Has completado tu minuto de demostración gratuita del **Portafolio IA**. <br><br>
+                            Para seguir simulando la evolución de tu riqueza a 20 años, apalancarte con crédito FHA y recibir asesoría patrimonial sin límites, adquiere una suscripción de **Inversionista** o sube tu plan de **Agente** a Pro/VIP.
+                        </p>
+                        <button onclick="closePortfolioTrialBlockerAndRedirect()" class="btn btn-primary glowing-effect-purple" style="background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%); border: none; padding: 12px 30px; font-size: 0.82rem; font-weight: bold; color: #fff; border-radius: 8px; cursor: pointer; text-shadow: 0 0 5px rgba(255,255,255,0.6); display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i> ADQUIRIR MEMBRESÍA PREMIUM
+                        </button>
+                    </div>
+
                     <!-- CABECERA DE GAMIFICACIÓN -->
                     <div class="portfolio-header-hud">
                         <div class="ph-left">

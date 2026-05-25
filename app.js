@@ -53,6 +53,11 @@ let agentUploadedProperties = [];
 let pendingPaymentType = null; // 'subscription' | 'ad'
 let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { propertyId, zone }
 
+// Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
+let portfolioTrialTimer = null;
+let portfolioTrialTimeLeft = 60; // 60 segundos
+let isPortfolioBlocked = false;
+
 // MAPA DE ICONOS LUCIDE ADICIONALES
 const MATERIAL_ICONS = {
     "Piso de madera de ingeniería / chapa de lujo": "layers",
@@ -112,12 +117,59 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
+    // 1. Pausar y restablecer el timer del trial de marketing al cambiar de vista
+    if (portfolioTrialTimer) {
+        clearInterval(portfolioTrialTimer);
+        portfolioTrialTimer = null;
+    }
+    const trialBadge = document.getElementById('portfolio-trial-badge');
+    if (trialBadge) trialBadge.classList.add('hidden');
+
+    // 2. Control del trial del Portafolio IA
     if (viewId === 'portfolio') {
-        const isInversionista = isCommercialAuthenticated && loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
-        if (!isInversionista) {
-            alert("⚠️ ACCESO EXCLUSIVO: El simulador de Portafolio IA y registro histórico de riqueza es exclusivo para Inversionistas suscritos.\n\nPor favor, inicia sesión o regístrate como 'Inversionista' en la Consola B2B.");
-            switchView('commercial');
-            return;
+        const hasUnlimitedAccess = isCommercialAuthenticated && loggedInB2bClient && (
+            loggedInB2bClient.role === 'inversionista' || 
+            (loggedInB2bClient.role === 'agente' && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro'))
+        );
+
+        const blocker = document.getElementById('portfolio-trial-blocker');
+
+        if (hasUnlimitedAccess) {
+            // Ocultar cualquier bloqueador de demo
+            if (blocker) blocker.classList.add('hidden');
+            isPortfolioBlocked = false;
+        } else {
+            // Si no tiene acceso ilimitado, verificar si ya expiró el trial de 1 minuto
+            if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
+                if (blocker) blocker.classList.remove('hidden');
+                isPortfolioBlocked = true;
+            } else {
+                // Si aún tiene tiempo, mostrar badge y arrancar timer de cuenta regresiva
+                if (blocker) blocker.classList.add('hidden');
+                if (trialBadge) {
+                    trialBadge.classList.remove('hidden');
+                    const lbl = document.getElementById('portfolio-trial-timer-lbl');
+                    if (lbl) lbl.innerText = `${portfolioTrialTimeLeft}s`;
+                }
+
+                portfolioTrialTimer = setInterval(() => {
+                    portfolioTrialTimeLeft--;
+                    const lbl = document.getElementById('portfolio-trial-timer-lbl');
+                    if (lbl) lbl.innerText = `${portfolioTrialTimeLeft}s`;
+
+                    if (portfolioTrialTimeLeft <= 0) {
+                        clearInterval(portfolioTrialTimer);
+                        portfolioTrialTimer = null;
+                        isPortfolioBlocked = true;
+
+                        const activeBlocker = document.getElementById('portfolio-trial-blocker');
+                        if (activeBlocker) activeBlocker.classList.remove('hidden');
+                        if (trialBadge) trialBadge.classList.add('hidden');
+
+                        alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita del Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                    }
+                }, 1000);
+            }
         }
     }
 
@@ -2357,9 +2409,14 @@ function saveActiveValuationToPortfolio() {
         return;
     }
 
-    const isInversionista = isCommercialAuthenticated && loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
-    if (!isInversionista) {
-        alert("⚠️ ACCESO EXCLUSIVO: Para guardar propiedades en tu Portafolio IA y realizar seguimiento histórico, debes iniciar sesión como 'Inversionista' en la Consola B2B.");
+    const hasUnlimitedAccess = isCommercialAuthenticated && loggedInB2bClient && (
+        loggedInB2bClient.role === 'inversionista' || 
+        (loggedInB2bClient.role === 'agente' && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro'))
+    );
+
+    // Para mercadeo, permitimos a los usuarios de la demo (visitantes y agentes básicos) guardar si aún no ha expirado su trial de 1 minuto
+    if (!hasUnlimitedAccess && (isPortfolioBlocked || portfolioTrialTimeLeft <= 0)) {
+        alert("⚠️ VISTA PREVIA EXPIRADA: Para seguir guardando propiedades y realizar simulaciones patrimoniales en tu Portafolio IA, inicia sesión o suscríbete.");
         switchView('commercial');
         return;
     }
@@ -2574,6 +2631,15 @@ function autofillPublishFormFromValuation() {
     document.getElementById('pub-title').value = newTitle;
 
     alert("📂 DATOS IMPORTADOS: Se han cargado exitosamente los 35+ parámetros de la tasación activa del Valuador IA, incluyendo coordenadas GPS y valuación sugerida.");
+}
+
+/**
+ * Cierra la máscara del trial y redirige a la pantalla comercial para suscribirse
+ */
+function closePortfolioTrialBlockerAndRedirect() {
+    const blocker = document.getElementById('portfolio-trial-blocker');
+    if (blocker) blocker.classList.add('hidden');
+    switchView('commercial');
 }
 
 /**
