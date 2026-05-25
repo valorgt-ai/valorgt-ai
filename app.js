@@ -3158,8 +3158,12 @@ async function authenticateCommercialAgent(event) {
         return;
     }
 
-    // SI SUPABASE ESTÁ ACTIVO, AUTENTICAR CONTRA EL SERVIDOR DE SUPABASE
-    if (isSupabaseActive) {
+    // Bypass de cuentas Demo locales para permitir acceso de pruebas rápido sin requerir registro manual previo en Supabase Auth
+    const isDemoAccount = (user === 'agente@valorgt.com' && pass === 'valorgt') || 
+                          b2bClients.some(c => c.email.toLowerCase() === user && (c.password === pass || pass === 'valorgt'));
+
+    // SI SUPABASE ESTÁ ACTIVO Y NO ES CUENTA DEMO, AUTENTICAR CONTRA EL SERVIDOR DE SUPABASE
+    if (isSupabaseActive && !isDemoAccount) {
         const scanOverlay = document.getElementById('login-scanning-overlay');
         if (scanOverlay) {
             scanOverlay.classList.remove('hidden');
