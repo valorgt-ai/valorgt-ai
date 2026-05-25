@@ -1215,6 +1215,48 @@
 
                         <!-- COLUMNA 2: GRÁFICOS Y PROYECCIONES -->
                         <div class="portfolio-column charts-column">
+                            <!-- CARD: CAMINO A LA LIBERTAD FINANCIERA -->
+                            <div class="card glassmorphism col-card freedom-card">
+                                <div class="card-header border-purple">
+                                    <div class="header-icon purple"><i data-lucide="sparkles"></i></div>
+                                    <h2>Camino a la Libertad Financiera</h2>
+                                </div>
+                                
+                                <div class="freedom-content-wrapper">
+                                    <div class="form-group" style="margin-bottom: 12px;">
+                                        <label for="p-freedom-budget">Presupuesto de Vida Deseado (Mensual)</label>
+                                        <div class="input-with-unit">
+                                            <input type="number" id="p-freedom-budget" min="100" max="2500000" value="4000" oninput="updatePortfolioCalculations()">
+                                            <span class="unit-badge" id="p-freedom-budget-unit">$</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="freedom-progress-wrapper">
+                                        <div class="freedom-percentage-ring">
+                                            <svg class="ring-svg" width="120" height="120">
+                                                <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                                                <circle class="ring-fill" cx="60" cy="60" r="50" id="freedom-progress-ring-circle"></circle>
+                                            </svg>
+                                            <div class="ring-center font-mono">
+                                                <span class="pct-num" id="freedom-pct-val">0%</span>
+                                                <span class="pct-lbl">LIBRE</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="freedom-stats font-mono">
+                                        <div class="fstat">
+                                            <span class="fs-lbl">Flujo Pasivo Neto:</span>
+                                            <span class="fs-val text-green" id="freedom-cashflow-val">Q0</span>
+                                        </div>
+                                        <div class="fstat">
+                                            <span class="fs-lbl">Meta Patrimonial:</span>
+                                            <span class="fs-val text-purple" id="freedom-target-equity">Q0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- CARD: PROYECCIÓN A PLAZO -->
                             <div class="card glassmorphism col-card">
                                 <div class="card-header border-purple">
@@ -1289,47 +1331,7 @@
                             </div>
                         </div>
 
-                        <!-- CARD: CAMINO A LA LIBERTAD FINANCIERA -->
-                        <div class="card glassmorphism col-card freedom-card">
-                            <div class="card-header border-purple">
-                                <div class="header-icon purple"><i data-lucide="sparkles"></i></div>
-                                <h2>Camino a la Libertad Financiera</h2>
-                            </div>
-                            
-                            <div class="freedom-content-wrapper">
-                                <div class="form-group" style="margin-bottom: 12px;">
-                                    <label for="p-freedom-budget">Presupuesto de Vida Deseado (Mensual)</label>
-                                    <div class="input-with-unit">
-                                        <input type="number" id="p-freedom-budget" min="100" max="2500000" value="4000" oninput="updatePortfolioCalculations()">
-                                        <span class="unit-badge" id="p-freedom-budget-unit">$</span>
-                                    </div>
-                                </div>
 
-                                <div class="freedom-progress-wrapper">
-                                    <div class="freedom-percentage-ring">
-                                        <svg class="ring-svg" width="120" height="120">
-                                            <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
-                                            <circle class="ring-fill" cx="60" cy="60" r="50" id="freedom-progress-ring-circle"></circle>
-                                        </svg>
-                                        <div class="ring-center font-mono">
-                                            <span class="pct-num" id="freedom-pct-val">0%</span>
-                                            <span class="pct-lbl">LIBRE</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="freedom-stats font-mono">
-                                    <div class="fstat">
-                                        <span class="fs-lbl">Flujo Pasivo Neto:</span>
-                                        <span class="fs-val text-green" id="freedom-cashflow-val">Q0</span>
-                                    </div>
-                                    <div class="fstat">
-                                        <span class="fs-lbl">Meta Patrimonial:</span>
-                                        <span class="fs-val text-purple" id="freedom-target-equity">Q0</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
 

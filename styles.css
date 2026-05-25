@@ -2360,7 +2360,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .portfolio-grid-lower {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1fr;
     gap: 24px;
     margin-bottom: 24px;
     align-items: start;
