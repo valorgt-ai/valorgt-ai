@@ -4307,6 +4307,36 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: block;
 }
 
+/* KEYFRAMES ADICIONALES PARA LA INSIGNIA FLOTANTE DE VISTA PREVIA */
+@keyframes glow-pulse {
+    0% {
+        border-color: #bf5af2;
+        box-shadow: 0 0 12px rgba(191, 90, 242, 0.4), inset 0 0 8px rgba(191, 90, 242, 0.2);
+    }
+    50% {
+        border-color: #00f0ff;
+        box-shadow: 0 0 25px rgba(191, 90, 242, 0.8), 0 0 35px rgba(0, 240, 255, 0.4), inset 0 0 12px rgba(0, 240, 255, 0.3);
+    }
+    100% {
+        border-color: #bf5af2;
+        box-shadow: 0 0 12px rgba(191, 90, 242, 0.4), inset 0 0 8px rgba(191, 90, 242, 0.2);
+    }
+}
 
-
-
+@keyframes beacon-pulse-anim {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.6;
+        box-shadow: 0 0 0 0 rgba(191, 90, 242, 0.7);
+    }
+    70% {
+        transform: scale(1.1);
+        opacity: 1;
+        box-shadow: 0 0 0 10px rgba(191, 90, 242, 0);
+    }
+    100% {
+        transform: scale(0.9);
+        opacity: 0.6;
+        box-shadow: 0 0 0 0 rgba(191, 90, 242, 0);
+    }
+}

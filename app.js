@@ -57,6 +57,7 @@ let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { prope
 let portfolioTrialTimer = null;
 let portfolioTrialTimeLeft = 60; // 60 segundos
 let isPortfolioBlocked = false;
+let aiChatHistory = []; // Historial de chat interactivo persistente del Asesor Patrimonial
 
 // MAPA DE ICONOS LUCIDE ADICIONALES
 const MATERIAL_ICONS = {
@@ -2250,6 +2251,37 @@ function runAiStrategyAdvisor(totalValueUSD, totalDebtUSD, netCashflowUSD, avgRo
     }
 
     consoleEl.innerHTML = adviceHtml;
+
+    // Renderizar chat interactivo persistente si existe historial
+    if (aiChatHistory && aiChatHistory.length > 0) {
+        consoleEl.innerHTML += `
+            <div style="border-top: 1px dashed rgba(191,90,242,0.3); margin: 18px 0 12px 0; padding-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span style="font-size: 0.62rem; color: #bf5af2; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">💬 CONSULTAS E INTERACCIÓN CON IA</span>
+            </div>
+        `;
+        aiChatHistory.forEach(msg => {
+            if (msg.sender === 'user') {
+                consoleEl.innerHTML += `
+                    <div class="opinion-item" style="border-left: 3px solid var(--neon-blue); background: rgba(0, 240, 255, 0.03); margin-top: 10px; text-align: right; padding: 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); margin-left: 20px;">
+                        <span style="font-size: 0.58rem; color: var(--neon-blue); font-weight: bold; display: block; text-transform: uppercase; margin-bottom: 2px;">💬 TÚ:</span>
+                        <p style="font-size: 0.72rem; color: #fff; margin: 0; line-height: 1.45; text-align: right;">${msg.text}</p>
+                    </div>
+                `;
+            } else {
+                consoleEl.innerHTML += `
+                    <div class="opinion-item" style="border-left: 3px solid #bf5af2; background: rgba(191, 90, 242, 0.04); margin-top: 10px; padding: 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); margin-right: 20px;">
+                        <span style="font-size: 0.58rem; color: #bf5af2; font-weight: bold; display: block; text-transform: uppercase; margin-bottom: 2px;">🤖 VALORGT AI ANALYST:</span>
+                        <p style="font-size: 0.72rem; color: #fff; margin: 0; line-height: 1.45; text-align: left;">${msg.text}</p>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    // Scroll automático al final para ver las últimas respuestas
+    setTimeout(() => {
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }, 100);
 }
 
 /**
@@ -2657,86 +2689,166 @@ function sendPortfolioAiChatMessage() {
     const message = inputEl.value.trim();
     if (!message) return;
 
-    // 1. Renderizar mensaje del usuario
-    const userMsgHtml = `
-        <div class="opinion-item" style="border-left: 3px solid var(--neon-blue); background: rgba(0, 240, 255, 0.03); margin-top: 10px; text-align: right; padding: 6px; border-radius: 4px;">
-            <span style="font-size: 0.6rem; color: var(--neon-blue); font-weight: bold; display: block; text-transform: uppercase;">💬 TÚ:</span>
-            <p style="font-size: 0.72rem; color: #fff; margin: 3px 0 0 0; line-height: 1.4;">${message}</p>
-        </div>
-    `;
-    consoleEl.innerHTML += userMsgHtml;
+    // 1. Guardar mensaje del usuario en el historial interactivo
+    const userMsg = {
+        sender: 'user',
+        text: message,
+        timestamp: Date.now()
+    };
+    aiChatHistory.push(userMsg);
     inputEl.value = '';
-    consoleEl.scrollTop = consoleEl.scrollHeight;
 
-    // 2. Renderizar indicador de escritura del Asesor
+    // Calcular métricas actuales del portafolio del inversionista para personalización inteligente
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+    const totalAssets = userPortfolio.length;
+    
+    let totalValUSD = 0;
+    let totalRentUSD = 0;
+    let totalDebtUSD = 0;
+    let weightedRoi = 0;
+    let weightedPlusvalia = 0;
+
+    userPortfolio.forEach(a => {
+        let currentVal = a.currentValue;
+        let currentRent = a.rent;
+        let currentRoi = (currentRent * 12) / a.buyValue * 100;
+        let currentPlus = a.plusvalia;
+
+        if (a.isRemodeled) {
+            currentVal *= 1.10;
+            currentRoi += 1.5;
+            currentPlus += 2.0;
+        }
+        if (a.isAirbnb) {
+            currentRent *= 1.50;
+            currentRoi = (currentRent * 12) / a.buyValue * 100;
+        }
+        if (a.isRentRaised) {
+            currentRent *= 1.10;
+            currentRoi = (currentRent * 12) / a.buyValue * 100;
+        }
+
+        const occupancyFactor = (a.isAirbnb ? Math.max(a.occupancy - 15, 60) : a.occupancy) / 100;
+
+        totalValUSD += currentVal;
+        totalRentUSD += currentRent * occupancyFactor;
+        if (a.hasMortgage) {
+            totalDebtUSD += a.mortgageDebt;
+        }
+        weightedRoi += currentRoi * currentVal;
+        weightedPlusvalia += currentPlus * currentVal;
+    });
+
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const totalVal = totalValUSD * conversion;
+    const totalRent = totalRentUSD * conversion;
+    const totalDebt = totalDebtUSD * conversion;
+    const equityPct = totalValUSD > 0 ? (((totalValUSD - totalDebtUSD) / totalValUSD) * 100) : 0;
+    const avgRoi = totalValUSD > 0 ? weightedRoi / totalValUSD : 0;
+    const avgPlusvalia = totalValUSD > 0 ? weightedPlusvalia / totalValUSD : 0;
+
+    // 2. Refrescar la vista del portafolio y consola del chat de inmediato (esto pintará el mensaje del usuario)
+    runAiStrategyAdvisor(totalValUSD, totalDebtUSD, totalRentUSD - (totalDebtUSD * 0.075 / 12), avgRoi, avgPlusvalia);
+
+    // 3. Renderizar indicador de escritura del Asesor de forma temporal
     const typingId = "ai-chat-typing-" + Date.now();
     const typingHtml = `
-        <div class="opinion-item" id="${typingId}" style="border-left: 3px solid #bf5af2; background: rgba(191, 90, 242, 0.03); margin-top: 10px; padding: 6px; border-radius: 4px;">
-            <span style="font-size: 0.6rem; color: #bf5af2; font-weight: bold; display: block; text-transform: uppercase;">🤖 VALORGT AI ANALYST:</span>
-            <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 3px 0 0 0; font-style: italic;">
-                Analizando estructura multivariable de tu patrimonio y métricas macroeconómicas...
+        <div class="opinion-item animate-pulse" id="${typingId}" style="border-left: 3px solid #bf5af2; background: rgba(191, 90, 242, 0.03); margin-top: 10px; padding: 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.15); margin-right: 20px;">
+            <span style="font-size: 0.58rem; color: #bf5af2; font-weight: bold; display: block; text-transform: uppercase; margin-bottom: 2px;">🤖 VALORGT AI ANALYST:</span>
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 0; font-style: italic;">
+                Analizando telemetrías y corriendo simulaciones financieras del sector guatemalteco...
             </p>
         </div>
     `;
     consoleEl.innerHTML += typingHtml;
     consoleEl.scrollTop = consoleEl.scrollHeight;
 
-    // 3. Formular respuesta personalizada en base a keywords tras 1.2 segundos
+    // 4. Formular respuesta personalizada en base a keywords tras 1.2 segundos
     setTimeout(() => {
-        // Eliminar indicador de carga
+        // Eliminar indicador de carga si sigue allí
         const typingEl = document.getElementById(typingId);
         if (typingEl) typingEl.remove();
 
         const cleanMsg = message.toLowerCase();
         let reply = "";
 
-        // Calcular métricas actuales del portafolio del inversionista para personalización inteligente
-        const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-        const totalAssets = userPortfolio.length;
-        
-        let totalValUSD = 0;
-        let totalRentUSD = 0;
-        let totalDebtUSD = 0;
-        userPortfolio.forEach(a => {
-            totalValUSD += a.currentValue;
-            totalRentUSD += a.rent;
-            if (a.hasMortgage) {
-                totalDebtUSD += a.mortgageDebt;
-            }
-        });
-
-        const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-        const totalVal = totalValUSD * conversion;
-        const totalRent = totalRentUSD * conversion;
-        const totalDebt = totalDebtUSD * conversion;
-        const equityPct = totalValUSD > 0 ? (((totalValUSD - totalDebtUSD) / totalValUSD) * 100) : 0;
-
-        if (cleanMsg.includes('flujo') || cleanMsg.includes('renta') || cleanMsg.includes('ganancia') || cleanMsg.includes('cashflow') || cleanMsg.includes('retorno')) {
+        // RECONOCIMIENTO DE PALABRAS CLAVE CON CONTEXTO INMOBILIARIO GUATEMALTECO AVANZADO
+        if (cleanMsg.includes('local') || cleanMsg.includes('locales') || cleanMsg.includes('comercial') || cleanMsg.includes('comerciales') || cleanMsg.includes('plaza') || cleanMsg.includes('strip') || cleanMsg.includes('mall') || cleanMsg.includes('tienda')) {
+            const hasCommercial = userPortfolio.filter(a => a.type === 'comercial' || a.type === 'office' || a.type === 'oficina').length;
+            reply = `🏬 <strong>Análisis Estratégico de Activos Comerciales (SÍ Rotundo):</strong><br><br>
+            • <strong>¿Te aconsejo comprar locales comerciales? SÍ, absolutamente.</strong> En el mercado actual de Guatemala (principalmente en Zona 10, Zona 14, Zona 16 Cayalá y el corredor metropolitano de Carretera a El Salvador), los locales comerciales y strip malls representan una de las inversiones más rentables y estables del sector inmobiliario.<br><br>
+            • <strong>Rendimientos Financieros (Yields) Superiores:</strong> Mientras que un apartamento de renta tradicional en Zona 14 o Zona 15 ofrece retornos anuales netos de entre <strong>5.5% y 6.8%</strong>, los locales comerciales de conveniencia reportan yields brutos estables del <strong>7.8% al 9.5% anual</strong> (hasta un 2.5% más de rentabilidad sobre tu capital invertido).<br><br>
+            • <strong>La Ventaja de los Contratos Triple Neto (NNN):</strong> A diferencia de los inmuebles residenciales, los locales comerciales en Guatemala se arriendan bajo contratos Triple Neto (NNN). Esto significa que **el inquilino asume el costo total del mantenimiento, el seguro del inmueble y el IUSI**. Tu flujo de caja pasivo se mantiene limpio y totalmente blindado contra incrementos de costes operativos o inflación.<br><br>
+            • <strong>Estabilidad y Plazos Contractuales:</strong> Los contratos comerciales con marcas o empresas corporativas se pactan a plazos mínimos de 3 a 5 años (con incrementos anuales de renta indexados de entre 3% y 5% en dólares), en comparación con el estándar de 1 año residencial. Esto reduce significativamente la vacancia y la rotación.<br><br>
+            • <strong>Menores Costes de Rotación y Remodelación:</strong> Típicamente los locales se entregan en obra gris. El inquilino invierte su propio capital en equipar y adecuar el local a sus necesidades de marca, lo que genera un alto costo de salida para él, blindando su permanencia.<br><br>
+            • <strong>Recomendación IA para tu portafolio:</strong> Cuentas con una capacidad de apalancamiento crediticio robusta de hasta <strong>${currencySym}${formatNumber((totalRent * 0.45).toFixed(0))}</strong> mensuales. Te aconsejo apalancar la compra de un local comercial en preventa en el sector de <em>Zona 16 Cayalá</em> para maximizar tu flujo pasivo neto.`;
+        } 
+        else if (cleanMsg.includes('apartamento') || cleanMsg.includes('apartamentos') || cleanMsg.includes('casa') || cleanMsg.includes('casas') || cleanMsg.includes('residencial') || cleanMsg.includes('vivienda') || cleanMsg.includes('habitación') || cleanMsg.includes('condominio')) {
+            reply = `🏠 <strong>Análisis del Sector Residencial (Casas y Apartamentos):</strong><br><br>
+            • <strong>Rendimiento de Renta vs Plusvalía:</strong> Los apartamentos residenciales en zonas de alta demanda vertical como Zona 14, Zona 15 y Zona 10 ofrecen rendimientos por renta tradicional de entre <strong>5.5% y 6.5% anual</strong>. Sin embargo, su mayor fortaleza es la **plusvalía constante (+7.0% a +9.5% anual)** en proyectos sobre planos de desarrolladores consolidados en Guatemala.<br><br>
+            • <strong>La Revolución de Airbnb / Renta Corta:</strong> Si tu apartamento está ubicado en áreas turísticas o corporativas vibrantes (como Zona 4 Cuatro Grados Norte, Zona 10 o Zona 16 Cayalá), rentarlo en formato vacacional (Airbnb) puede incrementar tu rendimiento neto al <strong>9.0% - 11.0% anual</strong>, asumiendo una tasa de ocupación del 70%-75%. Requiere una gestión operativa más activa y gastos de lavandería/limpieza.<br><br>
+            • <strong>Liquidez y Salida:</strong> El mercado residencial es el más líquido del país. Si necesitas vender para obtener liquidez, un apartamento residencial se venderá hasta 3 veces más rápido que un local comercial o una bodega industrial.<br><br>
+            • <strong>Consejo IA:</strong> Utiliza apartamentos residenciales en planos para capturar plusvalía y "acumular riqueza especulativa". Para "generar flujo neto inmediato para vivir", los **locales comerciales** son una opción superior en este momento en Guatemala.`;
+        } 
+        else if (cleanMsg.includes('bodega') || cleanMsg.includes('bodegas') || cleanMsg.includes('industrial') || cleanMsg.includes('industria') || cleanMsg.includes('almacen')) {
+            reply = `🏭 <strong>Análisis de Bodegas e Infraestructura Industrial:</strong><br><br>
+            • <strong>Yields del Sector Logístico:</strong> Las bodegas en la periferia industrial de Guatemala (Mixco, Villa Nueva, Amatitlán y Palín) ofrecen rendimientos de renta sumamente sólidos de entre <strong>8.0% y 9.5% anual</strong>.<br><br>
+            • <strong>Baja Desocupación:</strong> El sector de bodegas tiene actualmente la menor tasa de desocupación en el país (< 3%), debido al auge del e-commerce y hubs de distribución de última milla. Los contratos suelen ser muy estables (2 a 4 años mínimos).<br><br>
+            • <strong>Consejo IA:</strong> Si buscas diversificar con bajo riesgo de desocupación y un inquilino corporativo de alta calidad, adquiere un módulo en un complejo industrial cerrado de bodegas pequeñas (minibodegas) de 100-300m².`;
+        }
+        else if (cleanMsg.includes('terreno') || cleanMsg.includes('terrenos') || cleanMsg.includes('lote') || cleanMsg.includes('lotes') || cleanMsg.includes('tierra') || cleanMsg.includes('finca')) {
+            reply = `🌱 <strong>Análisis de Lotes y Terrenos en Guatemala:</strong><br><br>
+            • <strong>Plusvalía Especulativa Pura:</strong> Los terrenos en áreas de alta expansión de condominios como Fraijanes, San José Pinula, San Lucas Sacatepéquez y Carretera a El Salvador (Km 18 al 28) reportan crecimientos de valor de hasta el **12% anual** en fases tempranas de urbanización.<br><br>
+            • <strong>Advertencia Crítica de Flujo:</strong> Un terreno es un activo de **flujo de caja libre nulo o negativo** (tienes que pagar IUSI y mantenimiento de condominio sin recibir ingresos mensuales), a menos que lo arriendes comercialmente para parqueos o antenas de telecomunicación. Esto penaliza tu capacidad de crédito y liquidez en el portafolio.<br><br>
+            • <strong>Consejo IA:</strong> Invierte en tierras únicamente si ya cuentas con un flujo robusto y excedentes mensuales que provengan de locales comerciales arriendados u oficinas. Los terrenos son excelentes vehículos de preservación de riqueza generacional, pero pésimos generadores de estilo de vida en el corto plazo.`;
+        } 
+        else if (cleanMsg.includes('tasa') || cleanMsg.includes('interés') || cleanMsg.includes('interes') || cleanMsg.includes('crédito') || cleanMsg.includes('credito') || cleanMsg.includes('préstamo') || cleanMsg.includes('prestamo') || cleanMsg.includes('hipoteca') || cleanMsg.includes('banco') || cleanMsg.includes('bancario') || cleanMsg.includes('financiar') || cleanMsg.includes('fha')) {
+            reply = `🏦 <strong>Análisis de Financiamiento y Tasas en Guatemala (2026):</strong><br><br>
+            • <strong>Créditos de Vivienda FHA:</strong> Las tasas activas FHA en Quetzales para vivienda propia o inversión residencial se encuentran actualmente entre el <strong>7.0% y el 8.25% anual</strong>, con plazos de hasta 25 o 30 años y enganches desde el 5% en bancos autorizados (e.g. Banco Industrial, BANRURAL, BAC, G&T Continental). Es el financiamiento más barato y seguro del país.<br><br>
+            • <strong>Créditos Comerciales para Locales y Oficinas:</strong> Las hipotecas comerciales (no FHA) para locales, oficinas o bodegas tienen tasas que oscilan entre el <strong>8.5% y el 10.5% anual</strong>, con plazos máximos de 15 años y enganches requeridos del 20% al 30%. Además, conllevan gastos de avalúo y escrituración comercial directa.<br><br>
+            • <strong>Consejo de Apalancamiento IA:</strong> Con tu portafolio actual de activos y un Equity del <strong>${equityPct.toFixed(1)}%</strong>, tu perfil de riesgo ante bancos guatemaltecos es excelente. Calificas para tasas preferenciales del 7.25% en proyectos residenciales FHA y 8.5% en locales comerciales. Recomiendo no sobrepasar una relación Deuda/Valor (LTV) del 60% para mantener una salud financiera óptima.`;
+        }
+        else if (cleanMsg.includes('flujo') || cleanMsg.includes('renta') || cleanMsg.includes('ganancia') || cleanMsg.includes('cashflow') || cleanMsg.includes('retorno') || cleanMsg.includes('rendimiento') || cleanMsg.includes('roi')) {
             reply = `🟢 <strong>Optimización de Renta Inmobiliaria:</strong> Con base en tus ${totalAssets} activos, generas un flujo de renta bruta mensual de <strong>${currencySym}${formatNumber(totalRent.toFixed(0))}</strong>. <br><br>Para maximizar tu cashflow neto, recomiendo:<br>
             • Incrementar la renta un <strong>5%</strong> en tu activo <em>Oficina Plaza República Z10</em> para capturar la plusvalía del sector comercial corporativo.<br>
             • Amortizar capital de forma acelerada sobre la hipoteca de Cayalá Z16 para disminuir los cargos por intereses y liberar flujo de caja neto.`;
-        } else if (cleanMsg.includes('deuda') || cleanMsg.includes('hipoteca') || cleanMsg.includes('refinanciar') || cleanMsg.includes('apalanca') || cleanMsg.includes('crédito') || cleanMsg.includes('banco')) {
-            reply = `🌐 <strong>Estructura de Apalancamiento IA:</strong> Tu patrimonio total asciende a <strong>${currencySym}${formatNumber(totalVal.toFixed(0))}</strong> con una deuda consolidada de <strong>${currencySym}${formatNumber(totalDebt.toFixed(0))}</strong> (un Equity del <strong>${equityPct.toFixed(1)}%</strong>). <br><br>
-            • Tu salud de apalancamiento es excelente. Al tener un Equity robusto, calificas para financiamiento FHA premium con tasa preferencial.<br>
-            • Recomiendo refinanciar la hipoteca de la <em>Oficina en Zona 10</em> si logras negociar una tasa FHA inferior al <strong>7.25% anual</strong>, lo que ahorraría miles en amortización.`;
-        } else if (cleanMsg.includes('comprar') || cleanMsg.includes('adquirir') || cleanMsg.includes('invertir') || cleanMsg.includes('plusvalía') || cleanMsg.includes('zona') || cleanMsg.includes('sector')) {
-            reply = `🚀 <strong>Planificación de Adquisiciones IA:</strong> Tu activo en <em>Zona 16 Cayalá</em> lidera tu portafolio con una plusvalía de <strong>+8.4% anual</strong>. <br><br>
-            • Si deseas adquirir tu próximo activo, el motor analítico predice un crecimiento acelerado en <strong>Zona 14 (La Cañada)</strong> y <strong>Zona 15</strong> debido a escasez de terrenos premium.<br>
-            • Cuentas con una capacidad crediticia disponible de <strong>${currencySym}${formatNumber((totalRent * 0.4).toFixed(0))} mensuales</strong>. Esto te permite apalancar una preventa de apartamento en Zona 14 de hasta <strong>${currencySym}${formatNumber((totalRent * 50).toFixed(0))}</strong> sin arriesgar tu liquidez.`;
-        } else {
-            reply = `🤖 <strong>Asesoría Estratégica Multivariable:</strong> Entendido. He analizado tu portafolio de <strong>${totalAssets} activos</strong> valorados en <strong>${currencySym}${formatNumber(totalVal.toFixed(0))}</strong>.<br><br>
-            • Tu Equity es del <strong>${equityPct.toFixed(1)}%</strong>, lo cual te coloca en una posición sumamente conservadora y con alta solvencia crediticia bancaria.<br>
-            • ¿Te gustaría que analicemos el impacto financiero de adquirir una nueva propiedad, refinanciar Plaza República Z10, o realizar un plan de retiro acelerado mediante plusvalía compuesta?`;
+        } 
+        else if (cleanMsg.includes('zona') || cleanMsg.includes('zonas') || cleanMsg.includes('cayala') || cleanMsg.includes('naranjo') || cleanMsg.includes('salvador') || cleanMsg.includes('fraijanes') || cleanMsg.includes('san cristobal') || cleanMsg.includes('zona 10') || cleanMsg.includes('zona 14') || cleanMsg.includes('zona 15') || cleanMsg.includes('zona 4') || cleanMsg.includes('carretera')) {
+            reply = `🌐 <strong>Análisis Geográfico de Inversión en Guatemala:</strong><br><br>
+            • <strong>Zona 16 (Cayalá, Lomas, Cardales):</strong> Máxima plusvalía del mercado residencial (+8.4% anualizado) y alta absorción en preventas. Atrae perfiles familiares de altos ingresos.<br><br>
+            • <strong>Zona 10 y Zona 14 (El Corazón Financiero):</strong> Las mejores ubicaciones para oficinas premium e inversión en apartamentos boutique para renta corporativa. yields estables del 6.2% residencial y 7.8% comercial.<br><br>
+            • <strong>Zona 4 (Cuatro Grados Norte):</strong> El distrito más dinámico para **rentas cortas de Airbnb**. yields netos de hasta el 9.5% por ocupación de turismo joven e internacional.<br><br>
+            • <strong>Carretera a El Salvador (Km 14 al 25) y Fraijanes:</strong> La mayor plusvalía especulativa de mediano plazo en terrenos residenciales debido al crecimiento metropolitano periférico. Excelente retorno si inviertes en strip malls pequeños.`;
+        }
+        else if (cleanMsg.includes('que me aconsejas') || cleanMsg.includes('que aconsejas') || cleanMsg.includes('que me recomiendas') || cleanMsg.includes('recomiendas comprar') || cleanMsg.includes('que comprar') || cleanMsg.includes('cual es mejor') || cleanMsg.includes('en que invertir') || cleanMsg.includes('consejo inversion') || cleanMsg.includes('donde invertir') || cleanMsg.includes('que hago') || cleanMsg.includes('estrategia') || cleanMsg.includes('aconsejaria') || cleanMsg.includes('aconsejas')) {
+            reply = `💡 <strong>Estrategia de Inversión Comparativa para tu Patrimonio:</strong><br><br>
+            Para optimizar tu riqueza y flujo de efectivo con base en tus **${totalAssets} activos actuales**, analicemos la comparación comercial vs residencial en Guatemala:<br><br>
+            • <strong>1. Si buscas FLUJO PASIVO NETO de inmediato:</strong> Invierte en <strong>Locales Comerciales</strong>. Un local en preventa en Zona 16 Cayalá o Zona 10 te generará una rentabilidad de renta del **8.5% anual** con contratos estables de 5 años bajo modelo NNN (cero gastos de mantenimiento para ti).<br><br>
+            • <strong>2. Si buscas PLUSVALÍA y crecimiento a largo plazo:</strong> Adquiere <strong>Apartamentos en Planos</strong> en zonas residenciales premium (e.g. Zona 14 o Zona 15). Capturas un descuento del 15% en planos y la plusvalía de Guatemala se encargará de hacer crecer tu patrimonio neto al culminar el proyecto.<br><br>
+            • <strong>3. Si buscas ALTOS RENDIMIENTOS (pero operando activamente):</strong> Compra un apartamento pequeño (tipo estudio) en Zona 4 o Zona 10 y lánzalo a <strong>Airbnb</strong>. Puedes alcanzar hasta un **10.5% de yield**, aunque debes considerar la gestión de vacancias y limpiezas.<br><br>
+            • <strong>Recomendación IA Personalizada:</strong> Cuentas con un Equity de **${currencySym}${formatNumber((totalVal - totalDebt).toFixed(0))}** (${equityPct.toFixed(1)}%). Estás en una posición inmejorable para apalancar un crédito de tasa comercial del 8.5% y comprar un local en preventa. ¡Esto disparará tu cashflow neto mensual de inmediato!`;
+        }
+        else {
+            reply = `🤖 <strong>Asesoría Estratégica Multivariable ValorGT:</strong><br><br>
+            He procesado de manera profunda tu portafolio compuesto por <strong>${totalAssets} activos inmobiliarios</strong> valorados en <strong>${currencySym}${formatNumber(totalVal.toFixed(0))}</strong>.<br><br>
+            • Tu nivel de apalancamiento es de <strong>${equityPct > 0 ? (100 - equityPct).toFixed(1) : 0}%</strong> y tu flujo neto mensual es excelente.<br><br>
+            • <strong>Temas recomendados para consultarme:</strong><br>
+            1. <em>"¿Me aconsejas comprar locales comerciales en Guatemala en lugar de apartamentos?"</em> (Analizaremos yields, contratos Triple Neto NNN y sectores clave).<br>
+            2. <em>"¿Cuáles son las tasas de interés bancarias activas actuales en Guatemala?"</em> (Revisaremos FHA frente a créditos comerciales).<br>
+            3. <em>"¿Cómo optimizar el flujo de caja de mi portafolio actual?"</em> (Plan de refinanciamiento, amortizaciones y alzas de renta).<br><br>
+            Escribe tu consulta y con gusto desglosaré la telemetría financiera precisa para ti.`;
         }
 
-        const aiMsgHtml = `
-            <div class="opinion-item" style="border-left: 3px solid #bf5af2; background: rgba(191, 90, 242, 0.03); margin-top: 10px; padding: 6px; border-radius: 4px;">
-                <span style="font-size: 0.6rem; color: #bf5af2; font-weight: bold; display: block; text-transform: uppercase;">🤖 VALORGT AI ANALYST:</span>
-                <p style="font-size: 0.72rem; color: #fff; margin: 3px 0 0 0; line-height: 1.4;">${reply}</p>
-            </div>
-        `;
-        consoleEl.innerHTML += aiMsgHtml;
-        consoleEl.scrollTop = consoleEl.scrollHeight;
+        // 5. Agregar la respuesta del Asesor a la cola interactiva persistente
+        const aiMsg = {
+            sender: 'ai',
+            text: reply,
+            timestamp: Date.now()
+        };
+        aiChatHistory.push(aiMsg);
+
+        // 6. Recalcular e inicializar toda la vista de portafolio para redibujar de forma íntegra con persistencia
+        runAiStrategyAdvisor(totalValUSD, totalDebtUSD, totalRentUSD - (totalDebtUSD * 0.075 / 12), avgRoi, avgPlusvalia);
 
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
