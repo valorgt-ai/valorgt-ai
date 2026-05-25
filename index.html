@@ -1086,6 +1086,34 @@
                         </div>
                     </div>
 
+                    <!-- CARD: ASESOR ESTRATÉGICO IA (AHORA ARRIBA Y ANCHO COMPLETO) -->
+                    <div class="card glassmorphism col-card" style="margin-bottom: 24px;">
+                        <div class="card-header border-purple">
+                            <div class="header-icon purple"><i data-lucide="bot"></i></div>
+                            <h2>Asesor Patrimonial IA</h2>
+                        </div>
+                        
+                        <div class="ai-console-wrapper" style="display: flex; flex-direction: column; height: 100%;">
+                            <div class="credit-capacity-box">
+                                <div class="cap-title">Capacidad Adicional de Crédito</div>
+                                <div class="cap-val font-mono text-purple" id="p-ai-credit-capacity">Q0 / mes</div>
+                                <span class="cap-desc">Soportada por tu flujo neto actual ajustada a regulaciones bancarias.</span>
+                            </div>
+
+                            <div class="ai-opinion-feed" id="portfolio-ai-console" style="flex-grow: 1; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                                <!-- Respuestas de asesoramiento en tiempo real -->
+                            </div>
+
+                            <!-- Caja de Chat con la IA -->
+                            <div class="ai-chat-input-wrapper" style="margin-top: 15px; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; width: 100%;">
+                                <input type="text" id="portfolio-ai-chat-input" placeholder="Pregúntale al Asesor IA... (ej: ¿Cómo optimizar mi flujo?)" style="flex-grow: 1; padding: 10px 14px; font-size: 0.78rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; font-family: 'Inter', sans-serif;" onkeydown="if(event.key === 'Enter') sendPortfolioAiChatMessage()">
+                                <button onclick="sendPortfolioAiChatMessage()" class="btn-micro-cyber" style="background: rgba(191,90,242,0.15); border: 1px solid var(--neon-purple); color: var(--neon-purple); cursor: pointer; padding: 0 16px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--neon-purple);">
+                                    <i data-lucide="send" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- GRID SUPERIOR (2 COLUMNAS ANCHAS) -->
                     <div class="portfolio-grid-upper">
                         
@@ -1233,9 +1261,9 @@
 
                                     <div class="freedom-progress-wrapper">
                                         <div class="freedom-percentage-ring">
-                                            <svg class="ring-svg" width="120" height="120">
-                                                <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
-                                                <circle class="ring-fill" cx="60" cy="60" r="50" id="freedom-progress-ring-circle"></circle>
+                                            <svg class="ring-svg" width="180" height="180">
+                                                <circle class="ring-bg" cx="90" cy="90" r="80"></circle>
+                                                <circle class="ring-fill" cx="90" cy="90" r="80" id="freedom-progress-ring-circle"></circle>
                                             </svg>
                                             <div class="ring-center font-mono">
                                                 <span class="pct-num" id="freedom-pct-val">0%</span>
@@ -1299,41 +1327,7 @@
 
                     </div>
 
-                    <!-- GRID INFERIOR (BAJAMOS EL ASESOR IA PARA MAS AMPLITUD) -->
-                    <div class="portfolio-grid-lower">
-                        
-                        <!-- CARD: ASESOR ESTRATÉGICO IA -->
-                        <div class="card glassmorphism col-card">
-                            <div class="card-header border-purple">
-                                <div class="header-icon purple"><i data-lucide="bot"></i></div>
-                                <h2>Asesor Patrimonial IA</h2>
-                            </div>
-                            
-                            <div class="ai-console-wrapper" style="display: flex; flex-direction: column; height: 100%;">
-                                <!-- CAPACIDAD DE CRÉDITO HUD -->
-                                <div class="credit-capacity-box">
-                                    <div class="cap-title">Capacidad Adicional de Crédito</div>
-                                    <div class="cap-val font-mono text-purple" id="p-ai-credit-capacity">Q0 / mes</div>
-                                    <div class="cap-desc">Soportada por tu flujo neto actual ajustada a regulaciones bancarias.</div>
-                                </div>
 
-                                <div class="ai-opinion-feed" id="portfolio-ai-console" style="flex-grow: 1; max-height: 250px; overflow-y: auto; padding-right: 5px;">
-                                    <!-- Respuestas de asesoramiento en tiempo real -->
-                                </div>
-
-                                <!-- Caja de Chat con la IA -->
-                                <div class="ai-chat-input-wrapper" style="margin-top: 15px; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; width: 100%;">
-                                    <input type="text" id="portfolio-ai-chat-input" placeholder="Pregúntale al Asesor IA... (ej: ¿Cómo optimizar mi flujo?)" style="flex-grow: 1; padding: 10px 14px; font-size: 0.78rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; font-family: 'Inter', sans-serif;" onkeydown="if(event.key === 'Enter') sendPortfolioAiChatMessage()">
-                                    <button onclick="sendPortfolioAiChatMessage()" class="btn-micro-cyber" style="background: rgba(191,90,242,0.15); border: 1px solid var(--neon-purple); color: var(--neon-purple); cursor: pointer; padding: 0 16px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--neon-purple);">
-                                        <i data-lucide="send" style="width: 14px; height: 14px;"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                    </div>
 
                     <!-- SECCIÓN: MAPA DE CALOR Y BALIZAS DE ACTIVOS -->
                     <div class="card glassmorphism portfolio-map-card">

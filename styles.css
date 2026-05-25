@@ -2661,8 +2661,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .freedom-percentage-ring {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2675,18 +2675,18 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .ring-bg {
     fill: none;
     stroke: rgba(255, 255, 255, 0.03);
-    stroke-width: 8px;
+    stroke-width: 12px;
 }
 
 .ring-fill {
     fill: none;
     stroke: var(--neon-purple);
-    stroke-width: 8px;
+    stroke-width: 12px;
     stroke-linecap: round;
-    stroke-dasharray: 314.16;
-    stroke-dashoffset: 314.16; /* 100% libre es 0 dashoffset */
+    stroke-dasharray: 502.65;
+    stroke-dashoffset: 502.65; /* 100% libre es 0 dashoffset */
     transition: stroke-dashoffset 0.8s ease-out;
-    filter: drop-shadow(0 0 5px rgba(191, 90, 242, 0.5));
+    filter: drop-shadow(0 0 8px rgba(191, 90, 242, 0.6));
 }
 
 .ring-center {
@@ -2699,15 +2699,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .pct-num {
-    font-size: 1.4rem;
+    font-size: 2.1rem;
     font-weight: 800;
     color: #fff;
 }
 
 .pct-lbl {
-    font-size: 0.55rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
 .freedom-stats {

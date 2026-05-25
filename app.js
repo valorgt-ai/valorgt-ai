@@ -2175,10 +2175,11 @@ function updateFinancialFreedomStatus(netCashflowUSD, totalEquityUSD) {
     if (freedomPct > 100) freedomPct = 100;
 
     // Actualizar anillo de porcentaje circular (SVG Stroke Dashoffset)
-    // El círculo tiene r=50, lo que da una circunferencia de 314.16px
+    // El círculo tiene r=80, lo que da una circunferencia de 502.65px
     const circle = document.getElementById('freedom-progress-ring-circle');
     if (circle) {
-        const offset = 314.16 - (freedomPct / 100) * 314.16;
+        const circumference = 502.65;
+        const offset = circumference - (freedomPct / 100) * circumference;
         circle.style.strokeDashoffset = offset;
     }
 
