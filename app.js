@@ -7,8 +7,8 @@
 // 1. Regístrate gratis en supabase.com y crea tu base de datos
 // 2. Ejecuta el script SQL incluido en tu plan de implementación en el "SQL Editor"
 // 3. Pega aquí tu URL y Anon Key públicas
-const SUPABASE_URL = ""; 
-const SUPABASE_ANON_KEY = "";
+const SUPABASE_URL = "https://kcwfiruutezheudqxesv.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_mparhlydfWVr_CuSPk0nHQ_-3qNaTgO";
 
 let supabaseClient = null;
 let isSupabaseActive = false;
