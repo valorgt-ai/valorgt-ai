@@ -45,9 +45,9 @@ let saasBillingAmountUSD = 149; // Inicializado con el cobro mensual del plan Pr
 let saasImpressionsCount = 12450;
 let saasClientClicks = 320;
 let b2bClients = [
-    { name: 'Ana Estévez', company: 'Estévez Inmobiliaria', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250 },
-    { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Pro', status: 'Activo', password: 'valorgt', usdtBalance: 100 },
-    { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50 }
+    { name: 'Ana Estévez', company: 'Estévez Inmobiliaria', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250, role: 'agente' },
+    { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Pro', status: 'Activo', password: 'valorgt', usdtBalance: 100, role: 'inversionista' },
+    { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente' }
 ];
 let agentUploadedProperties = [];
 let pendingPaymentType = null; // 'subscription' | 'ad'
@@ -112,6 +112,15 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
+    if (viewId === 'portfolio') {
+        const isInversionista = isCommercialAuthenticated && loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
+        if (!isInversionista) {
+            alert("⚠️ ACCESO EXCLUSIVO: El simulador de Portafolio IA y registro histórico de riqueza es exclusivo para Inversionistas suscritos.\n\nPor favor, inicia sesión o regístrate como 'Inversionista' en la Consola B2B.");
+            switchView('commercial');
+            return;
+        }
+    }
+
     // Quitar clase activa de todos los botones de navegación y agregar a la seleccionada
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.getElementById(`nav-btn-${viewId}`);
@@ -2340,6 +2349,234 @@ function updatePortfolioMapMarkers() {
 }
 
 /**
+ * Guarda el resultado de la valuación IA activa en el Portafolio del Inversionista
+ */
+function saveActiveValuationToPortfolio() {
+    if (!activeValuation) {
+        alert("⚠️ NO HAY EVALUACIÓN ACTIVA: Por favor, realiza una tasación en el Valuador IA primero.");
+        return;
+    }
+
+    const isInversionista = isCommercialAuthenticated && loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
+    if (!isInversionista) {
+        alert("⚠️ ACCESO EXCLUSIVO: Para guardar propiedades en tu Portafolio IA y realizar seguimiento histórico, debes iniciar sesión como 'Inversionista' en la Consola B2B.");
+        switchView('commercial');
+        return;
+    }
+
+    // Recopilar datos de la tasación activa
+    const typeSelect = document.getElementById('prop-type');
+    const type = typeSelect ? typeSelect.value : 'apartamento';
+    const zoneData = ZONES_DATABASE[activeZoneKey];
+    const zoneName = zoneData ? zoneData.name.split(' (')[0] : activeZoneKey.toUpperCase();
+    const residential = document.getElementById('prop-residential') ? document.getElementById('prop-residential').value.trim() : '';
+    const size = document.getElementById('prop-size') ? parseFloat(document.getElementById('prop-size').value) : 150;
+
+    let title = `Valuación IA: ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+    if (residential) {
+        title += ` en ${residential}`;
+    } else {
+        title += ` en ${zoneName}`;
+    }
+    title += ` (${size} m²)`;
+
+    // Métricas predictivas inteligentes en USD
+    const buyValue = activeValuation;
+    const currentValue = activeValuation;
+    const rent = Math.round((activeValuation * 0.065) / 12); // Yield anual del 6.5%
+    const maintenance = Math.round(size * 1.0); // $1 USD por metro cuadrado
+    const taxes = Math.round((activeValuation * 0.006) / 12); // IUSI del 6 por millar anualizado
+
+    const offsetLat = (Math.random() - 0.5) * 0.008;
+    const offsetLng = (Math.random() - 0.5) * 0.008;
+    const lat = zoneData ? zoneData.lat + offsetLat : 14.5956;
+    const lng = zoneData ? zoneData.lng + offsetLng : -90.4851;
+    const plusvalia = zoneData ? (zoneData.growth5Y / 5) : 7.5;
+
+    const newAsset = {
+        id: "port-" + (userPortfolio.length + Date.now()).toString(),
+        title: title,
+        type: type === 'comercial' || type === 'oficina' || type === 'bodega' ? 'comercial' : (type === 'terreno' ? 'terreno' : 'apartamento'),
+        zoneKey: activeZoneKey,
+        buyValue: buyValue,
+        currentValue: currentValue,
+        rent: rent,
+        hasMortgage: false,
+        mortgageDebt: 0,
+        mortgagePayment: 0,
+        interestRate: 0,
+        termYears: 0,
+        maintenance: maintenance,
+        taxes: taxes,
+        occupancy: 95,
+        plusvalia: plusvalia,
+        lat: lat,
+        lng: lng,
+        isRemodeled: false,
+        isAirbnb: false,
+        isRefinanced: false,
+        isRentRaised: false
+    };
+
+    userPortfolio.unshift(newAsset);
+
+    alert(`🎉 ¡PROPIEDAD GUARDADA EN TU PORTAFOLIO IA!\nEl activo en ${zoneName} tasado en $${formatNumber(activeValuation.toFixed(0))} USD fue añadido exitosamente. Se ha calculado una renta mensual predictiva de $${formatNumber(rent.toFixed(0))} USD (ROI 6.5% anual).\n\nRedirigiendo a tu simulador de riqueza...`);
+
+    switchView('portfolio');
+}
+
+/**
+ * Importa los 35+ parámetros de la tasación inteligente activa al formulario B2B
+ */
+function autofillPublishFormFromValuation() {
+    // 1. Mapeo de Categoría/Tipo
+    const typeSelect = document.getElementById('prop-type');
+    const pubCategorySelect = document.getElementById('pub-category');
+    if (typeSelect && pubCategorySelect) {
+        const valType = typeSelect.value;
+        const typeMap = {
+            'casa': 'Casa',
+            'apartamento': 'Apartamento',
+            'terreno': 'Terreno',
+            'comercial': 'Local',
+            'oficina': 'Local',
+            'bodega': 'Bodega',
+            'finca': 'Terreno'
+        };
+        pubCategorySelect.value = typeMap[valType] || 'Apartamento';
+    }
+
+    // 2. Ubicación y Datos del Sector
+    const locationSelect = document.getElementById('prop-location');
+    const pubLocationSelect = document.getElementById('pub-location');
+    if (locationSelect && pubLocationSelect) {
+        // Asegurarse de que el sector exista en el listado B2B (Zonas principales)
+        const allowedSectors = ['zona14', 'zona10', 'zona16', 'zona15', 'antigua'];
+        if (allowedSectors.includes(locationSelect.value)) {
+            pubLocationSelect.value = locationSelect.value;
+        } else {
+            pubLocationSelect.value = 'zona14'; // Fallback por defecto si es Fraijanes/Mixco/etc.
+        }
+    }
+
+    // 3. Parámetros Básicos
+    const sizeInput = document.getElementById('prop-size');
+    if (sizeInput) document.getElementById('pub-size').value = sizeInput.value;
+
+    const roomsInput = document.getElementById('prop-rooms');
+    if (roomsInput) document.getElementById('pub-beds').value = roomsInput.value;
+
+    const bathroomsInput = document.getElementById('prop-bathrooms');
+    if (bathroomsInput) document.getElementById('pub-baths').value = bathroomsInput.value;
+
+    const parkingsInput = document.getElementById('prop-parkings');
+    if (parkingsInput) document.getElementById('pub-parks').value = parkingsInput.value;
+
+    // 4. Copiar precio sugerido si hay valuación IA
+    if (activeValuation) {
+        const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+        document.getElementById('pub-price').value = Math.round(activeValuation * conversion);
+    } else {
+        // Si no hay valuación activa, estimar un precio comercial base
+        const sizeVal = parseFloat(document.getElementById('pub-size').value) || 180;
+        const locVal = document.getElementById('pub-location').value;
+        const zoneData = ZONES_DATABASE[locVal];
+        if (zoneData) {
+            const basePrice = zoneData.basePriceM2 * sizeVal;
+            const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+            document.getElementById('pub-price').value = Math.round(basePrice * conversion);
+        }
+    }
+
+    // 5. Autocompletar Coordenadas GPS con offset aleatorio sobre la zona
+    const zoneKey = document.getElementById('pub-location').value;
+    const zoneData = ZONES_DATABASE[zoneKey];
+    if (zoneData) {
+        const offsetLat = (Math.random() - 0.5) * 0.003;
+        const offsetLng = (Math.random() - 0.5) * 0.003;
+        document.getElementById('pub-lat').value = (zoneData.lat + offsetLat).toFixed(4);
+        document.getElementById('pub-lng').value = (zoneData.lng + offsetLng).toFixed(4);
+    }
+
+    // 6. Sincronizar todos los 25+ campos avanzados detallados
+    const advancedFields = [
+        { from: 'prop-city', to: 'pub-prop-city', type: 'value' },
+        { from: 'prop-residential', to: 'pub-prop-residential', type: 'value' },
+        { from: 'prop-land-area', to: 'pub-prop-land-area', type: 'value' },
+        { from: 'prop-land-unit', to: 'pub-prop-land-unit', type: 'value' },
+        { from: 'room-secondary-count', to: 'pub-room-secondary-count', type: 'value' },
+        { from: 'bath-full-count', to: 'pub-bath-full-count', type: 'value' },
+        { from: 'parking-type', to: 'pub-parking-type', type: 'value' },
+        { from: 'prop-garden', to: 'pub-prop-garden', type: 'value' },
+        { from: 'prop-finishes', to: 'pub-prop-finishes', type: 'value' },
+        { from: 'prop-conservation', to: 'pub-prop-conservation', type: 'value' },
+
+        // Checkboxes
+        { from: 'near-malls', to: 'pub-near-malls', type: 'checked' },
+        { from: 'near-schools', to: 'pub-near-schools', type: 'checked' },
+        { from: 'near-supers', to: 'pub-near-supers', type: 'checked' },
+        { from: 'near-roads', to: 'pub-near-roads', type: 'checked' },
+        { from: 'room-master-suite', to: 'pub-room-master-suite', type: 'checked' },
+        { from: 'bath-visitor', to: 'pub-bath-visitor', type: 'checked' },
+        
+        { from: 'area-living', to: 'pub-area-living', type: 'checked' },
+        { from: 'area-dining', to: 'pub-area-dining', type: 'checked' },
+        { from: 'area-kitchen', to: 'pub-area-kitchen', type: 'checked' },
+        { from: 'area-breakfast', to: 'pub-area-breakfast', type: 'checked' },
+        { from: 'prop-family-room', to: 'pub-prop-family-room', type: 'checked' },
+        { from: 'prop-study', to: 'pub-prop-study', type: 'checked' },
+        { from: 'area-maid', to: 'pub-area-maid', type: 'checked' },
+        { from: 'area-laundry', to: 'pub-area-laundry', type: 'checked' },
+        { from: 'area-storage', to: 'pub-area-storage', type: 'checked' },
+        { from: 'area-terrace', to: 'pub-area-terrace', type: 'checked' },
+        { from: 'area-balcony', to: 'pub-area-balcony', type: 'checked' },
+        { from: 'area-patio', to: 'pub-area-patio', type: 'checked' },
+
+        { from: 'mat-porcelain', to: 'pub-mat-porcelain', type: 'checked' },
+        { from: 'mat-marble', to: 'pub-mat-marble', type: 'checked' },
+        { from: 'mat-wood', to: 'pub-mat-wood', type: 'checked' },
+        { from: 'mat-pvc', to: 'pub-mat-pvc', type: 'checked' },
+        { from: 'mat-kitchen-luxe', to: 'pub-mat-kitchen-luxe', type: 'checked' },
+
+        { from: 'amenity-pool', to: 'pub-amenity-pool', type: 'checked' },
+        { from: 'amenity-gym', to: 'pub-amenity-gym', type: 'checked' },
+        { from: 'amenity-security', to: 'pub-amenity-security', type: 'checked' },
+        { from: 'amenity-clubhouse', to: 'pub-amenity-clubhouse', type: 'checked' },
+        { from: 'amenity-view', to: 'pub-amenity-view', type: 'checked' },
+        { from: 'amenity-smart', to: 'pub-amenity-smart', type: 'checked' },
+        { from: 'amenity-solar', to: 'pub-amenity-solar', type: 'checked' },
+        { from: 'amenity-cistern', to: 'pub-amenity-cistern', type: 'checked' },
+        { from: 'amenity-elevator', to: 'pub-amenity-elevator', type: 'checked' }
+    ];
+
+    advancedFields.forEach(field => {
+        const fromEl = document.getElementById(field.from);
+        const toEl = document.getElementById(field.to);
+        if (fromEl && toEl) {
+            if (field.type === 'checked') {
+                toEl.checked = fromEl.checked;
+            } else {
+                toEl.value = fromEl.value;
+            }
+        }
+    });
+
+    // 7. Generar un título B2B elegante e inteligente
+    const cat = document.getElementById('pub-category').value;
+    const res = document.getElementById('pub-prop-residential').value.trim();
+    const locName = zoneData ? zoneData.name.split(' (')[0] : 'Guatemala';
+    let newTitle = `${cat} Premium en `;
+    if (res) newTitle += `${res}, ${locName}`;
+    else newTitle += locName;
+    
+    const sizeVal = document.getElementById('pub-size').value;
+    newTitle += ` (${sizeVal}m²)`;
+    document.getElementById('pub-title').value = newTitle;
+
+    alert("📂 DATOS IMPORTADOS: Se han cargado exitosamente los 35+ parámetros de la tasación activa del Valuador IA, incluyendo coordenadas GPS y valuación sugerida.");
+}
+
+/**
  * Inicializa la consola de gestión comercial B2B y SaaS
  */
 function initCommercialView() {
@@ -2728,6 +2965,88 @@ async function publishAgentProperty(event) {
     const lat = parseFloat(document.getElementById('pub-lat').value);
     const lng = parseFloat(document.getElementById('pub-lng').value);
 
+    // Parámetros avanzados del Acordeón B2B
+    const city = document.getElementById('pub-prop-city') ? document.getElementById('pub-prop-city').value : 'Guatemala';
+    const residential = document.getElementById('pub-prop-residential') ? document.getElementById('pub-prop-residential').value.trim() : '';
+    const landArea = parseFloat(document.getElementById('pub-prop-land-area') ? document.getElementById('pub-prop-land-area').value : '0') || 0;
+    const landUnit = document.getElementById('pub-prop-land-unit') ? document.getElementById('pub-prop-land-unit').value : 'v2';
+    const secondaryRooms = parseInt(document.getElementById('pub-room-secondary-count') ? document.getElementById('pub-room-secondary-count').value : '0') || 0;
+    const fullBathrooms = parseInt(document.getElementById('pub-bath-full-count') ? document.getElementById('pub-bath-full-count').value : '0') || 0;
+    const parkingType = document.getElementById('pub-parking-type') ? document.getElementById('pub-parking-type').value : 'techados';
+    const garden = parseFloat(document.getElementById('pub-prop-garden') ? document.getElementById('pub-prop-garden').value : '0') || 0;
+    const finishes = document.getElementById('pub-prop-finishes') ? document.getElementById('pub-prop-finishes').value : 'standard';
+    const conservation = document.getElementById('pub-prop-conservation') ? document.getElementById('pub-prop-conservation').value : 'nueva';
+
+    // Capturar checkboxes de distribución
+    const hasMasterSuite = document.getElementById('pub-room-master-suite') ? document.getElementById('pub-room-master-suite').checked : false;
+    const hasVisitorBath = document.getElementById('pub-bath-visitor') ? document.getElementById('pub-bath-visitor').checked : false;
+    const study = document.getElementById('pub-prop-study') ? document.getElementById('pub-prop-study').checked : false;
+    const familyRoom = document.getElementById('pub-prop-family-room') ? document.getElementById('pub-prop-family-room').checked : false;
+
+    // Checkboxes de áreas adicionales
+    const areas = [];
+    const areaMapping = [
+        { id: 'pub-area-living', key: 'area-living' },
+        { id: 'pub-area-dining', key: 'area-dining' },
+        { id: 'pub-area-kitchen', key: 'area-kitchen' },
+        { id: 'pub-area-breakfast', key: 'area-breakfast' },
+        { id: 'pub-area-maid', key: 'area-maid' },
+        { id: 'pub-area-laundry', key: 'area-laundry' },
+        { id: 'pub-area-storage', key: 'area-storage' },
+        { id: 'pub-area-terrace', key: 'area-terrace' },
+        { id: 'pub-area-balcony', key: 'area-balcony' },
+        { id: 'pub-area-patio', key: 'area-patio' }
+    ];
+    areaMapping.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el && el.checked) areas.push(item.key);
+    });
+
+    // Checkboxes de Amenidades
+    const amenities = [];
+    const amenityMapping = [
+        { id: 'pub-amenity-pool', key: 'amenity-pool' },
+        { id: 'pub-amenity-gym', key: 'amenity-gym' },
+        { id: 'pub-amenity-security', key: 'amenity-security' },
+        { id: 'pub-amenity-clubhouse', key: 'amenity-clubhouse' },
+        { id: 'pub-amenity-view', key: 'amenity-view' },
+        { id: 'pub-amenity-smart', key: 'amenity-smart' },
+        { id: 'pub-amenity-solar', key: 'amenity-solar' },
+        { id: 'pub-amenity-cistern', key: 'amenity-cistern' },
+        { id: 'pub-amenity-elevator', key: 'amenity-elevator' }
+    ];
+    amenityMapping.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el && el.checked) amenities.push(item.key);
+    });
+
+    // Checkboxes de Materiales
+    const materials = [];
+    const materialMapping = [
+        { id: 'pub-mat-porcelain', key: 'mat-porcelain' },
+        { id: 'pub-mat-marble', key: 'mat-marble' },
+        { id: 'pub-mat-wood', key: 'mat-wood' },
+        { id: 'pub-mat-pvc', key: 'mat-pvc' },
+        { id: 'pub-mat-kitchen-luxe', key: 'mat-kitchen-luxe' }
+    ];
+    materialMapping.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el && el.checked) materials.push(item.key);
+    });
+
+    // Checkboxes de Cercanías
+    const near = [];
+    const nearMapping = [
+        { id: 'pub-near-malls', key: 'near-malls' },
+        { id: 'pub-near-schools', key: 'near-schools' },
+        { id: 'pub-near-supers', key: 'near-supers' },
+        { id: 'pub-near-roads', key: 'near-roads' }
+    ];
+    nearMapping.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (el && el.checked) near.push(item.key);
+    });
+
     if (!title || !priceRaw || !size || !rooms || !bathrooms || !parkings || isNaN(lat) || isNaN(lng)) {
         alert("Por favor completa todos los campos del listado, incluyendo coordenadas GPS válidas.");
         return;
@@ -2739,7 +3058,7 @@ async function publishAgentProperty(event) {
     const zoneData = ZONES_DATABASE[locationKey];
     const locationName = zoneData ? zoneData.name.split(' (')[0] : "Guatemala";
 
-    // Estructurar propiedad que combine perfectamente con PORTFOLIO_DATABASE
+    // Estructurar propiedad que combine perfectamente con PORTFOLIO_DATABASE y soporte la tasación multivariable
     const newProperty = {
         id: 'agent-' + Date.now(),
         title: title,
@@ -2751,10 +3070,24 @@ async function publishAgentProperty(event) {
         rooms: rooms,
         bathrooms: bathrooms,
         parkings: parkings,
-        garden: 0,
-        study: true,
-        familyRoom: true,
-        amenities: ["amenity-security", "amenity-smart"],
+        city: city,
+        residential: residential,
+        landArea: landArea,
+        landUnit: landUnit,
+        secondaryRooms: secondaryRooms,
+        fullBathrooms: fullBathrooms,
+        parkingType: parkingType,
+        garden: garden,
+        finishes: finishes,
+        conservation: conservation,
+        hasMasterSuite: hasMasterSuite,
+        hasVisitorBath: hasVisitorBath,
+        study: study,
+        familyRoom: familyRoom,
+        areas: areas,
+        materials: materials,
+        near: near,
+        amenities: amenities.length > 0 ? amenities : ["amenity-security"],
         photo: photo,
         badge: "NUEVO LISTADO",
         location: locationKey,
@@ -2766,6 +3099,7 @@ async function publishAgentProperty(event) {
 
     if (isSupabaseActive) {
         try {
+            // Guardar en Supabase incluyendo los campos avanzados en el payload de properties
             const { data, error } = await supabaseClient.from('properties').insert([
                 {
                     title: title,
@@ -2782,7 +3116,27 @@ async function publishAgentProperty(event) {
                     sponsored: false,
                     latitude: lat,
                     longitude: lng,
-                    agent_id: loggedInB2bClient ? loggedInB2bClient.id : null
+                    agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
+                    metadata: {
+                        city: city,
+                        residential: residential,
+                        landArea: landArea,
+                        landUnit: landUnit,
+                        secondaryRooms: secondaryRooms,
+                        fullBathrooms: fullBathrooms,
+                        parkingType: parkingType,
+                        garden: garden,
+                        finishes: finishes,
+                        conservation: conservation,
+                        hasMasterSuite: hasMasterSuite,
+                        hasVisitorBath: hasVisitorBath,
+                        study: study,
+                        familyRoom: familyRoom,
+                        areas: areas,
+                        materials: materials,
+                        near: near,
+                        amenities: amenities
+                    }
                 }
             ]).select();
 
@@ -2805,8 +3159,24 @@ async function publishAgentProperty(event) {
     }
     PORTFOLIO_DATABASE[locationKey].push(newProperty);
 
-    // Limpiar formulario
+    // Limpiar formulario y restablecer valores del acordeón
     document.getElementById('publish-property-form').reset();
+    
+    // Forzar checkboxes y selectores por defecto
+    if (document.getElementById('pub-room-master-suite')) document.getElementById('pub-room-master-suite').checked = true;
+    if (document.getElementById('pub-bath-visitor')) document.getElementById('pub-bath-visitor').checked = true;
+    if (document.getElementById('pub-near-malls')) document.getElementById('pub-near-malls').checked = true;
+    if (document.getElementById('pub-near-schools')) document.getElementById('pub-near-schools').checked = true;
+    if (document.getElementById('pub-area-living')) document.getElementById('pub-area-living').checked = true;
+    if (document.getElementById('pub-area-dining')) document.getElementById('pub-area-dining').checked = true;
+    if (document.getElementById('pub-area-kitchen')) document.getElementById('pub-area-kitchen').checked = true;
+    if (document.getElementById('pub-area-laundry')) document.getElementById('pub-area-laundry').checked = true;
+    if (document.getElementById('pub-mat-porcelain')) document.getElementById('pub-mat-porcelain').checked = true;
+    if (document.getElementById('pub-mat-pvc')) document.getElementById('pub-mat-pvc').checked = true;
+    if (document.getElementById('pub-mat-kitchen-luxe')) document.getElementById('pub-mat-kitchen-luxe').checked = true;
+    if (document.getElementById('pub-amenity-security')) document.getElementById('pub-amenity-security').checked = true;
+    if (document.getElementById('pub-amenity-view')) document.getElementById('pub-amenity-view').checked = true;
+    if (document.getElementById('pub-amenity-cistern')) document.getElementById('pub-amenity-cistern').checked = true;
 
     // Actualizar selectores, HUD, inventario comercial y sincronizar monedas
     updatePromoPropertySelect();
@@ -2815,7 +3185,7 @@ async function publishAgentProperty(event) {
     updateFormUnits();
 
     // Alerta interactiva de éxito
-    alert(`Listado "${title}" publicado exitosamente como ${category}. Se inyectó en el inventario activo de ${locationName} y ahora está disponible para contratar pauta publicitaria.`);
+    alert(`Listado "${title}" publicado exitosamente como ${category}. Se inyectó en el inventario activo de ${locationName} con sus 35+ parámetros de tasación IA y ahora está disponible para contratar pauta publicitaria.`);
 }
 
 /**
@@ -3376,6 +3746,8 @@ function handleRegistrationFormSubmit(event) {
     const phone = document.getElementById('com-signup-phone').value.trim();
     const email = document.getElementById('com-signup-email').value.trim().toLowerCase();
     const pass = document.getElementById('com-signup-pass').value.trim();
+    const roleSelect = document.getElementById('com-signup-type');
+    const role = roleSelect ? roleSelect.value : 'agente';
 
     if (!name || !company || !nit || !phone || !email || !pass) {
         alert("Por favor completa todos los campos del registro.");
@@ -3390,7 +3762,7 @@ function handleRegistrationFormSubmit(event) {
     }
 
     // Guardar temporalmente los datos del nuevo usuario
-    pendingSignupUser = { name, company, nit, phone, email, pass };
+    pendingSignupUser = { name, company, nit, phone, email, pass, role };
 
     // Configurar pantalla de pago de suscripción
     document.getElementById('commercial-login-gate').classList.add('hidden');
@@ -3519,7 +3891,8 @@ async function completeSignupSubscriptionTransaction() {
         plan: selectedSignupPlanKey.charAt(0).toUpperCase() + selectedSignupPlanKey.slice(1),
         status: 'Activo',
         password: pendingSignupUser.pass,
-        usdtBalance: 100.00 // Airdrop de bienvenida
+        usdtBalance: 100.00, // Airdrop de bienvenida
+        role: pendingSignupUser.role
     };
 
     if (isSupabaseActive) {
@@ -3550,7 +3923,8 @@ async function completeSignupSubscriptionTransaction() {
                         email: pendingSignupUser.email,
                         plan: newClient.plan,
                         status: 'activo',
-                        usdt_balance: 100.00
+                        usdt_balance: 100.00,
+                        role: pendingSignupUser.role
                     }
                 ]);
 
