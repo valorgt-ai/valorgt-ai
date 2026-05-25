@@ -204,6 +204,28 @@ function toggleSidebar() {
 }
 
 /**
+ * Controla el despliegue de las secciones del formulario de tasación inteligente
+ * @param {string} itemId - ID de la sección a expandir/colapsar
+ */
+function toggleAccordion(itemId) {
+    const content = document.getElementById(itemId);
+    if (!content) return;
+    const item = content.closest('.accordion-item');
+    if (!item) return;
+    
+    const isActive = item.classList.contains('active');
+    
+    // Cerramos el resto de secciones para mantener el panel ordenado (opcional y premium)
+    document.querySelectorAll('.accordion-item').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    if (!isActive) {
+        item.classList.add('active');
+    }
+}
+
+/**
  * Alterna la moneda global entre GTQ (Quetzales) y USD (Dólares)
  */
 function toggleCurrency() {
@@ -836,30 +858,97 @@ function generateDetectedMaterials() {
 function calculateValuation(event) {
     event.preventDefault();
 
-    const locationSelect = document.getElementById('prop-location');
+    // 1. DATOS BÁSICOS
     const typeSelect = document.getElementById('prop-type');
-    const finishesSelect = document.getElementById('prop-finishes');
+    const locationSelect = document.getElementById('prop-location');
+    const citySelect = document.getElementById('prop-city');
+    const residentialInput = document.getElementById('prop-residential');
+    const landAreaInput = document.getElementById('prop-land-area');
+    const landUnitSelect = document.getElementById('prop-land-unit');
     const sizeInput = document.getElementById('prop-size');
-    const roomsInput = document.getElementById('prop-rooms');
-    const bathroomsInput = document.getElementById('prop-bathrooms');
-    const parkingsInput = document.getElementById('prop-parkings');
-    const gardenInput = document.getElementById('prop-garden');
-    const studyCheck = document.getElementById('prop-study');
-    const familyCheck = document.getElementById('prop-family-room');
 
     const zoneKey = locationSelect.value;
     const type = typeSelect.value;
-    const finishes = finishesSelect ? finishesSelect.value : 'standard';
+    const city = citySelect ? citySelect.value : 'Guatemala';
+    const residential = residentialInput ? residentialInput.value.trim() : '';
+    const landArea = parseFloat(landAreaInput ? landAreaInput.value : '0') || 0;
+    const landUnit = landUnitSelect ? landUnitSelect.value : 'v2';
     const size = parseFloat(sizeInput.value);
-    const rooms = parseInt(roomsInput.value);
-    const bathrooms = parseFloat(bathroomsInput.value);
+
+    // Cercanía inputs
+    const nearMalls = document.getElementById('near-malls') ? document.getElementById('near-malls').checked : false;
+    const nearSchools = document.getElementById('near-schools') ? document.getElementById('near-schools').checked : false;
+    const nearSupers = document.getElementById('near-supers') ? document.getElementById('near-supers').checked : false;
+    const nearRoads = document.getElementById('near-roads') ? document.getElementById('near-roads').checked : false;
+
+    // 2. DISTRIBUCIÓN INTERNA
+    const roomsInput = document.getElementById('prop-rooms');
+    const secondaryRoomsInput = document.getElementById('room-secondary-count');
+    const masterSuiteCheck = document.getElementById('room-master-suite');
+    
+    const bathroomsInput = document.getElementById('prop-bathrooms');
+    const fullBathroomsInput = document.getElementById('bath-full-count');
+    const visitorBathCheck = document.getElementById('bath-visitor');
+    
+    const parkingsInput = document.getElementById('prop-parkings');
+    const parkingTypeSelect = document.getElementById('parking-type');
+    const gardenInput = document.getElementById('prop-garden');
+
+    const rooms = parseInt(roomsInput.value) || 0;
+    const secondaryRooms = parseInt(secondaryRoomsInput ? secondaryRoomsInput.value : '0') || 0;
+    const hasMasterSuite = masterSuiteCheck ? masterSuiteCheck.checked : false;
+    
+    const bathrooms = parseFloat(bathroomsInput.value) || 0;
+    const fullBathrooms = parseInt(fullBathroomsInput ? fullBathroomsInput.value : '0') || 0;
+    const hasVisitorBath = visitorBathCheck ? visitorBathCheck.checked : false;
+    
     const parkings = parseInt(parkingsInput.value) || 0;
-    const garden = parseFloat(gardenInput.value) || 0;
-    const study = studyCheck.checked;
-    const familyRoom = familyCheck.checked;
+    const parkingType = parkingTypeSelect ? parkingTypeSelect.value : 'techados';
+    const garden = parseFloat(gardenInput ? gardenInput.value : '0') || 0;
+
+    // Checkboxes de distribución
+    const areaLiving = document.getElementById('area-living') ? document.getElementById('area-living').checked : false;
+    const areaDining = document.getElementById('area-dining') ? document.getElementById('area-dining').checked : false;
+    const areaKitchen = document.getElementById('area-kitchen') ? document.getElementById('area-kitchen').checked : false;
+    const areaBreakfast = document.getElementById('area-breakfast') ? document.getElementById('area-breakfast').checked : false;
+    const studyCheck = document.getElementById('prop-study');
+    const familyCheck = document.getElementById('prop-family-room');
+    const areaMaid = document.getElementById('area-maid') ? document.getElementById('area-maid').checked : false;
+    const areaLaundry = document.getElementById('area-laundry') ? document.getElementById('area-laundry').checked : false;
+    const areaStorage = document.getElementById('area-storage') ? document.getElementById('area-storage').checked : false;
+    const areaTerrace = document.getElementById('area-terrace') ? document.getElementById('area-terrace').checked : false;
+    const areaBalcony = document.getElementById('area-balcony') ? document.getElementById('area-balcony').checked : false;
+    const areaPatio = document.getElementById('area-patio') ? document.getElementById('area-patio').checked : false;
+
+    const study = studyCheck ? studyCheck.checked : false;
+    const familyRoom = familyCheck ? familyCheck.checked : false;
+
+    // 3. CALIDAD Y ACABADOS
+    const finishesSelect = document.getElementById('prop-finishes');
+    const conservationSelect = document.getElementById('prop-conservation');
+    const finishes = finishesSelect ? finishesSelect.value : 'standard';
+    const conservation = conservationSelect ? conservationSelect.value : 'buena';
+
+    // Materiales
+    const matPorcelain = document.getElementById('mat-porcelain') ? document.getElementById('mat-porcelain').checked : false;
+    const matMarble = document.getElementById('mat-marble') ? document.getElementById('mat-marble').checked : false;
+    const matWood = document.getElementById('mat-wood') ? document.getElementById('mat-wood').checked : false;
+    const matPvc = document.getElementById('mat-pvc') ? document.getElementById('mat-pvc').checked : false;
+    const matKitchenLuxe = document.getElementById('mat-kitchen-luxe') ? document.getElementById('mat-kitchen-luxe').checked : false;
+
+    // 4. CARACTERÍSTICAS ESPECIALES & AMENIDADES
+    const amenityPool = document.getElementById('amenity-pool') ? document.getElementById('amenity-pool').checked : false;
+    const amenityGym = document.getElementById('amenity-gym') ? document.getElementById('amenity-gym').checked : false;
+    const amenitySecurity = document.getElementById('amenity-security') ? document.getElementById('amenity-security').checked : false;
+    const amenityClubhouse = document.getElementById('amenity-clubhouse') ? document.getElementById('amenity-clubhouse').checked : false;
+    const amenityView = document.getElementById('amenity-view') ? document.getElementById('amenity-view').checked : false;
+    const amenitySmart = document.getElementById('amenity-smart') ? document.getElementById('amenity-smart').checked : false;
+    const amenitySolar = document.getElementById('amenity-solar') ? document.getElementById('amenity-solar').checked : false;
+    const amenityCistern = document.getElementById('amenity-cistern') ? document.getElementById('amenity-cistern').checked : false;
+    const amenityElevator = document.getElementById('amenity-elevator') ? document.getElementById('amenity-elevator').checked : false;
 
     if (!zoneKey) {
-        alert("Por favor selecciona una ubicación en Ciudad de Guatemala.");
+        alert("Por favor selecciona una ubicación / zona de referencia.");
         return;
     }
 
@@ -877,69 +966,137 @@ function calculateValuation(event) {
     activeZoneKey = zoneKey;
     const zoneData = ZONES_DATABASE[zoneKey];
 
-    // --- ALGORITMO DE VALUACIÓN MULTIVARIABLE IA (CALIBRADO GUATEMALA 2026) ---
-    // 1. Regresión de tamaño: A medida que la propiedad es más grande, el precio promedio por m² decrece
+    // --- ALGORITMO COMPLEJO DE VALUACIÓN INMOBILIARIA IA (VERSIÓN PRO MULTIVARIABLE) ---
+    
+    // 1. Regresión de tamaño
     let sizeRegression = Math.pow(120 / size, 0.11);
     
-    // 2. Determinar precio m² base según acabados (Q7,300 Estándar vs Q9,000 Lujo convertidos a USD) ajustado por zona y regresión
-    let baseFinishesPriceM2 = finishes === 'luxury' ? 1156 : 938; // Q9,000 y Q7,300 en USD (tipo de cambio 7.78)
-    let locationMultiplier = zoneData.basePriceM2 / 1100; // Multiplicador de zona relativo a Carretera a El Salvador
+    // 2. Determinar precio m² base según acabados generales
+    // standard (semi-lujo/medios): Q7,300, economy: Q5,500, luxury: Q9,000
+    let baseFinishesPriceM2 = 938; // standard default (~$120/m² en dólares)
+    if (finishes === 'luxury') baseFinishesPriceM2 = 1157; // Q9,000
+    if (finishes === 'economy') baseFinishesPriceM2 = 707; // Q5,500
+    
+    let locationMultiplier = zoneData.basePriceM2 / 1100;
     let priceM2 = baseFinishesPriceM2 * locationMultiplier * sizeRegression;
+    
+    // Valor Base por Construcción
     let baseValue = size * priceM2;
 
-    // 3. Ajuste por tipo de propiedad (Calibración realista: Casas horizontales tienen menor costo por m² que torres premium)
+    // 3. Valor Adicional por Terreno (Aporta un 18% del valor por m² del sector)
+    let landAreaM2 = landUnit === 'v2' ? landArea * 0.6988 : landArea;
+    let landValue = landAreaM2 * (priceM2 * 0.18);
+    
+    // Para Terrenos puros, el valor principal es el suelo y el tamaño de construcción es irrelevante
+    if (type === 'terreno') {
+        baseValue = landAreaM2 * (priceM2 * 0.85); // 85% del precio m² del sector
+        landValue = 0;
+    }
+
+    let combinedBase = baseValue + landValue;
+
+    // 4. Ajuste por Tipo de Propiedad
     let typeFactor = 1.0;
-    if (type === 'apartamento') typeFactor = 1.00; // Apartamentos verticales base
-    if (type === 'casa') typeFactor = 0.76; // Descuento del 24% por m² de construcción horizontal frente a torre de lujo
-    if (type === 'terreno') typeFactor = 0.40; // Suelo puro sin edificación
-    if (type === 'comercial') typeFactor = 1.25; // Eje comercial con prima de renta corporativa
+    if (type === 'apartamento') typeFactor = 1.05; // Apartamentos premium verticales tienen plus de exclusividad
+    if (type === 'casa') typeFactor = 0.82; // Ajuste realista de edificación horizontal
+    if (type === 'terreno') typeFactor = 1.0; // Ya calibrado en baseValue
+    if (type === 'comercial') typeFactor = 1.30; // Rentabilidad comercial
+    if (type === 'oficina') typeFactor = 1.20; 
+    if (type === 'bodega') typeFactor = 0.70; // Costo constructivo de bodega es menor por m²
+    if (type === 'finca') typeFactor = 0.60;
 
-    // 4. Ajuste por amenidades marcadas (Capa de amortiguación para evitar inflación acumulativa)
-    let amenityFactor = 0;
-    if (document.getElementById('amenity-pool').checked) amenityFactor += 0.04;
-    if (document.getElementById('amenity-gym').checked) amenityFactor += 0.03;
-    if (document.getElementById('amenity-security').checked) amenityFactor += 0.015;
-    if (document.getElementById('amenity-rooftop').checked) amenityFactor += 0.02;
-    if (document.getElementById('amenity-smart').checked) amenityFactor += 0.045;
+    // 5. Ajuste por Exclusividad Residencial / Colonia (Guatemala Exclusivo)
+    let residentialGlow = 0;
+    if (residential.length > 0) {
+        const luxuryKeywords = ["cañada", "san isidro", "cayala", "pulte", "encinal", "hacienda real", "portal", "condado", "encuentro", "sauces", "lomas", "vistas", "socorro", "altos", "cumbres", "encanto"];
+        const resLower = residential.toLowerCase();
+        luxuryKeywords.forEach(kw => {
+            if (resLower.includes(kw)) {
+                residentialGlow += 0.05; // +5% de valor por colonia prestigiosa
+            }
+        });
+    }
 
-    // 5. Ajuste por distribución (habitaciones y baños ideales)
+    // 6. Ajuste por Distribución Interna
     let distributionFactor = 0;
+    
+    // Áreas principales incorporadas
+    if (areaLiving) distributionFactor += 0.015;
+    if (areaDining) distributionFactor += 0.015;
+    if (areaKitchen) distributionFactor += 0.02;
+    if (areaBreakfast) distributionFactor += 0.01;
+    if (familyRoom) distributionFactor += 0.025;
+    if (study) distributionFactor += 0.035;
+    if (areaMaid) distributionFactor += 0.025;
+    if (areaLaundry) distributionFactor += 0.015;
+    if (areaStorage) distributionFactor += 0.01;
+    if (areaTerrace) distributionFactor += 0.025;
+    if (areaBalcony) distributionFactor += 0.015;
+    if (areaPatio) distributionFactor += 0.02;
+
+    // Habitaciones y Baños ideales
     if (rooms > 0) {
         const sizePerRoom = size / rooms;
-        if (sizePerRoom < 25) distributionFactor -= 0.06; // Hacinamiento
-        if (sizePerRoom > 50) distributionFactor += 0.03; // Amplitud
+        if (sizePerRoom < 20) distributionFactor -= 0.06; // Hacinamiento
+        if (sizePerRoom > 45) distributionFactor += 0.03; // Mayor holgura
     }
-    if (bathrooms > 0 && rooms > 0) {
-        const bathRatio = bathrooms / rooms;
-        if (bathRatio >= 1) distributionFactor += 0.02;
-    }
+    if (hasMasterSuite) distributionFactor += 0.04;
+    if (hasVisitorBath) distributionFactor += 0.02;
 
-    // 6. Ajustes por nuevas características (Parámetros y jardín con de-escalación parabólica)
-    let characteristicsFactor = 0;
-    // Parqueos techados: +2.0% por cada parqueo techado adicional arriba de la base estándar de 2 parqueos
+    // Parqueos y su tipo
     if (parkings > 2) {
-        characteristicsFactor += (parkings - 2) * 0.02;
+        let pBonus = (parkings - 2) * 0.02;
+        if (parkingType === 'techados') pBonus *= 1.2;
+        if (parkingType === 'no-techados') pBonus *= 0.6;
+        distributionFactor += pBonus;
     } else if (parkings === 1) {
-        characteristicsFactor -= 0.02; // Penalización por solo 1 parqueo en segmentos premium
+        distributionFactor -= 0.02; // Penalización
     }
-    // Área de jardín: +0.025% por m² con crecimiento desacelerado (raíz cuadrada) para evitar anomalías
+
+    // Jardín (crecimiento raíz cuadrada)
     if (garden > 0) {
-        characteristicsFactor += Math.sqrt(garden) * 0.0025;
-    }
-    // Estudio privado: +3.5%
-    if (study) {
-        characteristicsFactor += 0.035;
-    }
-    // Sala familiar: +2.5%
-    if (familyRoom) {
-        characteristicsFactor += 0.025;
+        distributionFactor += Math.sqrt(garden) * 0.0025;
     }
 
-    // 7. Ajuste total combinando IA Visual (acabados)
-    const totalMultiplier = typeFactor * (1 + amenityFactor + distributionFactor + characteristicsFactor + activePhotoBonus);
-    const finalValueUSD = baseValue * totalMultiplier;
+    // 7. Ajuste por Calidad y Acabados de Materiales Específicos
+    let materialsFactor = 0;
+    if (matPorcelain) materialsFactor += 0.02;
+    if (matMarble) materialsFactor += 0.05;
+    if (matWood) materialsFactor += 0.04;
+    if (matPvc) materialsFactor += 0.03;
+    if (matKitchenLuxe) materialsFactor += 0.05;
 
-    // Guardar estado global de valuación en USD
+    // Estado de conservación
+    let conservationFactor = 0;
+    if (conservation === 'nueva') conservationFactor += 0.10;
+    if (conservation === 'remodelada') conservationFactor += 0.08;
+    if (conservation === 'buena') conservationFactor += 0.03;
+    if (conservation === 'regular') conservationFactor += 0.0;
+    if (conservation === 'reparacion') conservationFactor -= 0.15;
+
+    // 8. Características Especiales y Amenidades del Proyecto
+    let amenityFactor = 0;
+    if (amenityPool) amenityFactor += 0.05;
+    if (amenityGym) amenityFactor += 0.035;
+    if (amenitySecurity) amenityFactor += 0.02;
+    if (amenityClubhouse) amenityFactor += 0.03;
+    if (amenityView) amenityFactor += 0.04;
+    if (amenitySmart) amenityFactor += 0.05;
+    if (amenitySolar) amenityFactor += 0.06;
+    if (amenityCistern) amenityFactor += 0.02;
+    if (amenityElevator) amenityFactor += 0.035;
+
+    // Cercanías
+    let nearFactor = 0;
+    if (nearMalls) nearFactor += 0.015;
+    if (nearSchools) nearFactor += 0.015;
+    if (nearSupers) nearFactor += 0.01;
+    if (nearRoads) nearFactor += 0.01;
+
+    // 9. Cálculo Final de Valuación (Integración de todos los factores de red neural ficticia)
+    const multiplier = 1 + residentialGlow + distributionFactor + materialsFactor + conservationFactor + amenityFactor + nearFactor + activePhotoBonus;
+    const finalValueUSD = combinedBase * typeFactor * multiplier;
+
     activeValuation = finalValueUSD;
 
     // Registrar en los logs de administración global de forma reactiva

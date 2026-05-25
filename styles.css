@@ -4200,6 +4200,113 @@ input[type="range"]::-webkit-slider-thumb:hover {
     justify-content: space-between;
 }
 
+/* ==========================================================================
+   ACORDIONES DE FORMULARIO PREMIUM (VALORACIÓN DETALLADA)
+   ========================================================================== */
+.valuation-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.accordion-item {
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.accordion-item.active {
+    border-color: rgba(0, 240, 255, 0.3);
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
+}
+
+.accordion-header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.01);
+    user-select: none;
+    transition: var(--transition-smooth);
+}
+
+.accordion-header:hover {
+    background: rgba(0, 240, 255, 0.03);
+    color: var(--cyan);
+}
+
+.accordion-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.accordion-header-left i {
+    width: 16px;
+    height: 16px;
+    color: var(--cyan);
+    filter: drop-shadow(0 0 4px var(--cyan));
+}
+
+.accordion-header h3 {
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+}
+
+.acc-arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.accordion-item.active .acc-arrow {
+    transform: rotate(180deg);
+    color: var(--cyan);
+}
+
+.accordion-content {
+    padding: 0 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), padding 0.4s ease;
+    border-top: 0 solid var(--border-light);
+}
+
+.accordion-item.active .accordion-content {
+    padding: 16px;
+    max-height: 1200px; /* High enough to contain all items in a section */
+    border-top: 1px solid var(--border-light);
+}
+
+.accordion-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
+}
+
+.form-group-full {
+    grid-column: span 2;
+}
+
+.form-label-bold {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-left: 2px solid var(--cyan);
+    padding-left: 6px;
+    margin-bottom: 4px;
+    display: block;
+}
+
 
 
 

@@ -140,146 +140,397 @@
                                 <h2>Parámetros de la Propiedad</h2>
                             </div>
                             <form id="valuation-form" onsubmit="calculateValuation(event)">
-                                <div class="form-grid">
-                                    <div class="form-group full-width">
-                                        <label for="prop-location">Ubicación / Zona de Ciudad de Guatemala</label>
-                                        <select id="prop-location" required onchange="updateSuggestedValues()">
-                                            <option value="" disabled selected>Selecciona una ubicación...</option>
-                                            <option value="zona10">Ciudad de Guatemala - Zona 10 (Zona Viva)</option>
-                                            <option value="zona14">Ciudad de Guatemala - Zona 14 (La Cañada / Américas)</option>
-                                            <option value="zona15">Ciudad de Guatemala - Zona 15 (Vista Hermosa)</option>
-                                            <option value="zona16">Ciudad de Guatemala - Zona 16 (Cayalá / Lomas)</option>
-                                            <option value="zona4">Ciudad de Guatemala - Zona 4 (Cantón Exposición)</option>
-                                            <option value="carretera">Carretera a El Salvador (Km 10 - Km 17)</option>
-                                            <option value="fraijanes">Fraijanes (Km 18 - Km 25, Condominios)</option>
-                                            <option value="mixco">Mixco (San Cristóbal / Blvd. Principal)</option>
-                                            <option value="antigua">Antigua Guatemala (Sacatepéquez)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="prop-type">Tipo de Inmueble</label>
-                                        <select id="prop-type" required>
-                                            <option value="apartamento" selected>Apartamento</option>
-                                            <option value="casa">Casa</option>
-                                            <option value="terreno">Terreno</option>
-                                            <option value="comercial">Comercial / Oficina</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="prop-finishes">Calidad de Acabados</label>
-                                        <select id="prop-finishes" required onchange="updateSuggestedValues()">
-                                            <option value="standard" selected>Estándar (Q7,300/m²)</option>
-                                            <option value="luxury">Lujo (Q9,000/m²)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="prop-size">Área Construida (m²)</label>
-                                        <div class="input-with-unit">
-                                            <input type="number" id="prop-size" min="20" max="2000" value="120" required>
-                                            <span class="unit-badge">m²</span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="prop-garden">Área de Jardín (m²)</label>
-                                        <div class="input-with-unit">
-                                            <input type="number" id="prop-garden" min="0" max="1000" value="0" required>
-                                            <span class="unit-badge">m²</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="prop-rooms">Habitaciones</label>
-                                        <input type="number" id="prop-rooms" min="0" max="10" value="3" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="prop-bathrooms">Baños</label>
-                                        <input type="number" id="prop-bathrooms" min="0" max="10" step="0.5" value="2.5" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="prop-parkings">Vehículos Techados</label>
-                                        <input type="number" id="prop-parkings" min="0" max="8" value="2" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Calibración Táctica</label>
-                                        <div class="hud-mini-info font-mono" style="background: rgba(0,240,255,0.02); border: 1px dashed rgba(0,240,255,0.25); border-radius: 6px; padding: 10px; font-size: 0.65rem; color: var(--cyan); display: flex; align-items: center; gap: 6px; height: 42px; box-sizing: border-box;">
-                                            <i data-lucide="info" style="width: 14px; height: 14px; flex-shrink: 0;"></i>
-                                            <span>La IA pondera el metraje y los acabados según el sector.</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group full-width">
-                                        <label>Distribución Especial</label>
-                                        <div class="amenities-grid" style="grid-template-columns: 1fr 1fr;">
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="prop-study" value="study">
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="book-open" class="tiny-icon"></i> Estudio Privado</span>
-                                            </label>
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="prop-family-room" value="family-room">
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="users" class="tiny-icon"></i> Sala Familiar</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
+                                <div class="valuation-accordion">
                                     
-                                    <!-- Amenidades Modernas -->
-                                    <div class="form-group full-width">
-                                        <label>Amenidades y Equipamiento</label>
-                                        <div class="amenities-grid">
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="amenity-pool" value="pool">
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="droplet" class="tiny-icon"></i> Piscina / Jacuzzi</span>
-                                            </label>
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="amenity-gym" value="gym">
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="dumbbell" class="tiny-icon"></i> Gimnasio Equipado</span>
-                                            </label>
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="amenity-security" value="security" checked>
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="shield" class="tiny-icon"></i> Seguridad 24/7</span>
-                                            </label>
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="amenity-rooftop" value="rooftop">
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="sunset" class="tiny-icon"></i> Rooftop / BBQ</span>
-                                            </label>
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="amenity-smart" value="smart">
-                                                <span class="checkmark"></span>
-                                                <span class="label-text"><i data-lucide="cpu" class="tiny-icon"></i> Automatización / Domótica</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Subida de Fotos IA Visual -->
-                                    <div class="form-group full-width">
-                                        <label>Análisis de Acabados por IA Visual (Opcional)</label>
-                                        <div class="photo-upload-zone" id="photo-dropzone">
-                                            <input type="file" id="photo-input" accept="image/*" class="hidden-file-input" onchange="handlePhotoUpload(event)">
-                                            <div class="upload-content" id="upload-prompt">
-                                                <i data-lucide="camera" class="upload-icon"></i>
-                                                <p class="upload-title">Arrastra o selecciona fotos del inmueble</p>
-                                                <p class="upload-subtitle">Nuestra IA detectará acabados, remodelaciones e iluminación</p>
+                                    <!-- 1. DATOS BÁSICOS -->
+                                    <div class="accordion-item active">
+                                        <div class="accordion-header" onclick="toggleAccordion('sec-basic')">
+                                            <div class="accordion-header-left">
+                                                <i data-lucide="home"></i>
+                                                <h3>1. Datos Básicos del Inmueble</h3>
                                             </div>
-                                            <div class="upload-preview hidden" id="upload-preview-container">
-                                                <img src="" id="uploaded-img-preview" alt="Vista previa de propiedad">
-                                                <div class="laser-scanner" id="laser-scanner"></div>
-                                                <div class="scan-overlay">
-                                                    <span class="scan-status" id="scan-status-text">ESCANEO IA EN PROCESO...</span>
+                                            <i data-lucide="chevron-down" class="acc-arrow"></i>
+                                        </div>
+                                        <div id="sec-basic" class="accordion-content">
+                                            <div class="accordion-form-grid">
+                                                <div class="form-group">
+                                                    <label for="prop-type">Tipo de Propiedad</label>
+                                                    <select id="prop-type" required>
+                                                        <option value="casa" selected>Casa</option>
+                                                        <option value="apartamento">Apartamento</option>
+                                                        <option value="terreno">Terreno</option>
+                                                        <option value="comercial">Local Comercial</option>
+                                                        <option value="oficina">Oficina</option>
+                                                        <option value="bodega">Bodega</option>
+                                                        <option value="finca">Finca</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="prop-location">Zona / Sector (Guatemala)</label>
+                                                    <select id="prop-location" required onchange="updateSuggestedValues()">
+                                                        <option value="" disabled>Selecciona zona...</option>
+                                                        <option value="zona10" selected>Zona 10 (Zona Viva)</option>
+                                                        <option value="zona14">Zona 14 (La Cañada / Américas)</option>
+                                                        <option value="zona15">Zona 15 (Vista Hermosa)</option>
+                                                        <option value="zona16">Zona 16 (Cayalá / Lomas)</option>
+                                                        <option value="zona4">Zona 4 (Cantón Exposición)</option>
+                                                        <option value="carretera">Carretera a El Salvador (Km 10-17)</option>
+                                                        <option value="fraijanes">Fraijanes (Condominios)</option>
+                                                        <option value="mixco">Mixco (San Cristóbal / Blvd)</option>
+                                                        <option value="antigua">Antigua Guatemala</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="prop-city">Ciudad / Municipio</label>
+                                                    <select id="prop-city">
+                                                        <option value="Guatemala" selected>Ciudad de Guatemala</option>
+                                                        <option value="Mixco">Mixco</option>
+                                                        <option value="Fraijanes">Fraijanes</option>
+                                                        <option value="Santa Catarina Pinula">Santa Catarina Pinula</option>
+                                                        <option value="Antigua Guatemala">Antigua Guatemala</option>
+                                                        <option value="Villa Nueva">Villa Nueva</option>
+                                                        <option value="San Lucas">San Lucas Sacatepéquez</option>
+                                                        <option value="Otros">Otros</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="prop-residential">Colonia o Residencial</label>
+                                                    <input type="text" id="prop-residential" placeholder="Ej. Puerta de Hierro, El Pulté" value="">
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="prop-land-area">Área del Terreno</label>
+                                                    <input type="number" id="prop-land-area" min="0" value="250" placeholder="Área total">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="prop-land-unit">Unidad del Terreno</label>
+                                                    <select id="prop-land-unit">
+                                                        <option value="v2" selected>Varas Cuadradas (v²)</option>
+                                                        <option value="m2">Metros Cuadrados (m²)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group-full">
+                                                    <label for="prop-size">Área Construida Real (m²)</label>
+                                                    <div class="input-with-unit">
+                                                        <input type="number" id="prop-size" min="10" max="2500" value="180" required>
+                                                        <span class="unit-badge">m²</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-group-full">
+                                                    <label class="form-label-bold">Cercanía y Puntos de Interés</label>
+                                                    <div class="amenities-grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="near-malls" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Centros Comerciales</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="near-schools" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Colegios / Universidades</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="near-supers">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Supermercados / Clínicas</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="near-roads">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Acceso a Vías Principales</span>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- 2. DISTRIBUCIÓN INTERNA -->
+                                    <div class="accordion-item">
+                                        <div class="accordion-header" onclick="toggleAccordion('sec-dist')">
+                                            <div class="accordion-header-left">
+                                                <i data-lucide="layers"></i>
+                                                <h3>2. Distribución Interna</h3>
+                                            </div>
+                                            <i data-lucide="chevron-down" class="acc-arrow"></i>
+                                        </div>
+                                        <div id="sec-dist" class="accordion-content">
+                                            <div class="accordion-form-grid">
+                                                <div class="form-group">
+                                                    <label for="prop-rooms">Total de Dormitorios</label>
+                                                    <input type="number" id="prop-rooms" min="0" max="15" value="3" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="room-secondary-count">Habitaciones Secundarias</label>
+                                                    <input type="number" id="room-secondary-count" min="0" max="12" value="2">
+                                                </div>
+                                                <div class="form-group-full">
+                                                    <label class="checkbox-container">
+                                                        <input type="checkbox" id="room-master-suite" checked>
+                                                        <span class="checkmark"></span>
+                                                        <span class="label-text"><i data-lucide="award" class="tiny-icon"></i> Dormitorio Principal con Baño y Walk-in Closet</span>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="prop-bathrooms">Total de Baños</label>
+                                                    <input type="number" id="prop-bathrooms" min="0" max="15" step="0.5" value="2.5" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="bath-full-count">Baños Completos</label>
+                                                    <input type="number" id="bath-full-count" min="0" max="15" value="2">
+                                                </div>
+                                                <div class="form-group-full">
+                                                    <label class="checkbox-container">
+                                                        <input type="checkbox" id="bath-visitor" checked>
+                                                        <span class="checkmark"></span>
+                                                        <span class="label-text"><i data-lucide="smile" class="tiny-icon"></i> Baño de visitas (Medio Baño)</span>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="prop-parkings">Total de Parqueos</label>
+                                                    <input type="number" id="prop-parkings" min="0" max="15" value="2" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="parking-type">Tipo de Estacionamiento</label>
+                                                    <select id="parking-type">
+                                                        <option value="techados" selected>Techados</option>
+                                                        <option value="no-techados">No techados</option>
+                                                        <option value="ambos">Ambos tipos</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="form-group-full">
+                                                    <label class="form-label-bold">Áreas Principales y Distribución</label>
+                                                    <div class="amenities-grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-living" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Sala Principal</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-dining" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Comedor</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-kitchen" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Cocina</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-breakfast">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Desayunador</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="prop-family-room" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Sala Familiar</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="prop-study">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Estudio / Oficina</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-maid">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Cuarto de Servicio</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-laundry" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Lavandería</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-storage">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Bodega Interna</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-terrace">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Terraza</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-balcony">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Balcón</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="area-patio">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Patio / Área Verde</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="form-group-full">
+                                                    <label for="prop-garden">Metraje de Jardín (m²)</label>
+                                                    <div class="input-with-unit">
+                                                        <input type="number" id="prop-garden" min="0" max="1000" value="0">
+                                                        <span class="unit-badge">m²</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 3. CALIDAD Y ACABADOS -->
+                                    <div class="accordion-item">
+                                        <div class="accordion-header" onclick="toggleAccordion('sec-finishes')">
+                                            <div class="accordion-header-left">
+                                                <i data-lucide="sliders"></i>
+                                                <h3>3. Calidad y Acabados</h3>
+                                            </div>
+                                            <i data-lucide="chevron-down" class="acc-arrow"></i>
+                                        </div>
+                                        <div id="sec-finishes" class="accordion-content">
+                                            <div class="accordion-form-grid">
+                                                <div class="form-group">
+                                                    <label for="prop-finishes">Tipo de Acabados</label>
+                                                    <select id="prop-finishes" required onchange="updateSuggestedValues()">
+                                                        <option value="standard" selected>Estándar / Medios (Q7,300/m²)</option>
+                                                        <option value="economy">Económicos (Q5,500/m²)</option>
+                                                        <option value="luxury">Premium / Lujo (Q9,000/m²)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="prop-conservation">Estado de Conservación</label>
+                                                    <select id="prop-conservation">
+                                                        <option value="nueva" selected>Nueva por estrenar</option>
+                                                        <option value="remodelada">Totalmente Remodelada</option>
+                                                        <option value="buena">Excelente / Buena</option>
+                                                        <option value="regular">Regular / Uso Normal</option>
+                                                        <option value="reparacion">Necesita Reparaciones</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="form-group-full">
+                                                    <label class="form-label-bold">Materiales Incorporados</label>
+                                                    <div class="amenities-grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="mat-porcelain" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Piso Porcelanato</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="mat-marble">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Mármol Natural</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="mat-wood">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Madera de Ingeniería / Deck</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="mat-pvc" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Ventanería PVC / Hermética</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="mat-kitchen-luxe" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text">Cocina con Cuarzo/Granito</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 4. CARACTERÍSTICAS ESPECIALES -->
+                                    <div class="accordion-item">
+                                        <div class="accordion-header" onclick="toggleAccordion('sec-special')">
+                                            <div class="accordion-header-left">
+                                                <i data-lucide="sparkles"></i>
+                                                <h3>4. Amenidades y Extras Especiales</h3>
+                                            </div>
+                                            <i data-lucide="chevron-down" class="acc-arrow"></i>
+                                        </div>
+                                        <div id="sec-special" class="accordion-content">
+                                            <div class="accordion-form-grid">
+                                                <div class="form-group-full">
+                                                    <label class="form-label-bold">Equipamiento y Amenidades del Proyecto</label>
+                                                    <div class="amenities-grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-pool">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="droplet" class="tiny-icon"></i> Piscina / Jacuzzi</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-gym">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="dumbbell" class="tiny-icon"></i> Gimnasio Equipado</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-security" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="shield" class="tiny-icon"></i> Seguridad 24/7</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-clubhouse">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="home" class="tiny-icon"></i> Casa Club / Eventos</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-view" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="eye" class="tiny-icon"></i> Vista Panorámica</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-smart">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="cpu" class="tiny-icon"></i> Smart Home (Domótica)</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-solar">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="sun" class="tiny-icon"></i> Paneles Solares</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-cistern" checked>
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="container" class="tiny-icon"></i> Cisterna de Agua</span>
+                                                        </label>
+                                                        <label class="checkbox-container">
+                                                            <input type="checkbox" id="amenity-elevator">
+                                                            <span class="checkmark"></span>
+                                                            <span class="label-text"><i data-lucide="arrow-up-down" class="tiny-icon"></i> Elevador</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div> <!-- Cierre de valuation-accordion -->
+
+                                <!-- Subida de Fotos IA Visual -->
+                                <div class="form-group-full" style="margin-top: 20px; width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                                    <label>Análisis de Acabados por IA Visual (Opcional)</label>
+                                    <div class="photo-upload-zone" id="photo-dropzone">
+                                        <input type="file" id="photo-input" accept="image/*" class="hidden-file-input" onchange="handlePhotoUpload(event)">
+                                        <div class="upload-content" id="upload-prompt">
+                                            <i data-lucide="camera" class="upload-icon"></i>
+                                            <p class="upload-title">Arrastra o selecciona fotos del inmueble</p>
+                                            <p class="upload-subtitle">Nuestra IA detectará acabados, remodelaciones e iluminación</p>
+                                        </div>
+                                        <div class="upload-preview hidden" id="upload-preview-container">
+                                            <img src="" id="uploaded-img-preview" alt="Vista previa de propiedad">
+                                            <div class="laser-scanner" id="laser-scanner"></div>
+                                            <div class="scan-overlay">
+                                                <span class="scan-status" id="scan-status-text">ESCANEO IA EN PROCESO...</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block glowing-effect" id="calculate-btn">
+
+                                <button type="submit" class="btn btn-primary btn-block glowing-effect" id="calculate-btn" style="margin-top: 24px; width: 100%;">
                                     <i data-lucide="sparkles"></i> VALORAR INMUEBLE CON IA
                                 </button>
                             </form>
