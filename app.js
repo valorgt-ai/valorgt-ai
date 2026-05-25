@@ -1803,7 +1803,7 @@ function updatePortfolioCalculations() {
     });
 
     const totalEquityUSD = totalValueUSD - totalDebtUSD;
-    const netCashflowUSD = totalRentUSD - totalPaymentsUSD - totalExpensesUSD;
+    const netCashflowUSD = totalRentUSD - totalPaymentsUSD;
     const avgRoi = totalValueUSD > 0 ? weightedRoi / totalValueUSD : 0;
     const avgPlusvalia = totalValueUSD > 0 ? weightedPlusvalia / totalValueUSD : 0;
 
@@ -1831,7 +1831,7 @@ function updatePortfolioCalculations() {
         // Si la deuda proyectada es extremadamente baja, asumimos que se canceló y cuota cae a 0
         displayPaymentsUSD = displayDebtUSD > 1000 ? totalPaymentsUSD : 0;
         
-        displayNetCashflowUSD = displayRentUSD - displayPaymentsUSD - displayExpensesUSD;
+        displayNetCashflowUSD = displayRentUSD - displayPaymentsUSD;
     }
 
     // Guardar en variables de caché global los valores que se están mostrando (actuales o proyectados)
