@@ -143,6 +143,9 @@ function switchView(viewId) {
             if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
                 if (blocker) blocker.classList.remove('hidden');
                 isPortfolioBlocked = true;
+                alert("⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita del Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                switchView('commercial');
+                return;
             } else {
                 // Si aún tiene tiempo, mostrar badge y arrancar timer de cuenta regresiva
                 if (blocker) blocker.classList.add('hidden');
@@ -167,6 +170,7 @@ function switchView(viewId) {
                         if (trialBadge) trialBadge.classList.add('hidden');
 
                         alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita del Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                        switchView('commercial');
                     }
                 }, 1000);
             }
@@ -2640,6 +2644,104 @@ function closePortfolioTrialBlockerAndRedirect() {
     const blocker = document.getElementById('portfolio-trial-blocker');
     if (blocker) blocker.classList.add('hidden');
     switchView('commercial');
+}
+
+/**
+ * Envía un mensaje en el chat interactivo del Asesor Patrimonial IA y genera una respuesta analítica predictiva
+ */
+function sendPortfolioAiChatMessage() {
+    const inputEl = document.getElementById('portfolio-ai-chat-input');
+    const consoleEl = document.getElementById('portfolio-ai-console');
+    if (!inputEl || !consoleEl) return;
+
+    const message = inputEl.value.trim();
+    if (!message) return;
+
+    // 1. Renderizar mensaje del usuario
+    const userMsgHtml = `
+        <div class="opinion-item" style="border-left: 3px solid var(--neon-blue); background: rgba(0, 240, 255, 0.03); margin-top: 10px; text-align: right; padding: 6px; border-radius: 4px;">
+            <span style="font-size: 0.6rem; color: var(--neon-blue); font-weight: bold; display: block; text-transform: uppercase;">💬 TÚ:</span>
+            <p style="font-size: 0.72rem; color: #fff; margin: 3px 0 0 0; line-height: 1.4;">${message}</p>
+        </div>
+    `;
+    consoleEl.innerHTML += userMsgHtml;
+    inputEl.value = '';
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+
+    // 2. Renderizar indicador de escritura del Asesor
+    const typingId = "ai-chat-typing-" + Date.now();
+    const typingHtml = `
+        <div class="opinion-item" id="${typingId}" style="border-left: 3px solid #bf5af2; background: rgba(191, 90, 242, 0.03); margin-top: 10px; padding: 6px; border-radius: 4px;">
+            <span style="font-size: 0.6rem; color: #bf5af2; font-weight: bold; display: block; text-transform: uppercase;">🤖 VALORGT AI ANALYST:</span>
+            <p style="font-size: 0.72rem; color: var(--text-secondary); margin: 3px 0 0 0; font-style: italic;">
+                Analizando estructura multivariable de tu patrimonio y métricas macroeconómicas...
+            </p>
+        </div>
+    `;
+    consoleEl.innerHTML += typingHtml;
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+
+    // 3. Formular respuesta personalizada en base a keywords tras 1.2 segundos
+    setTimeout(() => {
+        // Eliminar indicador de carga
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        const cleanMsg = message.toLowerCase();
+        let reply = "";
+
+        // Calcular métricas actuales del portafolio del inversionista para personalización inteligente
+        const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+        const totalAssets = userPortfolio.length;
+        
+        let totalValUSD = 0;
+        let totalRentUSD = 0;
+        let totalDebtUSD = 0;
+        userPortfolio.forEach(a => {
+            totalValUSD += a.currentValue;
+            totalRentUSD += a.rent;
+            if (a.hasMortgage) {
+                totalDebtUSD += a.mortgageDebt;
+            }
+        });
+
+        const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+        const totalVal = totalValUSD * conversion;
+        const totalRent = totalRentUSD * conversion;
+        const totalDebt = totalDebtUSD * conversion;
+        const equityPct = totalValUSD > 0 ? (((totalValUSD - totalDebtUSD) / totalValUSD) * 100) : 0;
+
+        if (cleanMsg.includes('flujo') || cleanMsg.includes('renta') || cleanMsg.includes('ganancia') || cleanMsg.includes('cashflow') || cleanMsg.includes('retorno')) {
+            reply = `🟢 <strong>Optimización de Renta Inmobiliaria:</strong> Con base en tus ${totalAssets} activos, generas un flujo de renta bruta mensual de <strong>${currencySym}${formatNumber(totalRent.toFixed(0))}</strong>. <br><br>Para maximizar tu cashflow neto, recomiendo:<br>
+            • Incrementar la renta un <strong>5%</strong> en tu activo <em>Oficina Plaza República Z10</em> para capturar la plusvalía del sector comercial corporativo.<br>
+            • Amortizar capital de forma acelerada sobre la hipoteca de Cayalá Z16 para disminuir los cargos por intereses y liberar flujo de caja neto.`;
+        } else if (cleanMsg.includes('deuda') || cleanMsg.includes('hipoteca') || cleanMsg.includes('refinanciar') || cleanMsg.includes('apalanca') || cleanMsg.includes('crédito') || cleanMsg.includes('banco')) {
+            reply = `🌐 <strong>Estructura de Apalancamiento IA:</strong> Tu patrimonio total asciende a <strong>${currencySym}${formatNumber(totalVal.toFixed(0))}</strong> con una deuda consolidada de <strong>${currencySym}${formatNumber(totalDebt.toFixed(0))}</strong> (un Equity del <strong>${equityPct.toFixed(1)}%</strong>). <br><br>
+            • Tu salud de apalancamiento es excelente. Al tener un Equity robusto, calificas para financiamiento FHA premium con tasa preferencial.<br>
+            • Recomiendo refinanciar la hipoteca de la <em>Oficina en Zona 10</em> si logras negociar una tasa FHA inferior al <strong>7.25% anual</strong>, lo que ahorraría miles en amortización.`;
+        } else if (cleanMsg.includes('comprar') || cleanMsg.includes('adquirir') || cleanMsg.includes('invertir') || cleanMsg.includes('plusvalía') || cleanMsg.includes('zona') || cleanMsg.includes('sector')) {
+            reply = `🚀 <strong>Planificación de Adquisiciones IA:</strong> Tu activo en <em>Zona 16 Cayalá</em> lidera tu portafolio con una plusvalía de <strong>+8.4% anual</strong>. <br><br>
+            • Si deseas adquirir tu próximo activo, el motor analítico predice un crecimiento acelerado en <strong>Zona 14 (La Cañada)</strong> y <strong>Zona 15</strong> debido a escasez de terrenos premium.<br>
+            • Cuentas con una capacidad crediticia disponible de <strong>${currencySym}${formatNumber((totalRent * 0.4).toFixed(0))} mensuales</strong>. Esto te permite apalancar una preventa de apartamento en Zona 14 de hasta <strong>${currencySym}${formatNumber((totalRent * 50).toFixed(0))}</strong> sin arriesgar tu liquidez.`;
+        } else {
+            reply = `🤖 <strong>Asesoría Estratégica Multivariable:</strong> Entendido. He analizado tu portafolio de <strong>${totalAssets} activos</strong> valorados en <strong>${currencySym}${formatNumber(totalVal.toFixed(0))}</strong>.<br><br>
+            • Tu Equity es del <strong>${equityPct.toFixed(1)}%</strong>, lo cual te coloca en una posición sumamente conservadora y con alta solvencia crediticia bancaria.<br>
+            • ¿Te gustaría que analicemos el impacto financiero de adquirir una nueva propiedad, refinanciar Plaza República Z10, o realizar un plan de retiro acelerado mediante plusvalía compuesta?`;
+        }
+
+        const aiMsgHtml = `
+            <div class="opinion-item" style="border-left: 3px solid #bf5af2; background: rgba(191, 90, 242, 0.03); margin-top: 10px; padding: 6px; border-radius: 4px;">
+                <span style="font-size: 0.6rem; color: #bf5af2; font-weight: bold; display: block; text-transform: uppercase;">🤖 VALORGT AI ANALYST:</span>
+                <p style="font-size: 0.72rem; color: #fff; margin: 3px 0 0 0; line-height: 1.4;">${reply}</p>
+            </div>
+        `;
+        consoleEl.innerHTML += aiMsgHtml;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }, 1200);
 }
 
 /**
