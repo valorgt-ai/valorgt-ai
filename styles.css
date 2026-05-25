@@ -110,24 +110,11 @@ body::before {
 }
 
 .logo-area {
-    padding: 16px 24px;
+    padding: 24px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 12px;
     border-bottom: 1px solid var(--border-light);
-    min-height: 80px;
-}
-
-.brand-logo-img {
-    height: 48px;
-    max-width: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3));
-    transition: var(--transition-smooth);
-}
-
-.collapsed-logo-icon {
-    display: none;
 }
 
 .logo-icon {
@@ -2821,22 +2808,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     grid-template-columns: 72px 1fr;
 }
 
-.app-container.sidebar-collapsed .brand-logo-img {
-    display: none !important;
-}
-
-.app-container.sidebar-collapsed .collapsed-logo-icon {
-    display: flex !important;
-}
-
 .app-container.sidebar-collapsed .logo-text {
     display: none;
 }
 
 .app-container.sidebar-collapsed .logo-area {
-    padding: 16px 0;
+    padding: 24px 0;
     justify-content: center;
-    min-height: 80px;
 }
 
 .app-container.sidebar-collapsed .nav-menu {
