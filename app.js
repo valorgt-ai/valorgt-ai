@@ -118,59 +118,74 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
-    // 1. Pausar y restablecer el timer del trial de marketing al cambiar de vista
+    // 1. Pausar y ocultar todos los timers y badges de trial de marketing al cambiar de vista
     if (portfolioTrialTimer) {
         clearInterval(portfolioTrialTimer);
         portfolioTrialTimer = null;
     }
-    const trialBadge = document.getElementById('portfolio-trial-badge');
-    if (trialBadge) trialBadge.classList.add('hidden');
+    document.getElementById('portfolio-trial-badge')?.classList.add('hidden');
+    document.getElementById('heatmap-trial-badge')?.classList.add('hidden');
+    document.getElementById('investor-trial-badge')?.classList.add('hidden');
 
-    // 2. Control del trial del Portafolio IA
-    if (viewId === 'portfolio') {
+    // 2. Control del trial de marketing para las vistas Premium (Portafolio, Radar de Calor, Terminal de Inversión)
+    const premiumViews = ['portfolio', 'heatmap', 'investor'];
+    if (premiumViews.includes(viewId)) {
         const hasUnlimitedAccess = isCommercialAuthenticated && loggedInB2bClient && (
             loggedInB2bClient.role === 'inversionista' || 
             (loggedInB2bClient.role === 'agente' && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro'))
         );
 
-        const blocker = document.getElementById('portfolio-trial-blocker');
+        const activeBlocker = document.getElementById(`${viewId}-trial-blocker`);
+        const activeBadge = document.getElementById(`${viewId}-trial-badge`);
+        const activeTimerLbl = document.getElementById(`${viewId}-trial-timer-lbl`);
+
+        // Nombres amigables para alertas
+        const viewNames = {
+            'portfolio': 'Portafolio IA',
+            'heatmap': 'Radar de Calor',
+            'investor': 'Terminal de Inversión'
+        };
 
         if (hasUnlimitedAccess) {
-            // Ocultar cualquier bloqueador de demo
-            if (blocker) blocker.classList.add('hidden');
+            // Ocultar bloqueadores en todas las vistas premium
+            document.getElementById('portfolio-trial-blocker')?.classList.add('hidden');
+            document.getElementById('heatmap-trial-blocker')?.classList.add('hidden');
+            document.getElementById('investor-trial-blocker')?.classList.add('hidden');
             isPortfolioBlocked = false;
         } else {
-            // Si no tiene acceso ilimitado, verificar si ya expiró el trial de 1 minuto
+            // Si no tiene acceso ilimitado, verificar si ya expiró la demo de 1 minuto
             if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
-                if (blocker) blocker.classList.remove('hidden');
+                if (activeBlocker) activeBlocker.classList.remove('hidden');
                 isPortfolioBlocked = true;
-                alert("⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita del Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                alert(`⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita de ${viewNames[viewId]} ha finalizado. Por favor suscríbete para continuar.`);
                 switchView('commercial');
                 return;
             } else {
-                // Si aún tiene tiempo, mostrar badge y arrancar timer de cuenta regresiva
-                if (blocker) blocker.classList.add('hidden');
-                if (trialBadge) {
-                    trialBadge.classList.remove('hidden');
-                    const lbl = document.getElementById('portfolio-trial-timer-lbl');
-                    if (lbl) lbl.innerText = `${portfolioTrialTimeLeft}s`;
+                // Si aún tiene tiempo, ocultar blocker de la vista activa y arrancar timer de cuenta regresiva
+                if (activeBlocker) activeBlocker.classList.add('hidden');
+                if (activeBadge) {
+                    activeBadge.classList.remove('hidden');
+                    if (activeTimerLbl) activeTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
                 }
 
                 portfolioTrialTimer = setInterval(() => {
                     portfolioTrialTimeLeft--;
-                    const lbl = document.getElementById('portfolio-trial-timer-lbl');
-                    if (lbl) lbl.innerText = `${portfolioTrialTimeLeft}s`;
+                    // Actualizar el label activo de la pestaña donde se encuentre
+                    const currentTimerLbl = document.getElementById(`${viewId}-trial-timer-lbl`);
+                    if (currentTimerLbl) currentTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
 
                     if (portfolioTrialTimeLeft <= 0) {
                         clearInterval(portfolioTrialTimer);
                         portfolioTrialTimer = null;
                         isPortfolioBlocked = true;
 
-                        const activeBlocker = document.getElementById('portfolio-trial-blocker');
-                        if (activeBlocker) activeBlocker.classList.remove('hidden');
-                        if (trialBadge) trialBadge.classList.add('hidden');
+                        // Mostrar bloqueador y ocultar badge
+                        const currentBlocker = document.getElementById(`${viewId}-trial-blocker`);
+                        if (currentBlocker) currentBlocker.classList.remove('hidden');
+                        const currentBadge = document.getElementById(`${viewId}-trial-badge`);
+                        if (currentBadge) currentBadge.classList.add('hidden');
 
-                        alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita del Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                        alert(`⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita de ${viewNames[viewId]} ha finalizado. Por favor suscríbete para continuar.`);
                         switchView('commercial');
                     }
                 }, 1000);
