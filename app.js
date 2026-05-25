@@ -706,24 +706,52 @@ function autofillValuationForm(zoneKey, index) {
         }
     }
 
-    // Llenar formulario
-    document.getElementById("prop-location").value = zoneKey;
-    document.getElementById("prop-type").value = typeValue;
-    document.getElementById("prop-finishes").value = finishesValue;
-    document.getElementById("prop-size").value = prop.size;
-    document.getElementById("prop-rooms").value = prop.rooms;
-    document.getElementById("prop-bathrooms").value = prop.bathrooms;
-    document.getElementById("prop-parkings").value = prop.parkings;
-    document.getElementById("prop-garden").value = prop.garden;
-    document.getElementById("prop-study").checked = prop.study;
-    document.getElementById("prop-family-room").checked = prop.familyRoom;
+    // Llenar formulario de forma segura
+    const locEl = document.getElementById("prop-location");
+    if (locEl) locEl.value = zoneKey;
+    
+    const typeEl = document.getElementById("prop-type");
+    if (typeEl) typeEl.value = typeValue;
+    
+    const finishesEl = document.getElementById("prop-finishes");
+    if (finishesEl) finishesEl.value = finishesValue;
+    
+    const sizeEl = document.getElementById("prop-size");
+    if (sizeEl) sizeEl.value = prop.size;
+    
+    const roomsEl = document.getElementById("prop-rooms");
+    if (roomsEl) roomsEl.value = prop.rooms;
+    
+    const bathEl = document.getElementById("prop-bathrooms");
+    if (bathEl) bathEl.value = prop.bathrooms;
+    
+    const parkEl = document.getElementById("prop-parkings");
+    if (parkEl) parkEl.value = prop.parkings;
+    
+    const gardenEl = document.getElementById("prop-garden");
+    if (gardenEl) gardenEl.value = prop.garden || 0;
+    
+    const studyEl = document.getElementById("prop-study");
+    if (studyEl) studyEl.checked = prop.study || false;
+    
+    const familyEl = document.getElementById("prop-family-room");
+    if (familyEl) familyEl.checked = prop.familyRoom || false;
 
-    // Configurar amenidades
-    document.getElementById("amenity-pool").checked = prop.amenities.includes("amenity-pool") || prop.amenities.includes("pool");
-    document.getElementById("amenity-gym").checked = prop.amenities.includes("amenity-gym") || prop.amenities.includes("gym");
-    document.getElementById("amenity-security").checked = prop.amenities.includes("amenity-security") || prop.amenities.includes("security");
-    document.getElementById("amenity-rooftop").checked = prop.amenities.includes("amenity-rooftop") || prop.amenities.includes("rooftop");
-    document.getElementById("amenity-smart").checked = prop.amenities.includes("amenity-smart") || prop.amenities.includes("smart");
+    // Configurar amenidades de forma segura
+    const poolEl = document.getElementById("amenity-pool");
+    if (poolEl) poolEl.checked = prop.amenities.includes("amenity-pool") || prop.amenities.includes("pool");
+    
+    const gymEl = document.getElementById("amenity-gym");
+    if (gymEl) gymEl.checked = prop.amenities.includes("amenity-gym") || prop.amenities.includes("gym");
+    
+    const securityEl = document.getElementById("amenity-security");
+    if (securityEl) securityEl.checked = prop.amenities.includes("amenity-security") || prop.amenities.includes("security");
+    
+    const rooftopEl = document.getElementById("amenity-rooftop");
+    if (rooftopEl) rooftopEl.checked = prop.amenities.includes("amenity-rooftop") || prop.amenities.includes("rooftop");
+    
+    const smartEl = document.getElementById("amenity-smart");
+    if (smartEl) smartEl.checked = prop.amenities.includes("amenity-smart") || prop.amenities.includes("smart");
 
     // Configurar foto de previsualización
     const previewImg = document.getElementById('uploaded-img-preview');
