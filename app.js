@@ -4923,6 +4923,52 @@ async function executeAdminGoldAirdrop() {
     
     const txHash = "0x" + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
     
+    // SI SUPABASE ESTÁ ACTIVO, HACER LA DISTRIBUCIÓN PERSISTENTE EN LA BASE DE DATOS
+    if (isSupabaseActive) {
+        try {
+            // A. Consultar perfiles premium activos en Supabase
+            const { data: remoteProfiles, error: fetchErr } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .in('plan', ['Pro', 'VIP', 'pro', 'vip'])
+                .eq('status', 'activo');
+
+            if (fetchErr) {
+                console.error("Error al consultar perfiles premium en Supabase:", fetchErr);
+            } else if (remoteProfiles && remoteProfiles.length > 0) {
+                // B. Obtener IDs de usuarios
+                const userIds = remoteProfiles.map(p => p.id);
+
+                // C. Ejecutar el RPC de distribución transaccional en Supabase
+                const { error: rpcErr } = await supabaseClient.rpc('distribuir_airdrop_oro', {
+                    p_usuario_ids: userIds,
+                    p_monto_usd_por_usuario: individualUSD,
+                    p_monto_xaut_por_usuario: individualXAUt,
+                    p_precio_pivote: xautPrice
+                });
+
+                if (rpcErr) {
+                    console.error("Error al ejecutar el RPC de Airdrop en Supabase:", rpcErr);
+                    alert("⚠️ FALLO EN BASE DE DATOS: La transacción del Airdrop falló en Supabase.");
+                } else {
+                    if (typeof appendAdminLog === 'function') {
+                        appendAdminLog("SECURITY", `ledger_node: Distribución de Airdrop de Oro registrada exitosamente en Supabase para ${remoteProfiles.length} perfiles.`, false);
+                    }
+                    
+                    // Sincronizar localmente las carteras en Supabase
+                    for (const profile of remoteProfiles) {
+                        const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
+                        if (localClient) {
+                            localClient.usdtBalance = parseFloat(profile.usdt_balance) + individualXAUt;
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Fallo crítico de conexión al distribuir a Supabase:", err);
+        }
+    }
+
     // Distribuir a los clientes en el arreglo local
     eligibleClients.forEach(client => {
         client.usdtBalance += individualXAUt;
@@ -4936,7 +4982,6 @@ async function executeAdminGoldAirdrop() {
         const matchingClient = eligibleClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
         if (matchingClient) {
             loggedInB2bClient.usdtBalance = matchingClient.usdtBalance;
-            updateSaasMetricsHUD();
         }
     }
     
@@ -4944,6 +4989,9 @@ async function executeAdminGoldAirdrop() {
     if (typeof renderAdminDashboard === 'function') {
         renderAdminDashboard();
     }
+
+    // Actualizar todos los HUDs y pantallas
+    updateSaasMetricsHUD();
     
     alert(`🎉 ¡AIRDROP DISTRIBUIDO EXITOSAMENTE!
     
