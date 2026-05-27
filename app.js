@@ -4637,6 +4637,11 @@ function initAdminView() {
         appendAdminLog("SECURITY", "pci_dss: Módulo de encriptación de datos bancarios activo (PCI-DSS compliant).", false);
         appendAdminLog("SAAS", "billing_node: Orquestador de facturación SaaS activo.", false);
     }
+
+    // Sincronizar perfiles reales desde Supabase si está activo
+    if (isSupabaseActive) {
+        syncB2bClientsFromSupabase();
+    }
     
     // Inicializar visualmente la lista de destinatarios del airdrop
     renderAdminAirdropComponents();
@@ -5421,6 +5426,11 @@ async function executeAdminGoldAirdrop() {
         }
     }
     
+    // Sincronizar balances reales actualizados desde Supabase
+    if (isSupabaseActive) {
+        await syncB2bClientsFromSupabase();
+    }
+
     // Recargar tabla de administración
     if (typeof renderAdminDashboard === 'function') {
         renderAdminDashboard();
@@ -5455,6 +5465,12 @@ async function syncSupabaseData() {
     if (!isSupabaseActive) return;
 
     try {
+        // Sincronizar perfiles de agentes para la tabla admin si la vista admin está activa
+        const adminViewEl = document.getElementById('view-admin');
+        if (adminViewEl && adminViewEl.classList.contains('active')) {
+            await syncB2bClientsFromSupabase();
+        }
+
         // 0. Sincronizar el saldo del agente activo desde Supabase
         if (loggedInB2bClient) {
             const { data: latestProfile, error: profileErr } = await supabaseClient
@@ -5547,6 +5563,46 @@ async function syncSupabaseData() {
         }
     } catch (err) {
         console.error("Fallo crítico de conexión al sincronizar Supabase:", err);
+    }
+}
+
+async function syncB2bClientsFromSupabase() {
+    if (!isSupabaseActive) return;
+    try {
+        const { data: remoteProfiles, error } = await supabaseClient
+            .from('profiles')
+            .select('*');
+        if (error) {
+            console.error("Error al sincronizar agentes desde Supabase:", error);
+            if (typeof appendAdminLog === 'function') {
+                appendAdminLog("SECURITY", `sync_node: Error al sincronizar agentes desde Supabase: ${error.message}`, true);
+            }
+            return;
+        }
+        if (remoteProfiles && remoteProfiles.length > 0) {
+            b2bClients = remoteProfiles.map(profile => ({
+                id: profile.id,
+                name: profile.name,
+                company: profile.company,
+                nit: profile.nit || 'C/F',
+                phone: profile.phone || 'N/A',
+                email: profile.email,
+                plan: profile.plan || 'Básico',
+                status: profile.status ? (profile.status.charAt(0).toUpperCase() + profile.status.slice(1)) : 'Activo',
+                password: 'valorgt',
+                usdtBalance: parseFloat(profile.usdt_balance || 0),
+                role: profile.role || 'agente'
+            }));
+            
+            // Re-renderizar de inmediato
+            renderAdminDashboard();
+            renderAdminAirdropComponents();
+            if (typeof appendAdminLog === 'function') {
+                appendAdminLog("SYSTEM", `sync_node: Sincronizados ${remoteProfiles.length} agentes desde Supabase con éxito.`, false);
+            }
+        }
+    } catch (err) {
+        console.error("Fallo crítico al sincronizar perfiles de agentes:", err);
     }
 }
 
