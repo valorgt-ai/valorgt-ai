@@ -111,6 +111,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isSupabaseActive) {
         syncSupabaseData();
     }
+
+    // Autocompletado de coordenadas GPS automático B2B al cambiar zona de ubicación
+    const pubLocationSelect = document.getElementById('pub-location');
+    const pubLatInput = document.getElementById('pub-lat');
+    const pubLngInput = document.getElementById('pub-lng');
+    
+    if (pubLocationSelect && pubLatInput && pubLngInput) {
+        const updateGpsCoords = () => {
+            const val = pubLocationSelect.value;
+            if (val && ZONES_DATABASE[val]) {
+                const zone = ZONES_DATABASE[val];
+                // Generar un pequeño offset aleatorio (aprox. 100-300 metros)
+                const latOffset = (Math.random() - 0.5) * 0.003;
+                const lngOffset = (Math.random() - 0.5) * 0.003;
+                pubLatInput.value = (zone.lat + latOffset).toFixed(4);
+                pubLngInput.value = (zone.lng + lngOffset).toFixed(4);
+            }
+        };
+        pubLocationSelect.addEventListener('change', updateGpsCoords);
+        
+        // Ejecutar inicialmente si ya tiene valor y los campos están vacíos
+        if (pubLocationSelect.value && !pubLatInput.value && !pubLngInput.value) {
+            updateGpsCoords();
+        }
+    }
+
+    // Visibilidad dinámica B2B en cambio de categoría
+    const pubCategorySelect = document.getElementById('pub-category');
+    if (pubCategorySelect) {
+        pubCategorySelect.addEventListener('change', updateB2bFieldVisibility);
+        updateB2bFieldVisibility(); // Ejecutar inicialmente
+    }
 });
 
 /**
@@ -446,6 +478,76 @@ function updateSuggestedValues() {
         gardenInput.value = 0;
         studyCheck.checked = false;
         familyCheck.checked = false;
+    }
+
+    // Visibilidad dinámica avanzada de campos B2C según tipo de propiedad
+    const b2cGroups = {
+        'prop-size-group': type !== 'terreno',
+        'prop-rooms-group': ['casa', 'apartamento', 'finca'].includes(type),
+        'prop-bathrooms-group': type !== 'terreno',
+        'prop-parkings-group': type !== 'terreno',
+        'prop-finishes-group': type !== 'terreno',
+        'prop-conservation-group': type !== 'terreno',
+        'land-area-group': ['casa', 'terreno', 'finca'].includes(type),
+        'land-unit-group': ['casa', 'terreno', 'finca'].includes(type)
+    };
+
+    Object.keys(b2cGroups).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (b2cGroups[id]) {
+                el.classList.remove('hidden-dynamic');
+            } else {
+                el.classList.add('hidden-dynamic');
+            }
+        }
+    });
+}
+
+/**
+ * Controla la visibilidad dinámica de los campos de la terminal B2B según la categoría elegida
+ */
+function updateB2bFieldVisibility() {
+    const categorySelect = document.getElementById('pub-category');
+    if (!categorySelect) return;
+
+    const cat = categorySelect.value; // 'Apartamento' | 'Casa' | 'Local' | 'Bodega' | 'Terreno'
+
+    // Reglas para el grid principal B2B
+    const b2bMainGroups = {
+        'pub-size-group': cat !== 'Terreno',
+        'pub-beds-group': ['Casa', 'Apartamento'].includes(cat),
+        'pub-baths-group': cat !== 'Terreno',
+        'pub-parks-group': cat !== 'Terreno'
+    };
+
+    Object.keys(b2bMainGroups).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (b2bMainGroups[id]) {
+                el.classList.remove('hidden-dynamic');
+            } else {
+                el.classList.add('hidden-dynamic');
+            }
+        }
+    });
+
+    // Ocultar dinámicamente en el panel avanzado B2B si está presente
+    const pubLandArea = document.getElementById('pub-prop-land-area');
+    const pubLandUnit = document.getElementById('pub-prop-land-unit');
+    if (pubLandArea && pubLandUnit) {
+        const showLand = ['Casa', 'Terreno'].includes(cat);
+        const areaWrapper = pubLandArea.closest('.form-group');
+        const unitWrapper = pubLandUnit.closest('.form-group');
+        if (areaWrapper && unitWrapper) {
+            if (showLand) {
+                areaWrapper.classList.remove('hidden-dynamic');
+                unitWrapper.classList.remove('hidden-dynamic');
+            } else {
+                areaWrapper.classList.add('hidden-dynamic');
+                unitWrapper.classList.add('hidden-dynamic');
+            }
+        }
     }
 }
 

@@ -4348,3 +4348,101 @@ input[type="range"]::-webkit-slider-thumb:hover {
         box-shadow: 0 0 0 0 rgba(191, 90, 242, 0);
     }
 }
+
+/* ==========================================================================
+   FORMULARIO SIMPLIFICADO & COLAPSABLES PREMIUM (DETALLES AVANZADOS)
+   ========================================================================== */
+.cyber-details {
+    background: rgba(10, 12, 17, 0.6);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+    width: 100%;
+}
+
+.cyber-details[open] {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
+.details-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--cyan);
+    cursor: pointer;
+    user-select: none;
+    list-style: none; /* Oculta la flecha nativa */
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
+.details-summary::-webkit-details-marker {
+    display: none; /* Flecha nativa Safari */
+}
+
+.details-summary-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.details-summary i.acc-arrow {
+    transition: transform var(--transition-smooth);
+}
+
+.cyber-details[open] .details-summary i.acc-arrow {
+    transform: rotate(180deg);
+}
+
+.details-content {
+    border-top: 1px dashed var(--border-light);
+    padding: 16px;
+    animation: slide-down-details 0.3s ease-out;
+}
+
+@keyframes slide-down-details {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 20px;
+}
+
+/* Ocultamiento y animación de terreno */
+.form-group-dynamic {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    transform: scaleY(1);
+    transform-origin: top;
+    max-height: 150px;
+}
+
+.form-group-dynamic.hidden-dynamic {
+    opacity: 0 !important;
+    transform: scaleY(0) !important;
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+    pointer-events: none !important;
+}
