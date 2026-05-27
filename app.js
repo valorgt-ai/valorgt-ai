@@ -4622,6 +4622,11 @@ function initAdminView() {
         appendAdminLog("SECURITY", "pci_dss: Módulo de encriptación de datos bancarios activo (PCI-DSS compliant).", false);
         appendAdminLog("SAAS", "billing_node: Orquestador de facturación SaaS activo.", false);
     }
+    
+    // Cargar precio de Tether Gold (XAUt) en segundo plano una sola vez al inicializar la vista de administración
+    fetchXautPriceForAirdrop().then(() => {
+        calculateAdminAirdropPreview();
+    });
 }
 
 /**
@@ -4846,7 +4851,7 @@ async function fetchXautPriceForAirdrop() {
     return currentAirdropXautPrice;
 }
 
-async function calculateAdminAirdropPreview() {
+function calculateAdminAirdropPreview() {
     const revenueInput = document.getElementById('admin-airdrop-revenue');
     if (!revenueInput) return;
     
@@ -4856,8 +4861,8 @@ async function calculateAdminAirdropPreview() {
     const eligibleEl = document.getElementById('airdrop-preview-eligible');
     const individualEl = document.getElementById('airdrop-preview-individual');
     
-    // Obtener precio en tiempo real
-    const xautPrice = await fetchXautPriceForAirdrop();
+    // Obtener precio en tiempo real ya pre-cargado en memoria
+    const xautPrice = currentAirdropXautPrice;
     if (priceEl) priceEl.innerText = `$${xautPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
     
     if (isNaN(revenue) || revenue <= 0) {
