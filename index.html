@@ -2340,10 +2340,10 @@
                     <div class="featured-header">
                         <div class="fh-left">
                             <span class="hud-label-small">SISTEMA CORE DE TELEMETRÍA</span>
-                            <h3 class="section-title-premium" style="color: var(--red); text-shadow: 0 0 10px rgba(255, 55, 95, 0.35);">Consola de Administración Central</h3>
+                            <h3 class="section-title-premium" style="color: var(--magenta); text-shadow: 0 0 10px rgba(255, 0, 127, 0.35);">Consola de Administración Central</h3>
                         </div>
                         <div class="fh-right" style="display: flex; align-items: center; gap: 15px;">
-                            <div class="investor-rank-badge font-mono" style="border-color: var(--red); color: var(--red); box-shadow: 0 0 8px rgba(255, 55, 95, 0.2);">
+                            <div class="investor-rank-badge font-mono" style="border-color: var(--magenta); color: var(--magenta); box-shadow: 0 0 8px rgba(255, 0, 127, 0.2);">
                                 <i data-lucide="shield-alert" style="width: 14px; height: 14px;"></i>
                                 <span class="badge-lbl">NIVEL ACCESO:</span>
                                 <span class="badge-val">ROOT / ADMIN</span>
@@ -2354,55 +2354,151 @@
                     <!-- KPI GRID DE ADMINISTRACIÓN -->
                     <div class="portfolio-kpis-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 15px; gap: 15px; margin-bottom: 20px;">
                         <!-- KPI 1: Facturación SaaS Total -->
-                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--red) !important; border-color: rgba(255, 55, 95, 0.4) !important; background: rgba(255, 55, 95, 0.03) !important; box-shadow: 0 0 15px rgba(255, 55, 95, 0.1) !important;">
-                            <div class="kpi-icon-wrapper" style="background: rgba(255, 55, 95, 0.1) !important; border-color: rgba(255, 55, 95, 0.2) !important;">
-                                <i data-lucide="line-chart" class="kpi-icon-cyan" style="color: var(--red) !important; filter: drop-shadow(0 0 5px rgba(255, 55, 95, 0.6));"></i>
+                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--magenta) !important; border-color: rgba(255, 0, 127, 0.4) !important; background: rgba(255, 0, 127, 0.03) !important; box-shadow: 0 0 15px rgba(255, 0, 127, 0.1) !important;">
+                            <div class="kpi-icon-wrapper" style="background: rgba(255, 0, 127, 0.1) !important; border-color: rgba(255, 0, 127, 0.2) !important;">
+                                <i data-lucide="line-chart" class="kpi-icon-cyan" style="color: var(--magenta) !important; filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.6));"></i>
                             </div>
                             <div class="kpi-content">
-                                <span class="kpi-label-text" style="color: var(--red) !important; font-weight: bold;">Facturación SaaS Total</span>
-                                <span class="kpi-value-text font-mono" id="admin-total-revenue" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 55, 95, 0.45);">Q0</span>
-                                <span class="kpi-sub-text" style="color: var(--red) !important; opacity: 0.8; font-weight: 500;">📊 INGRESOS GLOBALES</span>
+                                <span class="kpi-label-text" style="color: var(--magenta) !important; font-weight: bold;">Facturación SaaS Total</span>
+                                <span class="kpi-value-text font-mono" id="admin-total-revenue" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 0, 127, 0.45);">Q0</span>
+                                <span class="kpi-sub-text" style="color: var(--magenta) !important; opacity: 0.8; font-weight: 500;">📊 INGRESOS GLOBALES</span>
                             </div>
-                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--red), transparent) !important;"></div>
+                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--magenta), transparent) !important;"></div>
                         </div>
 
                         <!-- KPI 2: Suscriptores SaaS Activos -->
-                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--red) !important; border-color: rgba(255, 55, 95, 0.4) !important; background: rgba(255, 55, 95, 0.03) !important; box-shadow: 0 0 15px rgba(255, 55, 95, 0.1) !important;">
-                            <div class="kpi-icon-wrapper" style="background: rgba(255, 55, 95, 0.1) !important; border-color: rgba(255, 55, 95, 0.2) !important;">
-                                <i data-lucide="users" class="kpi-icon-cyan" style="color: var(--red) !important; filter: drop-shadow(0 0 5px rgba(255, 55, 95, 0.6));"></i>
+                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--magenta) !important; border-color: rgba(255, 0, 127, 0.4) !important; background: rgba(255, 0, 127, 0.03) !important; box-shadow: 0 0 15px rgba(255, 0, 127, 0.1) !important;">
+                            <div class="kpi-icon-wrapper" style="background: rgba(255, 0, 127, 0.1) !important; border-color: rgba(255, 0, 127, 0.2) !important;">
+                                <i data-lucide="users" class="kpi-icon-cyan" style="color: var(--magenta) !important; filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.6));"></i>
                             </div>
                             <div class="kpi-content">
-                                <span class="kpi-label-text" style="color: var(--red) !important; font-weight: bold;">Suscriptores SaaS Activos</span>
-                                <span class="kpi-value-text font-mono" id="admin-total-subscribers" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 55, 95, 0.45);">0 Agentes</span>
-                                <span class="kpi-sub-text" style="color: var(--red) !important; opacity: 0.8; font-weight: 500;">👥 CLIENTES PREMIUM</span>
+                                <span class="kpi-label-text" style="color: var(--magenta) !important; font-weight: bold;">Suscriptores SaaS Activos</span>
+                                <span class="kpi-value-text font-mono" id="admin-total-subscribers" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 0, 127, 0.45);">0 Agentes</span>
+                                <span class="kpi-sub-text" style="color: var(--magenta) !important; opacity: 0.8; font-weight: 500;">👥 CLIENTES PREMIUM</span>
                             </div>
-                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--red), transparent) !important;"></div>
+                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--magenta), transparent) !important;"></div>
                         </div>
 
                         <!-- KPI 3: Campañas de Pauta Activas -->
-                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--red) !important; border-color: rgba(255, 55, 95, 0.4) !important; background: rgba(255, 55, 95, 0.03) !important; box-shadow: 0 0 15px rgba(255, 55, 95, 0.1) !important;">
-                            <div class="kpi-icon-wrapper" style="background: rgba(255, 55, 95, 0.1) !important; border-color: rgba(255, 55, 95, 0.2) !important;">
-                                <i data-lucide="award" class="kpi-icon-cyan" style="color: var(--red) !important; filter: drop-shadow(0 0 5px rgba(255, 55, 95, 0.6));"></i>
+                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--magenta) !important; border-color: rgba(255, 0, 127, 0.4) !important; background: rgba(255, 0, 127, 0.03) !important; box-shadow: 0 0 15px rgba(255, 0, 127, 0.1) !important;">
+                            <div class="kpi-icon-wrapper" style="background: rgba(255, 0, 127, 0.1) !important; border-color: rgba(255, 0, 127, 0.2) !important;">
+                                <i data-lucide="award" class="kpi-icon-cyan" style="color: var(--magenta) !important; filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.6));"></i>
                             </div>
                             <div class="kpi-content">
-                                <span class="kpi-label-text" style="color: var(--red) !important; font-weight: bold;">Campañas de Pauta Activas</span>
-                                <span class="kpi-value-text font-mono" id="admin-total-campaigns" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 55, 95, 0.45);">0 Pautas</span>
-                                <span class="kpi-sub-text" style="color: var(--red) !important; opacity: 0.8; font-weight: 500;">🚀 DESTACADOS PORTADA</span>
+                                <span class="kpi-label-text" style="color: var(--magenta) !important; font-weight: bold;">Campañas de Pauta Activas</span>
+                                <span class="kpi-value-text font-mono" id="admin-total-campaigns" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 0, 127, 0.45);">0 Pautas</span>
+                                <span class="kpi-sub-text" style="color: var(--magenta) !important; opacity: 0.8; font-weight: 500;">🚀 DESTACADOS PORTADA</span>
                             </div>
-                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--red), transparent) !important;"></div>
+                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--magenta), transparent) !important;"></div>
                         </div>
 
-                        <!-- KPI 4: Integridad Servidores Core -->
-                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--red) !important; border-color: rgba(255, 55, 95, 0.4) !important; background: rgba(255, 55, 95, 0.03) !important; box-shadow: 0 0 15px rgba(255, 55, 95, 0.1) !important;">
-                            <div class="kpi-icon-wrapper" style="background: rgba(255, 55, 95, 0.1) !important; border-color: rgba(255, 55, 95, 0.2) !important;">
-                                <i data-lucide="cpu" class="kpi-icon-cyan" style="color: var(--red) !important; filter: drop-shadow(0 0 5px rgba(255, 55, 95, 0.6));"></i>
+                        <!-- KPI 4: Ingresos Acumulados del Mes -->
+                        <div class="kpi-card kpi-card-premium" style="border-left: 3px solid var(--magenta) !important; border-color: rgba(255, 0, 127, 0.4) !important; background: rgba(255, 0, 127, 0.03) !important; box-shadow: 0 0 15px rgba(255, 0, 127, 0.1) !important;">
+                            <div class="kpi-icon-wrapper" style="background: rgba(255, 0, 127, 0.1) !important; border-color: rgba(255, 0, 127, 0.2) !important;">
+                                <i data-lucide="piggy-bank" class="kpi-icon-cyan" style="color: var(--magenta) !important; filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.6));"></i>
                             </div>
                             <div class="kpi-content">
-                                <span class="kpi-label-text" style="color: var(--red) !important; font-weight: bold;">Integridad Servidores Core</span>
-                                <span class="kpi-value-text font-mono" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 55, 95, 0.45);">99.98% / ONLINE</span>
-                                <span class="kpi-sub-text" style="color: var(--red) !important; opacity: 0.8; font-weight: 500;">🔒 LEDGER INTEGRITY OK</span>
+                                <span class="kpi-label-text" style="color: var(--magenta) !important; font-weight: bold;">Ingresos Acumulados del Mes</span>
+                                <span class="kpi-value-text font-mono" id="admin-monthly-accumulated-revenue" style="color: #fff !important; text-shadow: 0 0 8px rgba(255, 0, 127, 0.45);">$1,000.00</span>
+                                <span class="kpi-sub-text" style="color: var(--magenta) !important; opacity: 0.8; font-weight: 500;">💰 FONDO DE DISTRIBUCIÓN</span>
                             </div>
-                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--red), transparent) !important;"></div>
+                            <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--magenta), transparent) !important;"></div>
+                        </div>
+                    </div>
+
+                    <!-- CARD INTEGRAL DE LANZAMIENTO DE AIRDROPS DE ORO DIGITAL (PRIORIZADO Y HORIZONTAL) -->
+                    <div class="card glassmorphism col-card border-magenta" style="margin-bottom: 20px; width: 100%; box-shadow: 0 0 20px rgba(255, 0, 127, 0.15) !important;">
+                        <div class="card-header border-magenta" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                            <div class="header-icon magenta" style="box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);"><i data-lucide="sparkles"></i></div>
+                            <h2 style="color: var(--magenta) !important;">Lanzador de Airdrops del Mes (Oro Digital XAUt)</h2>
+                            <span class="item-count font-mono border-magenta" style="color: var(--magenta) !important; border-color: rgba(255, 0, 127, 0.4) !important; background: rgba(255, 0, 127, 0.1) !important;">LEDGER GOLD ACCREDITATION</span>
+                        </div>
+
+                        <!-- Grilla Horizontal de 3 Columnas -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding: 5px 0;">
+                            
+                            <!-- COLUMNA 1: PARAMETRIZACIÓN & DESTINATARIOS -->
+                            <div style="display: flex; flex-direction: column; gap: 12px; border-right: 1px solid rgba(255,255,255,0.05); padding-right: 20px;">
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">TIPO DE DISTRIBUCIÓN</span>
+                                    <select id="admin-airdrop-target-type" onchange="handleAirdropTargetTypeChange()" style="padding: 8px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 0, 127, 0.25); color: #fff; border-radius: 4px; outline: none; width: 100%;">
+                                        <option value="all">Distribuir a todos los Premium (5% del Mes)</option>
+                                        <option value="single">Usuario Específico (Monto Directo)</option>
+                                    </select>
+                                </div>
+
+                                <div id="admin-airdrop-single-user-wrapper" style="display: none; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">DESTINATARIO PREMIUM ESPECÍFICO</span>
+                                    <select id="admin-airdrop-single-user" onchange="handleAirdropSingleUserChange()" style="padding: 8px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 0, 127, 0.25); color: #fff; border-radius: 4px; outline: none; width: 100%;">
+                                        <!-- Poblado dinámicamente -->
+                                    </select>
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">DESTINATARIOS SELECCIONADOS</span>
+                                    <div id="admin-airdrop-recipients-list" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 8px; max-height: 110px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">
+                                        <!-- Poblado dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- COLUMNA 2: EJECUCIÓN FINANCIERA -->
+                            <div style="display: flex; flex-direction: column; gap: 12px; border-right: 1px solid rgba(255,255,255,0.05); padding-right: 20px;">
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <span id="admin-airdrop-revenue-label" style="font-size: 0.6rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">VALOR MÁXIMO DE BASE (USD)</span>
+                                    <div style="position: relative; width: 100%;">
+                                        <span style="position: absolute; left: 10px; top: 7px; font-size: 0.75rem; color: rgba(255,255,255,0.4); font-family: var(--font-mono);">$</span>
+                                        <input type="number" id="admin-airdrop-revenue" oninput="calculateAdminAirdropPreview()" placeholder="Ej. 100" style="padding: 8px 8px 8px 24px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 0, 127, 0.25); color: #fff; border-radius: 4px; width: 100%; text-align: left; font-family: var(--font-mono); outline: none;">
+                                    </div>
+                                    <span id="admin-airdrop-limit-warning" style="font-size: 0.55rem; color: var(--magenta); font-weight: bold; margin-top: 2px; display: none;">⚠️ MONTO EXCEEDE LOS INGRESOS ACUMULADOS</span>
+                                </div>
+
+                                <div style="flex-grow: 1; display: flex; align-items: flex-end; margin-top: 10px;">
+                                    <button id="admin-airdrop-execute-btn" onclick="executeAdminGoldAirdrop()" class="btn-commercial-gold" style="width: 100%; padding: 12px; font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 4px;">
+                                        <i data-lucide="award" style="width: 14px; height: 14px;"></i>
+                                        EJECUTAR DISTRIBUCIÓN
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- COLUMNA 3: CAJA DE PROYECCIÓN HOLOGRAMA -->
+                            <div style="display: flex; flex-direction: column; justify-content: space-between; background: rgba(255, 0, 127, 0.02); border: 1px solid rgba(255, 0, 127, 0.1); border-radius: 8px; padding: 12px; text-align: left;">
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <span style="font-size: 0.55rem; font-weight: bold; color: var(--magenta); letter-spacing: 1.5px; border-bottom: 1px solid rgba(255, 0, 127, 0.15); padding-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="eye" style="width: 10px; height: 10px;"></i>
+                                        PROYECCIÓN EN TIEMPO REAL
+                                    </span>
+                                    
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-muted);">
+                                        <span>Precio XAUt (Tether Gold):</span>
+                                        <span id="airdrop-preview-xaut-price" class="font-mono text-white" style="font-weight: bold;">$2,380.00 USD</span>
+                                    </div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-muted);">
+                                        <span>Destinatarios Elegibles:</span>
+                                        <span id="airdrop-preview-eligible" class="font-mono text-white" style="font-weight: bold;">0 Premium</span>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-muted);">
+                                        <span>Bolsa / Monto Total:</span>
+                                        <span id="airdrop-preview-pool" class="font-mono text-white" style="font-weight: bold; color: #ffd700 !important;">$0.00 USD</span>
+                                    </div>
+
+                                    <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 2px;">
+                                        <span style="font-size: 0.55rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Airdrop Individual por Cuenta:</span>
+                                        <span id="airdrop-preview-individual" class="font-mono" style="font-size: 0.75rem; font-weight: 800; color: #34c759; filter: drop-shadow(0 0 5px rgba(52, 199, 89, 0.35));">$0.00 USD (0.0000 XAUt)</span>
+                                    </div>
+
+                                    <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px;">
+                                        <span style="font-size: 0.55rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Fondo Remanente Estimado:</span>
+                                        <span id="airdrop-preview-remnant" class="font-mono" style="font-size: 0.75rem; font-weight: 800; color: var(--magenta); filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.35));">$1,000.00 USD</span>
+                                    </div>
+                                </div>
+                                <span style="font-size: 0.5rem; color: var(--text-muted); line-height: 1.3; margin-top: 10px;">
+                                    * Distribución libre de blockchain gas fees. Acreditación transaccional segura en base de datos.
+                                </span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -2411,8 +2507,8 @@
                         <!-- COLUMNA 1: AUDITORÍA Y LISTA DE AGENTES -->
                         <div class="portfolio-column assets-column" style="flex: 1.4;">
                             <div class="card glassmorphism col-card" style="min-height: 480px;">
-                                <div class="card-header border-red" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
-                                    <div class="header-icon red"><i data-lucide="folder-key"></i></div>
+                                <div class="card-header border-magenta" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon magenta"><i data-lucide="folder-key"></i></div>
                                     <h2>Auditoría de Agentes y Membresías</h2>
                                     <span class="item-count font-mono" id="admin-agents-count">0 AGENTES</span>
                                 </div>
@@ -2440,8 +2536,8 @@
                         <div class="portfolio-column charts-column" style="flex: 1;">
                             <!-- CARD: PLATFORM SECURITY LOGS -->
                             <div class="card glassmorphism col-card">
-                                <div class="card-header border-red" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
-                                    <div class="header-icon red"><i data-lucide="activity"></i></div>
+                                <div class="card-header border-magenta" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon magenta"><i data-lucide="activity"></i></div>
                                     <h2>Logs del Sistema y Auditoría de Red</h2>
                                 </div>
                                 <div class="ai-opinion-feed font-mono" id="admin-security-logs" style="height: 180px; font-size: 0.6rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; line-height: 1.4; overflow-y: auto; text-align: left;">
@@ -2451,100 +2547,49 @@
 
                             <!-- CARD: AJUSTES CORE HOLOGRÁFICOS -->
                             <div class="card glassmorphism col-card">
-                                <div class="card-header border-red">
-                                    <div class="header-icon red"><i data-lucide="sliders"></i></div>
+                                <div class="card-header border-magenta">
+                                    <div class="header-icon magenta"><i data-lucide="sliders"></i></div>
                                     <h2>Calibración y Filtros del Core IA</h2>
                                 </div>
                                 <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px; padding: 15px 0;">
                                     <label class="checkbox-container">
                                         <input type="checkbox" id="admin-toggle-maintenance" onchange="toggleAdminMaintenance(this.checked)">
-                                        <span class="checkmark border-red" style="border-color: rgba(255, 55, 95, 0.45);"></span>
+                                        <span class="checkmark border-magenta" style="border-color: rgba(255, 0, 127, 0.45);"></span>
                                         <span class="label-text">Activar Modo Mantenimiento en Red</span>
                                     </label>
                                     <label class="checkbox-container">
                                         <input type="checkbox" id="admin-toggle-pci" checked onchange="toggleAdminPCIDSS(this.checked)">
-                                        <span class="checkmark border-red" style="border-color: rgba(255, 55, 95, 0.45);"></span>
+                                        <span class="checkmark border-magenta" style="border-color: rgba(255, 0, 127, 0.45);"></span>
                                         <span class="label-text">Forzar Cifrado de Datos PCI-DSS</span>
                                     </label>
                                     <label class="checkbox-container">
                                         <input type="checkbox" id="admin-toggle-speculation" checked onchange="toggleAdminSpeculation(this.checked)">
-                                        <span class="checkmark border-red" style="border-color: rgba(255, 55, 95, 0.45);"></span>
+                                        <span class="checkmark border-magenta" style="border-color: rgba(255, 0, 127, 0.45);"></span>
                                         <span class="label-text">Calibración Especulativa de Plusvalía (+1.5% global)</span>
                                     </label>
                                 </div>
 
                                 <!-- Inputs de Calibración de Precios por m² de Construcción -->
-                                <div class="admin-price-calibration font-mono" style="border-top: 1px dashed rgba(255, 55, 95, 0.2); padding-top: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-                                    <span style="font-size: 0.65rem; color: var(--red); font-weight: bold; letter-spacing: 0.5px;">PROMEDIO M² CONSTRUCCIÓN (USD)</span>
+                                <div class="admin-price-calibration font-mono" style="border-top: 1px dashed rgba(255, 0, 127, 0.2); padding-top: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                                    <span style="font-size: 0.65rem; color: var(--magenta); font-weight: bold; letter-spacing: 0.5px;">PROMEDIO M² CONSTRUCCIÓN (USD)</span>
                                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                                         <div style="display: flex; flex-direction: column; gap: 3px;">
                                             <label for="admin-price-economy" style="font-size: 0.55rem; color: var(--text-muted);">Económico</label>
-                                            <input type="number" id="admin-price-economy" placeholder="707" style="padding: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 55, 95, 0.2); color: #fff; border-radius: 4px; text-align: center;" oninput="updateAdminPriceAverages()">
+                                            <input type="number" id="admin-price-economy" placeholder="707" style="padding: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 0, 127, 0.2); color: #fff; border-radius: 4px; text-align: center;" oninput="updateAdminPriceAverages()">
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 3px;">
                                             <label for="admin-price-standard" style="font-size: 0.55rem; color: var(--text-muted);">Estándar</label>
-                                            <input type="number" id="admin-price-standard" placeholder="938" style="padding: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 55, 95, 0.2); color: #fff; border-radius: 4px; text-align: center;" oninput="updateAdminPriceAverages()">
+                                            <input type="number" id="admin-price-standard" placeholder="938" style="padding: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 0, 127, 0.2); color: #fff; border-radius: 4px; text-align: center;" oninput="updateAdminPriceAverages()">
                                         </div>
                                         <div style="display: flex; flex-direction: column; gap: 3px;">
                                             <label for="admin-price-luxury" style="font-size: 0.55rem; color: var(--text-muted);">Premium</label>
-                                            <input type="number" id="admin-price-luxury" placeholder="1157" style="padding: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 55, 95, 0.2); color: #fff; border-radius: 4px; text-align: center;" oninput="updateAdminPriceAverages()">
+                                            <input type="number" id="admin-price-luxury" placeholder="1157" style="padding: 4px; font-size: 0.7rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 0, 127, 0.2); color: #fff; border-radius: 4px; text-align: center;" oninput="updateAdminPriceAverages()">
                                         </div>
                                     </div>
                                     <span style="font-size: 0.5rem; color: var(--text-muted); line-height: 1.3;">* Si se dejan vacíos, se usarán los valores base calculados por la IA por defecto.</span>
                                 </div>
                             </div>
 
-                            <!-- CARD: LANZADOR DE AIRDROPS DE ORO DIGITAL -->
-                            <div class="card glassmorphism col-card" style="border-left: 3px solid var(--amber) !important; border-color: rgba(245, 158, 11, 0.25) !important; margin-top: 15px;">
-                                <div class="card-header border-red" style="border-bottom: 1px solid rgba(245, 158, 11, 0.15) !important;">
-                                    <div class="header-icon red" style="background: rgba(245, 158, 11, 0.1) !important; color: var(--amber) !important; border-color: rgba(245, 158, 11, 0.3) !important;"><i data-lucide="award"></i></div>
-                                    <h2 style="color: var(--amber) !important;">Lanzador de Airdrops (Oro XAUt)</h2>
-                                </div>
-                                <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px; padding: 15px 0;">
-                                    <!-- Selector de Tipo de Airdrop -->
-                                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                                        <label for="admin-airdrop-target-type" style="font-size: 0.65rem; color: var(--text-muted); text-align: left;">TIPO DE DISTRIBUCIÓN</label>
-                                        <select id="admin-airdrop-target-type" style="padding: 8px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(245, 158, 11, 0.2); color: #fff; border-radius: 6px; outline: none; font-family: var(--font-mono);" onchange="handleAirdropTargetTypeChange()">
-                                            <option value="all" selected>Todos los Usuarios Premium</option>
-                                            <option value="single">Usuario Específico...</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Selector de Usuario Específico (Oculto inicialmente) -->
-                                    <div id="admin-airdrop-single-user-wrapper" style="display: none; flex-direction: column; gap: 4px;">
-                                        <label for="admin-airdrop-single-user" style="font-size: 0.65rem; color: var(--text-muted); text-align: left;">SELECCIONAR USUARIO PREMIUM</label>
-                                        <select id="admin-airdrop-single-user" style="padding: 8px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(245, 158, 11, 0.2); color: #fff; border-radius: 6px; outline: none; font-family: var(--font-mono);" onchange="handleAirdropSingleUserChange()">
-                                            <!-- Poblado dinámicamente -->
-                                        </select>
-                                    </div>
-
-                                    <!-- Lista Visual de Destinatarios Elegibles -->
-                                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                                        <span style="font-size: 0.65rem; color: var(--text-muted); text-align: left; text-transform: uppercase; letter-spacing: 0.5px;">DESTINATARIOS SELECCIONADOS</span>
-                                        <div id="admin-airdrop-recipients-list" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 8px; display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); font-size: 0.6rem; max-height: 90px; overflow-y: auto; text-align: left;">
-                                            <!-- Listado de destinatarios dinámico -->
-                                        </div>
-                                    </div>
-
-                                    <!-- Campo de Ingresos Mensuales -->
-                                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                                        <label for="admin-airdrop-revenue" style="font-size: 0.65rem; color: var(--text-muted); text-align: left;">INGRESOS MENSUALES TOTALES (USD)</label>
-                                        <input type="number" id="admin-airdrop-revenue" placeholder="Facturación USD" style="padding: 8px 12px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(245, 158, 11, 0.2); color: #fff; border-radius: 6px; text-align: center; font-family: var(--font-mono);" oninput="calculateAdminAirdropPreview()">
-                                    </div>
-                                    
-                                    <div id="admin-airdrop-preview-box" class="font-mono text-left" style="background: rgba(0,0,0,0.3); border: 1px dashed rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 10px; font-size: 0.6rem; display: flex; flex-direction: column; gap: 5px;">
-                                        <span style="color: var(--amber); font-weight: bold; font-size: 0.65rem;">PROYECCIÓN DE DISTRIBUCIÓN</span>
-                                        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Precio XAUt (Oro):</span><span style="color: #fff;" id="airdrop-preview-xaut-price">$2,380.00 USD</span></div>
-                                        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Bolsa a repartir (5%):</span><span style="color: var(--amber);" id="airdrop-preview-pool">$0.00 USD</span></div>
-                                        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Usuarios Seleccionados:</span><span style="color: var(--cyan);" id="airdrop-preview-eligible">2 Premium</span></div>
-                                        <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 5px; margin-top: 2px;"><span style="color: var(--text-muted);">Airdrop por Usuario:</span><span style="color: #fff; font-weight: bold;" id="airdrop-preview-individual">$0.00 USD (0.0000 XAUt)</span></div>
-                                    </div>
-                                    
-                                    <button type="button" class="btn-commercial btn-commercial-gold" style="width: 100%; padding: 12px 16px; font-size: 0.85rem; margin-top: 5px;" onclick="executeAdminGoldAirdrop()">
-                                        <i data-lucide="sparkles" style="width: 15px; height: 15px; stroke-width: 3;"></i> EJECUTAR DISTRIBUCIÓN DE ORO
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>

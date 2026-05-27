@@ -39,6 +39,7 @@ let currentTotalEquityUSD = 0; // Guardará el equity actual para reevaluación 
 
 // VARIABLES DE ESTADO B2B & SAAS GLOBAL
 let activeB2bPlan = 'pro'; // 'basico' | 'pro' | 'vip'
+let adminMonthlyRevenueUSD = 1000.00;
 let isCommercialAuthenticated = false;
 let loggedInB2bClient = null;
 let saasBillingAmountUSD = 149; // Inicializado con el cobro mensual del plan Pro por defecto
@@ -422,6 +423,10 @@ function toggleCurrency() {
     if (document.getElementById('view-commercial') && document.getElementById('view-commercial').classList.contains('active')) {
         initCommercialView();
     }
+
+    // Actualizar HUD de ingresos acumulados del admin en el cambio de moneda
+    updateAdminMonthlyRevenueHUD();
+    calculateAdminAirdropPreview();
 }
 
 /**
@@ -3199,6 +3204,20 @@ function updateSaasMetricsHUD() {
             usdtCard.innerText = `${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt`;
         }
     }
+    updateAdminMonthlyRevenueHUD();
+}
+
+/**
+ * Actualiza la tarjeta de Ingresos Acumulados del Mes en la Consola Admin
+ */
+function updateAdminMonthlyRevenueHUD() {
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+    const revenueEl = document.getElementById('admin-monthly-accumulated-revenue');
+    if (revenueEl) {
+        const amt = adminMonthlyRevenueUSD * conversion;
+        revenueEl.innerText = `${currencySym}${formatNumber(amt.toFixed(2))}`;
+    }
 }
 
 /**
@@ -4909,12 +4928,26 @@ function createRecipientBadgeHTML(client, selected = true, pendingAirdrop = 0) {
 function handleAirdropTargetTypeChange() {
     const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
     const singleUserWrapper = document.getElementById('admin-airdrop-single-user-wrapper');
+    const revenueInput = document.getElementById('admin-airdrop-revenue');
+    const revenueLabel = document.getElementById('admin-airdrop-revenue-label');
     
-    if (targetTypeSelect && singleUserWrapper) {
-        if (targetTypeSelect.value === 'single') {
-            singleUserWrapper.style.display = 'flex';
-        } else {
-            singleUserWrapper.style.display = 'none';
+    if (targetTypeSelect) {
+        const isSingle = targetTypeSelect.value === 'single';
+        if (singleUserWrapper) {
+            singleUserWrapper.style.display = isSingle ? 'flex' : 'none';
+        }
+        if (revenueLabel) {
+            revenueLabel.innerText = isSingle ? "MONTO DIRECTO A ENVIAR (USD)" : "VALOR DE BASE MÁXIMO (USD)";
+        }
+        if (revenueInput) {
+            if (isSingle) {
+                revenueInput.disabled = false;
+                revenueInput.placeholder = "Ej. 100";
+                revenueInput.value = ""; // Limpiar para que ingrese monto
+            } else {
+                revenueInput.disabled = true;
+                revenueInput.value = adminMonthlyRevenueUSD.toFixed(2); // Autocompletar con ingresos acumulados
+            }
         }
     }
     
@@ -4934,14 +4967,18 @@ function calculateAdminAirdropPreview() {
     const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
     const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     
-    const revenue = parseFloat(revenueInput.value);
     const priceEl = document.getElementById('airdrop-preview-xaut-price');
     const poolEl = document.getElementById('airdrop-preview-pool');
     const eligibleEl = document.getElementById('airdrop-preview-eligible');
     const individualEl = document.getElementById('airdrop-preview-individual');
+    const remnantEl = document.getElementById('airdrop-preview-remnant');
+    const warningEl = document.getElementById('admin-airdrop-limit-warning');
+    const executeBtn = document.getElementById('admin-airdrop-execute-btn');
     
-    // Obtener precio en tiempo real ya pre-cargado en memoria
     const xautPrice = currentAirdropXautPrice;
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+
     if (priceEl) priceEl.innerText = `$${xautPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
     
     // Filtrar clientes Premium (VIP o Pro) activos
@@ -4964,24 +5001,87 @@ function calculateAdminAirdropPreview() {
     
     if (eligibleEl) {
         eligibleEl.innerText = isSingle 
-            ? `1 Destinatario Individual` 
+            ? `1 Destinatario (Premium)` 
             : `${selectedCount} Premium (VIP/Pro)`;
     }
+
+    // Si es "all", el input se deshabilitó y autocompletó con adminMonthlyRevenueUSD
+    if (!isSingle && revenueInput) {
+        revenueInput.value = adminMonthlyRevenueUSD.toFixed(2);
+    }
     
-    if (isNaN(revenue) || revenue <= 0 || selectedCount === 0) {
-        if (poolEl) poolEl.innerText = "$0.00 USD";
-        if (individualEl) individualEl.innerText = "$0.00 USD (0.0000 XAUt)";
+    const revenueVal = parseFloat(revenueInput.value);
+    
+    if (isNaN(revenueVal) || revenueVal <= 0 || selectedCount === 0) {
+        if (poolEl) poolEl.innerText = `${currencySym}0.00`;
+        if (individualEl) individualEl.innerText = `${currencySym}0.00 (${(0).toFixed(6)} XAUt)`;
+        if (remnantEl) {
+            const rem = adminMonthlyRevenueUSD * conversion;
+            remnantEl.innerText = `${currencySym}${formatNumber(rem.toFixed(2))}`;
+        }
+        if (warningEl) warningEl.style.display = 'none';
+        if (executeBtn) {
+            executeBtn.removeAttribute('disabled');
+            executeBtn.style.opacity = '1';
+            executeBtn.style.cursor = 'pointer';
+        }
         renderAdminAirdropComponents(0);
         return;
     }
     
-    const poolUSD = revenue * 0.05;
-    const individualUSD = poolUSD / selectedCount;
+    let poolUSD = 0;
+    let individualUSD = 0;
+    let remnantUSD = 0;
+    
+    if (isSingle) {
+        // En envío directo, el monto ingresado es el airdrop en USD para ese usuario único
+        poolUSD = revenueVal;
+        individualUSD = revenueVal;
+        remnantUSD = adminMonthlyRevenueUSD - poolUSD;
+        
+        // Validación de límite
+        if (poolUSD > adminMonthlyRevenueUSD) {
+            if (warningEl) warningEl.style.display = 'block';
+            if (executeBtn) {
+                executeBtn.setAttribute('disabled', 'true');
+                executeBtn.style.opacity = '0.5';
+                executeBtn.style.cursor = 'not-allowed';
+            }
+        } else {
+            if (warningEl) warningEl.style.display = 'none';
+            if (executeBtn) {
+                executeBtn.removeAttribute('disabled');
+                executeBtn.style.opacity = '1';
+                executeBtn.style.cursor = 'pointer';
+            }
+        }
+    } else {
+        // En masivo, la bolsa es el 5% de los ingresos mensuales acumulados
+        poolUSD = adminMonthlyRevenueUSD * 0.05;
+        individualUSD = poolUSD / selectedCount;
+        remnantUSD = 0; // Se reinicia a 0 después de distribuir a todos
+        
+        if (warningEl) warningEl.style.display = 'none';
+        if (executeBtn) {
+            executeBtn.removeAttribute('disabled');
+            executeBtn.style.opacity = '1';
+            executeBtn.style.cursor = 'pointer';
+        }
+    }
+    
     const individualXAUt = individualUSD / xautPrice;
     
-    if (poolEl) poolEl.innerText = `$${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+    if (poolEl) {
+        const poolConv = poolUSD * conversion;
+        poolEl.innerText = `${currencySym}${formatNumber(poolConv.toFixed(2))}`;
+    }
     if (individualEl) {
-        individualEl.innerText = `$${individualUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD (${individualXAUt.toFixed(4)} XAUt)`;
+        const indConv = individualUSD * conversion;
+        individualEl.innerText = `${currencySym}${formatNumber(indConv.toFixed(2))} (${individualXAUt.toFixed(6)} XAUt)`;
+    }
+    if (remnantEl) {
+        const remConv = remnantUSD * conversion;
+        remnantEl.innerText = `${currencySym}${formatNumber(remConv.toFixed(2))}`;
     }
     
     // Re-renderizar componentes pasando el airdrop individual para la vista previa
@@ -4995,18 +5095,29 @@ async function executeAdminGoldAirdrop() {
     const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
     const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     
-    const revenue = parseFloat(revenueInput.value);
-    if (isNaN(revenue) || revenue <= 0) {
-        alert("Por favor ingresa un monto válido de facturación mensual.");
-        return;
+    const inputVal = parseFloat(revenueInput.value);
+    const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
+    
+    if (isSingle) {
+        if (isNaN(inputVal) || inputVal <= 0) {
+            alert("Por favor ingresa un monto directo válido en USD para el destinatario.");
+            return;
+        }
+        if (inputVal > adminMonthlyRevenueUSD) {
+            alert(`⚠️ FONDOS INSUFICIENTES: El monto ingresado ($${inputVal.toFixed(2)} USD) excede los ingresos acumulados del mes ($${adminMonthlyRevenueUSD.toFixed(2)} USD).`);
+            return;
+        }
+    } else {
+        if (adminMonthlyRevenueUSD <= 0) {
+            alert("⚠️ PROCESAMIENTO RECHAZADO: No hay ingresos acumulados en el mes actual para realizar una distribución.");
+            return;
+        }
     }
     
     const xautPrice = await fetchXautPriceForAirdrop();
     const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
     
-    const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
     let selectedClients = [];
-    
     if (isSingle) {
         if (singleUserSelect && singleUserSelect.value) {
             const selectedEmail = singleUserSelect.value;
@@ -5018,62 +5129,67 @@ async function executeAdminGoldAirdrop() {
     }
     
     const selectedCount = selectedClients.length;
-    
     if (selectedCount === 0) {
         alert("No hay agentes Premium activos seleccionados para recibir el Airdrop.");
         return;
     }
     
-    const poolUSD = revenue * 0.05;
-    const individualUSD = poolUSD / selectedCount;
+    let poolUSD = 0;
+    let individualUSD = 0;
+    
+    if (isSingle) {
+        poolUSD = inputVal;
+        individualUSD = inputVal;
+    } else {
+        poolUSD = adminMonthlyRevenueUSD * 0.05;
+        individualUSD = poolUSD / selectedCount;
+    }
+    
     const individualXAUt = individualUSD / xautPrice;
     
     const confirmTx = confirm(
-      `🔒 ACCIÓN ADMINISTRATIVA CORE:\n\n` +
-      `¿Confirmas la inyección de Oro Digital (XAUt)?\n` +
-      `• Monto de Facturación: $${revenue.toLocaleString()} USD\n` +
-      `• Bolsa a Repartir (5%): $${poolUSD.toLocaleString()} USD\n` +
-      `• Destinatario(s): ${isSingle ? selectedClients[0].name : `${selectedCount} Agentes Premium`}\n` +
-      `• Fracción por cartera: $${individualUSD.toFixed(2)} USD (${individualXAUt.toFixed(4)} XAUt)\n\n` +
-      `Se realizará una inyección digital directa en las carteras seleccionadas.`
+      `🔒 CONFIRMACIÓN TRANSACCIONAL CORE:\n\n` +
+      `¿Deseas autorizar la dispersión de oro digital indexado Tether Gold (XAUt)?\n` +
+      `• Tipo de Envío: ${isSingle ? "Destinatario Único (Monto Directo)" : "Dispersión General (5% del Mes)"}\n` +
+      `• Total a Repartir: $${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD\n` +
+      `• Destinatario(s): ${isSingle ? selectedClients[0].name : `${selectedCount} Premium Activos`}\n` +
+      `• Acreditación Individual: $${individualUSD.toFixed(2)} USD (${individualXAUt.toFixed(6)} XAUt)\n\n` +
+      `Esta acción modificará los libros contables y los saldos de cartera en tiempo real.`
     );
     
     if (!confirmTx) return;
     
     const txHash = "0x" + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
     
-    // SI SUPABASE ESTÁ ACTIVO, HACER LA DISTRIBUCIÓN PERSISTENTE EN LA BASE DE DATOS
+    // SI SUPABASE ESTÁ ACTIVO, REGISTRAR EN DB REMOTA
     if (isSupabaseActive) {
         try {
-            // A. Consultar perfiles en Supabase para obtener sus UUIDs reales
             const emails = selectedClients.map(c => c.email.toLowerCase());
             const { data: remoteProfiles, error: fetchErr } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .in('email', emails);
-
+ 
             if (fetchErr) {
                 console.error("Error al consultar perfiles premium en Supabase:", fetchErr);
             } else if (remoteProfiles && remoteProfiles.length > 0) {
                 const userIds = remoteProfiles.map(p => p.id);
-
-                // Ejecutar el RPC de distribución transaccional en Supabase
+ 
                 const { error: rpcErr } = await supabaseClient.rpc('distribuir_airdrop_oro', {
                     p_usuario_ids: userIds,
                     p_monto_usd_por_usuario: individualUSD,
                     p_monto_xaut_por_usuario: individualXAUt,
                     p_precio_pivote: xautPrice
                 });
-
+ 
                 if (rpcErr) {
                     console.error("Error al ejecutar el RPC de Airdrop en Supabase:", rpcErr);
-                    alert("⚠️ FALLO EN BASE DE DATOS: La transacción del Airdrop falló en Supabase.");
+                    alert("⚠️ FALLO EN BASE DE DATOS: La transacción remota falló en Supabase.");
                 } else {
                     if (typeof appendAdminLog === 'function') {
-                        appendAdminLog("SECURITY", `ledger_node: Distribución de Airdrop registrada exitosamente en Supabase para ${remoteProfiles.length} perfiles.`, false);
+                        appendAdminLog("SECURITY", `ledger_node: Airdrop registrado en Supabase para ${remoteProfiles.length} perfiles.`, false);
                     }
                     
-                    // Sincronizar localmente
                     for (const profile of remoteProfiles) {
                         const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
                         if (localClient) {
@@ -5086,16 +5202,15 @@ async function executeAdminGoldAirdrop() {
             console.error("Fallo crítico de conexión al distribuir a Supabase:", err);
         }
     }
-
-    // Distribuir a los clientes en el arreglo local
+ 
+    // Acreditación local
     selectedClients.forEach(client => {
         client.usdtBalance += individualXAUt;
         if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(4)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER GOLD SECURE].`, false);
+            appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER SECURE].`, false);
         }
     });
     
-    // Si el usuario logueado en la sesión B2B comercial es uno de ellos, actualizar su estado actual
     if (loggedInB2bClient) {
         const matchingClient = selectedClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
         if (matchingClient) {
@@ -5103,24 +5218,40 @@ async function executeAdminGoldAirdrop() {
         }
     }
     
-    // Recargar la tabla de agentes en la vista Admin para que se vean sus saldos actualizados inmediatamente
+    // Débito contable
+    const oldRevenue = adminMonthlyRevenueUSD;
+    if (isSingle) {
+        adminMonthlyRevenueUSD -= poolUSD;
+        if (typeof appendAdminLog === 'function') {
+            appendAdminLog("SYSTEM", `ledger_node: Débito parcial de $${poolUSD.toFixed(2)} USD de los ingresos mensuales. Nuevo saldo: $${adminMonthlyRevenueUSD.toFixed(2)} USD.`, false);
+        }
+    } else {
+        adminMonthlyRevenueUSD = 0;
+        if (typeof appendAdminLog === 'function') {
+            appendAdminLog("SYSTEM", `ledger_node: Clausura de ciclo mensual. Se debitó el remanente completo de $${oldRevenue.toFixed(2)} USD y el saldo de ingresos mensuales fue reiniciado a $0.00 USD.`, false);
+        }
+    }
+    
+    // Recargar tabla de administración
     if (typeof renderAdminDashboard === 'function') {
         renderAdminDashboard();
     }
-
-    // Re-renderizar visualmente la lista de destinatarios en la tarjeta del airdrop
+ 
+    // Re-renderizar lista de destinatarios
     renderAdminAirdropComponents();
-
-    // Actualizar todos los HUDs y pantallas
+ 
+    // Actualizar HUDs
     updateSaasMetricsHUD();
     
-    alert(`🎉 ¡INYECCIÓN DE ORO DIGITAL EXITOSA!
+    alert(`🎉 ¡INYECCIÓN Y REGISTRO DE ORO EXITOSO!
     
-    ✅ Fondo de $${poolUSD.toLocaleString()} USD procesado con éxito.
-    ✅ Se acreditaron ${individualXAUt.toFixed(4)} XAUt (Oro) a los destinatarios seleccionados.
-    Hash de registro del Ledger: ${txHash.substring(0, 18)}...
+    ✅ Modo de Distribución: ${isSingle ? "Destinatario Único" : "General Premium (Todos)"}
+    ✅ Monto Debitado: $${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD
+    ✅ Saldo Remanente del Mes: $${adminMonthlyRevenueUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD
+    ✅ Acreditado: +${individualXAUt.toFixed(6)} XAUt a los destinatarios.
+    ✅ Hash de Auditoría: ${txHash.substring(0, 18)}...
     
-    Los balances de las carteras han sido actualizados en tiempo real.`);
+    Los saldos y la consola comercial se han sincronizado con éxito.`);
     
     // Resetear formulario
     revenueInput.value = '';

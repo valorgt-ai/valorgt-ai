@@ -20,7 +20,9 @@
     --green: #00ff66;
     --orange: #ff9f0a;
     --red: #ff375f;
+    --magenta: #ff007f;
     --gold: #ffd60a;
+
     
     --text-primary: #f5f6f8;
     --text-secondary: #9da4b0;
@@ -3980,6 +3982,33 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .card-header.border-red {
     border-bottom: 1px solid rgba(255, 55, 95, 0.15) !important;
+}
+
+/* Magenta Custom Cyber-styles for Admin priorities */
+.border-magenta {
+    border: 1px solid rgba(255, 0, 127, 0.25) !important;
+    box-shadow: 0 4px 15px rgba(255, 0, 127, 0.05) !important;
+    transition: var(--transition-smooth);
+}
+
+.border-magenta:hover {
+    border-color: var(--magenta) !important;
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.22) !important;
+}
+
+.header-icon.magenta {
+    background: rgba(255, 0, 127, 0.1) !important;
+    color: var(--magenta) !important;
+    border-color: rgba(255, 0, 127, 0.3) !important;
+    box-shadow: 0 0 10px rgba(255, 0, 127, 0.15);
+}
+
+.card-header.border-magenta {
+    border-bottom: 1px solid rgba(255, 0, 127, 0.15) !important;
+}
+
+.text-magenta {
+    color: var(--magenta) !important;
 }
 
 /* Server Real-time Audit Logs */

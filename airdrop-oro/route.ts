@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. APLICACIÓN DE FÓRMULAS FINANCIERAS
-    const totalAirdropUSD = ingreso_total_usd * 0.05;
+    const totalAirdropUSD = distType === 'single' ? ingreso_total_usd : ingreso_total_usd * 0.05;
     const usdPerUser = totalAirdropUSD / premiumCount;
     const xautFractionPerUser = parseFloat((usdPerUser / xautPriceUSD).toFixed(8)); // Máxima precisión: 8 decimales
 
