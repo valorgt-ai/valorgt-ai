@@ -4671,7 +4671,8 @@ function renderAdminDashboard() {
         row.innerHTML = `
             <td>
                 <strong class="text-green">${client.name}</strong><br>
-                <span class="sub-title font-mono" style="font-size: 0.6rem; color: var(--text-muted);">${client.company}</span>
+                <span class="sub-title font-mono" style="font-size: 0.6rem; color: var(--text-muted);">${client.company}</span><br>
+                <span class="font-mono" style="font-size: 0.55rem; color: var(--amber); font-weight: bold; display: flex; align-items: center; gap: 3px; margin-top: 2px;"><i data-lucide="coins" style="width: 10px; height: 10px;"></i>${client.usdtBalance.toFixed(4)} XAUt</span>
             </td>
             <td><span class="plan-col ${planClass}" style="font-size: 0.65rem;">${client.plan.toUpperCase()}</span></td>
             <td style="font-size: 0.6rem;">
@@ -4825,6 +4826,131 @@ function updateAdminPriceAverages() {
     if (document.getElementById('valuation-form') && activeZoneKey) {
         calculateValuation(eventMock);
     }
+}
+
+let currentAirdropXautPrice = 2380.00;
+let isXautPriceFetched = false;
+
+async function fetchXautPriceForAirdrop() {
+    if (isXautPriceFetched) return currentAirdropXautPrice;
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd');
+        const data = await response.json();
+        if (data['tether-gold'] && data['tether-gold'].usd) {
+            currentAirdropXautPrice = data['tether-gold'].usd;
+            isXautPriceFetched = true;
+        }
+    } catch (err) {
+        console.warn("Error fetching Tether Gold price from CoinGecko, using fallback:", err);
+    }
+    return currentAirdropXautPrice;
+}
+
+async function calculateAdminAirdropPreview() {
+    const revenueInput = document.getElementById('admin-airdrop-revenue');
+    if (!revenueInput) return;
+    
+    const revenue = parseFloat(revenueInput.value);
+    const priceEl = document.getElementById('airdrop-preview-xaut-price');
+    const poolEl = document.getElementById('airdrop-preview-pool');
+    const eligibleEl = document.getElementById('airdrop-preview-eligible');
+    const individualEl = document.getElementById('airdrop-preview-individual');
+    
+    // Obtener precio en tiempo real
+    const xautPrice = await fetchXautPriceForAirdrop();
+    if (priceEl) priceEl.innerText = `$${xautPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+    
+    if (isNaN(revenue) || revenue <= 0) {
+        if (poolEl) poolEl.innerText = "$0.00 USD";
+        if (individualEl) individualEl.innerText = "$0.00 USD (0.0000 XAUt)";
+        return;
+    }
+    
+    // Filtrar clientes Premium (VIP o Pro)
+    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    const eligibleCount = eligibleClients.length;
+    
+    const poolUSD = revenue * 0.05;
+    const individualUSD = poolUSD / eligibleCount;
+    const individualXAUt = individualUSD / xautPrice;
+    
+    if (poolEl) poolEl.innerText = `$${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
+    if (eligibleEl) eligibleEl.innerText = `${eligibleCount} Premium (VIP/Pro)`;
+    if (individualEl) {
+        individualEl.innerText = `$${individualUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD (${individualXAUt.toFixed(4)} XAUt)`;
+    }
+}
+
+async function executeAdminGoldAirdrop() {
+    const revenueInput = document.getElementById('admin-airdrop-revenue');
+    if (!revenueInput) return;
+    
+    const revenue = parseFloat(revenueInput.value);
+    if (isNaN(revenue) || revenue <= 0) {
+        alert("Por favor ingresa un monto válido de facturación mensual.");
+        return;
+    }
+    
+    const xautPrice = await fetchXautPriceForAirdrop();
+    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    const eligibleCount = eligibleClients.length;
+    
+    if (eligibleCount === 0) {
+        alert("No hay agentes Premium activos registrados para recibir el Airdrop.");
+        return;
+    }
+    
+    const poolUSD = revenue * 0.05;
+    const individualUSD = poolUSD / eligibleCount;
+    const individualXAUt = individualUSD / xautPrice;
+    
+    const confirmTx = confirm(
+      `🔒 ACCIÓN ADMINISTRATIVA CORE:\n\n` +
+      `¿Confirmas la distribución del Airdrop de Oro Digital (XAUt)?\n` +
+      `• Facturación: $${revenue.toLocaleString()} USD\n` +
+      `• Bolsa a Repartir (5%): $${poolUSD.toLocaleString()} USD\n` +
+      `• Destinatarios: ${eligibleCount} Agentes Premium (VIP/Pro)\n` +
+      `• Cuota Individual: $${individualUSD.toFixed(2)} USD (${individualXAUt.toFixed(4)} XAUt)\n\n` +
+      `Se realizará una inyección digital directa en las carteras de los agentes.`
+    );
+    
+    if (!confirmTx) return;
+    
+    const txHash = "0x" + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    
+    // Distribuir a los clientes en el arreglo local
+    eligibleClients.forEach(client => {
+        client.usdtBalance += individualXAUt;
+        if (typeof appendAdminLog === 'function') {
+            appendAdminLog("SECURITY", `ledger_node: Airdrop mensual de ${individualXAUt.toFixed(4)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER GOLD SECURE].`, false);
+        }
+    });
+    
+    // Si el usuario logueado en la sesión B2B comercial es uno de ellos, actualizar su estado actual
+    if (loggedInB2bClient && ['VIP', 'Pro'].includes(loggedInB2bClient.plan)) {
+        const matchingClient = eligibleClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+        if (matchingClient) {
+            loggedInB2bClient.usdtBalance = matchingClient.usdtBalance;
+            updateSaasMetricsHUD();
+        }
+    }
+    
+    // Recargar la tabla de agentes en la vista Admin para que se vean sus saldos actualizados inmediatamente
+    if (typeof renderAdminDashboard === 'function') {
+        renderAdminDashboard();
+    }
+    
+    alert(`🎉 ¡AIRDROP DISTRIBUIDO EXITOSAMENTE!
+    
+    ✅ Fondo de $${poolUSD.toLocaleString()} USD inyectado de forma equitativa.
+    ✅ Se acreditaron ${individualXAUt.toFixed(4)} XAUt (Oro) a cada uno de los ${eligibleCount} agentes Premium activos.
+    Hash de registro del Ledger: ${txHash.substring(0, 18)}...
+    
+    Los balances de las carteras han sido actualizados en tiempo real.`);
+    
+    // Resetear formulario
+    revenueInput.value = '';
+    calculateAdminAirdropPreview();
 }
 
 /**

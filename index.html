@@ -2470,6 +2470,32 @@
                                     <span style="font-size: 0.5rem; color: var(--text-muted); line-height: 1.3;">* Si se dejan vacíos, se usarán los valores base calculados por la IA por defecto.</span>
                                 </div>
                             </div>
+
+                            <!-- CARD: LANZADOR DE AIRDROPS DE ORO DIGITAL -->
+                            <div class="card glassmorphism col-card" style="border-left: 3px solid var(--amber) !important; border-color: rgba(245, 158, 11, 0.25) !important; margin-top: 15px;">
+                                <div class="card-header border-red" style="border-bottom: 1px solid rgba(245, 158, 11, 0.15) !important;">
+                                    <div class="header-icon red" style="background: rgba(245, 158, 11, 0.1) !important; color: var(--amber) !important; border-color: rgba(245, 158, 11, 0.3) !important;"><i data-lucide="award"></i></div>
+                                    <h2 style="color: var(--amber) !important;">Lanzador de Airdrops (Oro XAUt)</h2>
+                                </div>
+                                <div class="form-grid" style="grid-template-columns: 1fr; gap: 12px; padding: 15px 0;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <label for="admin-airdrop-revenue" style="font-size: 0.65rem; color: var(--text-muted);">INGRESOS MENSUALES TOTALES (USD)</label>
+                                        <input type="number" id="admin-airdrop-revenue" placeholder="Facturación USD" style="padding: 8px 12px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(245, 158, 11, 0.2); color: #fff; border-radius: 6px; text-align: center; font-family: var(--font-mono);" oninput="calculateAdminAirdropPreview()">
+                                    </div>
+                                    
+                                    <div id="admin-airdrop-preview-box" class="font-mono text-left" style="background: rgba(0,0,0,0.3); border: 1px dashed rgba(245, 158, 11, 0.2); border-radius: 6px; padding: 10px; font-size: 0.6rem; display: flex; flex-direction: column; gap: 5px;">
+                                        <span style="color: var(--amber); font-weight: bold; font-size: 0.65rem;">PROYECCIÓN DE DISTRIBUCIÓN</span>
+                                        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Precio XAUt (Oro):</span><span style="color: #fff;" id="airdrop-preview-xaut-price">$2,380.00 USD</span></div>
+                                        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Bolsa a repartir (5%):</span><span style="color: var(--amber);" id="airdrop-preview-pool">$0.00 USD</span></div>
+                                        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Usuarios Elegibles:</span><span style="color: var(--cyan);" id="airdrop-preview-eligible">2 Premium (VIP/Pro)</span></div>
+                                        <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 5px; margin-top: 2px;"><span style="color: var(--text-muted);">Airdrop por Usuario:</span><span style="color: #fff; font-weight: bold;" id="airdrop-preview-individual">$0.00 USD (0.0000 XAUt)</span></div>
+                                    </div>
+                                    
+                                    <button type="button" class="btn-commercial" style="background: linear-gradient(135deg, var(--amber) 0%, #d97706 100%) !important; color: #000 !important; font-weight: bold; width: 100%; border: none; padding: 10px 16px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; transition: all 0.3s;" onclick="executeAdminGoldAirdrop()">
+                                        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> EJECUTAR AIRDROP DE ORO
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
