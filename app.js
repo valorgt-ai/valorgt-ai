@@ -4866,8 +4866,9 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
     // Obtener los clientes premium (VIP o Pro) activos de b2bClients
     const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
     
-    // 1. Poblar el selector de usuario único (si no está poblado)
-    if (singleUserSelect && singleUserSelect.children.length === 0) {
+    // 1. Poblar el selector de usuario único de forma dinámica
+    if (singleUserSelect) {
+        const prevValue = singleUserSelect.value;
         singleUserSelect.innerHTML = '';
         eligibleClients.forEach(client => {
             const opt = document.createElement('option');
@@ -4875,6 +4876,9 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
             opt.innerText = `${client.name} (${client.plan.toUpperCase()})`;
             singleUserSelect.appendChild(opt);
         });
+        if (prevValue && Array.from(singleUserSelect.options).some(o => o.value === prevValue)) {
+            singleUserSelect.value = prevValue;
+        }
     }
     
     const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
