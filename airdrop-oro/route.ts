@@ -37,20 +37,58 @@ export async function POST(req: NextRequest) {
     const distType = distribucion_tipo || 'all';
     const isDebit = operacion_tipo === 'debit';
 
-    // 3. CONSULTAR USUARIOS PREMIUM ACTIVOS
-    let query = supabaseAdmin
-      .from('perfiles')
-      .select('id, email')
-      .eq('plan_actual', 'Premium')
-      .eq('activo', true);
+    // 3. CONSULTAR USUARIOS PREMIUM ACTIVOS (Soporte Inteligente para profiles y perfiles)
+    let premiumUsers: Array<{ id: string; email: string }> = [];
+    let usersError: any = null;
 
-    if (distType === 'single' && usuario_email) {
-      query = query.eq('email', usuario_email.trim().toLowerCase());
+    // Intentar primero con la tabla 'profiles' (Dashboard General)
+    try {
+      let query = supabaseAdmin
+        .from('profiles')
+        .select('id, email');
+      
+      if (distType === 'single' && usuario_email) {
+        query = query.eq('email', usuario_email.trim().toLowerCase());
+      } else {
+        query = query.in('plan', ['VIP', 'Pro', 'Premium']).eq('status', 'activo');
+      }
+
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        premiumUsers = data;
+      } else if (error) {
+        usersError = error;
+      }
+    } catch (err) {
+      console.warn("Tabla 'profiles' no disponible, probando con 'perfiles'...");
     }
 
-    const { data: premiumUsers, error: usersError } = await query;
+    // Fallback a la tabla 'perfiles' si 'profiles' falló, no existe o está vacía
+    if (premiumUsers.length === 0) {
+      try {
+        let query = supabaseAdmin
+          .from('perfiles')
+          .select('id, email');
+        
+        if (distType === 'single' && usuario_email) {
+          query = query.eq('email', usuario_email.trim().toLowerCase());
+        } else {
+          query = query.eq('plan_actual', 'Premium').eq('activo', true);
+        }
 
-    if (usersError) {
+        const { data, error } = await query;
+        if (!error && data) {
+          premiumUsers = data;
+          usersError = null; // Limpiar error previo si este funciona
+        } else if (error) {
+          usersError = error;
+        }
+      } catch (err) {
+        console.error("Fallo al consultar perfiles:", err);
+      }
+    }
+
+    if (usersError && premiumUsers.length === 0) {
       console.error('Error al consultar usuarios Premium:', usersError);
       return NextResponse.json({ error: 'Error al consultar la base de datos de usuarios.' }, { status: 500 });
     }

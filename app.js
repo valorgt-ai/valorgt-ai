@@ -5287,58 +5287,28 @@ async function executeAdminGoldAirdrop() {
             } 
             
             if (remoteProfiles && remoteProfiles.length > 0) {
+                const userIds = remoteProfiles.map(p => p.id);
+
                 if (isDebit) {
-                    // Validar saldos en base de datos remota
-                    const remoteInsufficient = remoteProfiles.some(p => parseFloat(p.usdt_balance || 0) < individualXAUt);
-                    if (remoteInsufficient) {
-                        alert("⚠️ Uno o más usuarios tienen saldo insuficiente en la base de datos remota para esta extracción.");
+                    // Ejecutar RPC seguro de Extracción (Débito)
+                    const { error: rpcErr } = await supabaseClient.rpc('extraer_oro', {
+                        p_usuario_ids: userIds,
+                        p_monto_usd_por_usuario: individualUSD,
+                        p_monto_xaut_por_usuario: individualXAUt,
+                        p_precio_pivote: xautPrice
+                    });
+
+                    if (rpcErr) {
+                        console.error("Error al ejecutar el RPC de Extracción en Supabase:", rpcErr);
+                        alert(`⚠️ FALLO EN BASE DE DATOS: La extracción falló. Detalles: ${rpcErr.message}`);
                         return;
                     }
 
-                    for (const profile of remoteProfiles) {
-                        const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
-                        const newBal = parseFloat(profile.usdt_balance || 0) - individualXAUt;
-                        
-                        // 1. Actualizar balance en profiles
-                        await supabaseClient
-                            .from('profiles')
-                            .update({ usdt_balance: newBal })
-                            .eq('id', profile.id);
-
-                        // 2. Insertar historial con tipo 'canje'
-                        await supabaseClient
-                            .from('historial_oro')
-                            .insert([{
-                                usuario_id: profile.id,
-                                tipo: 'canje',
-                                monto_usd: individualUSD,
-                                monto_xaut: individualXAUt,
-                                precio_pivote_xaut: xautPrice
-                            }]);
-
-                        // 3. Actualizar balance acumulado en saldos_oro
-                        const { data: currentSaldoData } = await supabaseClient
-                            .from('saldos_oro')
-                            .select('balance_xaut')
-                            .eq('usuario_id', profile.id)
-                            .single();
-                        const currentSaldo = currentSaldoData ? parseFloat(currentSaldoData.balance_xaut) : 0;
-                        await supabaseClient
-                            .from('saldos_oro')
-                            .update({ balance_xaut: Math.max(0, currentSaldo - individualXAUt) })
-                            .eq('usuario_id', profile.id);
-
-                        if (localClient) {
-                            localClient.usdtBalance = newBal;
-                            if (typeof appendAdminLog === 'function') {
-                                appendAdminLog("SECURITY", `ledger_node: Extracción de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) debitada de ${localClient.name} (${localClient.email}) [LEDGER SECURE].`, false);
-                            }
-                        }
+                    if (typeof appendAdminLog === 'function') {
+                        appendAdminLog("SECURITY", `ledger_node: Extracción de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) procesada mediante RPC seguro para ${remoteProfiles.length} perfiles.`, false);
                     }
                 } else {
-                    // Operación crédito / airdrop
-                    const userIds = remoteProfiles.map(p => p.id);
-     
+                    // Ejecutar RPC seguro de Distribución (Crédito)
                     const { error: rpcErr } = await supabaseClient.rpc('distribuir_airdrop_oro', {
                         p_usuario_ids: userIds,
                         p_monto_usd_por_usuario: individualUSD,
@@ -5348,30 +5318,23 @@ async function executeAdminGoldAirdrop() {
      
                     if (rpcErr) {
                         console.error("Error al ejecutar el RPC de Airdrop en Supabase:", rpcErr);
-                        alert("⚠️ FALLO EN BASE DE DATOS: La transacción remota falló en Supabase.");
+                        alert(`⚠️ FALLO EN BASE DE DATOS: El airdrop falló. Detalles: ${rpcErr.message}`);
                         return;
                     } 
                     
                     if (typeof appendAdminLog === 'function') {
                         appendAdminLog("SECURITY", `ledger_node: Airdrop registrado en Supabase para ${remoteProfiles.length} perfiles.`, false);
                     }
-                    
-                    // Actualizar columna usdt_balance en Supabase profiles para que se refleje de inmediato en la tarjeta comercial
-                    for (const profile of remoteProfiles) {
-                        const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
-                        const newBal = parseFloat(profile.usdt_balance || 0) + individualXAUt;
-                        
-                        await supabaseClient
-                            .from('profiles')
-                            .update({ usdt_balance: newBal })
-                            .eq('id', profile.id);
+                }
 
-                        if (localClient) {
-                            localClient.usdtBalance = newBal;
-                            if (typeof appendAdminLog === 'function') {
-                                appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${localClient.name} (${localClient.email}) [LEDGER SECURE].`, false);
-                            }
-                        }
+                // Actualizar balances de memoria local
+                for (const profile of remoteProfiles) {
+                    const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
+                    if (localClient) {
+                        const newBal = isDebit 
+                            ? Math.max(0, parseFloat(profile.usdt_balance || 0) - individualXAUt) 
+                            : parseFloat(profile.usdt_balance || 0) + individualXAUt;
+                        localClient.usdtBalance = newBal;
                     }
                 }
             }

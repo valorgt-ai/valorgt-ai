@@ -63,7 +63,7 @@ CREATE INDEX IF NOT EXISTS idx_saldos_oro_usuario ON public.saldos_oro(usuario_i
 CREATE INDEX IF NOT EXISTS idx_historial_oro_usuario_fecha ON public.historial_oro(usuario_id, fecha DESC);
 
 
--- 4. FUNCIÓN DE DISTRIBUCIÓN TRANSACCIONAL (RPC)
+-- 4. FUNCIÓN DE DISTRIBUCIÓN TRANSACCIONAL (RPC - CRÉDITO)
 CREATE OR REPLACE FUNCTION public.distribuir_airdrop_oro(
     p_usuario_ids UUID[],
     p_monto_usd_por_usuario NUMERIC,
@@ -95,6 +95,87 @@ BEGIN
         -- B. Registrar auditoría individual
         INSERT INTO public.historial_oro (usuario_id, tipo, monto_usd, monto_xaut, precio_pivote_xaut, fecha)
         VALUES (u_id, 'airdrop_mensual', p_monto_usd_por_usuario, p_monto_xaut_por_usuario, p_precio_pivote, NOW());
+
+        -- C. Sincronizar en profiles (si existe la tabla y columna)
+        BEGIN
+            UPDATE public.profiles 
+            SET usdt_balance = COALESCE(usdt_balance, 0) + p_monto_xaut_por_usuario
+            WHERE id = u_id;
+        EXCEPTION WHEN OTHERS THEN
+            -- Ignorar si la tabla o la columna no existen
+        END;
+
+        -- D. Sincronizar en perfiles (si existe la tabla y columna)
+        BEGIN
+            UPDATE public.perfiles 
+            SET usdt_balance = COALESCE(usdt_balance, 0) + p_monto_xaut_por_usuario
+            WHERE id = u_id;
+        EXCEPTION WHEN OTHERS THEN
+            -- Ignorar si la tabla o la columna no existen
+        END;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- 5. FUNCIÓN DE EXTRACCIÓN TRANSACCIONAL (RPC - DÉBITO)
+CREATE OR REPLACE FUNCTION public.extraer_oro(
+    p_usuario_ids UUID[],
+    p_monto_usd_por_usuario NUMERIC,
+    p_monto_xaut_por_usuario NUMERIC,
+    p_precio_pivote NUMERIC
+) RETURNS VOID AS $$
+DECLARE
+    u_id UUID;
+    v_balance NUMERIC;
+BEGIN
+    -- Validaciones críticas
+    IF ARRAY_LENGTH(p_usuario_ids, 1) IS NULL OR ARRAY_LENGTH(p_usuario_ids, 1) = 0 THEN
+        RAISE EXCEPTION 'La lista de usuarios para la extracción no puede estar vacía.';
+    END IF;
+    
+    IF p_monto_xaut_por_usuario <= 0 OR p_precio_pivote <= 0 THEN
+        RAISE EXCEPTION 'Los montos y precios pivote deben ser mayores a cero.';
+    END IF;
+
+    -- Iteración segura dentro de la transacción
+    FOREACH u_id IN ARRAY p_usuario_ids LOOP
+        -- A. Verificar saldo actual en saldos_oro
+        SELECT balance_xaut INTO v_balance
+        FROM public.saldos_oro
+        WHERE usuario_id = u_id;
+
+        IF v_balance IS NULL OR v_balance < p_monto_xaut_por_usuario THEN
+            RAISE EXCEPTION 'Fondos insuficientes en la cartera de oro para extraer % XAUt.', p_monto_xaut_por_usuario;
+        END IF;
+
+        -- B. Restar saldo acumulado
+        UPDATE public.saldos_oro
+        SET balance_xaut = balance_xaut - p_monto_xaut_por_usuario,
+            updated_at = NOW()
+        WHERE usuario_id = u_id;
+
+        -- C. Registrar auditoría individual con tipo 'canje'
+        INSERT INTO public.historial_oro (usuario_id, tipo, monto_usd, monto_xaut, precio_pivote_xaut, fecha)
+        VALUES (u_id, 'canje', p_monto_usd_por_usuario, p_monto_xaut_por_usuario, p_precio_pivote, NOW());
+
+        -- D. Sincronizar en profiles (si existe la tabla y columna)
+        BEGIN
+            UPDATE public.profiles 
+            SET usdt_balance = GREATEST(0, COALESCE(usdt_balance, 0) - p_monto_xaut_por_usuario)
+            WHERE id = u_id;
+        EXCEPTION WHEN OTHERS THEN
+            -- Ignorar si la tabla o la columna no existen
+        END;
+
+        -- E. Sincronizar en perfiles (si existe la tabla y columna)
+        BEGIN
+            UPDATE public.perfiles 
+            SET usdt_balance = GREATEST(0, COALESCE(usdt_balance, 0) - p_monto_xaut_por_usuario)
+            WHERE id = u_id;
+        EXCEPTION WHEN OTHERS THEN
+            -- Ignorar si la tabla o la columna no existen
+        END;
     END LOOP;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
