@@ -1656,23 +1656,23 @@
                                 <div class="kpi-glow-bar"></div>
                             </div>
                             
-                            <!-- KPI 4: USDT Cartera (Airdrops) -->
+                            <!-- KPI 4: Oro Digital (Airdrops XAUt) -->
                             <div class="kpi-card kpi-card-premium">
                                 <div class="kpi-icon-wrapper">
-                                    <i data-lucide="coins" class="kpi-icon-cyan"></i>
+                                    <i data-lucide="coins" class="kpi-icon-cyan" style="color: var(--amber) !important; filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.45));"></i>
                                 </div>
                                 <div class="kpi-content">
-                                    <span class="kpi-label-text">Cartera USDT (Airdrops)</span>
-                                    <span class="kpi-value-text" id="saas-usdt-balance-card">100.00 USDT</span>
-                                    <span class="kpi-sub-text">🔗 ON-CHAIN LEDGER</span>
+                                    <span class="kpi-label-text" style="color: var(--amber) !important;">Cartera Oro Digital (XAUt)</span>
+                                    <span class="kpi-value-text" id="saas-usdt-balance-card" style="color: #fff !important; text-shadow: 0 0 8px rgba(245, 158, 11, 0.35);">1.0000 XAUt</span>
+                                    <span class="kpi-sub-text" style="color: var(--amber) !important; opacity: 0.8;">🔗 XAUt GOLD LEDGER</span>
                                 </div>
-                                <div class="kpi-glow-bar"></div>
+                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--amber), transparent) !important;"></div>
                             </div>
                         </div>
 
                     <!-- GRID PRINCIPAL DE GESTIÓN (FILA SUPERIOR) -->
                     <div class="commercial-grid-upper">
-                        <!-- COLUMNA 1: MI PERFIL + CONSOLA DE TRANSFERENCIA USDT -->
+                        <!-- COLUMNA 1: MI PERFIL + CONSOLA DE TRANSFERENCIA ORO -->
                         <div class="commercial-column-flex">
                             <!-- MI PERFIL PROFESIONAL Y MEMBRESÍA SaaS -->
                             <div class="card glassmorphism border-cyan" style="border-left: 3px solid var(--cyan); border-color: rgba(0, 240, 255, 0.2) !important;">
@@ -1685,14 +1685,14 @@
                                 </div>
                             </div>
 
-                            <!-- CONSOLA DE TRANSFERENCIA USDT BLOCKCHAIN -->
+                            <!-- CONSOLA DE TRANSFERENCIA ORO DIGITAL -->
                             <div class="card glassmorphism border-cyan" style="border-left: 3px solid var(--cyan); border-color: rgba(0, 240, 255, 0.2) !important;">
                                 <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;">
                                     <div class="header-icon cyan" style="background: rgba(0, 240, 255, 0.1) !important; color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="send"></i></div>
-                                    <h2>Transferencia de USDT (Airdrops)</h2>
+                                    <h2>Transferencia de Oro Digital (XAUt)</h2>
                                 </div>
                                 <div class="commercial-section-body font-mono">
-                                    <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Transfiere fondos de tu cartera USDT a otros agentes registrados de forma instantánea usando únicamente su correo electrónico corporativo.</p>
+                                    <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Transfiere fracciones de tu cartera de oro digital XAUt a otros agentes registrados de forma instantánea usando únicamente su correo electrónico corporativo.</p>
                                     
                                     <form id="b2b-usdt-transfer-form" class="commercial-form" onsubmit="executeB2bUsdtTransfer(event)">
                                         <div class="form-row-2">
@@ -1701,12 +1701,12 @@
                                                 <input type="email" id="usdt-recipient-email" placeholder="ej: ana@estevezinmobiliaria.com" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
                                             </div>
                                             <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="usdt-transfer-amount" style="font-size: 0.75rem;">Monto USDT</label>
-                                                <input type="number" id="usdt-transfer-amount" placeholder="Monto" min="1" step="0.01" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; text-align: center;">
+                                                <label for="usdt-transfer-amount" style="font-size: 0.75rem;">Monto XAUt</label>
+                                                <input type="number" id="usdt-transfer-amount" placeholder="Monto XAUt" min="0.0001" step="0.0001" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; text-align: center;">
                                             </div>
                                         </div>
                                         <button type="submit" class="btn-commercial btn-commercial-cyan" style="background: linear-gradient(135deg, var(--cyan) 0%, var(--neon-blue) 100%); color: #fff; font-weight: bold; width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; transition: var(--transition-smooth); text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
-                                            <i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i> EJECUTAR TRANSFERENCIA ON-CHAIN
+                                            <i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i> EJECUTAR TRANSFERENCIA DE ORO DIGITAL
                                         </button>
                                     </form>
                                 </div>

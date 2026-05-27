@@ -3192,17 +3192,17 @@ function updateSaasMetricsHUD() {
         impressionsCard.innerText = formatNumber(saasImpressionsCount);
     }
 
-    // Cartera USDT (Airdrops)
+    // Cartera Oro Digital (XAUt Airdrops)
     if (loggedInB2bClient) {
         const usdtCard = document.getElementById('saas-usdt-balance-card');
         if (usdtCard) {
-            usdtCard.innerText = `${loggedInB2bClient.usdtBalance.toFixed(2)} USDT`;
+            usdtCard.innerText = `${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt`;
         }
     }
 }
 
 /**
- * Ejecuta la transferencia simulada de USDT entre agentes comerciales
+ * Ejecuta la transferencia simulada de Oro Digital (XAUt) entre agentes comerciales
  */
 async function executeB2bUsdtTransfer(event) {
     if (event) event.preventDefault();
@@ -3222,13 +3222,13 @@ async function executeB2bUsdtTransfer(event) {
 
     // 1. Validar fondos suficientes locales
     if (loggedInB2bClient.usdtBalance < amount) {
-        alert(`⚠️ FONDOS INSUFICIENTES: Tu balance actual es de ${loggedInB2bClient.usdtBalance.toFixed(2)} USDT. No puedes transferir ${amount.toFixed(2)} USDT.`);
+        alert(`⚠️ FONDOS INSUFICIENTES: Tu balance actual es de ${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt. No puedes transferir ${amount.toFixed(4)} XAUt.`);
         return;
     }
 
     // 2. Validar que no se transfiera a sí mismo
     if (loggedInB2bClient.email.toLowerCase() === recipientEmail) {
-        alert("⚠️ OPERACIÓN RECHAZADA: No puedes transferirte fondos USDT a ti mismo.");
+        alert("⚠️ OPERACIÓN RECHAZADA: No puedes transferirte fondos de oro digital a ti mismo.");
         return;
     }
 
@@ -3297,12 +3297,12 @@ async function executeB2bUsdtTransfer(event) {
 
             // Registrar log administrativo
             if (typeof appendAdminLog === 'function') {
-                appendAdminLog("SECURITY", `ledger_node: Transferencia exitosa de ${amount.toFixed(2)} USDT de ${loggedInB2bClient.name} a ${recipientProfile.name} (${recipientEmail}) en Supabase.`, false);
+                appendAdminLog("SECURITY", `ledger_node: Transferencia exitosa de ${amount.toFixed(4)} XAUt (Oro Digital) de ${loggedInB2bClient.name} a ${recipientProfile.name} (${recipientEmail}) en Supabase.`, false);
             }
 
         } catch (err) {
             console.error("Fallo de red en transferencia Supabase:", err);
-            alert("⚠️ FALLO DE RED: No se pudo conectar con el Ledger de la Blockchain.");
+            alert("⚠️ FALLO DE RED: No se pudo conectar con el Ledger de Oro Digital.");
             return;
         }
     } else {
@@ -3319,7 +3319,7 @@ async function executeB2bUsdtTransfer(event) {
         finalRecipient.usdtBalance += amount;
 
         if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SECURITY", `ledger_node: Transferencia exitosa de ${amount.toFixed(2)} USDT de ${loggedInB2bClient.name} a ${finalRecipient.name} (${finalRecipient.email}) [Memoria Local].`, false);
+            appendAdminLog("SECURITY", `ledger_node: Transferencia exitosa de ${amount.toFixed(4)} XAUt (Oro Digital) de ${loggedInB2bClient.name} a ${finalRecipient.name} (${finalRecipient.email}) [Memoria Local].`, false);
         }
     }
 
@@ -3330,13 +3330,13 @@ async function executeB2bUsdtTransfer(event) {
     document.getElementById('b2b-usdt-transfer-form').reset();
 
     // Alerta de éxito
-    alert(`¡CONEXIÓN ESTABLECIDA CON LA BLOCKCHAIN!
+    alert(`¡CONEXIÓN ESTABLECIDA CON EL LEDGER DE ORO DIGITAL!
     
-    ✅ Transferencia de ${amount.toFixed(2)} USDT autorizada y confirmada.
+    ✅ Transferencia de ${amount.toFixed(4)} XAUt (Oro Digital) autorizada y confirmada.
     Destinatario: ${recipientEmail}
-    Hash del bloque: ${txHash.substring(0, 16)}...
+    Hash del Ledger: ${txHash.substring(0, 16)}...
     
-    Tu nuevo balance es de ${loggedInB2bClient.usdtBalance.toFixed(2)} USDT.`);
+    Tu nuevo balance es de ${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt.`);
 }
 
 /**
