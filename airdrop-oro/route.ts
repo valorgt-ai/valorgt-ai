@@ -97,6 +97,47 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Fallo crítico al ejecutar transacciones de oro.' }, { status: 500 });
     }
 
+    // Sincronizar también la columna usdt_balance en las tablas de perfiles/profiles para reflejarse en los dashboards comerciales
+    try {
+      for (const user of premiumUsers) {
+        // A. Intentar actualizar tabla perfiles (Next.js)
+        try {
+          const { data: profile } = await supabaseAdmin
+            .from('perfiles')
+            .select('usdt_balance')
+            .eq('id', user.id)
+            .single();
+
+          const currentBal = profile ? parseFloat(profile.usdt_balance || '0') : 0;
+          await supabaseAdmin
+            .from('perfiles')
+            .update({ usdt_balance: currentBal + xautFractionPerUser })
+            .eq('id', user.id);
+        } catch (e1) {
+          // Ignorar si perfiles no existe o no tiene usdt_balance
+        }
+
+        // B. Intentar actualizar tabla profiles (dashboard local/HTML)
+        try {
+          const { data: profile } = await supabaseAdmin
+            .from('profiles')
+            .select('usdt_balance')
+            .eq('id', user.id)
+            .single();
+
+          const currentBal = profile ? parseFloat(profile.usdt_balance || '0') : 0;
+          await supabaseAdmin
+            .from('profiles')
+            .update({ usdt_balance: currentBal + xautFractionPerUser })
+            .eq('id', user.id);
+        } catch (e2) {
+          // Ignorar si profiles no existe o no tiene usdt_balance
+        }
+      }
+    } catch (syncErr) {
+      console.error('Error al sincronizar balance de perfiles/profiles:', syncErr);
+    }
+
     // 7. RESPUESTA EXITOSA
     return NextResponse.json({
       success: true,

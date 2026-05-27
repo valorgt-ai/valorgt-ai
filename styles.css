@@ -3996,6 +3996,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 20px rgba(255, 0, 127, 0.22) !important;
 }
 
+.border-white {
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.03) !important;
+    transition: var(--transition-smooth);
+}
+
+.border-white:hover {
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.12) !important;
+}
+
 .header-icon.magenta {
     background: rgba(255, 0, 127, 0.1) !important;
     color: var(--magenta) !important;
@@ -4005,6 +4016,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .card-header.border-magenta {
     border-bottom: 1px solid rgba(255, 0, 127, 0.15) !important;
+}
+
+.card-header.border-white {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.checkmark.border-white {
+    border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .text-magenta {

@@ -5190,10 +5190,21 @@ async function executeAdminGoldAirdrop() {
                         appendAdminLog("SECURITY", `ledger_node: Airdrop registrado en Supabase para ${remoteProfiles.length} perfiles.`, false);
                     }
                     
+                    // Actualizar columna usdt_balance en Supabase profiles para que se refleje de inmediato en la tarjeta comercial
                     for (const profile of remoteProfiles) {
                         const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
+                        const newBal = parseFloat(profile.usdt_balance || 0) + individualXAUt;
+                        
+                        await supabaseClient
+                            .from('profiles')
+                            .update({ usdt_balance: newBal })
+                            .eq('id', profile.id);
+
                         if (localClient) {
-                            localClient.usdtBalance = parseFloat(profile.usdt_balance) + individualXAUt;
+                            localClient.usdtBalance = newBal;
+                            if (typeof appendAdminLog === 'function') {
+                                appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${localClient.name} (${localClient.email}) [LEDGER SECURE].`, false);
+                            }
                         }
                     }
                 }
@@ -5201,15 +5212,15 @@ async function executeAdminGoldAirdrop() {
         } catch (err) {
             console.error("Fallo crítico de conexión al distribuir a Supabase:", err);
         }
+    } else {
+        // Acreditación local (Modo contingencia local)
+        selectedClients.forEach(client => {
+            client.usdtBalance += individualXAUt;
+            if (typeof appendAdminLog === 'function') {
+                appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER SECURE - LOCAL].`, false);
+            }
+        });
     }
- 
-    // Acreditación local
-    selectedClients.forEach(client => {
-        client.usdtBalance += individualXAUt;
-        if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(6)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER SECURE].`, false);
-        }
-    });
     
     if (loggedInB2bClient) {
         const matchingClient = selectedClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
