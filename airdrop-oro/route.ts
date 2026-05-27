@@ -27,20 +27,27 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. PARSE & VALIDACIÓN DEL BODY
-    const body: AirdropRequest = await req.json();
-    const { ingreso_total_usd } = body;
+    const body = await req.json();
+    const { ingreso_total_usd, distribucion_tipo, usuario_email } = body;
 
     if (!ingreso_total_usd || isNaN(ingreso_total_usd) || ingreso_total_usd <= 0) {
       return NextResponse.json({ error: 'El ingreso total mensual ingresado no es válido.' }, { status: 400 });
     }
 
+    const distType = distribucion_tipo || 'all';
+
     // 3. CONSULTAR USUARIOS PREMIUM ACTIVOS
-    // Se asume tabla 'perfiles' enlazada a 'auth.users' donde se registra el plan de suscripción
-    const { data: premiumUsers, error: usersError } = await supabaseAdmin
+    let query = supabaseAdmin
       .from('perfiles')
-      .select('id')
+      .select('id, email')
       .eq('plan_actual', 'Premium')
       .eq('activo', true);
+
+    if (distType === 'single' && usuario_email) {
+      query = query.eq('email', usuario_email.trim().toLowerCase());
+    }
+
+    const { data: premiumUsers, error: usersError } = await query;
 
     if (usersError) {
       console.error('Error al consultar usuarios Premium:', usersError);

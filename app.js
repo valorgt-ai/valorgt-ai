@@ -3952,8 +3952,6 @@ async function authenticateCommercialAgent(event) {
             if (typeof appendAdminLog === 'function') {
                 appendAdminLog("SECURITY", `auth_node: Consola de Administración Central desbloqueada para cuenta ROOT/ADMIN.`, false);
             }
-
-            alert("¡Acceso ROOT/ADMIN Concedido! Consola Global de Administración desbloqueada con éxito.");
         }, 1500);
         return;
     }
@@ -4108,8 +4106,6 @@ async function authenticateCommercialAgent(event) {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
-
-            alert("¡Acceso B2B Concedido! Firma digital y certificado de socio inmobiliario validados.");
         }, 1500);
 
     } else {
@@ -4623,11 +4619,15 @@ function initAdminView() {
         appendAdminLog("SAAS", "billing_node: Orquestador de facturación SaaS activo.", false);
     }
     
+    // Inicializar visualmente la lista de destinatarios del airdrop
+    renderAdminAirdropComponents();
+    
     // Cargar precio de Tether Gold (XAUt) en segundo plano una sola vez al inicializar la vista de administración
     fetchXautPriceForAirdrop().then(() => {
         calculateAdminAirdropPreview();
     });
 }
+
 
 /**
  * Renderiza el dashboard administrativo reactivamente
@@ -4810,27 +4810,6 @@ function toggleAdminSpeculation(checked) {
     if (document.getElementById('valuation-form') && activeZoneKey) {
         calculateValuation(eventMock);
     }
-    
-    alert(`Calibración del motor IA de plusvalías recalibrado a ${checked ? 'Burbuja Prime (+1.5% anual)' : 'Estable (suelo tradicional)'}.`);
-}
-
-/**
- * Calibración de promedios de construcción desde la consola del administrador en tiempo real
- */
-function updateAdminPriceAverages() {
-    const eco = document.getElementById('admin-price-economy')?.value || 'AI DEFAULT (707)';
-    const std = document.getElementById('admin-price-standard')?.value || 'AI DEFAULT (938)';
-    const lux = document.getElementById('admin-price-luxury')?.value || 'AI DEFAULT (1157)';
-    
-    if (typeof appendAdminLog === 'function') {
-        appendAdminLog("SYSTEM", `core_ia: Calibración de m² de construcción actualizada por administrador: Económico=${eco} USD, Estándar=${std} USD, Premium=${lux} USD.`, false);
-    }
-    
-    // Recalcular valuación en tiempo real si hay una activa
-    const eventMock = { preventDefault: () => {} };
-    if (document.getElementById('valuation-form') && activeZoneKey) {
-        calculateValuation(eventMock);
-    }
 }
 
 let currentAirdropXautPrice = 2380.00;
@@ -4851,9 +4830,109 @@ async function fetchXautPriceForAirdrop() {
     return currentAirdropXautPrice;
 }
 
+function renderAdminAirdropComponents(pendingAirdrop = 0) {
+    const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
+    const singleUserSelect = document.getElementById('admin-airdrop-single-user');
+    const recipientsList = document.getElementById('admin-airdrop-recipients-list');
+    
+    if (!recipientsList) return;
+    
+    // Obtener los clientes premium (VIP o Pro) activos de b2bClients
+    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    
+    // 1. Poblar el selector de usuario único (si no está poblado)
+    if (singleUserSelect && singleUserSelect.children.length === 0) {
+        singleUserSelect.innerHTML = '';
+        eligibleClients.forEach(client => {
+            const opt = document.createElement('option');
+            opt.value = client.email;
+            opt.innerText = `${client.name} (${client.plan.toUpperCase()})`;
+            singleUserSelect.appendChild(opt);
+        });
+    }
+    
+    const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
+    
+    // 2. Renderizar visualmente el listado de destinatarios
+    recipientsList.innerHTML = '';
+    
+    if (isSingle) {
+        if (singleUserSelect && singleUserSelect.value) {
+            const selectedEmail = singleUserSelect.value;
+            const client = eligibleClients.find(c => c.email.toLowerCase() === selectedEmail.toLowerCase());
+            if (client) {
+                recipientsList.appendChild(createRecipientBadgeHTML(client, true, pendingAirdrop));
+            }
+        }
+    } else {
+        eligibleClients.forEach(client => {
+            recipientsList.appendChild(createRecipientBadgeHTML(client, true, pendingAirdrop));
+        });
+    }
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function createRecipientBadgeHTML(client, selected = true, pendingAirdrop = 0) {
+    const el = document.createElement('div');
+    el.style.display = 'flex';
+    el.style.justify = 'space-between';
+    el.style.alignItems = 'center';
+    el.style.padding = '6px 10px';
+    el.style.margin = '2px 0';
+    el.style.background = 'rgba(255, 215, 0, 0.03)';
+    el.style.border = '1px solid rgba(255, 215, 0, 0.12)';
+    el.style.borderRadius = '6px';
+    el.style.color = '#fff';
+    el.style.transition = 'all 0.3s ease';
+    
+    const airdropText = pendingAirdrop > 0 
+        ? `<span style="color: #34c759; font-weight: 800; margin-left: 6px; font-size: 0.6rem; filter: drop-shadow(0 0 4px rgba(52, 199, 89, 0.45));">+${pendingAirdrop.toFixed(4)} XAUt</span>` 
+        : '';
+        
+    el.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="user" style="width: 12px; height: 12px; color: #ffd700;"></i>
+            <span style="font-weight: bold; font-size: 0.65rem; color: #fff;">${client.name}</span>
+            <span style="font-size: 0.55rem; background: rgba(255, 215, 0, 0.1); padding: 1px 4px; border-radius: 3px; color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.2); font-weight: bold;">${client.plan.toUpperCase()}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 0.65rem;">
+            <span style="color: #ffd700; font-weight: bold;">${client.usdtBalance.toFixed(4)} XAUt</span>
+            ${airdropText}
+        </div>
+    `;
+    return el;
+}
+
+function handleAirdropTargetTypeChange() {
+    const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
+    const singleUserWrapper = document.getElementById('admin-airdrop-single-user-wrapper');
+    
+    if (targetTypeSelect && singleUserWrapper) {
+        if (targetTypeSelect.value === 'single') {
+            singleUserWrapper.style.display = 'flex';
+        } else {
+            singleUserWrapper.style.display = 'none';
+        }
+    }
+    
+    renderAdminAirdropComponents();
+    calculateAdminAirdropPreview();
+}
+
+function handleAirdropSingleUserChange() {
+    renderAdminAirdropComponents();
+    calculateAdminAirdropPreview();
+}
+
 function calculateAdminAirdropPreview() {
     const revenueInput = document.getElementById('admin-airdrop-revenue');
     if (!revenueInput) return;
+    
+    const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
+    const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     
     const revenue = parseFloat(revenueInput.value);
     const priceEl = document.getElementById('airdrop-preview-xaut-price');
@@ -4865,30 +4944,56 @@ function calculateAdminAirdropPreview() {
     const xautPrice = currentAirdropXautPrice;
     if (priceEl) priceEl.innerText = `$${xautPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
     
-    if (isNaN(revenue) || revenue <= 0) {
+    // Filtrar clientes Premium (VIP o Pro) activos
+    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    
+    const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
+    let selectedClients = [];
+    
+    if (isSingle) {
+        if (singleUserSelect && singleUserSelect.value) {
+            const selectedEmail = singleUserSelect.value;
+            const client = eligibleClients.find(c => c.email.toLowerCase() === selectedEmail.toLowerCase());
+            if (client) selectedClients.push(client);
+        }
+    } else {
+        selectedClients = eligibleClients;
+    }
+    
+    const selectedCount = selectedClients.length;
+    
+    if (eligibleEl) {
+        eligibleEl.innerText = isSingle 
+            ? `1 Destinatario Individual` 
+            : `${selectedCount} Premium (VIP/Pro)`;
+    }
+    
+    if (isNaN(revenue) || revenue <= 0 || selectedCount === 0) {
         if (poolEl) poolEl.innerText = "$0.00 USD";
         if (individualEl) individualEl.innerText = "$0.00 USD (0.0000 XAUt)";
+        renderAdminAirdropComponents(0);
         return;
     }
     
-    // Filtrar clientes Premium (VIP o Pro)
-    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
-    const eligibleCount = eligibleClients.length;
-    
     const poolUSD = revenue * 0.05;
-    const individualUSD = poolUSD / eligibleCount;
+    const individualUSD = poolUSD / selectedCount;
     const individualXAUt = individualUSD / xautPrice;
     
     if (poolEl) poolEl.innerText = `$${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
-    if (eligibleEl) eligibleEl.innerText = `${eligibleCount} Premium (VIP/Pro)`;
     if (individualEl) {
         individualEl.innerText = `$${individualUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD (${individualXAUt.toFixed(4)} XAUt)`;
     }
+    
+    // Re-renderizar componentes pasando el airdrop individual para la vista previa
+    renderAdminAirdropComponents(individualXAUt);
 }
 
 async function executeAdminGoldAirdrop() {
     const revenueInput = document.getElementById('admin-airdrop-revenue');
     if (!revenueInput) return;
+    
+    const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
+    const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     
     const revenue = parseFloat(revenueInput.value);
     if (isNaN(revenue) || revenue <= 0) {
@@ -4898,25 +5003,39 @@ async function executeAdminGoldAirdrop() {
     
     const xautPrice = await fetchXautPriceForAirdrop();
     const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
-    const eligibleCount = eligibleClients.length;
     
-    if (eligibleCount === 0) {
-        alert("No hay agentes Premium activos registrados para recibir el Airdrop.");
+    const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
+    let selectedClients = [];
+    
+    if (isSingle) {
+        if (singleUserSelect && singleUserSelect.value) {
+            const selectedEmail = singleUserSelect.value;
+            const client = eligibleClients.find(c => c.email.toLowerCase() === selectedEmail.toLowerCase());
+            if (client) selectedClients.push(client);
+        }
+    } else {
+        selectedClients = eligibleClients;
+    }
+    
+    const selectedCount = selectedClients.length;
+    
+    if (selectedCount === 0) {
+        alert("No hay agentes Premium activos seleccionados para recibir el Airdrop.");
         return;
     }
     
     const poolUSD = revenue * 0.05;
-    const individualUSD = poolUSD / eligibleCount;
+    const individualUSD = poolUSD / selectedCount;
     const individualXAUt = individualUSD / xautPrice;
     
     const confirmTx = confirm(
       `🔒 ACCIÓN ADMINISTRATIVA CORE:\n\n` +
-      `¿Confirmas la distribución del Airdrop de Oro Digital (XAUt)?\n` +
-      `• Facturación: $${revenue.toLocaleString()} USD\n` +
+      `¿Confirmas la inyección de Oro Digital (XAUt)?\n` +
+      `• Monto de Facturación: $${revenue.toLocaleString()} USD\n` +
       `• Bolsa a Repartir (5%): $${poolUSD.toLocaleString()} USD\n` +
-      `• Destinatarios: ${eligibleCount} Agentes Premium (VIP/Pro)\n` +
-      `• Cuota Individual: $${individualUSD.toFixed(2)} USD (${individualXAUt.toFixed(4)} XAUt)\n\n` +
-      `Se realizará una inyección digital directa en las carteras de los agentes.`
+      `• Destinatario(s): ${isSingle ? selectedClients[0].name : `${selectedCount} Agentes Premium`}\n` +
+      `• Fracción por cartera: $${individualUSD.toFixed(2)} USD (${individualXAUt.toFixed(4)} XAUt)\n\n` +
+      `Se realizará una inyección digital directa en las carteras seleccionadas.`
     );
     
     if (!confirmTx) return;
@@ -4926,20 +5045,19 @@ async function executeAdminGoldAirdrop() {
     // SI SUPABASE ESTÁ ACTIVO, HACER LA DISTRIBUCIÓN PERSISTENTE EN LA BASE DE DATOS
     if (isSupabaseActive) {
         try {
-            // A. Consultar perfiles premium activos en Supabase
+            // A. Consultar perfiles en Supabase para obtener sus UUIDs reales
+            const emails = selectedClients.map(c => c.email.toLowerCase());
             const { data: remoteProfiles, error: fetchErr } = await supabaseClient
                 .from('profiles')
                 .select('*')
-                .in('plan', ['Pro', 'VIP', 'pro', 'vip'])
-                .eq('status', 'activo');
+                .in('email', emails);
 
             if (fetchErr) {
                 console.error("Error al consultar perfiles premium en Supabase:", fetchErr);
             } else if (remoteProfiles && remoteProfiles.length > 0) {
-                // B. Obtener IDs de usuarios
                 const userIds = remoteProfiles.map(p => p.id);
 
-                // C. Ejecutar el RPC de distribución transaccional en Supabase
+                // Ejecutar el RPC de distribución transaccional en Supabase
                 const { error: rpcErr } = await supabaseClient.rpc('distribuir_airdrop_oro', {
                     p_usuario_ids: userIds,
                     p_monto_usd_por_usuario: individualUSD,
@@ -4952,10 +5070,10 @@ async function executeAdminGoldAirdrop() {
                     alert("⚠️ FALLO EN BASE DE DATOS: La transacción del Airdrop falló en Supabase.");
                 } else {
                     if (typeof appendAdminLog === 'function') {
-                        appendAdminLog("SECURITY", `ledger_node: Distribución de Airdrop de Oro registrada exitosamente en Supabase para ${remoteProfiles.length} perfiles.`, false);
+                        appendAdminLog("SECURITY", `ledger_node: Distribución de Airdrop registrada exitosamente en Supabase para ${remoteProfiles.length} perfiles.`, false);
                     }
                     
-                    // Sincronizar localmente las carteras en Supabase
+                    // Sincronizar localmente
                     for (const profile of remoteProfiles) {
                         const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
                         if (localClient) {
@@ -4970,16 +5088,16 @@ async function executeAdminGoldAirdrop() {
     }
 
     // Distribuir a los clientes en el arreglo local
-    eligibleClients.forEach(client => {
+    selectedClients.forEach(client => {
         client.usdtBalance += individualXAUt;
         if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SECURITY", `ledger_node: Airdrop mensual de ${individualXAUt.toFixed(4)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER GOLD SECURE].`, false);
+            appendAdminLog("SECURITY", `ledger_node: Airdrop de ${individualXAUt.toFixed(4)} XAUt ($${individualUSD.toFixed(2)} USD) acreditado a ${client.name} (${client.email}) [LEDGER GOLD SECURE].`, false);
         }
     });
     
     // Si el usuario logueado en la sesión B2B comercial es uno de ellos, actualizar su estado actual
-    if (loggedInB2bClient && ['VIP', 'Pro'].includes(loggedInB2bClient.plan)) {
-        const matchingClient = eligibleClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+    if (loggedInB2bClient) {
+        const matchingClient = selectedClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
         if (matchingClient) {
             loggedInB2bClient.usdtBalance = matchingClient.usdtBalance;
         }
@@ -4990,13 +5108,16 @@ async function executeAdminGoldAirdrop() {
         renderAdminDashboard();
     }
 
+    // Re-renderizar visualmente la lista de destinatarios en la tarjeta del airdrop
+    renderAdminAirdropComponents();
+
     // Actualizar todos los HUDs y pantallas
     updateSaasMetricsHUD();
     
-    alert(`🎉 ¡AIRDROP DISTRIBUIDO EXITOSAMENTE!
+    alert(`🎉 ¡INYECCIÓN DE ORO DIGITAL EXITOSA!
     
-    ✅ Fondo de $${poolUSD.toLocaleString()} USD inyectado de forma equitativa.
-    ✅ Se acreditaron ${individualXAUt.toFixed(4)} XAUt (Oro) a cada uno de los ${eligibleCount} agentes Premium activos.
+    ✅ Fondo de $${poolUSD.toLocaleString()} USD procesado con éxito.
+    ✅ Se acreditaron ${individualXAUt.toFixed(4)} XAUt (Oro) a los destinatarios seleccionados.
     Hash de registro del Ledger: ${txHash.substring(0, 18)}...
     
     Los balances de las carteras han sido actualizados en tiempo real.`);
