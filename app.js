@@ -425,16 +425,11 @@ function toggleCurrency() {
 }
 
 /**
- * Actualiza los valores sugeridos (Metros, Habitaciones, etc.) según zona y tipo
+ * Actualiza los valores sugeridos (Metros, Habitaciones, etc.) según tipo
  */
 function updateSuggestedValues() {
-    const locationSelect = document.getElementById('prop-location');
     const typeSelect = document.getElementById('prop-type');
-    
-    if (!locationSelect.value) return;
-
-    // Actualizar el portafolio destacado
-    renderFeaturedProperties(locationSelect.value);
+    if (!typeSelect) return;
 
     // Sugerencias lógicas inteligentes por tipo
     const type = typeSelect.value;
@@ -1182,11 +1177,18 @@ function calculateValuation(event) {
     // 1. Regresión de tamaño (no aplica a terrenos ya que no poseen edificación)
     let sizeRegression = type === 'terreno' ? 1.0 : Math.pow(120 / size, 0.11);
     
-    // 2. Determinar precio m² base según acabados generales
-    // standard (semi-lujo/medios): Q7,300, economy: Q5,500, luxury: Q9,000
-    let baseFinishesPriceM2 = 938; // standard default (~$120/m² en dólares)
-    if (finishes === 'luxury') baseFinishesPriceM2 = 1157; // Q9,000
-    if (finishes === 'economy') baseFinishesPriceM2 = 707; // Q5,500
+    // 2. Determinar precio m² base según acabados generales (con soporte para calibraciones del administrador)
+    const adminPriceEconomy = parseFloat(document.getElementById('admin-price-economy')?.value);
+    const adminPriceStandard = parseFloat(document.getElementById('admin-price-standard')?.value);
+    const adminPriceLuxury = parseFloat(document.getElementById('admin-price-luxury')?.value);
+
+    let baseFinishesPriceM2 = !isNaN(adminPriceStandard) ? adminPriceStandard : 938; // standard default (~$120/m² en dólares)
+    if (finishes === 'luxury') {
+        baseFinishesPriceM2 = !isNaN(adminPriceLuxury) ? adminPriceLuxury : 1157; // Q9,000
+    }
+    if (finishes === 'economy') {
+        baseFinishesPriceM2 = !isNaN(adminPriceEconomy) ? adminPriceEconomy : 707; // Q5,500
+    }
     
     let locationMultiplier = zoneData.basePriceM2 / 1100;
     let priceM2 = baseFinishesPriceM2 * locationMultiplier * sizeRegression;
@@ -4804,6 +4806,25 @@ function toggleAdminSpeculation(checked) {
     }
     
     alert(`Calibración del motor IA de plusvalías recalibrado a ${checked ? 'Burbuja Prime (+1.5% anual)' : 'Estable (suelo tradicional)'}.`);
+}
+
+/**
+ * Calibración de promedios de construcción desde la consola del administrador en tiempo real
+ */
+function updateAdminPriceAverages() {
+    const eco = document.getElementById('admin-price-economy')?.value || 'AI DEFAULT (707)';
+    const std = document.getElementById('admin-price-standard')?.value || 'AI DEFAULT (938)';
+    const lux = document.getElementById('admin-price-luxury')?.value || 'AI DEFAULT (1157)';
+    
+    if (typeof appendAdminLog === 'function') {
+        appendAdminLog("SYSTEM", `core_ia: Calibración de m² de construcción actualizada por administrador: Económico=${eco} USD, Estándar=${std} USD, Premium=${lux} USD.`, false);
+    }
+    
+    // Recalcular valuación en tiempo real si hay una activa
+    const eventMock = { preventDefault: () => {} };
+    if (document.getElementById('valuation-form') && activeZoneKey) {
+        calculateValuation(eventMock);
+    }
 }
 
 /**
