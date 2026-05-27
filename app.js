@@ -5286,6 +5286,15 @@ async function executeAdminGoldAirdrop() {
                 return;
             } 
             
+            const foundEmails = (remoteProfiles || []).map(p => p.email.toLowerCase());
+            const missingClients = selectedClients.filter(c => !foundEmails.includes(c.email.toLowerCase()));
+
+            if (missingClients.length > 0) {
+                const missingNames = missingClients.map(c => `${c.name} (${c.email})`).join(", ");
+                alert(`⚠️ USUARIOS NO REGISTRADOS EN SUPABASE:\n\nLos siguientes agentes seleccionados no existen en la base de datos de tu Supabase:\n• ${missingNames}\n\nPara poder enviarles o retirarles oro real, primero deben registrarse/crear su cuenta desde la sección de Registro de la plataforma.`);
+                return;
+            }
+
             if (remoteProfiles && remoteProfiles.length > 0) {
                 const userIds = remoteProfiles.map(p => p.id);
 

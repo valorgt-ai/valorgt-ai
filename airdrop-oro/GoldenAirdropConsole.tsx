@@ -215,6 +215,15 @@ export default function GoldenAirdropConsole() {
       );
       setIngresosUSD('');
     } catch (err: any) {
+      if (err.message && err.message.includes('No se encontraron usuarios Premium activos')) {
+        alert(
+          `⚠️ USUARIOS NO REGISTRADOS EN SUPABASE:\n\n` +
+          `Los agentes seleccionados no están registrados en la base de datos de producción de tu Supabase.\n\n` +
+          `Para poder enviarles o retirarles oro real, primero deben registrarse/crear su cuenta desde la sección de Registro de la plataforma.`
+        );
+        setIsExecuting(false);
+        return;
+      }
       // Fallback local
       setPremiumUsers(prev => prev.map(user => {
         const isAffected = targetType === 'all' || user.email.toLowerCase() === selectedEmail.toLowerCase();
