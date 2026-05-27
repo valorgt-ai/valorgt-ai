@@ -20,6 +20,7 @@ interface AirdropMetrics {
 
 export default function GoldenAirdropConsole() {
   const [ingresosUSD, setIngresosUSD] = useState<string>('');
+  const [operationType, setOperationType] = useState<'credit' | 'debit'>('credit');
   const [targetType, setTargetType] = useState<'all' | 'single'>('all');
   const [selectedEmail, setSelectedEmail] = useState<string>('roberto@inversionesrv.com');
   const [loadingPrice, setLoadingPrice] = useState<boolean>(false);
@@ -82,22 +83,23 @@ export default function GoldenAirdropConsole() {
 
   // 2. AUTOCOMPLETAR/CONFIGURAR MONTO SEGÚN TIPO
   useEffect(() => {
-    if (targetType === 'all') {
+    if (targetType === 'all' && operationType === 'credit') {
       setIngresosUSD(adminMonthlyRevenueUSD.toFixed(2));
     } else {
       setIngresosUSD('');
     }
-  }, [targetType, adminMonthlyRevenueUSD]);
+  }, [targetType, operationType, adminMonthlyRevenueUSD]);
 
   // 3. RECALCULAR PROYECCIÓN FINANCIERA EN PANTALLA
   useEffect(() => {
     const selectedUsers = getSelectedUsers();
     const selectedCount = selectedUsers.length;
     const isSingle = targetType === 'single';
+    const isDebit = operationType === 'debit';
     const baseUSD = parseFloat(ingresosUSD);
 
     if (!isNaN(baseUSD) && baseUSD > 0 && selectedCount > 0) {
-      const pool = isSingle ? baseUSD : baseUSD * 0.05;
+      const pool = (isSingle || isDebit) ? baseUSD : baseUSD * 0.05;
       const individualUSD = isSingle ? baseUSD : pool / selectedCount;
       const individualXAUt = parseFloat((individualUSD / xautPrice).toFixed(8));
 
@@ -111,7 +113,7 @@ export default function GoldenAirdropConsole() {
     } else {
       setMetrics(null);
     }
-  }, [ingresosUSD, targetType, selectedEmail, xautPrice, getSelectedUsers, adminMonthlyRevenueUSD]);
+  }, [ingresosUSD, targetType, selectedEmail, xautPrice, getSelectedUsers, adminMonthlyRevenueUSD, operationType]);
 
   // 4. EJECUTAR LLAMADO AL BACKEND CON CONFIRMACIÓN HOLOGRÁFICA
   const handleAirdropExecution = async () => {
@@ -119,38 +121,51 @@ export default function GoldenAirdropConsole() {
 
     const baseUSD = parseFloat(ingresosUSD);
     const isSingle = targetType === 'single';
+    const isDebit = operationType === 'debit';
 
-    if (isSingle && baseUSD > adminMonthlyRevenueUSD) {
-      alert(`⚠️ FONDOS INSUFICIENTES: El monto ingresado ($${baseUSD.toFixed(2)} USD) excede los ingresos acumulados del mes ($${adminMonthlyRevenueUSD.toFixed(2)} USD).`);
-      return;
-    }
-
-    if (!isSingle && adminMonthlyRevenueUSD <= 0) {
-      alert("⚠️ PROCESAMIENTO RECHAZADO: No hay ingresos acumulados en el mes actual para realizar una distribución.");
-      return;
+    if (isSingle) {
+      if (!isDebit && baseUSD > adminMonthlyRevenueUSD) {
+        alert(`⚠️ FONDOS INSUFICIENTES: El monto ingresado ($${baseUSD.toFixed(2)} USD) excede los ingresos acumulados del mes ($${adminMonthlyRevenueUSD.toFixed(2)} USD).`);
+        return;
+      }
+    } else {
+      if (!isDebit && adminMonthlyRevenueUSD <= 0) {
+        alert("⚠️ PROCESAMIENTO RECHAZADO: No hay ingresos acumulados en el mes actual para realizar una distribución.");
+        return;
+      }
     }
 
     const selectedUsers = getSelectedUsers();
+    
+    // Si es débito, validar saldos locales
+    if (isDebit) {
+      const insufficient = selectedUsers.find(u => u.usdtBalance < metrics.xautPerUser);
+      if (insufficient) {
+        alert(`⚠️ FONDO INSUFICIENTE: El usuario ${insufficient.name} tiene ${insufficient.usdtBalance.toFixed(4)} XAUt, insuficiente para extraer ${metrics.xautPerUser.toFixed(4)} XAUt.`);
+        return;
+      }
+    }
+
     const targetNames = isSingle ? selectedUsers[0]?.name : `${metrics.premiumUsersCount} Usuarios Premium`;
 
     const confirmPayload = confirm(
       `🔒 ACCIÓN ADMINISTRATIVA CORE:\n\n` +
-      `¿Confirmas la inyección de Oro Digital (XAUt)?\n` +
-      `• Tipo de Envío: ${isSingle ? "Destinatario Único (Monto Directo)" : "Dispersión General (5% del Mes)"}\n` +
-      `• Monto Base/Dispersado: $${baseUSD.toLocaleString()} USD\n` +
-      `• Bolsa a Repartir: $${metrics.poolUSD.toLocaleString()} USD\n` +
+      `¿Confirmas la ${isDebit ? "extracción (débito)" : "inyección (crédito)"} de Oro Digital (XAUt)?\n` +
+      `• Tipo de Operación: ${isDebit ? "Extracción de Fondos (Débito)" : (isSingle ? "Destinatario Único (Crédito)" : "Dispersión General (Crédito)")}\n` +
+      `• Monto Base/Afectado: $${baseUSD.toLocaleString()} USD\n` +
+      `• Bolsa a Procesar: $${metrics.poolUSD.toLocaleString()} USD\n` +
       `• Destinatario(s): ${targetNames}\n` +
-      `• Acreditación Individual: $${metrics.usdPerUser.toFixed(2)} USD (${metrics.xautPerUser} XAUt)\n\n` +
-      `Se realizará una inyección digital directa en las carteras seleccionadas.`
+      `• Afectación Individual: ${isDebit ? "-" : "+"}${metrics.xautPerUser.toFixed(6)} XAUt ($${metrics.usdPerUser.toFixed(2)} USD)\n\n` +
+      `Se realizará una afectación directa en las carteras seleccionadas.`
     );
 
     if (!confirmPayload) return;
 
     setIsExecuting(true);
-    setLogMessage('⚡ Iniciando distribución transaccional en Supabase...');
+    setLogMessage(`⚡ Iniciando ${isDebit ? "extracción" : "distribución"} transaccional en Supabase...`);
 
     try {
-      // Inyectar en el backend de Vercel/Supabase
+      // Inyectar / Debitar en el backend de Vercel/Supabase
       const response = await fetch('/api/admin/airdrop', {
         method: 'POST',
         headers: {
@@ -160,6 +175,7 @@ export default function GoldenAirdropConsole() {
         body: JSON.stringify({
           ingreso_total_usd: baseUSD,
           distribucion_tipo: targetType,
+          operacion_tipo: operationType,
           usuario_email: isSingle ? selectedEmail : undefined
         })
       });
@@ -174,23 +190,27 @@ export default function GoldenAirdropConsole() {
         if (isAffected) {
           return {
             ...user,
-            usdtBalance: user.usdtBalance + metrics.xautPerUser
+            usdtBalance: isDebit ? user.usdtBalance - metrics.xautPerUser : user.usdtBalance + metrics.xautPerUser
           };
         }
         return user;
       }));
 
-      // Débito contable
-      if (isSingle) {
-        setAdminMonthlyRevenueUSD(prev => prev - metrics.poolUSD);
+      // Afectación contable del pool admin
+      if (isDebit) {
+        setAdminMonthlyRevenueUSD(prev => prev + metrics.poolUSD);
       } else {
-        setAdminMonthlyRevenueUSD(0);
+        if (isSingle) {
+          setAdminMonthlyRevenueUSD(prev => prev - metrics.poolUSD);
+        } else {
+          setAdminMonthlyRevenueUSD(0);
+        }
       }
 
       setLogMessage(
-        `✅ AIRDROP PROCESADO CON ÉXITO Y REGISTRADO EN EL LEDGER:\n` +
-        `• Total inyectado: $${result.data.pool_distribuido_usd || metrics.poolUSD} USD\n` +
-        `• Fracción individual: ${result.data.monto_xaut_individual || metrics.xautPerUser} XAUt acreditado a ${targetNames}.\n` +
+        `✅ OPERACIÓN PROCESADA CON ÉXITO Y REGISTRADA EN EL LEDGER:\n` +
+        `• Total procesado: $${result.data.pool_distribuido_usd || metrics.poolUSD} USD\n` +
+        `• Fracción individual: ${isDebit ? "-" : "+"}${result.data.monto_xaut_individual || metrics.xautPerUser} XAUt en ${targetNames}.\n` +
         `• Hash del Ledger: 0x${Array.from({length: 24}, () => Math.floor(Math.random()*16).toString(16)).join('')}...`
       );
       setIngresosUSD('');
@@ -201,22 +221,26 @@ export default function GoldenAirdropConsole() {
         if (isAffected) {
           return {
             ...user,
-            usdtBalance: user.usdtBalance + metrics.xautPerUser
+            usdtBalance: isDebit ? user.usdtBalance - metrics.xautPerUser : user.usdtBalance + metrics.xautPerUser
           };
         }
         return user;
       }));
 
-      if (isSingle) {
-        setAdminMonthlyRevenueUSD(prev => prev - metrics.poolUSD);
+      if (isDebit) {
+        setAdminMonthlyRevenueUSD(prev => prev + metrics.poolUSD);
       } else {
-        setAdminMonthlyRevenueUSD(0);
+        if (isSingle) {
+          setAdminMonthlyRevenueUSD(prev => prev - metrics.poolUSD);
+        } else {
+          setAdminMonthlyRevenueUSD(0);
+        }
       }
 
       setLogMessage(
-        `✅ INYECCIÓN DIGITAL LOCAL PROCESADA (FALLBACK DEV):\n` +
-        `• Bolsa inyectada: $${metrics.poolUSD.toFixed(2)} USD\n` +
-        `• Acreditado local: +${metrics.xautPerUser} XAUt a ${targetNames}.\n` +
+        `✅ OPERACIÓN LOCAL PROCESADA (FALLBACK DEV):\n` +
+        `• Bolsa afectada: $${metrics.poolUSD.toFixed(2)} USD\n` +
+        `• Afectado local: ${isDebit ? "-" : "+"}${metrics.xautPerUser} XAUt a ${targetNames}.\n` +
         `• Los balances en pantalla han sido actualizados con éxito.`
       );
       setIngresosUSD('');
@@ -228,7 +252,14 @@ export default function GoldenAirdropConsole() {
   const selectedUsers = getSelectedUsers();
   const inputAmount = parseFloat(ingresosUSD);
   const isSingle = targetType === 'single';
-  const isOverLimit = isSingle && !isNaN(inputAmount) && inputAmount > adminMonthlyRevenueUSD;
+  const isDebit = operationType === 'debit';
+  
+  let isOverLimit = false;
+  if (isDebit) {
+    isOverLimit = selectedUsers.some(u => u.usdtBalance < (metrics ? metrics.xautPerUser : 0));
+  } else {
+    isOverLimit = isSingle && !isNaN(inputAmount) && inputAmount > adminMonthlyRevenueUSD;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8 flex items-center justify-center font-sans">
@@ -286,6 +317,20 @@ export default function GoldenAirdropConsole() {
           {/* Columna de Entradas */}
           <div className="flex flex-col gap-4">
             
+            {/* 0. Selector de Tipo de Operación */}
+            <div className="flex flex-col gap-2 text-left">
+              <label htmlFor="op-type" className="text-xs font-bold text-slate-400 uppercase tracking-wider">Tipo de Operación</label>
+              <select 
+                id="op-type"
+                value={operationType}
+                onChange={(e) => setOperationType(e.target.value as 'credit' | 'debit')}
+                className="w-full bg-slate-950/80 border border-slate-700 focus:border-white/55 rounded-lg px-3 py-2.5 text-white outline-none font-sans text-sm transition"
+              >
+                <option value="credit">Enviar Oro (Acreditar)</option>
+                <option value="debit">Extraer Oro (Debitar)</option>
+              </select>
+            </div>
+
             {/* 1. Selector de Tipo de Distribución */}
             <div className="flex flex-col gap-2 text-left">
               <label htmlFor="dist-type" className="text-xs font-bold text-slate-400 uppercase tracking-wider">Tipo de Distribución</label>
@@ -337,8 +382,8 @@ export default function GoldenAirdropConsole() {
                       <div className="flex items-center gap-2 font-mono">
                         <span className="text-slate-300 font-bold">{user.usdtBalance.toFixed(4)} XAUt</span>
                         {metrics && metrics.xautPerUser > 0 && (
-                          <span className="text-emerald-400 font-extrabold shadow-sm animate-pulse">
-                            +{metrics.xautPerUser.toFixed(4)}
+                          <span className={`font-extrabold shadow-sm animate-pulse ${isDebit ? 'text-red-500' : 'text-emerald-400'}`}>
+                            {isDebit ? "-" : "+"}{metrics.xautPerUser.toFixed(4)}
                           </span>
                         )}
                       </div>
@@ -353,7 +398,7 @@ export default function GoldenAirdropConsole() {
             {/* 4. Input de Facturación o Monto Directo */}
             <div className="flex flex-col gap-2 text-left">
               <label htmlFor="revenue-input" className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                {isSingle ? "Monto Directo a Enviar (USD)" : "Valor de Base Máximo (USD)"}
+                {isDebit ? (isSingle ? "Monto Directo a Extraer (USD)" : "Monto de Extracción de Base (USD)") : (isSingle ? "Monto Directo a Enviar (USD)" : "Valor de Base Máximo (USD)")}
               </label>
               <div className="relative">
                 <span className="absolute left-3.5 top-3 text-slate-400 text-base font-semibold">$</span>
@@ -361,21 +406,20 @@ export default function GoldenAirdropConsole() {
                   id="revenue-input"
                   type="number" 
                   value={ingresosUSD}
-                  disabled={!isSingle}
+                  disabled={targetType === 'all' && operationType === 'credit'}
                   onChange={(e) => setIngresosUSD(e.target.value)}
-                  placeholder={isSingle ? "Ej. 100" : ""}
+                  placeholder={isSingle || isDebit ? "Ej. 100" : ""}
                   className={`w-full bg-slate-950/80 border ${isOverLimit ? 'border-red-500' : 'border-slate-700'} focus:border-white/50 rounded-lg pl-8 pr-4 py-2.5 text-white outline-none font-mono text-sm transition text-center`}
                 />
               </div>
               {isOverLimit && (
                 <span className="text-xs text-red-500 font-bold mt-1.5 block">
-                  ⚠️ EL MONTO EXCEDE EL SALDO MENSUAL ACUMULADO
+                  {isDebit ? "⚠️ EL MONTO EXCEDE EL SALDO DISPONIBLE EN LA CARTERA DEL USUARIO" : "⚠️ EL MONTO EXCEDE EL SALDO MENSUAL ACUMULADO"}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Columna de Proyecciones Holográficas */}
           <div className="bg-gradient-to-br from-white/5 to-transparent border border-white/10 rounded-lg p-5 flex flex-col justify-between min-h-[240px] text-left">
             <div>
               <span className="text-xs font-bold text-white/70 uppercase tracking-widest block mb-4 border-b border-white/10 pb-2">PROYECCIÓN DE DISTRIBUCIÓN</span>
@@ -387,7 +431,7 @@ export default function GoldenAirdropConsole() {
                 </div>
                 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-400">{isSingle ? "Monto Directo a Enviar:" : "Bolsa a repartir (5%):"}</span>
+                  <span className="text-slate-400">{isSingle ? (isDebit ? "Monto Directo a Extraer:" : "Monto Directo a Enviar:") : (isDebit ? "Monto Total a Extraer:" : "Bolsa a repartir (5%):")}</span>
                   <span className="font-mono text-amber-400 font-bold">
                     {metrics ? `$${metrics.poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD` : '$0.00 USD'}
                   </span>
@@ -401,14 +445,14 @@ export default function GoldenAirdropConsole() {
                 </div>
 
                 <div className="border-t border-slate-800/80 pt-3 mt-1.5">
-                  <span className="text-xs text-slate-400 block mb-1">Airdrop por Usuario:</span>
+                  <span className="text-xs text-slate-400 block mb-1">{isDebit ? "Débito por Usuario:" : "Airdrop por Usuario:"}</span>
                   {metrics ? (
                     <div className="flex flex-col">
                       <span className="text-xl font-mono font-extrabold text-white leading-none">
                         ${metrics.usdPerUser.toLocaleString('en-US', { minimumFractionDigits: 2 })} <span className="text-xs text-slate-400 font-normal">USD</span>
                       </span>
                       <span className="text-sm font-mono text-cyan-400 font-bold mt-1.5">
-                        ({metrics.xautPerUser.toFixed(6)} XAUt)
+                        ({isDebit ? "-" : ""}{metrics.xautPerUser.toFixed(6)} XAUt)
                       </span>
                     </div>
                   ) : (
@@ -417,9 +461,9 @@ export default function GoldenAirdropConsole() {
                 </div>
 
                 <div className="border-t border-slate-800/80 pt-3 mt-1.5">
-                  <span className="text-xs text-slate-400 block mb-1">Remanente de Ingresos Mensuales:</span>
+                  <span className="text-xs text-slate-400 block mb-1">{isDebit ? "Fondo Incrementado Estimado:" : "Remanente de Ingresos Mensuales:"}</span>
                   <span className="text-base font-mono font-bold text-white filter drop-shadow(0 0 4px rgba(255,255,255,0.25))">
-                    ${(isSingle ? (metrics ? adminMonthlyRevenueUSD - metrics.poolUSD : adminMonthlyRevenueUSD) : 0).toLocaleString('en-US', { minimumFractionDigits: 2 })} USD
+                    ${(isDebit ? adminMonthlyRevenueUSD + (metrics ? metrics.poolUSD : 0) : (isSingle ? (metrics ? adminMonthlyRevenueUSD - metrics.poolUSD : adminMonthlyRevenueUSD) : 0)).toLocaleString('en-US', { minimumFractionDigits: 2 })} USD
                   </span>
                 </div>
               </div>
@@ -450,7 +494,7 @@ export default function GoldenAirdropConsole() {
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
             }`}
           >
-            {isExecuting ? '⚡ INYECTANDO ORO DIGITAL...' : '🚀 [ EJECUTAR DISTRIBUCIÓN DE ORO ]'}
+            {isExecuting ? '⚡ PROCESANDO...' : (isDebit ? '🚀 [ EJECUTAR EXTRACCIÓN DE ORO ]' : '🚀 [ EJECUTAR DISTRIBUCIÓN DE ORO ]')}
           </button>
         </div>
 

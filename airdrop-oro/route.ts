@@ -28,13 +28,14 @@ export async function POST(req: NextRequest) {
 
     // 2. PARSE & VALIDACIÓN DEL BODY
     const body = await req.json();
-    const { ingreso_total_usd, distribucion_tipo, usuario_email } = body;
+    const { ingreso_total_usd, distribucion_tipo, operacion_tipo, usuario_email } = body;
 
     if (!ingreso_total_usd || isNaN(ingreso_total_usd) || ingreso_total_usd <= 0) {
       return NextResponse.json({ error: 'El ingreso total mensual ingresado no es válido.' }, { status: 400 });
     }
 
     const distType = distribucion_tipo || 'all';
+    const isDebit = operacion_tipo === 'debit';
 
     // 3. CONSULTAR USUARIOS PREMIUM ACTIVOS
     let query = supabaseAdmin
@@ -72,29 +73,68 @@ export async function POST(req: NextRequest) {
       if (!xautPriceUSD) throw new Error('Dato de cotización no disponible.');
     } catch (apiErr) {
       console.warn('Fallo en API CoinGecko. Usando precio de contingencia (fallback financiero):', apiErr);
-      // Fallback seguro a precio aproximado del oro spot (~$2,380.00 por onza de XAUt)
       xautPriceUSD = 2380.00;
     }
 
     // 5. APLICACIÓN DE FÓRMULAS FINANCIERAS
-    const totalAirdropUSD = distType === 'single' ? ingreso_total_usd : ingreso_total_usd * 0.05;
+    const totalAirdropUSD = distType === 'single' ? ingreso_total_usd : (isDebit ? ingreso_total_usd : ingreso_total_usd * 0.05);
     const usdPerUser = totalAirdropUSD / premiumCount;
     const xautFractionPerUser = parseFloat((usdPerUser / xautPriceUSD).toFixed(8)); // Máxima precisión: 8 decimales
 
     // Extracción de IDs de usuarios
     const userIds = premiumUsers.map((u) => u.id);
 
-    // 6. INVOCACIÓN DEL RPC TRANSACCIONAL EN SUPABASE
-    const { error: rpcError } = await supabaseAdmin.rpc('distribuir_airdrop_oro', {
-      p_usuario_ids: userIds,
-      p_monto_usd_por_usuario: usdPerUser,
-      p_monto_xaut_por_usuario: xautFractionPerUser,
-      p_precio_pivote: xautPriceUSD,
-    });
+    if (isDebit) {
+      // 1. Validar fondos suficientes de XAUt en Supabase
+      for (const user of premiumUsers) {
+        const { data: saldo } = await supabaseAdmin
+          .from('saldos_oro')
+          .select('balance_xaut')
+          .eq('usuario_id', user.id)
+          .single();
+        const currentGold = saldo ? parseFloat(saldo.balance_xaut) : 0;
+        if (currentGold < xautFractionPerUser) {
+          return NextResponse.json({ error: `Fondos insuficientes en la cartera de oro para extraer ${xautFractionPerUser} XAUt.` }, { status: 400 });
+        }
+      }
 
-    if (rpcError) {
-      console.error('Error crítico en transacción RPC:', rpcError);
-      return NextResponse.json({ error: 'Fallo crítico al ejecutar transacciones de oro.' }, { status: 500 });
+      // 2. Realizar sustracción e insertar historial
+      for (const user of premiumUsers) {
+        const { data: saldo } = await supabaseAdmin
+          .from('saldos_oro')
+          .select('balance_xaut')
+          .eq('usuario_id', user.id)
+          .single();
+        const currentGold = saldo ? parseFloat(saldo.balance_xaut) : 0;
+        
+        await supabaseAdmin
+          .from('saldos_oro')
+          .update({ balance_xaut: Math.max(0, currentGold - xautFractionPerUser) })
+          .eq('usuario_id', user.id);
+
+        await supabaseAdmin
+          .from('historial_oro')
+          .insert([{
+            usuario_id: user.id,
+            tipo: 'canje',
+            monto_usd: usdPerUser,
+            monto_xaut: xautFractionPerUser,
+            precio_pivote_xaut: xautPriceUSD
+          }]);
+      }
+    } else {
+      // 6. INVOCACIÓN DEL RPC TRANSACCIONAL EN SUPABASE
+      const { error: rpcError } = await supabaseAdmin.rpc('distribuir_airdrop_oro', {
+        p_usuario_ids: userIds,
+        p_monto_usd_por_usuario: usdPerUser,
+        p_monto_xaut_por_usuario: xautFractionPerUser,
+        p_precio_pivote: xautPriceUSD,
+      });
+
+      if (rpcError) {
+        console.error('Error crítico en transacción RPC:', rpcError);
+        return NextResponse.json({ error: 'Fallo crítico al ejecutar transacciones de oro.' }, { status: 500 });
+      }
     }
 
     // Sincronizar también la columna usdt_balance en las tablas de perfiles/profiles para reflejarse en los dashboards comerciales
@@ -109,9 +149,10 @@ export async function POST(req: NextRequest) {
             .single();
 
           const currentBal = profile ? parseFloat(profile.usdt_balance || '0') : 0;
+          const targetBal = isDebit ? Math.max(0, currentBal - xautFractionPerUser) : currentBal + xautFractionPerUser;
           await supabaseAdmin
             .from('perfiles')
-            .update({ usdt_balance: currentBal + xautFractionPerUser })
+            .update({ usdt_balance: targetBal })
             .eq('id', user.id);
         } catch (e1) {
           // Ignorar si perfiles no existe o no tiene usdt_balance
@@ -126,9 +167,10 @@ export async function POST(req: NextRequest) {
             .single();
 
           const currentBal = profile ? parseFloat(profile.usdt_balance || '0') : 0;
+          const targetBal = isDebit ? Math.max(0, currentBal - xautFractionPerUser) : currentBal + xautFractionPerUser;
           await supabaseAdmin
             .from('profiles')
-            .update({ usdt_balance: currentBal + xautFractionPerUser })
+            .update({ usdt_balance: targetBal })
             .eq('id', user.id);
         } catch (e2) {
           // Ignorar si profiles no existe o no tiene usdt_balance

@@ -4014,6 +4014,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 10px rgba(255, 0, 127, 0.15);
 }
 
+.header-icon.white {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.12) !important;
+}
+
 .card-header.border-magenta {
     border-bottom: 1px solid rgba(255, 0, 127, 0.15) !important;
 }
@@ -4028,6 +4035,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .text-magenta {
     color: var(--magenta) !important;
+}
+
+.text-white-neon {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.45) !important;
 }
 
 /* Server Real-time Audit Logs */
