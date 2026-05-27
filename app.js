@@ -1179,8 +1179,8 @@ function calculateValuation(event) {
 
     // --- ALGORITMO COMPLEJO DE VALUACIÓN INMOBILIARIA IA (VERSIÓN PRO MULTIVARIABLE) ---
     
-    // 1. Regresión de tamaño
-    let sizeRegression = Math.pow(120 / size, 0.11);
+    // 1. Regresión de tamaño (no aplica a terrenos ya que no poseen edificación)
+    let sizeRegression = type === 'terreno' ? 1.0 : Math.pow(120 / size, 0.11);
     
     // 2. Determinar precio m² base según acabados generales
     // standard (semi-lujo/medios): Q7,300, economy: Q5,500, luxury: Q9,000
@@ -1194,9 +1194,12 @@ function calculateValuation(event) {
     // Valor Base por Construcción
     let baseValue = size * priceM2;
 
-    // 3. Valor Adicional por Terreno (Aporta un 18% del valor por m² del sector)
+    // 3. Valor Adicional por Terreno (Aporta un 18% del valor por m² del sector, solo aplicable a Casas y Fincas)
     let landAreaM2 = landUnit === 'v2' ? landArea * 0.6988 : landArea;
-    let landValue = landAreaM2 * (priceM2 * 0.18);
+    let landValue = 0;
+    if (['casa', 'finca'].includes(type)) {
+        landValue = landAreaM2 * (priceM2 * 0.18);
+    }
     
     // Para Terrenos puros, el valor principal es el suelo y el tamaño de construcción es irrelevante
     if (type === 'terreno') {
@@ -1338,7 +1341,27 @@ function updateValuationUI() {
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     const finalVal = activeValuation * conversion;
-    const priceM2Val = (activeValuation / parseFloat(document.getElementById('prop-size').value)) * conversion;
+    
+    // Calcular precio unitario dinámico (por m² de construcción o por v²/m² de terreno)
+    const typeSelect = document.getElementById('prop-type');
+    const type = typeSelect ? typeSelect.value : 'casa';
+    const landUnitSelect = document.getElementById('prop-land-unit');
+    const landUnit = landUnitSelect ? landUnitSelect.value : 'v2';
+
+    let priceM2Val = 0;
+    let unitLabel = 'm²';
+    
+    if (type === 'terreno') {
+        const landAreaInput = document.getElementById('prop-land-area');
+        const landArea = parseFloat(landAreaInput ? landAreaInput.value : '0') || 1;
+        priceM2Val = (activeValuation / landArea) * conversion;
+        unitLabel = landUnit === 'v2' ? 'v²' : 'm²';
+    } else {
+        const sizeInput = document.getElementById('prop-size');
+        const size = parseFloat(sizeInput ? sizeInput.value : '0') || 1;
+        priceM2Val = (activeValuation / size) * conversion;
+        unitLabel = 'm²';
+    }
 
     // Animación de incremento de número para el valor principal
     animateNumber('val-estimated-price', 0, finalVal, 1000);
@@ -1356,7 +1379,14 @@ function updateValuationUI() {
 
     // Actualizar micro-stats
     document.getElementById('val-curr-symbol').innerText = currencySym;
-    document.getElementById('val-price-m2').innerText = `${currencySym}${formatNumber(priceM2Val.toFixed(0))} / m²`;
+    
+    // Actualizar etiqueta del precio unitario dinámicamente
+    const labelEl = document.getElementById('val-price-m2-label');
+    if (labelEl) {
+        labelEl.innerText = type === 'terreno' ? `Precio por ${unitLabel}` : 'Precio por m²';
+    }
+    
+    document.getElementById('val-price-m2').innerText = `${currencySym}${formatNumber(priceM2Val.toFixed(0))} / ${unitLabel}`;
     document.getElementById('val-plusvalia-pct').innerText = `+${(zoneData.growth5Y / 5).toFixed(1)}%`;
     document.getElementById('val-demand-score').innerText = zoneData.demandScore;
 
