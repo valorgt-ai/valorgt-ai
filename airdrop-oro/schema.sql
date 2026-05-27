@@ -180,4 +180,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- 6. POLÍTICAS DE LECTURA PÚBLICA PARA AGENTES (PROFILES / PERFILES)
+-- Esto permite que la consola administrativa (SPA en navegador) pueda consultar y auditar los perfiles premium de Supabase de manera reactiva.
+DROP POLICY IF EXISTS "Permitir lectura publica de perfiles" ON public.profiles;
+CREATE POLICY "Permitir lectura publica de perfiles" ON public.profiles
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Permitir lectura publica de perfiles_alt" ON public.perfiles;
+CREATE POLICY "Permitir lectura publica de perfiles_alt" ON public.perfiles
+    FOR SELECT USING (true);
+
 COMMIT;
