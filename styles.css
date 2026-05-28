@@ -4851,3 +4851,206 @@ input[type="range"]::-webkit-slider-thumb:hover {
         transform: translateY(0);
     }
 }
+
+/* ESTILOS DE PASARELA POR TRANSFERENCIA BANCARIA Y APROBACIÓN ADMIN */
+.bank-details-card {
+    transition: all 0.3s ease;
+}
+.bank-details-card:hover {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.12) !important;
+    border-color: rgba(0, 240, 255, 0.5) !important;
+}
+
+.receipt-upload-box {
+    transition: all 0.3s ease;
+}
+.receipt-upload-box:hover {
+    border-color: var(--cyan) !important;
+    background: rgba(0, 240, 255, 0.04) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.08) !important;
+}
+.receipt-upload-box:hover i {
+    color: var(--cyan) !important;
+    transform: scale(1.1);
+}
+
+/* Lightbox de Comprobantes para el Admin */
+.receipt-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2500;
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.receipt-lightbox-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.receipt-lightbox-card {
+    position: relative;
+    width: 90%;
+    max-width: 550px;
+    background: rgba(10, 15, 25, 0.95);
+    border: 1.5px solid rgba(0, 240, 255, 0.35);
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
+    transform: scale(0.9);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.receipt-lightbox-overlay.active .receipt-lightbox-card {
+    transform: scale(1);
+}
+
+.receipt-lightbox-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-secondary);
+    font-size: 1.3rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+.receipt-lightbox-close:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    transform: rotate(90deg);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+/* Insignias e Indicador Pendiente */
+.status-badge-pending-auth {
+    animation: glowWarning 1.5s infinite alternate;
+}
+
+@keyframes glowWarning {
+    from {
+        box-shadow: 0 0 5px rgba(255, 149, 0, 0.2);
+    }
+    to {
+        box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+    }
+}
+
+.pending-banner-content {
+    transition: all 0.3s ease;
+}
+.pending-banner-content:hover {
+    box-shadow: 0 0 15px rgba(255, 149, 0, 0.1) !important;
+}
+
+.btn-whatsapp-small {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 8px rgba(37, 211, 102, 0.15);
+}
+
+.btn-whatsapp-small:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.35) !important;
+    background: linear-gradient(135deg, #2ae771, #159b8c) !important;
+}
+
+.spinner-slow {
+    animation: spin 3s linear infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ESTILOS DE LA BARRA DE NAVEGACIÓN MÓVIL INFERIOR */
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(10, 12, 16, 0.85);
+    backdrop-filter: blur(15px);
+    border-top: 1.5px solid rgba(0, 240, 255, 0.2);
+    box-shadow: 0 -5px 25px rgba(0, 240, 255, 0.1);
+    z-index: 2000;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    justify-items: center;
+    box-sizing: border-box;
+}
+
+.mobile-nav-item {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.58rem;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-item i {
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-item.active {
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.mobile-nav-item.active i {
+    filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.6));
+    transform: scale(1.15);
+}
+
+/* Responsividad para Smartphones y Tablets */
+@media (max-width: 1100px) {
+    .mobile-bottom-nav {
+        display: grid !important;
+    }
+    
+    /* Agregar margen inferior a las vistas para que el contenido no quede tapado */
+    .main-content {
+        padding-bottom: 75px !important;
+    }
+}

@@ -277,6 +277,11 @@ function switchView(viewId) {
     const activeBtn = document.getElementById(`nav-btn-${viewId}`);
     if (activeBtn) activeBtn.classList.add('active');
 
+    // Sincronizar reactivamente los botones de navegación móvil
+    document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+    const activeMobileBtn = document.getElementById(`mobile-nav-btn-${viewId}`);
+    if (activeMobileBtn) activeMobileBtn.classList.add('active');
+
     // Ocultar todas las vistas y mostrar la seleccionada
     document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
     const activeView = document.getElementById(`view-${viewId}`);
@@ -3131,6 +3136,8 @@ function initCommercialView() {
     updateSaasMetricsHUD();
     updatePromoPropertySelect();
     renderB2bInventory();
+    updateB2bSubscriptionPendingBanner();
+    syncPendingPaymentRequests();
 
     // Gestionar Overlays de Bloqueo Criptográficos según Plan
     const goldLock = document.getElementById('commercial-gold-overlay-lock');
@@ -3854,28 +3861,27 @@ function openPlanPayment(planKey) {
     pendingPaymentType = 'subscription';
     pendingPaymentTarget = planKey;
 
-    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-
-    let planName = "";
-    let planPriceUSD = 0;
-
-    if (planKey === 'basico') {
-        planName = "Suscripción Agente Individual";
-        planPriceUSD = 18;
-    } else if (planKey === 'pro') {
-        planName = "Suscripción Inmobiliaria Pro";
-        planPriceUSD = 31;
-    } else if (planKey === 'vip') {
-        planName = "Suscripción Inmobiliaria Premium";
-        planPriceUSD = 82;
+    // Habilitar y resetear duración
+    const durationSelect = document.getElementById('payment-duration-select');
+    if (durationSelect) {
+        durationSelect.value = "1";
+        durationSelect.removeAttribute('disabled');
     }
 
-    const priceConverted = planPriceUSD * conversion;
+    resetReceiptUploadUI();
+
+    let planName = "";
+    if (planKey === 'basico') {
+        planName = "Suscripción Agente Individual";
+    } else if (planKey === 'pro') {
+        planName = "Suscripción Inmobiliaria Pro";
+    } else if (planKey === 'vip') {
+        planName = "Suscripción Inmobiliaria Premium";
+    }
 
     // Actualizar interfaz del modal
     document.getElementById('payment-concept-label').innerText = planName;
-    document.getElementById('payment-total-label').innerText = `${currencySym}${formatNumber(priceConverted.toFixed(2))}`;
+    updateDynamicB2bPaymentTotals();
 
     // Mostrar modal
     const modal = document.getElementById('commercial-payment-modal');
@@ -3884,9 +3890,6 @@ function openPlanPayment(planKey) {
     }
 }
 
-/**
- * Abre el modal de pasarela de pago para contratar publicidad
- */
 function promotePropertyOnCover(event) {
     if (event) event.preventDefault();
 
@@ -3904,15 +3907,18 @@ function promotePropertyOnCover(event) {
     pendingPaymentType = 'ad';
     pendingPaymentTarget = { propertyId: propertyId, zone: zoneKey };
 
-    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-    
-    // El precio fijo de pauta publicitaria es Q450 o USD $58
-    const priceConverted = activeCurrency === 'GTQ' ? 450 : 58;
+    // Desactivar y resetear duración para pauta publicitaria (es de 1 mes fijo)
+    const durationSelect = document.getElementById('payment-duration-select');
+    if (durationSelect) {
+        durationSelect.value = "1";
+        durationSelect.setAttribute('disabled', 'true');
+    }
+
+    resetReceiptUploadUI();
 
     // Actualizar interfaz del modal
     document.getElementById('payment-concept-label').innerText = `Pauta Destacada: ${selectedProp.title} en Portada ${zoneKey.toUpperCase()}`;
-    document.getElementById('payment-total-label').innerText = `${currencySym}${formatNumber(priceConverted.toFixed(2))}`;
+    updateDynamicB2bPaymentTotals();
 
     // Mostrar modal
     const modal = document.getElementById('commercial-payment-modal');
@@ -4094,6 +4100,575 @@ function completeB2bTransaction() {
     document.getElementById('payment-view-loading').classList.add('hidden');
     document.getElementById('payment-view-success').classList.remove('hidden');
 }
+
+// Variable global para solicitudes de pago pendientes
+let pendingPaymentRequests = [];
+let uploadedReceiptBase64 = '';
+
+/**
+ * Maneja la subida del archivo comprobante y lo lee en Base64
+ */
+function handleReceiptFileChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        uploadedReceiptBase64 = e.target.result;
+        
+        const wrapper = document.getElementById('receipt-upload-wrapper');
+        const icon = document.getElementById('receipt-upload-icon');
+        const text = document.getElementById('receipt-upload-text');
+        
+        if (wrapper) {
+            wrapper.style.borderColor = 'var(--neon-emerald)';
+            wrapper.style.background = 'rgba(52, 199, 89, 0.05)';
+        }
+        if (icon) {
+            icon.style.color = 'var(--neon-emerald)';
+        }
+        if (text) {
+            text.innerText = '¡Comprobante Cargado Exitosamente ✔️!';
+            text.style.color = 'var(--neon-emerald)';
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
+ * Resetea los elementos visuales de carga de comprobante
+ */
+function resetReceiptUploadUI() {
+    uploadedReceiptBase64 = '';
+    const fileInput = document.getElementById('payment-receipt-file');
+    if (fileInput) fileInput.value = '';
+    
+    const wrapper = document.getElementById('receipt-upload-wrapper');
+    const icon = document.getElementById('receipt-upload-icon');
+    const text = document.getElementById('receipt-upload-text');
+    
+    if (wrapper) {
+        wrapper.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        wrapper.style.background = 'rgba(0,0,0,0.3)';
+    }
+    if (icon) {
+        icon.style.color = 'var(--text-muted)';
+    }
+    if (text) {
+        text.innerText = 'Haz clic para seleccionar el comprobante desde tu dispositivo';
+        text.style.color = 'var(--text-muted)';
+    }
+}
+
+/**
+ * Actualiza el banner interactivo de suscripción pendiente en la pestaña del comercial
+ */
+function updateB2bSubscriptionPendingBanner() {
+    const banner = document.getElementById('b2b-subscription-pending-banner');
+    if (!banner) return;
+    
+    if (loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
+        banner.className = "glassmorphism font-mono";
+        banner.style.padding = "15px";
+        banner.style.border = "1px solid rgba(255, 149, 0, 0.3)";
+        banner.style.background = "rgba(255, 149, 0, 0.03)";
+        banner.style.borderRadius = "8px";
+        banner.style.textAlign = "left";
+        banner.style.boxShadow = "0 0 10px rgba(255, 149, 0, 0.05)";
+        
+        banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <i data-lucide="clock" class="spinner-slow" style="color: #ff9500; width: 16px; height: 16px;"></i>
+                <strong style="color: #ff9500; font-size: 0.85rem; text-shadow: 0 0 5px rgba(255,149,0,0.2);">Suscripción Pendiente de Verificación Bancaria</strong>
+            </div>
+            <p style="font-size: 0.7rem; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.4;">
+                Hemos recibido tu comprobante de transferencia y tu cuenta de agente se encuentra bajo auditoría. Usualmente se completa en un plazo de <strong>1 a 24 horas hábiles</strong>.
+            </p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20consultar%20el%20estado%20de%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(37, 211, 102, 0.2);">
+                    <i data-lucide="message-square" style="width: 12px; height: 12px;"></i> Contactar Soporte WhatsApp (+502 4041-6471)
+                </a>
+            </div>
+        `;
+        banner.style.display = "block";
+    } else {
+        banner.style.display = "none";
+    }
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Calcula y renderiza en tiempo real los totales en el modal de pago
+ */
+function updateDynamicB2bPaymentTotals() {
+    const durationSelect = document.getElementById('payment-duration-select');
+    if (!durationSelect) return;
+    
+    const months = parseInt(durationSelect.value);
+    let discount = 0;
+    if (months === 3) discount = 0.03;
+    else if (months === 6) discount = 0.05;
+    else if (months === 12) discount = 0.10;
+    
+    let baseUSD = 0;
+    if (pendingPaymentTarget === 'basico') baseUSD = 18;
+    else if (pendingPaymentTarget === 'pro') baseUSD = 31;
+    else if (pendingPaymentTarget === 'vip') baseUSD = 82;
+    else if (pendingPaymentType === 'ad') {
+        baseUSD = 58;
+        durationSelect.disabled = true;
+    }
+    
+    const subtotalUSD = baseUSD * months;
+    const totalUSD = subtotalUSD * (1 - discount);
+    const totalGTQ = totalUSD * exchangeRate;
+    
+    const durationLabel = document.getElementById('payment-duration-label');
+    const discountLabel = document.getElementById('payment-discount-label');
+    const totalLabel = document.getElementById('payment-total-label');
+    const totalUsdLabel = document.getElementById('payment-total-usd-label');
+    
+    if (durationLabel) {
+        durationLabel.innerText = months === 12 ? '1 Año (12 Meses)' : `${months} Mes${months > 1 ? 'es' : ''}`;
+    }
+    if (discountLabel) {
+        discountLabel.innerText = `${(discount * 100).toFixed(0)}%`;
+        if (discount > 0) {
+            discountLabel.style.color = 'var(--neon-emerald)';
+        } else {
+            discountLabel.style.color = 'var(--text-muted)';
+        }
+    }
+    if (totalLabel) {
+        totalLabel.innerText = `Q${formatNumber(totalGTQ.toFixed(2))}`;
+    }
+    if (totalUsdLabel) {
+        totalUsdLabel.innerText = `$${formatNumber(totalUSD.toFixed(2))} USD`;
+    }
+}
+
+/**
+ * Envía la solicitud transaccional por transferencia bancaria
+ */
+async function processB2bTransferPayment(event) {
+    if (event) event.preventDefault();
+    
+    if (!uploadedReceiptBase64) {
+        alert("⚠️ ERROR DE VALIDACIÓN BANCARIA: Debes subir una foto o captura de tu comprobante de transferencia bancaria.");
+        return;
+    }
+    
+    document.getElementById('payment-view-form').classList.add('hidden');
+    document.getElementById('payment-view-loading').classList.remove('hidden');
+    
+    const logsEl = document.getElementById('payment-status-logs');
+    if (logsEl) {
+        logsEl.innerHTML = '<p class="text-muted">> Leyendo archivo del comprobante bancario (Base64)...</p>';
+    }
+    
+    setTimeout(async () => {
+        if (logsEl) logsEl.innerHTML += '<p class="text-muted">> Conectando con el Ledger transaccional y Supabase...</p>';
+        
+        const durationSelect = document.getElementById('payment-duration-select');
+        const months = parseInt(durationSelect.value);
+        let discount = 0;
+        if (months === 3) discount = 0.03;
+        else if (months === 6) discount = 0.05;
+        else if (months === 12) discount = 0.10;
+        
+        let baseUSD = 0;
+        if (pendingPaymentTarget === 'basico') baseUSD = 18;
+        else if (pendingPaymentTarget === 'pro') baseUSD = 31;
+        else if (pendingPaymentTarget === 'vip') baseUSD = 82;
+        else if (pendingPaymentType === 'ad') baseUSD = 58;
+        
+        const totalUSD = (baseUSD * months) * (1 - discount);
+        const totalGTQ = totalUSD * exchangeRate;
+        const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
+        
+        const request = {
+            id: txnId,
+            clientId: loggedInB2bClient ? loggedInB2bClient.id : 'demo-client-id',
+            clientName: loggedInB2bClient ? loggedInB2bClient.name : 'Agente Demo',
+            clientEmail: loggedInB2bClient ? loggedInB2bClient.email : 'agente@valorgt.com',
+            concept: pendingPaymentType === 'subscription' ? `Suscripción: Plan ${pendingPaymentTarget.toUpperCase()}` : `Pauta Publicitaria: ${pendingPaymentTarget.zone.toUpperCase()}`,
+            planKey: pendingPaymentType === 'subscription' ? pendingPaymentTarget : 'ad',
+            months: months,
+            totalUSD: totalUSD,
+            totalGTQ: totalGTQ,
+            receipt: uploadedReceiptBase64,
+            status: 'pendiente',
+            timestamp: new Date().toISOString()
+        };
+        
+        // 1. Guardar localmente
+        pendingPaymentRequests.unshift(request);
+        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+        
+        // 2. Intentar guardar en Supabase 'payment_requests'
+        if (isSupabaseActive && supabaseClient) {
+            try {
+                await supabaseClient.from('payment_requests').insert([
+                    {
+                        id: request.id,
+                        client_id: request.clientId,
+                        client_name: request.clientName,
+                        client_email: request.clientEmail,
+                        concept: request.concept,
+                        plan_key: request.planKey,
+                        months: request.months,
+                        total_usd: request.totalUSD,
+                        total_gtq: request.totalGTQ,
+                        receipt: request.receipt,
+                        status: request.status,
+                        timestamp: request.timestamp
+                    }
+                ]);
+            } catch (dbErr) {
+                console.warn("Advertencia al guardar solicitud en Supabase payment_requests:", dbErr);
+            }
+        }
+        
+        // 3. Cambiar estado del perfil del cliente actual a 'Pendiente'
+        if (loggedInB2bClient) {
+            loggedInB2bClient.status = 'Pendiente';
+            
+            // Actualizar localmente en el arreglo de clientes
+            const clientIdx = b2bClients.findIndex(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+            if (clientIdx !== -1) {
+                b2bClients[clientIdx].status = 'Pendiente';
+            }
+            
+            // Intentar actualizar en Supabase
+            if (isSupabaseActive && supabaseClient) {
+                try {
+                    await supabaseClient.from('profiles').update({ status: 'pendiente' }).eq('id', loggedInB2bClient.id);
+                } catch (profErr) {
+                    console.warn("Fallo al actualizar status en perfiles de Supabase:", profErr);
+                }
+            }
+        }
+        
+        // 4. Configurar el modal de éxito con los datos
+        document.getElementById('receipt-auth-code').innerText = `#${txnId}`;
+        document.getElementById('receipt-ref-code').innerText = request.concept;
+        document.getElementById('receipt-amount-val').innerText = `Q${formatNumber(totalGTQ.toFixed(2))}`;
+        
+        // 5. Configurar el enlace de notificación de WhatsApp al admin
+        const whatsappMsg = `Hola Toomarket, acabo de subir mi comprobante de transferencia bancaria en ValorGT AI.\n\nDetalles de mi cuenta:\n- Asesor: ${request.clientName}\n- Correo: ${request.clientEmail}\n- Concepto: ${request.concept}\n- Plazo: ${months} Mes(es)\n- Total Transferido: Q${totalGTQ.toFixed(2)} (Ref: ${txnId}).\n\nPor favor verificar mi transferencia.`;
+        const whatsappUrl = `https://wa.me/50240416471?text=${encodeURIComponent(whatsappMsg)}`;
+        
+        const waBtn = document.getElementById('success-whatsapp-admin-btn');
+        if (waBtn) {
+            waBtn.href = whatsappUrl;
+        }
+        
+        // 6. Notificación de logs
+        if (typeof appendAdminLog === 'function') {
+            appendAdminLog("SAAS", `pago_transferencia: Solicitud ${txnId} de ${request.clientName} registrada. [EMAIL DESPACHADO] Alerta enviada a admin@valorgt.com. [WHATSAPP LISTO] Enlace directo de comprobante configurado para el admin (+502 4041-6471).`, false);
+        }
+        
+        // 7. Recargar vistas
+        updateB2bSubscriptionPendingBanner();
+        renderAdminPendingPaymentsTable();
+        renderAdminDashboard();
+        
+        // Cambiar a la vista de éxito
+        document.getElementById('payment-view-loading').classList.add('hidden');
+        document.getElementById('payment-view-success').classList.remove('hidden');
+    }, 1800);
+}
+
+/**
+ * Renderiza la tabla de aprobaciones del admin en tiempo real
+ */
+function renderAdminPendingPaymentsTable() {
+    const tableBody = document.getElementById('admin-pending-payments-table-body');
+    const counter = document.getElementById('admin-pending-payments-count');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (pendingPaymentRequests.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    <i data-lucide="shield-check" style="width: 24px; height: 24px; color: var(--cyan); margin-bottom: 5px; opacity: 0.5; display: inline-block;"></i><br>
+                    No hay transferencias pendientes de verificación bancaria.
+                </td>
+            </tr>
+        `;
+        if (counter) counter.innerText = "0 PENDIENTES";
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+    }
+    
+    if (counter) {
+        counter.innerText = `${pendingPaymentRequests.length} PENDIENTE${pendingPaymentRequests.length > 1 ? 'S' : ''}`;
+    }
+    
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+    
+    pendingPaymentRequests.forEach((req, idx) => {
+        const row = document.createElement('tr');
+        
+        const amt = req.totalGTQ / exchangeRate * conversion;
+        const totalFormatted = `${currencySym}${formatNumber(amt.toFixed(2))}`;
+        
+        row.innerHTML = `
+            <td style="text-align: left; padding: 10px; vertical-align: middle;">
+                <strong class="text-white">${req.clientName}</strong><br>
+                <span class="sub-title font-mono" style="font-size: 0.6rem; color: var(--text-muted);">${req.clientEmail}</span>
+            </td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                <span class="text-purple" style="font-weight: bold;">${req.concept}</span>
+            </td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                <span style="color: #fff;">${req.months} Mes${req.months > 1 ? 'es' : ''}</span>
+            </td>
+            <td style="text-align: right; padding: 10px; vertical-align: middle; font-weight: bold; color: var(--neon-emerald); font-size: 0.75rem;" class="font-mono">
+                ${totalFormatted}
+            </td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                <button class="btn btn-outline font-mono" style="padding: 3px 8px; font-size: 0.58rem; color: var(--cyan); border-color: rgba(0, 240, 255, 0.4); background: rgba(0,240,255,0.02); cursor: pointer;" onclick="showReceiptLightbox('${req.id}')">
+                    👁️ VER FOTO
+                </button>
+            </td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                <span class="status-badge-pending-auth" style="font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #ff9500; background: rgba(255,149,0,0.1); border: 1px solid rgba(255,149,0,0.3); text-shadow: 0 0 5px rgba(255,149,0,0.2);">PENDIENTE</span>
+            </td>
+            <td style="text-align: right; padding: 10px; vertical-align: middle;">
+                <div style="display: flex; gap: 8px; align-items: center; justify-content: flex-end;">
+                    <button class="btn font-mono" style="padding: 4px 8px; font-size: 0.6rem; background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%); border: none; color:#fff; cursor: pointer; font-weight: bold; border-radius: 4px; box-shadow: 0 0 8px rgba(0,240,255,0.2);" onclick="approvePendingPayment('${req.id}')">
+                        ✓ APROBAR PAGO
+                    </button>
+                </div>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Abre el Lightbox de previsualización del comprobante para el admin
+ */
+function showReceiptLightbox(reqId) {
+    const req = pendingPaymentRequests.find(r => r.id === reqId);
+    if (!req) return;
+    
+    const lightbox = document.getElementById('admin-receipt-lightbox');
+    const img = document.getElementById('receipt-lightbox-img');
+    const title = document.getElementById('receipt-lightbox-title');
+    
+    if (lightbox && img && title) {
+        img.src = req.receipt;
+        title.innerText = `Comprobante de ${req.clientName} (${req.concept})`;
+        lightbox.classList.add('active');
+    }
+}
+
+/**
+ * Cierra el Lightbox del comprobante
+ */
+function closeReceiptLightbox() {
+    const lightbox = document.getElementById('admin-receipt-lightbox');
+    if (lightbox) {
+        lightbox.classList.remove('active');
+    }
+}
+
+/**
+ * Sincroniza las solicitudes pendientes con Supabase y localStorage
+ */
+async function syncPendingPaymentRequests() {
+    const localData = localStorage.getItem('b2b_pending_payments');
+    if (localData) {
+        try {
+            pendingPaymentRequests = JSON.parse(localData);
+        } catch (e) {
+            console.error("Error al decodificar pagos pendientes de localstorage:", e);
+        }
+    }
+    
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('payment_requests')
+                .select('*')
+                .order('timestamp', { ascending: false });
+            
+            if (!error && data) {
+                pendingPaymentRequests = data.map(row => ({
+                    id: row.id,
+                    clientId: row.client_id,
+                    clientName: row.client_name,
+                    clientEmail: row.client_email,
+                    concept: row.concept,
+                    planKey: row.plan_key,
+                    months: row.months,
+                    totalUSD: parseFloat(row.total_usd || 0),
+                    totalGTQ: parseFloat(row.total_gtq || 0),
+                    receipt: row.receipt,
+                    status: row.status,
+                    timestamp: row.timestamp
+                }));
+                localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+            }
+        } catch (err) {
+            console.error("Error al sincronizar payment_requests desde Supabase:", err);
+        }
+    }
+    
+    renderAdminPendingPaymentsTable();
+}
+
+/**
+ * Aprueba una solicitud de pago pendiente de transferencia bancaria
+ */
+async function approvePendingPayment(reqId) {
+    const reqIndex = pendingPaymentRequests.findIndex(r => r.id === reqId);
+    if (reqIndex === -1) return;
+    
+    const req = pendingPaymentRequests[reqIndex];
+    
+    if (confirm(`¿Estás seguro de que deseas APROBAR el pago transaccional #${req.id} de ${req.clientName} por un monto de Q${req.totalGTQ.toFixed(2)} (${req.concept})?`)) {
+        
+        // 1. Eliminar solicitud de local
+        pendingPaymentRequests.splice(reqIndex, 1);
+        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+        
+        // 2. Eliminar solicitud de Supabase
+        if (isSupabaseActive && supabaseClient) {
+            try {
+                await supabaseClient.from('payment_requests').delete().eq('id', req.id);
+            } catch (dbErr) {
+                console.warn("Error al borrar solicitud en Supabase payment_requests:", dbErr);
+            }
+        }
+        
+        // 3. Actualizar balance de ingresos SaaS del admin
+        adminMonthlyRevenueUSD += req.totalUSD;
+        
+        // 4. Si el concepto es suscripción, actualizar el plan del cliente.
+        const isSub = req.concept.startsWith('Suscripción');
+        const planKey = req.planKey;
+        
+        let dbPlan = 'Pro';
+        if (planKey === 'basico') dbPlan = 'Basico';
+        else if (planKey === 'pro') dbPlan = 'Pro';
+        else if (planKey === 'vip') dbPlan = 'VIP';
+        
+        const client = b2bClients.find(c => c.email.toLowerCase() === req.clientEmail.toLowerCase() || c.id === req.clientId);
+        
+        if (client) {
+            client.status = 'Activo';
+            if (isSub) {
+                client.plan = dbPlan;
+                
+                if (loggedInB2bClient && loggedInB2bClient.id === client.id) {
+                    activeB2bPlan = planKey;
+                    loggedInB2bClient.plan = dbPlan;
+                    loggedInB2bClient.status = 'Activo';
+                    
+                    const partnerLevelEl = document.getElementById('commercial-partner-level');
+                    if (partnerLevelEl) {
+                        partnerLevelEl.innerText = (dbPlan === 'VIP' || dbPlan === 'Premium') ? "Inmobiliaria Premium" : (dbPlan === 'Pro' ? "Inmobiliaria Pro" : "Agente Individual");
+                    }
+                    
+                    const goldLock = document.getElementById('commercial-gold-overlay-lock');
+                    const promoLock = document.getElementById('commercial-promo-overlay-lock');
+                    const btnPromote = document.getElementById('btn-promote-property');
+                    
+                    if (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') {
+                        if (goldLock) goldLock.classList.add('hidden');
+                        if (promoLock) promoLock.classList.add('hidden');
+                        if (btnPromote) btnPromote.disabled = false;
+                    } else {
+                        if (goldLock) goldLock.classList.remove('hidden');
+                        if (promoLock) promoLock.classList.remove('hidden');
+                        if (btnPromote) btnPromote.disabled = true;
+                    }
+                    
+                    syncCommercialPricingGridUI();
+                    renderB2bAgentProfile();
+                }
+            }
+        }
+        
+        // Actualizar en Supabase
+        if (isSupabaseActive && supabaseClient) {
+            try {
+                const updatePayload = { status: 'activo' };
+                if (isSub) {
+                    updatePayload.plan = dbPlan;
+                }
+                
+                await supabaseClient.from('profiles').update(updatePayload).eq('id', req.clientId);
+            } catch (dbErr) {
+                console.warn("Fallo al actualizar el perfil en Supabase profiles:", dbErr);
+            }
+        }
+        
+        // Si el concepto es pauta, inyectar propiedad patrocinada
+        if (!isSub && planKey === 'ad') {
+            const zone = req.concept.split(': ')[1].toLowerCase();
+            
+            const propToPromote = agentUploadedProperties.find(p => p.agentEmail === req.clientEmail && p.sponsored !== true);
+            if (propToPromote) {
+                propToPromote.sponsored = true;
+                propToPromote.badge = "PATROCINADO";
+                
+                const sponsoredProp = {
+                    ...propToPromote,
+                    sponsored: true,
+                    badge: "PATROCINADO"
+                };
+                
+                if (!PORTFOLIO_DATABASE[zone]) {
+                    PORTFOLIO_DATABASE[zone] = [];
+                }
+                PORTFOLIO_DATABASE[zone].unshift(sponsoredProp);
+                
+                saasImpressionsCount += 4500;
+                saasClientClicks += 180;
+                
+                renderB2bInventory();
+                
+                const locationSelect = document.getElementById('prop-location');
+                if (locationSelect && locationSelect.value === zone) {
+                    renderFeaturedProperties(zone);
+                }
+                
+                const catalogZoneSelect = document.getElementById('catalog-zone-select');
+                if (catalogZoneSelect && catalogZoneSelect.value === zone) {
+                    renderCatalogProperties();
+                }
+            }
+        }
+        
+        if (typeof appendAdminLog === 'function') {
+            appendAdminLog("SAAS", `aprobación_pago: Aprobada transferencia bancaria transaccional #${req.id} de ${req.clientName}. Acreditado $${req.totalUSD.toFixed(2)} USD a ingresos SaaS.`, false);
+        }
+        
+        alert(`¡PAGO APROBADO EXITOSAMENTE!\n\n` +
+              `El comprobante bancario #${req.id} de ${req.clientName} ha sido auditado y aprobado.\n` +
+              `Activamos la membresía "${isSub ? dbPlan.toUpperCase() : 'PAUTA PUBLICITARIA'}" con éxito.\n` +
+              `Los ingresos globales de la plataforma SaaS han sido actualizados.`);
+        
+        updateB2bSubscriptionPendingBanner();
+        renderAdminPendingPaymentsTable();
+        renderAdminDashboard();
+        updateSaasMetricsHUD();
+    }
+}
+
 
 /**
  * Funciones de formateo de tarjeta de crédito
@@ -4411,17 +4986,84 @@ function handleRegistrationFormSubmit(event) {
         return;
     }
 
-    // Guardar temporalmente los datos del nuevo usuario
-    pendingSignupUser = { name, company, nit, phone, email, pass, role };
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
-    // Configurar pantalla de pago de suscripción
-    document.getElementById('commercial-login-gate').classList.add('hidden');
-    document.getElementById('commercial-signup-payment-gate').classList.remove('hidden');
+    const newClient = {
+        name: name,
+        company: company,
+        nit: nit,
+        phone: phone,
+        email: email,
+        plan: 'Pro', // Recomendado
+        status: 'Pendiente', // Pendiente de pago de transferencia
+        password: pass,
+        usdtBalance: 100.00, // Airdrop de bienvenida
+        role: role
+    };
+
+    // Registrar en Supabase Auth y Profiles si está activo
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            (async () => {
+                const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: pass
+                });
+
+                if (authErr) {
+                    alert(`⚠️ ERROR EN REGISTRO DE CREDENCIALES: ${authErr.message}`);
+                    return;
+                }
+
+                if (authData && authData.user) {
+                    await supabaseClient.from('profiles').insert([
+                        {
+                            id: authData.user.id,
+                            name: name,
+                            company: company,
+                            nit: nit,
+                            phone: phone,
+                            email: email,
+                            plan: 'Pro',
+                            status: 'pendiente',
+                            usdt_balance: 100.00,
+                            role: role
+                        }
+                    ]);
+                    newClient.id = authData.user.id;
+                }
+            })();
+        } catch (err) {
+            console.error("Fallo de red al registrar en Supabase:", err);
+        }
+    }
+
+    b2bClients.unshift(newClient);
+
+    if (typeof appendAdminLog === 'function') {
+        appendAdminLog("SAAS", `billing_node: Nuevo suscriptor ${newClient.name} (${newClient.company}) registrado en estado Pendiente.`, false);
+    }
+
+    // Auto-login al usuario
+    isCommercialAuthenticated = true;
+    loggedInB2bClient = newClient;
+    activeB2bPlan = 'pro'; 
+
+    const partnerLevelEl = document.getElementById('commercial-partner-level');
+    if (partnerLevelEl) {
+        partnerLevelEl.innerText = "Inmobiliaria Pro";
+    }
+
+    alert(`¡REGISTRO EXITOSO!\n\nTu cuenta comercial ha sido creada en estado Pendiente.\nTe dirigiremos de inmediato a nuestra pasarela de pagos por transferencia bancaria para activar tu suscripción.`);
+
+    // Iniciar dashboard
+    initCommercialView();
     
-    // Seleccionar plan recomendado 'pro' por defecto
-    selectSignupPlan('pro', 31);
-
-    alert(`¡Registro previo completado! Se ha establecido tu perfil. Por favor, selecciona un plan de suscripción e ingresa tus datos de tarjeta para activar tu cuenta.`);
+    // Inmediatamente disparar la pasarela de pagos por transferencia bancaria
+    setTimeout(() => {
+        openPlanPayment('pro');
+    }, 450);
 }
 
 /**
@@ -5772,9 +6414,11 @@ async function syncSupabaseData() {
                     renderB2bInventory();
                     updatePromoPropertySelect();
                     updateSaasMetricsHUD();
-                }
             }
         }
+        
+        // Sincronizar solicitudes de pago pendientes en tiempo real
+        await syncPendingPaymentRequests();
     } catch (err) {
         console.error("Fallo crítico de conexión al sincronizar Supabase:", err);
     }
