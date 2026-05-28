@@ -1678,13 +1678,28 @@
                         <button id="comm-tab-btn-propiedades" class="comm-tab-btn" onclick="switchCommercialTab('propiedades')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="home" style="width: 14px; height: 14px;"></i> INGRESO DE PROPIEDADES
                         </button>
+                        <button id="comm-tab-btn-propiedades-list" class="comm-tab-btn" onclick="switchCommercialTab('propiedades-list')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="folder-heart" style="width: 14px; height: 14px;"></i> MIS PROPIEDADES PUBLICADAS
+                        </button>
                         <button id="comm-tab-btn-suscripcion" class="comm-tab-btn" onclick="switchCommercialTab('suscripcion')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> MI SUSCRIPCIÓN B2B
                         </button>
                     </div>
 
                     <!-- PESTAÑA 1: CARTERA DE ORO DIGITAL -->
-                    <div id="comm-tab-content-oro" class="comm-tab-content">
+                    <div id="comm-tab-content-oro" class="comm-tab-content" style="position: relative;">
+                        <!-- Candado Holográfico Dorado (para planes no Premium) -->
+                        <div id="commercial-gold-overlay-lock" class="holographic-lock-overlay hidden">
+                            <div class="lock-card font-mono">
+                                <div class="lock-icon gold">
+                                    <i data-lucide="shield-alert"></i>
+                                </div>
+                                <h3 class="lock-title">CONEXIÓN INTERRUMPIDA</h3>
+                                <p class="lock-message">El XAUt Ledger y la consola contable de retiros bancarios de Tether Gold son privilegios exclusivos del plan Inmobiliaria Premium. Realiza un upgrade para desbloquear tu Cartera de Oro.</p>
+                                <button class="btn-commercial btn-commercial-gold" onclick="switchCommercialTab('suscripcion')">VER SUBSCRIPCIONES</button>
+                            </div>
+                        </div>
+                        
                         <!-- Fila de 3 Columnas: Perfil, Transferencias y Retiros -->
                         <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
                             <!-- Columna 1: Mi Perfil Profesional -->
@@ -1825,15 +1840,10 @@
                         </div>
                     </div>
 
-                    <!-- PESTAÑA 2: INGRESO DE PROPIEDADES (Contenedor abierto, se cerrará al final de la terminal/inventario) -->
+                    <!-- PESTAÑA 2: INGRESO DE PROPIEDADES -->
                     <div id="comm-tab-content-propiedades" class="comm-tab-content hidden">
-
-                    <!-- Moveremos el cierre de esta pestaña al final del inventario -->
-
-                    <!-- GRID PRINCIPAL DE GESTIÓN (FILA INFERIOR) -->
-                    <div class="commercial-grid-lower" style="margin-top: 20px;">
-                        <!-- COLUMNA 1: PUBLICAR NUEVA PROPIEDAD -->
-                        <div class="card glassmorphism">
+                        <!-- TERMINAL DE PUBLICACIÓN (ANCHO COMPLETO) -->
+                        <div class="card glassmorphism" style="width: 100%;">
                             <div class="card-header border-cyan">
                                 <div class="header-icon cyan"><i data-lucide="home"></i></div>
                                 <h2>Terminal de Publicaciones (Subir Propiedad)</h2>
@@ -2096,14 +2106,30 @@
                                         </div>
                                     </details>
 
-                                    <button type="submit" class="btn-commercial btn-commercial-cyan">
+                                    <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%;">
                                         <i data-lucide="plus-circle"></i> Publicar Listado en Inventario
                                     </button>
                                 </form>
+                            </div>
                         </div>
+                    </div> <!-- Cierre de #comm-tab-content-propiedades -->
 
+                    <!-- PESTAÑA 3: MIS PROPIEDADES PUBLICADAS -->
+                    <div id="comm-tab-content-propiedades-list" class="comm-tab-content hidden">
                         <!-- COLUMNA 2: PAUTA DE PUBLICIDAD Y DESTACADOS -->
-                        <div class="card glassmorphism">
+                        <div class="card glassmorphism" style="position: relative; margin-bottom: 20px; width: 100%;">
+                            <!-- Candado Holográfico Cian (para pautas comerciales) -->
+                            <div id="commercial-promo-overlay-lock" class="holographic-lock-overlay hidden">
+                                <div class="lock-card font-mono">
+                                    <div class="lock-icon cyan">
+                                        <i data-lucide="shield-alert"></i>
+                                    </div>
+                                    <h3 class="lock-title">SECCIÓN ENCRIPTADA</h3>
+                                    <p class="lock-message">La promoción premium de activos (Pauta en Portada) es un protocolo de visibilidad exclusivo de la membresía Inmobiliaria Premium. Haz un upgrade para desbloquear.</p>
+                                    <button class="btn-commercial btn-commercial-cyan" onclick="switchCommercialTab('suscripcion')">VER SUBSCRIPCIONES</button>
+                                </div>
+                            </div>
+                            
                             <div class="card-header border-cyan">
                                 <div class="header-icon cyan"><i data-lucide="sparkles"></i></div>
                                 <h2>Pauta de Publicidad & Inyección en Portada</h2>
@@ -2151,41 +2177,41 @@
                                 </form>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- FILA INFERIOR ADICIONAL: INVENTARIO DE PROPIEDADES B2B -->
-                    <div class="card glassmorphism b2b-inventory-card" style="margin-top: 20px; min-height: auto !important;">
-                        <div class="card-header border-cyan" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="header-icon cyan"><i data-lucide="folder-heart"></i></div>
-                                <h2>Mis Propiedades Publicadas B2B</h2>
-                            </div>
-                            
-                            <!-- Filtros interactivos por Categoría -->
-                            <div class="inventory-filters font-mono" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                                <button class="btn-inv-filter active" onclick="filterB2bInventory('todos')">Todos</button>
-                                <button class="btn-inv-filter" onclick="filterB2bInventory('Casa')">Casas</button>
-                                <button class="btn-inv-filter" onclick="filterB2bInventory('Apartamento')">Apartamentos</button>
-                                <button class="btn-inv-filter" onclick="filterB2bInventory('Local')">Locales</button>
-                                <button class="btn-inv-filter" onclick="filterB2bInventory('Bodega')">Bodegas</button>
-                                <button class="btn-inv-filter" onclick="filterB2bInventory('Terreno')">Terrenos</button>
-                            </div>
-                        </div>
 
-                        <div class="commercial-section-body" style="padding: 15px; min-height: auto !important;">
-                            <!-- Lista vacía de inicio -->
-                            <div id="b2b-inventory-empty" class="font-mono text-center" style="padding: 40px 10px; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; text-align: center; width: 100%;">
-                                <i data-lucide="cloud-off" style="width: 40px; height: 40px; stroke-width: 1.5; color: var(--text-secondary); margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
-                                <h4 style="font-weight: bold; font-size: 0.85rem; color: var(--text-secondary);">No hay listados en tu inventario comercial</h4>
-                                <p style="font-size: 0.65rem; margin-top: 5px;">Completa el formulario superior para publicar tu primer activo inmobiliario.</p>
+                        <!-- FILA INFERIOR ADICIONAL: INVENTARIO DE PROPIEDADES B2B -->
+                        <div class="card glassmorphism b2b-inventory-card" style="width: 100%; min-height: auto !important;">
+                            <div class="card-header border-cyan" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="header-icon cyan"><i data-lucide="folder-heart"></i></div>
+                                    <h2>Mis Propiedades Publicadas B2B</h2>
+                                </div>
+                                
+                                <!-- Filtros interactivos por Categoría -->
+                                <div class="inventory-filters font-mono" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <button class="btn-inv-filter active" onclick="filterB2bInventory('todos')">Todos</button>
+                                    <button class="btn-inv-filter" onclick="filterB2bInventory('Casa')">Casas</button>
+                                    <button class="btn-inv-filter" onclick="filterB2bInventory('Apartamento')">Apartamentos</button>
+                                    <button class="btn-inv-filter" onclick="filterB2bInventory('Local')">Locales</button>
+                                    <button class="btn-inv-filter" onclick="filterB2bInventory('Bodega')">Bodegas</button>
+                                    <button class="btn-inv-filter" onclick="filterB2bInventory('Terreno')">Terrenos</button>
+                                </div>
                             </div>
 
-                            <!-- Grid dinámico de tarjetas de inventario -->
-                            <div id="b2b-inventory-grid" class="b2b-inventory-grid font-mono hidden" style="width: 100%;">
-                                <!-- Insertadas dinámicamente -->
+                            <div class="commercial-section-body" style="padding: 15px; min-height: auto !important;">
+                                <!-- Lista vacía de inicio -->
+                                <div id="b2b-inventory-empty" class="font-mono text-center" style="padding: 40px 10px; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.05); border-radius: 8px; text-align: center; width: 100%;">
+                                    <i data-lucide="cloud-off" style="width: 40px; height: 40px; stroke-width: 1.5; color: var(--text-secondary); margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
+                                    <h4 style="font-weight: bold; font-size: 0.85rem; color: var(--text-secondary);">No hay listados en tu inventario comercial</h4>
+                                    <p style="font-size: 0.65rem; margin-top: 5px;">Completa el formulario de la pestaña de Ingreso de Propiedades para publicar tu primer activo inmobiliario.</p>
+                                </div>
+
+                                <!-- Grid dinámico de tarjetas de inventario -->
+                                <div id="b2b-inventory-grid" class="b2b-inventory-grid font-mono hidden" style="width: 100%;">
+                                    <!-- Insertadas dinámicamente -->
+                                </div>
                             </div>
                         </div>
-                    </div> <!-- Cierre de #comm-tab-content-propiedades -->
+                    </div> <!-- Cierre de #comm-tab-content-propiedades-list -->
 
                     <!-- PESTAÑA 3: MI SUSCRIPCIÓN B2B -->
                     <div id="comm-tab-content-suscripcion" class="comm-tab-content hidden">

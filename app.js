@@ -3045,6 +3045,21 @@ function initCommercialView() {
     updatePromoPropertySelect();
     renderB2bInventory();
 
+    // Gestionar Overlays de Bloqueo Criptográficos según Plan
+    const goldLock = document.getElementById('commercial-gold-overlay-lock');
+    const promoLock = document.getElementById('commercial-promo-overlay-lock');
+    const btnPromote = document.getElementById('btn-promote-property');
+
+    if (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') {
+        if (goldLock) goldLock.classList.add('hidden');
+        if (promoLock) promoLock.classList.add('hidden');
+        if (btnPromote) btnPromote.disabled = false;
+    } else {
+        if (goldLock) goldLock.classList.remove('hidden');
+        if (promoLock) promoLock.classList.remove('hidden');
+        if (btnPromote) btnPromote.disabled = true;
+    }
+
     // Sincronizar UI de retiros bancarios, pestañas por defecto y cuadrícula de suscripciones corporativas
     switchCommercialTab('oro');
     renderB2bWithdrawalsTable();
@@ -5652,7 +5667,7 @@ function switchCommercialTab(tabId) {
             activeBtn.style.borderColor = 'rgba(255,215,0,0.45)';
             activeBtn.style.color = '#ffd700';
             activeBtn.style.boxShadow = '0 0 12px rgba(255, 215, 0, 0.12)';
-        } else if (tabId === 'propiedades') {
+        } else if (tabId === 'propiedades' || tabId === 'propiedades-list') {
             activeBtn.style.background = 'rgba(0,240,255,0.05)';
             activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
             activeBtn.style.color = 'var(--cyan)';
@@ -5670,7 +5685,8 @@ function switchCommercialTab(tabId) {
  * Sincroniza visualmente cuál es la tarjeta de membresía activa en la cuadrícula
  */
 function syncCommercialPricingGridUI() {
-    const planKey = activeB2bPlan || 'pro';
+    let planKey = activeB2bPlan || 'pro';
+    if (planKey === 'premium') planKey = 'vip';
     ['basico', 'pro', 'vip'].forEach(p => {
         const card = document.getElementById(`plan-card-${p}`);
         const btn = document.getElementById(`btn-plan-${p}`);
