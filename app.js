@@ -45,7 +45,7 @@ let loggedInB2bClient = null;
 let saasBillingAmountUSD = 31; // Inicializado con el cobro mensual del plan Pro por defecto
 let saasImpressionsCount = 12450;
 let saasClientClicks = 320;
-let b2bClients = [
+let b2bClients = JSON.parse(localStorage.getItem('b2b_clients_local')) || [
     { name: 'Ana Estévez', company: 'Estévez Inmobiliaria', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250, role: 'agente', whatsapp: '50250129482', logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&h=100&q=80' },
     { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Pro', status: 'Activo', password: 'valorgt', usdtBalance: 100, role: 'inversionista', whatsapp: '50240028593', logo: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?auto=format&fit=crop&w=100&h=100&q=80' },
     { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente', whatsapp: '50239482049', logo: '' }
@@ -4443,7 +4443,7 @@ function renderAdminPendingPaymentsTable() {
             </td>
             <td style="text-align: right; padding: 10px; vertical-align: middle;">
                 <div style="display: flex; gap: 8px; align-items: center; justify-content: flex-end;">
-                    <button class="btn font-mono" style="padding: 4px 8px; font-size: 0.6rem; background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%); border: none; color:#fff; cursor: pointer; font-weight: bold; border-radius: 4px; box-shadow: 0 0 8px rgba(0,240,255,0.2);" onclick="approvePendingPayment('${req.id}')">
+                    <button class="btn btn-outline font-mono" style="padding: 3px 8px; font-size: 0.58rem; color: var(--green); border-color: rgba(0, 255, 102, 0.4); background: rgba(0,255,102,0.02); cursor: pointer; font-weight: bold;" onclick="approvePendingPayment('${req.id}')">
                         ✓ APROBAR PAGO
                     </button>
                 </div>
@@ -4601,6 +4601,7 @@ async function approvePendingPayment(reqId) {
                     renderB2bAgentProfile();
                 }
             }
+            localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
         }
         
         // Actualizar en Supabase
@@ -5045,6 +5046,7 @@ function handleRegistrationFormSubmit(event) {
     }
 
     b2bClients.unshift(newClient);
+    localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
 
     if (typeof appendAdminLog === 'function') {
         appendAdminLog("SAAS", `billing_node: Nuevo suscriptor ${newClient.name} (${newClient.company}) registrado en plan ${selectedPlanName.toUpperCase()} (Estado: Pendiente).`, false);
@@ -5639,6 +5641,7 @@ function toggleAgentStatus(clientIdx) {
         alert(`¡Socio ${client.name} suspendido de forma inmediata! Acceso SaaS bloqueado de forma temporal.`);
     }
 
+    localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
     renderAdminDashboard();
 }
 
@@ -5672,6 +5675,7 @@ async function deleteAgent(clientIdx) {
 
     appendAdminLog("SECURITY", `agent_audit: Cuenta de ${client.name} (${client.company}) ELIMINADA permanentemente por root.`, true);
     alert(`¡Socio ${client.name} eliminado permanentemente con éxito!`);
+    localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
     renderAdminDashboard();
 }
 
