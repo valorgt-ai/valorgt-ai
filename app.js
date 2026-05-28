@@ -4807,8 +4807,7 @@ async function authenticateCommercialAgent(event) {
                     email: user,
                     plan: 'Pro',
                     status: 'activo',
-                    usdt_balance: 100.00,
-                    role: 'agente'
+                    usdt_balance: 100.00
                 };
                 
                 try {
@@ -5062,8 +5061,7 @@ function handleRegistrationFormSubmit(event) {
                             email: email,
                             plan: selectedPlanName,
                             status: 'pendiente',
-                            usdt_balance: 100.00,
-                            role: role
+                            usdt_balance: 100.00
                         }
                     ]);
                     newClient.id = authData.user.id;
