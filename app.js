@@ -57,6 +57,7 @@ let b2bWithdrawals = [
 ];
 let pendingPaymentType = null; // 'subscription' | 'ad'
 let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { propertyId, zone }
+let uploadedBase64Image = ''; // Almacenará la foto local subida en Base64
 
 // Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
 let portfolioTrialTimer = null;
@@ -147,6 +148,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pubCategorySelect) {
         pubCategorySelect.addEventListener('change', updateB2bFieldVisibility);
         updateB2bFieldVisibility(); // Ejecutar inicialmente
+    }
+
+    // Listener para cargar foto local (Desde PC del agente) como Base64
+    const pubFileInput = document.getElementById('pub-file-input');
+    if (pubFileInput) {
+        pubFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedBase64Image = event.target.result;
+                    console.log("⚡ [ValorGT AI] Imagen local cargada en Base64 con éxito.");
+                    
+                    // Actualización estética interactiva premium (feedback en el label e input)
+                    const label = document.querySelector('label[for="pub-file-input"]');
+                    if (label) {
+                        label.innerHTML = 'O Subir Foto Local <span style="color: var(--green); font-weight: bold;">(¡Cargada ✔️!)</span>';
+                    }
+                    pubFileInput.style.border = '1px solid var(--green)';
+                    pubFileInput.style.background = 'rgba(0, 255, 128, 0.1)';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                uploadedBase64Image = '';
+                const label = document.querySelector('label[for="pub-file-input"]');
+                if (label) {
+                    label.innerText = 'O Subir Foto Local (Desde tu PC)';
+                }
+                pubFileInput.style.border = '1px dashed var(--cyan)';
+                pubFileInput.style.background = 'rgba(0,0,0,0.4)';
+            }
+        });
     }
 });
 
@@ -3511,7 +3544,14 @@ async function publishAgentProperty(event) {
     const bathrooms = parseFloat(document.getElementById('pub-baths').value);
     const parkings = parseInt(document.getElementById('pub-parks').value);
     const customPhoto = document.getElementById('pub-photo-custom') ? document.getElementById('pub-photo-custom').value.trim() : '';
-    const photo = customPhoto || document.getElementById('pub-photo').value;
+    let photo = '';
+    if (uploadedBase64Image) {
+        photo = uploadedBase64Image;
+    } else if (customPhoto) {
+        photo = customPhoto;
+    } else {
+        photo = document.getElementById('pub-photo').value;
+    }
     const youtubeUrl = document.getElementById('pub-youtube') ? document.getElementById('pub-youtube').value.trim() : '';
     const lat = parseFloat(document.getElementById('pub-lat').value);
     const lng = parseFloat(document.getElementById('pub-lng').value);
@@ -3715,21 +3755,34 @@ async function publishAgentProperty(event) {
     // Limpiar formulario y restablecer valores del acordeón
     document.getElementById('publish-property-form').reset();
     
-    // Forzar checkboxes y selectores por defecto
-    if (document.getElementById('pub-room-master-suite')) document.getElementById('pub-room-master-suite').checked = true;
-    if (document.getElementById('pub-bath-visitor')) document.getElementById('pub-bath-visitor').checked = true;
-    if (document.getElementById('pub-near-malls')) document.getElementById('pub-near-malls').checked = true;
-    if (document.getElementById('pub-near-schools')) document.getElementById('pub-near-schools').checked = true;
-    if (document.getElementById('pub-area-living')) document.getElementById('pub-area-living').checked = true;
-    if (document.getElementById('pub-area-dining')) document.getElementById('pub-area-dining').checked = true;
-    if (document.getElementById('pub-area-kitchen')) document.getElementById('pub-area-kitchen').checked = true;
-    if (document.getElementById('pub-area-laundry')) document.getElementById('pub-area-laundry').checked = true;
-    if (document.getElementById('pub-mat-porcelain')) document.getElementById('pub-mat-porcelain').checked = true;
-    if (document.getElementById('pub-mat-pvc')) document.getElementById('pub-mat-pvc').checked = true;
-    if (document.getElementById('pub-mat-kitchen-luxe')) document.getElementById('pub-mat-kitchen-luxe').checked = true;
-    if (document.getElementById('pub-amenity-security')) document.getElementById('pub-amenity-security').checked = true;
-    if (document.getElementById('pub-amenity-view')) document.getElementById('pub-amenity-view').checked = true;
-    if (document.getElementById('pub-amenity-cistern')) document.getElementById('pub-amenity-cistern').checked = true;
+    // Desmarcar todos los checkboxes de parámetros avanzados por defecto
+    const checkboxesToReset = [
+        'pub-room-master-suite', 'pub-bath-visitor', 
+        'pub-near-malls', 'pub-near-schools', 'pub-near-supers', 'pub-near-roads',
+        'pub-area-living', 'pub-area-dining', 'pub-area-kitchen', 'pub-area-breakfast',
+        'pub-prop-family-room', 'pub-prop-study', 'pub-area-maid', 'pub-area-laundry',
+        'pub-area-storage', 'pub-area-terrace', 'pub-area-balcony', 'pub-area-patio',
+        'pub-mat-porcelain', 'pub-mat-marble', 'pub-mat-wood', 'pub-mat-pvc', 'pub-mat-kitchen-luxe',
+        'pub-amenity-pool', 'pub-amenity-gym', 'pub-amenity-security', 'pub-amenity-clubhouse',
+        'pub-amenity-view', 'pub-amenity-smart', 'pub-amenity-solar', 'pub-amenity-cistern', 'pub-amenity-elevator'
+    ];
+    checkboxesToReset.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+    });
+
+    // Resetear imagen cargada localmente y feedback visual
+    uploadedBase64Image = '';
+    const fileInput = document.getElementById('pub-file-input');
+    if (fileInput) {
+        fileInput.value = '';
+        fileInput.style.border = '1px dashed var(--cyan)';
+        fileInput.style.background = 'rgba(0,0,0,0.4)';
+    }
+    const label = document.querySelector('label[for="pub-file-input"]');
+    if (label) {
+        label.innerText = 'O Subir Foto Local (Desde tu PC)';
+    }
 
     // Actualizar selectores, HUD, inventario comercial y sincronizar monedas
     updatePromoPropertySelect();
