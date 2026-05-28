@@ -1446,34 +1446,34 @@
                             <div class="plan-selection-column" style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
                                 <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">1. SELECCIONAR NIVEL DE SUSCRIPCIÓN</h3>
                                 
-                                <div class="pricing-card" id="signup-plan-basico" onclick="selectSignupPlan('basico', 49)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                <div class="pricing-card" id="signup-plan-basico" data-usd="18" data-gtq="140" onclick="selectSignupPlan('basico', 18)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
                                     <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">BÁSICO</span>
+                                        <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
                                         <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Agente Individual</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: var(--neon-blue);">
-                                        <span class="plan-currency-sym">Q</span><span id="signup-price-basico">381</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                        <span class="plan-currency-sym">Q</span><span id="signup-price-basico">140</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
                                     </div>
                                 </div>
 
-                                <div class="pricing-card active-plan" id="signup-plan-pro" onclick="selectSignupPlan('pro', 149)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
+                                <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="31" data-gtq="240" onclick="selectSignupPlan('pro', 31)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
                                     <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.5rem; padding: 1px 6px;">RECOMENDADO</div>
                                     <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
                                         <span class="plan-badge">PRO</span>
                                         <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Inmobiliaria Pro</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: var(--cyan);">
-                                        <span class="plan-currency-sym">Q</span><span id="signup-price-pro">1,159</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                        <span class="plan-currency-sym">Q</span><span id="signup-price-pro">240</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
                                     </div>
                                 </div>
 
-                                <div class="pricing-card" id="signup-plan-vip" onclick="selectSignupPlan('vip', 399)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                <div class="pricing-card" id="signup-plan-vip" data-usd="82" data-gtq="640" onclick="selectSignupPlan('vip', 82)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
                                     <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">VIP</span>
-                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Desarrollador VIP</span>
+                                        <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
+                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Inmobiliaria Premium</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: #bf5af2;">
-                                        <span class="plan-currency-sym">Q</span><span id="signup-price-vip">3,104</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                        <span class="plan-currency-sym">Q</span><span id="signup-price-vip">640</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
                                     </div>
                                 </div>
                             </div>
@@ -1726,19 +1726,23 @@
                                     <!-- Plan 1: Básico -->
                                     <div class="pricing-card" id="plan-card-basico">
                                         <div class="plan-header">
-                                            <span class="plan-badge">BÁSICO</span>
+                                            <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
                                             <h3 class="plan-title">Agente Individual</h3>
+                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para agentes pequeños.</p>
                                         </div>
                                         <div class="plan-price font-mono">
                                             <span class="plan-currency-sym" id="price-sym-basico">Q</span>
-                                            <span class="plan-price-num" id="price-num-basico" data-usd="49" data-gtq="381">381</span>
+                                            <span class="plan-price-num" id="price-num-basico" data-usd="18" data-gtq="140">140</span>
                                             <span class="plan-period">/mes</span>
                                         </div>
                                         <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> 5 Publicaciones</li>
+                                            <li><i data-lucide="check"></i> 20 Propiedades</li>
                                             <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="x" class="text-red"></i> PDF Marca blanca</li>
-                                            <li><i data-lucide="x" class="text-red"></i> 10% Desc. Pauta</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Su Logo en Propiedades</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Radar de Calor</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Terminal de Inversion</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Portafolio IA</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Desc. en Pautas</li>
                                         </ul>
                                         <button class="btn-plan-action" id="btn-plan-basico" onclick="openPlanPayment('basico')">Cambiar Plan</button>
                                     </div>
@@ -1749,17 +1753,21 @@
                                         <div class="plan-header">
                                             <span class="plan-badge">PRO</span>
                                             <h3 class="plan-title">Inmobiliaria Pro</h3>
+                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para empresas en expansion</p>
                                         </div>
                                         <div class="plan-price font-mono">
                                             <span class="plan-currency-sym" id="price-sym-pro">Q</span>
-                                            <span class="plan-price-num" id="price-num-pro" data-usd="149" data-gtq="1159">1,159</span>
+                                            <span class="plan-price-num" id="price-num-pro" data-usd="31" data-gtq="240">240</span>
                                             <span class="plan-period">/mes</span>
                                         </div>
                                         <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> 25 Publicaciones</li>
+                                            <li><i data-lucide="check"></i> 100 Propiedades</li>
                                             <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="check"></i> PDF Marca blanca</li>
-                                            <li><i data-lucide="check"></i> 20% Desc. Pauta</li>
+                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
+                                            <li><i data-lucide="check"></i> Radar de Calor</li>
+                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
+                                            <li><i data-lucide="check"></i> Portafolio IA</li>
+                                            <li><i data-lucide="check"></i> 15% Desc. Pautas Pub.</li>
                                         </ul>
                                         <button class="btn-plan-action" id="btn-plan-pro" onclick="openPlanPayment('pro')">Plan Activo</button>
                                     </div>
@@ -1767,19 +1775,24 @@
                                     <!-- Plan 3: VIP -->
                                     <div class="pricing-card" id="plan-card-vip">
                                         <div class="plan-header">
-                                            <span class="plan-badge">VIP</span>
-                                            <h3 class="plan-title">Desarrollador VIP</h3>
+                                            <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
+                                            <h3 class="plan-title">Inmobiliaria Premium</h3>
+                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para empresas en expansion</p>
                                         </div>
                                         <div class="plan-price font-mono">
                                             <span class="plan-currency-sym" id="price-sym-vip">Q</span>
-                                            <span class="plan-price-num" id="price-num-vip" data-usd="399" data-gtq="3104">3,104</span>
+                                            <span class="plan-price-num" id="price-num-vip" data-usd="82" data-gtq="640">640</span>
                                             <span class="plan-period">/mes</span>
                                         </div>
                                         <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> ILIMITADO</li>
-                                            <li><i data-lucide="check"></i> Acceso API Directa</li>
-                                            <li><i data-lucide="check"></i> Soporte VIP 24/7</li>
-                                            <li><i data-lucide="check"></i> 40% Desc. Pauta</li>
+                                            <li><i data-lucide="check"></i> Propiedades Ilimitadas</li>
+                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
+                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
+                                            <li><i data-lucide="check"></i> Radar de Calor</li>
+                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
+                                            <li><i data-lucide="check"></i> Portafolio IA</li>
+                                            <li><i data-lucide="check"></i> 25% Desc. Pautas Pub.</li>
+                                            <li><i data-lucide="check" style="color: #ffd700;"></i> Cartera de ORO Digital</li>
                                         </ul>
                                         <button class="btn-plan-action" id="btn-plan-vip" onclick="openPlanPayment('vip')">Cambiar Plan</button>
                                     </div>

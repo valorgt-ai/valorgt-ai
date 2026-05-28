@@ -42,7 +42,7 @@ let activeB2bPlan = 'pro'; // 'basico' | 'pro' | 'vip'
 let adminMonthlyRevenueUSD = 1000.00;
 let isCommercialAuthenticated = false;
 let loggedInB2bClient = null;
-let saasBillingAmountUSD = 149; // Inicializado con el cobro mensual del plan Pro por defecto
+let saasBillingAmountUSD = 31; // Inicializado con el cobro mensual del plan Pro por defecto
 let saasImpressionsCount = 12450;
 let saasClientClicks = 320;
 let b2bClients = [
@@ -1833,6 +1833,14 @@ function updateFormUnits() {
                 ? formatNumber(numEl.getAttribute('data-gtq')) 
                 : formatNumber(numEl.getAttribute('data-usd'));
         }
+        
+        const signupNumEl = document.getElementById(`signup-price-${plan}`);
+        const signupCardEl = document.getElementById(`signup-plan-${plan}`);
+        if (signupNumEl && signupCardEl) {
+            signupNumEl.innerText = activeCurrency === 'GTQ'
+                ? formatNumber(signupCardEl.getAttribute('data-gtq'))
+                : formatNumber(signupCardEl.getAttribute('data-usd'));
+        }
     });
 
     // Sincronizar presupuesto de pauta de publicidad
@@ -3059,9 +3067,9 @@ function renderB2bAgentProfile() {
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     let planPriceUSD = 0;
-    if (client.plan.toLowerCase() === 'vip') planPriceUSD = 399;
-    else if (client.plan.toLowerCase() === 'pro') planPriceUSD = 149;
-    else planPriceUSD = 49;
+    if (client.plan.toLowerCase() === 'vip' || client.plan.toLowerCase() === 'premium') planPriceUSD = 82;
+    else if (client.plan.toLowerCase() === 'pro') planPriceUSD = 31;
+    else planPriceUSD = 18;
 
     const planPriceConverted = planPriceUSD * conversion;
     const planClass = client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico' ? 'basico' : client.plan.toLowerCase();
@@ -3401,6 +3409,22 @@ function updatePromoPropertySelect() {
 async function publishAgentProperty(event) {
     if (event) event.preventDefault();
 
+    // Validar límites de publicación según el plan comercial contratado
+    let maxProperties = 20;
+    let planLabel = "Agente Individual";
+    if (activeB2bPlan === 'pro') {
+        maxProperties = 100;
+        planLabel = "Inmobiliaria Pro";
+    } else if (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') {
+        maxProperties = Infinity;
+        planLabel = "Inmobiliaria Premium";
+    }
+
+    if (agentUploadedProperties.length >= maxProperties) {
+        alert(`⚠️ LÍMITE DE PUBLICACIONES ALCANZADO: Tu plan "${planLabel}" posee un límite máximo de ${maxProperties} propiedades publicadas de forma simultánea. Para aumentar tu capacidad e inyectar más nodos, adquiere un plan corporativo superior.`);
+        return;
+    }
+
     const title = document.getElementById('pub-title').value;
     const category = document.getElementById('pub-category').value;
     const type = document.getElementById('pub-type').value;
@@ -3656,14 +3680,14 @@ function openPlanPayment(planKey) {
     let planPriceUSD = 0;
 
     if (planKey === 'basico') {
-        planName = "Suscripción Agente Básico";
-        planPriceUSD = 49;
+        planName = "Suscripción Agente Individual";
+        planPriceUSD = 18;
     } else if (planKey === 'pro') {
         planName = "Suscripción Inmobiliaria Pro";
-        planPriceUSD = 149;
+        planPriceUSD = 31;
     } else if (planKey === 'vip') {
-        planName = "Suscripción Desarrollador VIP";
-        planPriceUSD = 399;
+        planName = "Suscripción Inmobiliaria Premium";
+        planPriceUSD = 82;
     }
 
     const priceConverted = planPriceUSD * conversion;
@@ -3796,14 +3820,14 @@ function completeB2bTransaction() {
         // Actualizar HUD
         let planLabel = "Inmobiliaria Pro";
         if (planKey === 'basico') {
-            planLabel = "Agente Básico";
-            amountUSD = 49;
+            planLabel = "Agente Individual";
+            amountUSD = 18;
         } else if (planKey === 'pro') {
             planLabel = "Inmobiliaria Pro";
-            amountUSD = 149;
+            amountUSD = 31;
         } else if (planKey === 'vip') {
-            planLabel = "Desarrollador VIP";
-            amountUSD = 399;
+            planLabel = "Inmobiliaria Premium";
+            amountUSD = 82;
         }
 
         saasBillingAmountUSD += amountUSD;
@@ -4038,7 +4062,7 @@ async function authenticateCommercialAgent(event) {
 
             const partnerLevelEl = document.getElementById('commercial-partner-level');
             if (partnerLevelEl) {
-                partnerLevelEl.innerText = profile.plan === 'VIP' ? "Desarrollador VIP" : (profile.plan === 'Pro' ? "Inmobiliaria Pro" : "Agente Básico");
+                partnerLevelEl.innerText = (profile.plan === 'VIP' || profile.plan === 'Premium') ? "Inmobiliaria Premium" : (profile.plan === 'Pro' ? "Inmobiliaria Pro" : "Agente Individual");
             }
 
             // Registrar log en tiempo real en la administración
@@ -4086,7 +4110,7 @@ async function authenticateCommercialAgent(event) {
             activeB2bPlan = client.plan.toLowerCase();
             const partnerLevelEl = document.getElementById('commercial-partner-level');
             if (partnerLevelEl) {
-                partnerLevelEl.innerText = client.plan === 'VIP' ? "Desarrollador VIP" : (client.plan === 'Pro' ? "Inmobiliaria Pro" : "Agente Básico");
+                partnerLevelEl.innerText = (client.plan === 'VIP' || client.plan === 'Premium') ? "Inmobiliaria Premium" : (client.plan === 'Pro' ? "Inmobiliaria Pro" : "Agente Individual");
             }
         } else {
             // Demo user (agente@valorgt.com)
@@ -4141,7 +4165,7 @@ async function authenticateCommercialAgent(event) {
 
 let pendingSignupUser = null;
 let selectedSignupPlanKey = 'pro';
-let selectedSignupPlanPrice = 149;
+let selectedSignupPlanPrice = 31;
 
 /**
  * Alterna entre las pestañas de Login y Registro
@@ -4214,7 +4238,7 @@ function handleRegistrationFormSubmit(event) {
     document.getElementById('commercial-signup-payment-gate').classList.remove('hidden');
     
     // Seleccionar plan recomendado 'pro' por defecto
-    selectSignupPlan('pro', 149);
+    selectSignupPlan('pro', 31);
 
     alert(`¡Registro previo completado! Se ha establecido tu perfil. Por favor, selecciona un plan de suscripción e ingresa tus datos de tarjeta para activar tu cuenta.`);
 }
@@ -4248,8 +4272,8 @@ function selectSignupPlan(planKey, priceUSD) {
     const priceConverted = priceUSD * conversion;
 
     let planName = "Suscripción Inmobiliaria Pro";
-    if (planKey === 'basico') planName = "Suscripción Agente Básico";
-    if (planKey === 'vip') planName = "Suscripción Desarrollador VIP";
+    if (planKey === 'basico') planName = "Suscripción Agente Individual";
+    if (planKey === 'vip') planName = "Suscripción Inmobiliaria Premium";
 
     // Actualizar labels
     document.getElementById('signup-payment-concept-lbl').innerText = planName;
@@ -4401,8 +4425,8 @@ async function completeSignupSubscriptionTransaction() {
     const partnerLevelEl = document.getElementById('commercial-partner-level');
     if (partnerLevelEl) {
         let planLabel = "Inmobiliaria Pro";
-        if (selectedSignupPlanKey === 'basico') planLabel = "Agente Básico";
-        if (selectedSignupPlanKey === 'vip') planLabel = "Desarrollador VIP";
+        if (selectedSignupPlanKey === 'basico') planLabel = "Agente Individual";
+        if (selectedSignupPlanKey === 'vip') planLabel = "Inmobiliaria Premium";
         partnerLevelEl.innerText = planLabel;
     }
 
@@ -4674,15 +4698,15 @@ function renderAdminDashboard() {
         
         // Calcular cobro total del plan
         let planPriceUSD = 0;
-        if (client.plan.toLowerCase() === 'vip') planPriceUSD = 399;
-        else if (client.plan.toLowerCase() === 'pro') planPriceUSD = 149;
-        else if (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') planPriceUSD = 49;
+        if (client.plan.toLowerCase() === 'vip' || client.plan.toLowerCase() === 'premium') planPriceUSD = 82;
+        else if (client.plan.toLowerCase() === 'pro') planPriceUSD = 31;
+        else if (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') planPriceUSD = 18;
         
         // Sumar facturaciones por pauta publicitaria (si las tiene)
         let totalClientAdBillingUSD = 0;
         if (client.email === 'agente@valorgt.com') {
             // El agente demo tiene la facturación del ad actual
-            totalClientAdBillingUSD = (saasBillingAmountUSD - 149); // El plan Pro base es $149, lo demás son ads
+            totalClientAdBillingUSD = (saasBillingAmountUSD - 31); // El plan Pro base es $31, lo demás son ads
         }
 
         const clientTotalUSD = planPriceUSD + totalClientAdBillingUSD;
