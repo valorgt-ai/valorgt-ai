@@ -6414,6 +6414,7 @@ async function syncSupabaseData() {
                     renderB2bInventory();
                     updatePromoPropertySelect();
                     updateSaasMetricsHUD();
+                }
             }
         }
         
