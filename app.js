@@ -4990,13 +4990,17 @@ function handleRegistrationFormSubmit(event) {
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
+    const planSelect = document.getElementById('com-signup-plan');
+    const selectedPlanKey = planSelect ? planSelect.value : 'pro'; // basico | pro | vip
+    const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : 'Básico');
+
     const newClient = {
         name: name,
         company: company,
         nit: nit,
         phone: phone,
         email: email,
-        plan: 'Pro', // Recomendado
+        plan: selectedPlanName,
         status: 'Pendiente', // Pendiente de pago de transferencia
         password: pass,
         usdtBalance: 100.00, // Airdrop de bienvenida
@@ -5026,7 +5030,7 @@ function handleRegistrationFormSubmit(event) {
                             nit: nit,
                             phone: phone,
                             email: email,
-                            plan: 'Pro',
+                            plan: selectedPlanName,
                             status: 'pendiente',
                             usdt_balance: 100.00,
                             role: role
@@ -5043,27 +5047,27 @@ function handleRegistrationFormSubmit(event) {
     b2bClients.unshift(newClient);
 
     if (typeof appendAdminLog === 'function') {
-        appendAdminLog("SAAS", `billing_node: Nuevo suscriptor ${newClient.name} (${newClient.company}) registrado en estado Pendiente.`, false);
+        appendAdminLog("SAAS", `billing_node: Nuevo suscriptor ${newClient.name} (${newClient.company}) registrado en plan ${selectedPlanName.toUpperCase()} (Estado: Pendiente).`, false);
     }
 
     // Auto-login al usuario
     isCommercialAuthenticated = true;
     loggedInB2bClient = newClient;
-    activeB2bPlan = 'pro'; 
+    activeB2bPlan = selectedPlanKey; 
 
     const partnerLevelEl = document.getElementById('commercial-partner-level');
     if (partnerLevelEl) {
-        partnerLevelEl.innerText = "Inmobiliaria Pro";
+        partnerLevelEl.innerText = selectedPlanName === 'VIP' ? "Inmobiliaria Premium" : (selectedPlanName === 'Pro' ? "Inmobiliaria Pro" : "Agente Individual");
     }
 
-    alert(`¡REGISTRO EXITOSO!\n\nTu cuenta comercial ha sido creada en estado Pendiente.\nTe dirigiremos de inmediato a nuestra pasarela de pagos por transferencia bancaria para activar tu suscripción.`);
+    alert(`¡REGISTRO EXITOSO!\n\nTu cuenta comercial ha sido creada en estado Pendiente.\nTe dirigiremos de inmediato a nuestra pasarela de pagos por transferencia bancaria para activar tu suscripción del Plan ${selectedPlanName.toUpperCase()}.`);
 
     // Iniciar dashboard
     initCommercialView();
     
-    // Inmediatamente disparar la pasarela de pagos por transferencia bancaria
+    // Inmediatamente disparar la pasarela de pagos por transferencia bancaria para el plan elegido
     setTimeout(() => {
-        openPlanPayment('pro');
+        openPlanPayment(selectedPlanKey);
     }, 450);
 }
 
