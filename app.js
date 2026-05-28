@@ -4307,28 +4307,28 @@ async function processB2bTransferPayment(event) {
         pendingPaymentRequests.unshift(request);
         localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
         
-        // 2. Intentar guardar en Supabase 'payment_requests'
+        // 2. Intentar guardar en Supabase 'payment_requests' (en segundo plano, no bloquea el UI thread)
         if (isSupabaseActive && supabaseClient) {
-            try {
-                await supabaseClient.from('payment_requests').insert([
-                    {
-                        id: request.id,
-                        client_id: request.clientId,
-                        client_name: request.clientName,
-                        client_email: request.clientEmail,
-                        concept: request.concept,
-                        plan_key: request.planKey,
-                        months: request.months,
-                        total_usd: request.totalUSD,
-                        total_gtq: request.totalGTQ,
-                        receipt: request.receipt,
-                        status: request.status,
-                        timestamp: request.timestamp
-                    }
-                ]);
-            } catch (dbErr) {
+            supabaseClient.from('payment_requests').insert([
+                {
+                    id: request.id,
+                    client_id: request.clientId,
+                    client_name: request.clientName,
+                    client_email: request.clientEmail,
+                    concept: request.concept,
+                    plan_key: request.planKey,
+                    months: request.months,
+                    total_usd: request.totalUSD,
+                    total_gtq: request.totalGTQ,
+                    receipt: request.receipt,
+                    status: request.status,
+                    timestamp: request.timestamp
+                }
+            ]).then(() => {
+                console.log("Solicitud de pago registrada exitosamente en Supabase.");
+            }).catch(dbErr => {
                 console.warn("Advertencia al guardar solicitud en Supabase payment_requests:", dbErr);
-            }
+            });
         }
         
         // 3. Cambiar estado del perfil del cliente actual a 'Pendiente'
@@ -4341,13 +4341,14 @@ async function processB2bTransferPayment(event) {
                 b2bClients[clientIdx].status = 'Pendiente';
             }
             
-            // Intentar actualizar en Supabase
+            // Intentar actualizar en Supabase (en segundo plano, no bloquea el UI thread)
             if (isSupabaseActive && supabaseClient) {
-                try {
-                    await supabaseClient.from('profiles').update({ status: 'pendiente' }).eq('id', loggedInB2bClient.id);
-                } catch (profErr) {
+                supabaseClient.from('profiles').update({ status: 'pendiente' }).eq('id', loggedInB2bClient.id)
+                .then(() => {
+                    console.log("Estado de perfil actualizado a pendiente en Supabase.");
+                }).catch(profErr => {
                     console.warn("Fallo al actualizar status en perfiles de Supabase:", profErr);
-                }
+                });
             }
         }
         
