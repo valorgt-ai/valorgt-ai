@@ -4780,17 +4780,46 @@ async function authenticateCommercialAgent(event) {
                 return;
             }
 
-            // Descargar el perfil detallado del agente desde public.profiles
-            const { data: profile, error: profileErr } = await supabaseClient
+            // Descargar el perfil detallado del agente desde public.profiles (usando maybeSingle para evitar crash si no existe)
+            const { data: profileData, error: profileErr } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', data.user.id)
-                .single();
+                .maybeSingle();
 
             if (profileErr) {
                 if (scanOverlay) scanOverlay.classList.add('hidden');
                 alert(`⚠️ ERROR DE SISTEMA: No se pudo descargar el perfil de socio desde Supabase. ${profileErr.message}`);
                 return;
+            }
+
+            let profile = profileData;
+
+            // Mecanismo de auto-recuperación (Auto-healing): si el usuario existe en Auth pero no tiene registro en public.profiles
+            if (!profile) {
+                console.log("Auto-recuperación activa: Insertando perfil ausente para el usuario Auth:", data.user.id);
+                const fallbackProfile = {
+                    id: data.user.id,
+                    name: user.split('@')[0],
+                    company: 'Inmobiliaria Personal',
+                    nit: 'C/F',
+                    phone: 'N/A',
+                    email: user,
+                    plan: 'Pro',
+                    status: 'activo',
+                    usdt_balance: 100.00,
+                    role: 'agente'
+                };
+                
+                try {
+                    const { error: insertErr } = await supabaseClient.from('profiles').insert([fallbackProfile]);
+                    if (insertErr) throw insertErr;
+                    profile = fallbackProfile;
+                } catch (insertErr) {
+                    if (scanOverlay) scanOverlay.classList.add('hidden');
+                    alert(`⚠️ ERROR DE SISTEMA: Tu firma de autenticación es válida, pero no cuentas con un perfil de base de datos y falló el protocolo de auto-creación. Detalle: ${insertErr.message}`);
+                    return;
+                }
             }
 
             // Verificar si el agente está suspendido
