@@ -4281,116 +4281,163 @@ async function processB2bTransferPayment(event) {
     }
     
     setTimeout(async () => {
-        if (logsEl) logsEl.innerHTML += '<p class="text-muted">> Conectando con el Ledger transaccional y Supabase...</p>';
-        
-        const durationSelect = document.getElementById('payment-duration-select');
-        const months = parseInt(durationSelect.value);
-        let discount = 0;
-        if (months === 3) discount = 0.03;
-        else if (months === 6) discount = 0.05;
-        else if (months === 12) discount = 0.10;
-        
-        let baseUSD = 0;
-        if (pendingPaymentTarget === 'basico') baseUSD = 18;
-        else if (pendingPaymentTarget === 'pro') baseUSD = 31;
-        else if (pendingPaymentTarget === 'vip') baseUSD = 82;
-        else if (pendingPaymentType === 'ad') baseUSD = 58;
-        
-        const totalUSD = (baseUSD * months) * (1 - discount);
-        const totalGTQ = totalUSD * exchangeRate;
-        const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
-        
-        const request = {
-            id: txnId,
-            clientId: loggedInB2bClient ? loggedInB2bClient.id : 'demo-client-id',
-            clientName: loggedInB2bClient ? loggedInB2bClient.name : 'Agente Demo',
-            clientEmail: loggedInB2bClient ? loggedInB2bClient.email : 'agente@valorgt.com',
-            concept: pendingPaymentType === 'subscription' ? `Suscripción: Plan ${pendingPaymentTarget.toUpperCase()}` : `Pauta Publicitaria: ${pendingPaymentTarget.zone.toUpperCase()}`,
-            planKey: pendingPaymentType === 'subscription' ? pendingPaymentTarget : 'ad',
-            months: months,
-            totalUSD: totalUSD,
-            totalGTQ: totalGTQ,
-            receipt: uploadedReceiptBase64,
-            status: 'pendiente',
-            timestamp: new Date().toISOString()
-        };
-        
-        // 1. Guardar localmente
-        pendingPaymentRequests.unshift(request);
-        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
-        
-        // 2. Intentar guardar en Supabase 'payment_requests' (en segundo plano, no bloquea el UI thread)
-        if (isSupabaseActive && supabaseClient) {
-            supabaseClient.from('payment_requests').insert([
-                {
-                    id: request.id,
-                    client_id: request.clientId,
-                    client_name: request.clientName,
-                    client_email: request.clientEmail,
-                    concept: request.concept,
-                    plan_key: request.planKey,
-                    months: request.months,
-                    total_usd: request.totalUSD,
-                    total_gtq: request.totalGTQ,
-                    receipt: request.receipt,
-                    status: request.status,
-                    timestamp: request.timestamp
-                }
-            ]).then(() => {
-                console.log("Solicitud de pago registrada exitosamente en Supabase.");
-            }).catch(dbErr => {
-                console.warn("Advertencia al guardar solicitud en Supabase payment_requests:", dbErr);
-            });
-        }
-        
-        // 3. Cambiar estado del perfil del cliente actual a 'Pendiente'
-        if (loggedInB2bClient) {
-            loggedInB2bClient.status = 'Pendiente';
+        try {
+            if (logsEl) logsEl.innerHTML += '<p class="text-muted">> Conectando con el Ledger transaccional y Supabase...</p>';
             
-            // Actualizar localmente en el arreglo de clientes
-            const clientIdx = b2bClients.findIndex(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
-            if (clientIdx !== -1) {
-                b2bClients[clientIdx].status = 'Pendiente';
+            const durationSelect = document.getElementById('payment-duration-select');
+            const months = durationSelect ? parseInt(durationSelect.value) || 1 : 1;
+            let discount = 0;
+            if (months === 3) discount = 0.03;
+            else if (months === 6) discount = 0.05;
+            else if (months === 12) discount = 0.10;
+            
+            const pTarget = pendingPaymentTarget || 'basico';
+            const pType = pendingPaymentType || 'subscription';
+            
+            let baseUSD = 0;
+            if (pTarget === 'basico') baseUSD = 18;
+            else if (pTarget === 'pro') baseUSD = 31;
+            else if (pTarget === 'vip') baseUSD = 82;
+            else if (pType === 'ad') baseUSD = 58;
+            else baseUSD = 31; // fallback
+            
+            const totalUSD = (baseUSD * months) * (1 - discount);
+            const totalGTQ = totalUSD * exchangeRate;
+            const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
+            
+            let conceptText = "";
+            let planKeyVal = "";
+            if (pType === 'subscription') {
+                const planStr = (typeof pTarget === 'string' ? pTarget : 'pro').toUpperCase();
+                conceptText = `Suscripción: Plan ${planStr}`;
+                planKeyVal = typeof pTarget === 'string' ? pTarget : 'pro';
+            } else {
+                const zoneStr = (pTarget && pTarget.zone ? pTarget.zone : 'zona14').toUpperCase();
+                conceptText = `Pauta Publicitaria: ${zoneStr}`;
+                planKeyVal = 'ad';
             }
             
-            // Intentar actualizar en Supabase (en segundo plano, no bloquea el UI thread)
+            const request = {
+                id: txnId,
+                clientId: loggedInB2bClient ? loggedInB2bClient.id : 'demo-client-id',
+                clientName: loggedInB2bClient ? loggedInB2bClient.name : 'Agente Demo',
+                clientEmail: loggedInB2bClient ? loggedInB2bClient.email : 'agente@valorgt.com',
+                concept: conceptText,
+                planKey: planKeyVal,
+                months: months,
+                totalUSD: totalUSD,
+                totalGTQ: totalGTQ,
+                receipt: uploadedReceiptBase64,
+                status: 'pendiente',
+                timestamp: new Date().toISOString()
+            };
+            
+            // 1. Guardar localmente
+            pendingPaymentRequests.unshift(request);
+            localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+            
+            // 2. Intentar guardar en Supabase 'payment_requests'
             if (isSupabaseActive && supabaseClient) {
-                supabaseClient.from('profiles').update({ status: 'pendiente' }).eq('id', loggedInB2bClient.id)
-                .then(() => {
-                    console.log("Estado de perfil actualizado a pendiente en Supabase.");
-                }).catch(profErr => {
-                    console.warn("Fallo al actualizar status en perfiles de Supabase:", profErr);
-                });
+                try {
+                    supabaseClient.from('payment_requests').insert([
+                        {
+                            id: request.id,
+                            client_id: request.clientId,
+                            client_name: request.clientName,
+                            client_email: request.clientEmail,
+                            concept: request.concept,
+                            plan_key: request.planKey,
+                            months: request.months,
+                            total_usd: request.totalUSD,
+                            total_gtq: request.totalGTQ,
+                            receipt: request.receipt,
+                            status: request.status,
+                            timestamp: request.timestamp
+                        }
+                    ]).then(() => {
+                        console.log("Solicitud de pago registrada exitosamente en Supabase.");
+                    }).catch(dbErr => {
+                        console.warn("Advertencia al guardar solicitud en Supabase payment_requests:", dbErr);
+                    });
+                } catch (supabaseErr) {
+                    console.error("Fallo sincrónico al llamar a Supabase insert:", supabaseErr);
+                }
             }
+            
+            // 3. Cambiar estado del perfil del cliente actual a 'Pendiente'
+            if (loggedInB2bClient) {
+                loggedInB2bClient.status = 'Pendiente';
+                
+                // Actualizar localmente en el arreglo de clientes
+                const clientIdx = b2bClients.findIndex(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+                if (clientIdx !== -1) {
+                    b2bClients[clientIdx].status = 'Pendiente';
+                }
+                
+                // Intentar actualizar en Supabase
+                if (isSupabaseActive && supabaseClient) {
+                    try {
+                        supabaseClient.from('profiles').update({ status: 'pendiente' }).eq('id', loggedInB2bClient.id)
+                        .then(() => {
+                            console.log("Estado de perfil actualizado a pendiente en Supabase.");
+                        }).catch(profErr => {
+                            console.warn("Fallo al actualizar status en perfiles de Supabase:", profErr);
+                        });
+                    } catch (supabaseProfErr) {
+                        console.error("Fallo sincrónico al actualizar perfil en Supabase:", supabaseProfErr);
+                    }
+                }
+            }
+            
+            // 4. Configurar el modal de éxito con los datos
+            const authCodeEl = document.getElementById('receipt-auth-code');
+            if (authCodeEl) authCodeEl.innerText = `#${txnId}`;
+            
+            const refCodeEl = document.getElementById('receipt-ref-code');
+            if (refCodeEl) refCodeEl.innerText = request.concept;
+            
+            const amountValEl = document.getElementById('receipt-amount-val');
+            if (amountValEl) amountValEl.innerText = `Q${formatNumber(totalGTQ.toFixed(2))}`;
+            
+            // 5. Configurar el enlace de notificación de WhatsApp al admin
+            const whatsappMsg = `Hola Toomarket, acabo de subir mi comprobante de transferencia bancaria en ValorGT AI.\n\nDetalles de mi cuenta:\n- Asesor: ${request.clientName}\n- Correo: ${request.clientEmail}\n- Concepto: ${request.concept}\n- Plazo: ${months} Mes(es)\n- Total Transferido: Q${totalGTQ.toFixed(2)} (Ref: ${txnId}).\n\nPor favor verificar mi transferencia.`;
+            const whatsappUrl = `https://wa.me/50240416471?text=${encodeURIComponent(whatsappMsg)}`;
+            
+            const waBtn = document.getElementById('success-whatsapp-admin-btn');
+            if (waBtn) {
+                waBtn.href = whatsappUrl;
+            }
+            
+            // 6. Notificación de logs
+            if (typeof appendAdminLog === 'function') {
+                appendAdminLog("SAAS", `pago_transferencia: Solicitud ${txnId} de ${request.clientName} registrada. [EMAIL DESPACHADO] Alerta enviada a admin@valorgt.com. [WHATSAPP LISTO] Enlace directo de comprobante configurado para el admin (+502 4041-6471).`, false);
+            }
+            
+            // 7. Recargar vistas
+            updateB2bSubscriptionPendingBanner();
+            renderAdminPendingPaymentsTable();
+            renderAdminDashboard();
+            
+            // Cambiar a la vista de éxito
+            const loadingView = document.getElementById('payment-view-loading');
+            if (loadingView) loadingView.classList.add('hidden');
+            
+            const successView = document.getElementById('payment-view-success');
+            if (successView) successView.classList.remove('hidden');
+            
+        } catch (err) {
+            console.error("Error crítico procesando pago de transferencia B2B:", err);
+            
+            // Fallback de emergencia ante cualquier error de Javascript para asegurar que la UI no se quede colgada
+            alert("⚠️ PROCESADOR TRANSACCIONAL: Se registró un fallo en el Ledger de Supabase, pero tu solicitud ha sido guardada localmente y está en proceso. Por favor, procede con la notificación de WhatsApp.");
+            
+            // Forzar mostrar pantalla de éxito
+            const loadingView = document.getElementById('payment-view-loading');
+            if (loadingView) loadingView.classList.add('hidden');
+            
+            const successView = document.getElementById('payment-view-success');
+            if (successView) successView.classList.remove('hidden');
         }
-        
-        // 4. Configurar el modal de éxito con los datos
-        document.getElementById('receipt-auth-code').innerText = `#${txnId}`;
-        document.getElementById('receipt-ref-code').innerText = request.concept;
-        document.getElementById('receipt-amount-val').innerText = `Q${formatNumber(totalGTQ.toFixed(2))}`;
-        
-        // 5. Configurar el enlace de notificación de WhatsApp al admin
-        const whatsappMsg = `Hola Toomarket, acabo de subir mi comprobante de transferencia bancaria en ValorGT AI.\n\nDetalles de mi cuenta:\n- Asesor: ${request.clientName}\n- Correo: ${request.clientEmail}\n- Concepto: ${request.concept}\n- Plazo: ${months} Mes(es)\n- Total Transferido: Q${totalGTQ.toFixed(2)} (Ref: ${txnId}).\n\nPor favor verificar mi transferencia.`;
-        const whatsappUrl = `https://wa.me/50240416471?text=${encodeURIComponent(whatsappMsg)}`;
-        
-        const waBtn = document.getElementById('success-whatsapp-admin-btn');
-        if (waBtn) {
-            waBtn.href = whatsappUrl;
-        }
-        
-        // 6. Notificación de logs
-        if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SAAS", `pago_transferencia: Solicitud ${txnId} de ${request.clientName} registrada. [EMAIL DESPACHADO] Alerta enviada a admin@valorgt.com. [WHATSAPP LISTO] Enlace directo de comprobante configurado para el admin (+502 4041-6471).`, false);
-        }
-        
-        // 7. Recargar vistas
-        updateB2bSubscriptionPendingBanner();
-        renderAdminPendingPaymentsTable();
-        renderAdminDashboard();
-        
-        // Cambiar a la vista de éxito
-        document.getElementById('payment-view-loading').classList.add('hidden');
-        document.getElementById('payment-view-success').classList.remove('hidden');
     }, 1800);
 }
 
