@@ -5588,6 +5588,9 @@ function renderAdminDashboard() {
                     <button class="btn btn-outline font-mono" style="padding: 3px 6px; font-size: 0.55rem; background: transparent; cursor: pointer; border: 1px solid currentColor; ${actionBtnColor}" onclick="toggleAgentStatus(${idx})">
                         ${actionBtnText}
                     </button>
+                    <button class="btn btn-outline font-mono" style="padding: 3px 6px; font-size: 0.55rem; background: transparent; cursor: pointer; border: 1px solid var(--red); color: var(--red);" onclick="deleteAgent(${idx})">
+                        🗑️ BORRAR
+                    </button>
                 </div>
             </td>
         `;
@@ -5632,6 +5635,39 @@ function toggleAgentStatus(clientIdx) {
         alert(`¡Socio ${client.name} suspendido de forma inmediata! Acceso SaaS bloqueado de forma temporal.`);
     }
 
+    renderAdminDashboard();
+}
+
+/**
+ * Elimina de forma permanente una cuenta de agente comercial
+ */
+async function deleteAgent(clientIdx) {
+    const client = b2bClients[clientIdx];
+    if (!client) return;
+
+    // Evitar borrar el agente demo principal para proteger la operabilidad
+    if (client.email === 'agente@valorgt.com') {
+        alert("⚠️ ACCIÓN DENEGADA: El agente demo principal (agente@valorgt.com) no puede ser eliminado por seguridad operativa.");
+        return;
+    }
+
+    const confirmDelete = confirm(`⚠️ ¿CONFIRMAS LA ELIMINACIÓN PERMANENTE DEL ASESOR?\n\n• Nombre: ${client.name}\n• Empresa: ${client.company}\n• Correo: ${client.email}\n\nEsta acción borrará de forma irreversible al agente del sistema local, y si la conexión de base de datos Supabase está activa, de la nube.`);
+    if (!confirmDelete) return;
+
+    // Eliminar del arreglo local
+    b2bClients.splice(clientIdx, 1);
+
+    // Intentar eliminar de Supabase
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            await supabaseClient.from('profiles').delete().eq('email', client.email);
+        } catch (dbErr) {
+            console.warn("Fallo al intentar eliminar agente de Supabase profiles:", dbErr);
+        }
+    }
+
+    appendAdminLog("SECURITY", `agent_audit: Cuenta de ${client.name} (${client.company}) ELIMINADA permanentemente por root.`, true);
+    alert(`¡Socio ${client.name} eliminado permanentemente con éxito!`);
     renderAdminDashboard();
 }
 
