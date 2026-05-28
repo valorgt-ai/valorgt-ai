@@ -1925,30 +1925,35 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-row-3" style="margin-top: 10px; margin-bottom: 10px;">
-                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                             <label for="pub-file-input" style="font-size: 0.75rem;">O Subir Foto Local (Desde tu PC)</label>
-                                             <input type="file" id="pub-file-input" accept="image/*" style="font-size: 0.72rem; padding: 6px; background: rgba(0,0,0,0.4); border: 1px dashed var(--cyan); color: #fff; border-radius: 6px; cursor: pointer; height: 35px;">
-                                         </div>
-                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                             <label for="pub-photo-custom" style="font-size: 0.75rem;">O URL de Imagen Personalizada</label>
-                                             <input type="url" id="pub-photo-custom" placeholder="https://ejemplo.com/mi-propiedad.jpg" style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
-                                         </div>
-                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                             <label for="pub-youtube" style="font-size: 0.75rem;">Enlace de Video de YouTube</label>
-                                             <input type="url" id="pub-youtube" placeholder="https://www.youtube.com/watch?v=..." style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
-                                         </div>
+                                          <div class="form-row-3" style="margin-top: 10px; margin-bottom: 10px;">
+                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                              <label for="pub-file-input" style="font-size: 0.75rem;">O Subir Fotos Locales (Hasta 5 desde tu PC)</label>
+                                              <input type="file" id="pub-file-input" accept="image/*" multiple style="font-size: 0.72rem; padding: 6px; background: rgba(0,0,0,0.4); border: 1px dashed var(--cyan); color: #fff; border-radius: 6px; cursor: pointer; height: 35px;">
+                                          </div>
+                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                              <label for="pub-photo-custom" style="font-size: 0.75rem;">O URLs de Imágenes (Separadas por comas)</label>
+                                              <input type="url" id="pub-photo-custom" placeholder="Ej. https://url1.jpg, https://url2.jpg" style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
+                                          </div>
+                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                              <label for="pub-youtube" style="font-size: 0.75rem;">Enlace de Video de YouTube</label>
+                                              <input type="url" id="pub-youtube" placeholder="https://www.youtube.com/watch?v=..." style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
+                                          </div>
                                      </div>
-                                    <div class="form-row-2" style="margin-top: 10px; margin-bottom: 12px;">
-                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                             <label for="pub-lat" style="font-size: 0.75rem;">Coordenada Latitud (GPS)</label>
-                                             <input type="number" id="pub-lat" placeholder="Ej: 14.5828" step="0.0001" min="14.0" max="15.0" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
-                                         </div>
-                                         <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                             <label for="pub-lng" style="font-size: 0.75rem;">Coordenada Longitud (GPS)</label>
-                                             <input type="number" id="pub-lng" placeholder="Ej: -90.5147" step="0.0001" min="-91.0" max="-90.0" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
-                                         </div>
-                                    </div>
+                                     <div class="form-row-2" style="margin-top: 10px; margin-bottom: 12px;">
+                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                              <label for="pub-lat" style="font-size: 0.75rem;">Coordenada Latitud (GPS)</label>
+                                              <input type="number" id="pub-lat" placeholder="Ej: 14.5828" step="0.0001" min="14.0" max="15.0" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
+                                          </div>
+                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                              <label for="pub-lng" style="font-size: 0.75rem;">Coordenada Longitud (GPS)</label>
+                                              <input type="number" id="pub-lng" placeholder="Ej: -90.5147" step="0.0001" min="-91.0" max="-90.0" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px;">
+                                          </div>
+                                     </div>
+                                     
+                                     <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; margin-top: 10px; margin-bottom: 15px; width: 100%;">
+                                         <label for="pub-description" style="font-size: 0.75rem;">Descripción de la Propiedad (Máx 500 caracteres)</label>
+                                         <textarea id="pub-description" placeholder="Describe los atractivos principales de la propiedad, acabados especiales, cercanías, etc." style="font-size: 0.82rem; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 60px; resize: none; font-family: inherit; width: 100%; box-sizing: border-box;"></textarea>
+                                     </div>
 
                                     <!-- PESTAÑA COLAPSABLE DE PARÁMETROS AVANZADOS (OPCIONAL) -->
                                     <details class="cyber-details" id="pub-advanced-details">
@@ -2790,6 +2795,65 @@
     <!-- Supabase JS Client SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- MODAL DE DETALLES DE PROPIEDAD PREMIUM -->
+    <div id="property-detail-modal" class="cyber-modal hidden" onclick="if(event.target === this) closePropertyDetailModal()">
+        <div class="cyber-modal-content glassmorphism font-mono">
+            <button class="cyber-modal-close" onclick="closePropertyDetailModal()">&times;</button>
+            
+            <div class="modal-gallery-container" id="modal-property-gallery">
+                <!-- Renderizado dinámico del carrusel de fotos -->
+            </div>
+            
+            <div class="modal-body-content" style="padding: 20px; box-sizing: border-box; text-align: left;">
+                <div class="modal-header-info" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 15px;">
+                    <span class="property-tag" id="modal-property-tag" style="font-size: 0.65rem; color: var(--cyan); background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); padding: 2px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;"></span>
+                    <h2 id="modal-property-title" style="font-size: 1.2rem; font-weight: bold; color: #fff; margin: 8px 0 4px 0;"></h2>
+                    <div class="modal-property-price" id="modal-property-price" style="font-size: 1.2rem; font-weight: bold; color: var(--neon-emerald); font-family: monospace;"></div>
+                </div>
+                
+                <h4 style="font-size: 0.72rem; color: var(--cyan); margin-bottom: 6px; letter-spacing: 0.5px;">DESCRIPCIÓN GENERAL:</h4>
+                <p class="modal-property-description" id="modal-property-description" style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 18px; text-align: justify; background: rgba(0,0,0,0.15); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);"></p>
+                
+                <h4 style="font-size: 0.72rem; color: var(--cyan); margin-bottom: 6px; letter-spacing: 0.5px;">ESPECIFICACIONES TÉCNICAS:</h4>
+                <div class="modal-property-specs-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 18px;">
+                    <div style="display: flex; align-items: center; gap: 6px;"><i data-lucide="maximize-2" style="width: 13px; height: 13px; color: var(--cyan);"></i> Area: <strong id="modal-spec-size" style="color:#fff;"></strong> m²</div>
+                    <div style="display: flex; align-items: center; gap: 6px;"><i data-lucide="bed" style="width: 13px; height: 13px; color: var(--cyan);"></i> Habitaciones: <strong id="modal-spec-rooms" style="color:#fff;"></strong></div>
+                    <div style="display: flex; align-items: center; gap: 6px;"><i data-lucide="bath" style="width: 13px; height: 13px; color: var(--cyan);"></i> Baños: <strong id="modal-spec-baths" style="color:#fff;"></strong></div>
+                    <div style="display: flex; align-items: center; gap: 6px;"><i data-lucide="car" style="width: 13px; height: 13px; color: var(--cyan);"></i> Parqueos: <strong id="modal-spec-parks" style="color:#fff;"></strong></div>
+                </div>
+                
+                <h4 style="font-size: 0.72rem; color: var(--cyan); margin-bottom: 6px; letter-spacing: 0.5px;">CARACTERÍSTICAS Y AMENIDADES AVANZADAS:</h4>
+                <div class="modal-property-tags-area" id="modal-advanced-tags" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px;">
+                    <!-- Etiquetas avanzadas cian -->
+                </div>
+                
+                <!-- TARJETA DE CONTACTO DEL AGENTE -->
+                <div class="agent-contact-card" style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 15px; box-sizing: border-box; flex-wrap: wrap; gap: 15px;">
+                    <div class="agent-info-left" style="display: flex; gap: 12px; align-items: center;">
+                        <div class="agent-logo-wrapper" id="modal-agent-logo-container" style="width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--cyan); background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                            <!-- Logo del agente o icono -->
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px; text-align: left;">
+                            <span class="agent-label" style="font-size: 0.55rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">ASESOR ENCARGADO</span>
+                            <h4 class="agent-name" id="modal-agent-name" style="font-size: 0.85rem; font-weight: bold; color: #fff; margin: 0;"></h4>
+                            <span class="agent-company" id="modal-agent-company" style="font-size: 0.65rem; color: var(--text-secondary);"></span>
+                        </div>
+                    </div>
+                    <div class="agent-contact-actions" style="flex-grow: 1; display: flex; justify-content: flex-end; min-width: 180px;">
+                        <a href="#" id="modal-whatsapp-btn" target="_blank" class="btn-whatsapp" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; border-radius: 6px; font-size: 0.78rem; font-weight: bold; padding: 10px 18px; border: 1px solid rgba(255,255,255,0.1); width: 100%; box-sizing: border-box; text-align: center; transition: all 0.3s; box-shadow: 0 0 10px rgba(37, 211, 102, 0.2);">
+                            <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> CHATEAR POR WHATSAPP
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- ACCIÓN DE TASACIÓN INTEGRADA -->
+                <button class="btn btn-primary btn-block glowing-effect" id="modal-autotasar-btn" style="margin-top: 18px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i data-lucide="sparkles"></i> VALORAR ESTE INMUEBLE CON IA
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts del Proyecto -->
     <script src="mockData.js"></script>
     <script src="charts.js"></script>

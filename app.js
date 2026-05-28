@@ -46,9 +46,9 @@ let saasBillingAmountUSD = 31; // Inicializado con el cobro mensual del plan Pro
 let saasImpressionsCount = 12450;
 let saasClientClicks = 320;
 let b2bClients = [
-    { name: 'Ana Estévez', company: 'Estévez Inmobiliaria', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250, role: 'agente' },
-    { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Pro', status: 'Activo', password: 'valorgt', usdtBalance: 100, role: 'inversionista' },
-    { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente' }
+    { name: 'Ana Estévez', company: 'Estévez Inmobiliaria', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250, role: 'agente', whatsapp: '50250129482', logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&h=100&q=80' },
+    { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Pro', status: 'Activo', password: 'valorgt', usdtBalance: 100, role: 'inversionista', whatsapp: '50240028593', logo: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?auto=format&fit=crop&w=100&h=100&q=80' },
+    { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente', whatsapp: '50239482049', logo: '' }
 ];
 let agentUploadedProperties = [];
 let b2bWithdrawals = [
@@ -58,6 +58,7 @@ let b2bWithdrawals = [
 let pendingPaymentType = null; // 'subscription' | 'ad'
 let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { propertyId, zone }
 let uploadedBase64Image = ''; // Almacenará la foto local subida en Base64
+let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas en Base64 en un arreglo
 
 // Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
 let portfolioTrialTimer = null;
@@ -150,31 +151,39 @@ document.addEventListener('DOMContentLoaded', () => {
         updateB2bFieldVisibility(); // Ejecutar inicialmente
     }
 
-    // Listener para cargar foto local (Desde PC del agente) como Base64
+    // Listener para cargar múltiples fotos locales (Desde PC del agente, máx 5) como Base64
     const pubFileInput = document.getElementById('pub-file-input');
     if (pubFileInput) {
-        pubFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadedBase64Image = event.target.result;
-                    console.log("⚡ [ValorGT AI] Imagen local cargada en Base64 con éxito.");
-                    
-                    // Actualización estética interactiva premium (feedback en el label e input)
-                    const label = document.querySelector('label[for="pub-file-input"]');
-                    if (label) {
-                        label.innerHTML = 'O Subir Foto Local <span style="color: var(--green); font-weight: bold;">(¡Cargada ✔️!)</span>';
-                    }
-                    pubFileInput.style.border = '1px solid var(--green)';
-                    pubFileInput.style.background = 'rgba(0, 255, 128, 0.1)';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                uploadedBase64Image = '';
+        pubFileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files).slice(0, 5); // Limitar a 5 fotos máximo
+            uploadedBase64Images = [];
+            
+            if (files.length > 0) {
+                const readPromises = files.map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            resolve(event.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+                
+                uploadedBase64Images = await Promise.all(readPromises);
+                console.log(`⚡ [ValorGT AI] ${uploadedBase64Images.length} imágenes locales cargadas en Base64 con éxito.`);
+                
+                // Actualización estética interactiva premium (feedback en el label e input)
                 const label = document.querySelector('label[for="pub-file-input"]');
                 if (label) {
-                    label.innerText = 'O Subir Foto Local (Desde tu PC)';
+                    label.innerHTML = `O Subir Fotos Locales <span style="color: var(--green); font-weight: bold;">(¡${uploadedBase64Images.length} cargadas ✔️!)</span>`;
+                }
+                pubFileInput.style.border = '1px solid var(--green)';
+                pubFileInput.style.background = 'rgba(0, 255, 128, 0.1)';
+            } else {
+                uploadedBase64Images = [];
+                const label = document.querySelector('label[for="pub-file-input"]');
+                if (label) {
+                    label.innerText = 'O Subir Fotos Locales (Hasta 5 desde tu PC)';
                 }
                 pubFileInput.style.border = '1px dashed var(--cyan)';
                 pubFileInput.style.background = 'rgba(0,0,0,0.4)';
@@ -730,11 +739,8 @@ function renderFeaturedProperties(zoneKey) {
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
         
         const cardHTML = `
-            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="autofillValuationForm('${zoneKey}', ${absoluteIndex})">
-                <div class="card-image-wrapper" style="position: relative;">
-                    ${prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 5; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : ''}
-                    <img src="${prop.photo}" alt="${prop.title}">
-                </div>
+            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${zoneKey}', ${absoluteIndex})">
+                ${renderCardImageHTML(prop, 'card-image-wrapper', '165px', true, 'green')}
                 <div class="card-info">
                     <span class="property-tag">${prop.tag}</span>
                     <h4>${prop.title}</h4>
@@ -876,12 +882,8 @@ function renderCatalogProperties() {
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
         
         const cardHTML = `
-            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="autofillValuationForm('${zoneKey}', ${absoluteIndex})">
-                <div class="card-image-wrapper" style="position: relative;">
-                    ${isSponsored ? '' : `<span class="card-status-badge ${badgeColorClass}">${prop.badge || 'DESTACADO'}</span>`}
-                    ${prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 5; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : ''}
-                    <img src="${prop.photo}" alt="${prop.title}">
-                </div>
+            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${zoneKey}', ${absoluteIndex})">
+                ${renderCardImageHTML(prop, 'card-image-wrapper', '165px', isSponsored, badgeColorClass)}
                 <div class="card-info">
                     <span class="property-tag">${prop.tag}</span>
                     <h4>${prop.title}</h4>
@@ -3218,7 +3220,23 @@ function renderB2bAgentProfile() {
                 </div>
             </div>
 
-            <!-- Fila 3: Resumen de facturación y firma digital -->
+            <!-- Fila 3: Ajustes de Perfil (WhatsApp & Logo) -->
+            <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+                <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="sliders" style="width: 12px; height: 12px;"></i> AJUSTES DE MARCA B2B</span>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.62rem; color: var(--text-secondary);">WHATSAPP DE CONTACTO (SÓLO NÚMEROS):</label>
+                    <input type="tel" id="profile-whatsapp" placeholder="Ej: 50250129482" value="${client.whatsapp || client.phone || ''}" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.62rem; color: var(--text-secondary);">LOGOTIPO EN FOTOS (COPORATIVO PRO/PREMIUM):</label>
+                    <input type="url" id="profile-logo-url" placeholder="Ej. https://miweb.com/logo.png" value="${client.logo || ''}" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
+                </div>
+                <button onclick="saveB2bAgentProfile()" class="btn-micro-cyber" style="width: 100%; text-align: center; justify-content: center; height: 28px; font-size: 0.68rem; background: rgba(0, 240, 255, 0.08); border: 1px solid var(--cyan); color: var(--cyan); margin-top: 5px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <i data-lucide="save" style="width: 11px; height: 11px;"></i> GUARDAR AJUSTES DE MARCA
+                </button>
+            </div>
+
+            <!-- Fila 4: Resumen de facturación y firma digital -->
             <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Costo de Licencia SaaS:</span>
@@ -3543,15 +3561,26 @@ async function publishAgentProperty(event) {
     const rooms = parseInt(document.getElementById('pub-beds').value);
     const bathrooms = parseFloat(document.getElementById('pub-baths').value);
     const parkings = parseInt(document.getElementById('pub-parks').value);
+    const description = document.getElementById('pub-description') ? document.getElementById('pub-description').value.trim() : '';
+    const agentName = loggedInB2bClient ? loggedInB2bClient.name : 'Asesor Inmobiliario';
+    const agentCompany = loggedInB2bClient ? loggedInB2bClient.company : 'ValorGT Premium Partner';
+    const agentPhone = loggedInB2bClient ? (loggedInB2bClient.whatsapp || loggedInB2bClient.phone) : '50250129482';
+    const agentLogo = loggedInB2bClient ? loggedInB2bClient.logo : '';
+    const agentPlan = loggedInB2bClient ? loggedInB2bClient.plan : 'Básico';
+
     const customPhoto = document.getElementById('pub-photo-custom') ? document.getElementById('pub-photo-custom').value.trim() : '';
-    let photo = '';
-    if (uploadedBase64Image) {
-        photo = uploadedBase64Image;
+    let photos = [];
+    if (uploadedBase64Images && uploadedBase64Images.length > 0) {
+        photos = [...uploadedBase64Images];
     } else if (customPhoto) {
-        photo = customPhoto;
-    } else {
-        photo = document.getElementById('pub-photo').value;
+        photos = customPhoto.split(',').map(u => u.trim()).filter(Boolean);
     }
+    
+    if (photos.length === 0) {
+        photos = [document.getElementById('pub-photo').value];
+    }
+    
+    const photo = photos[0];
     const youtubeUrl = document.getElementById('pub-youtube') ? document.getElementById('pub-youtube').value.trim() : '';
     const lat = parseFloat(document.getElementById('pub-lat').value);
     const lng = parseFloat(document.getElementById('pub-lng').value);
@@ -3680,6 +3709,13 @@ async function publishAgentProperty(event) {
         near: near,
         amenities: amenities.length > 0 ? amenities : ["amenity-security"],
         photo: photo,
+        photos: photos,
+        description: description,
+        agentName: agentName,
+        agentCompany: agentCompany,
+        agentPhone: agentPhone,
+        agentLogo: agentLogo,
+        agentPlan: agentPlan,
         youtubeUrl: youtubeUrl,
         badge: "NUEVO LISTADO",
         location: locationKey,
@@ -3728,7 +3764,14 @@ async function publishAgentProperty(event) {
                         materials: materials,
                         near: near,
                         amenities: amenities,
-                        youtubeUrl: youtubeUrl
+                        youtubeUrl: youtubeUrl,
+                        photos: photos,
+                        description: description,
+                        agentName: agentName,
+                        agentCompany: agentCompany,
+                        agentPhone: agentPhone,
+                        agentLogo: agentLogo,
+                        agentPlan: agentPlan
                     }
                 }
             ]).select();
@@ -3771,8 +3814,9 @@ async function publishAgentProperty(event) {
         if (el) el.checked = false;
     });
 
-    // Resetear imagen cargada localmente y feedback visual
+    // Resetear imágenes cargadas localmente y feedback visual
     uploadedBase64Image = '';
+    uploadedBase64Images = [];
     const fileInput = document.getElementById('pub-file-input');
     if (fileInput) {
         fileInput.value = '';
@@ -3781,7 +3825,11 @@ async function publishAgentProperty(event) {
     }
     const label = document.querySelector('label[for="pub-file-input"]');
     if (label) {
-        label.innerText = 'O Subir Foto Local (Desde tu PC)';
+        label.innerText = 'O Subir Fotos Locales (Hasta 5 desde tu PC)';
+    }
+    const descInput = document.getElementById('pub-description');
+    if (descInput) {
+        descInput.value = '';
     }
 
     // Actualizar selectores, HUD, inventario comercial y sincronizar monedas
@@ -4707,13 +4755,10 @@ function renderB2bInventory(filter = 'todos') {
 
         const card = document.createElement('div');
         card.className = `b2b-inventory-card-item ${sponsoredClass}`;
+        card.setAttribute('onclick', `openPropertyDetailModal('${prop.location}', ${dbIndex})`);
+        card.style.cursor = 'pointer';
         card.innerHTML = `
-            <div class="inv-img-wrap" style="position: relative;">
-                <span class="inv-cat-badge ${catClass}">${prop.category.toUpperCase()}</span>
-                ${isSponsored ? '<span class="inv-sponsored-tag">★ PATROCINADO</span>' : ''}
-                ${prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 5; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : ''}
-                <img src="${prop.photo}" alt="${prop.title}">
-            </div>
+            ${renderCardImageHTML(prop, 'inv-img-wrap', '120px', isSponsored, '', true)}
             <div class="inv-info">
                 <div>
                     <h4 class="inv-title" title="${prop.title}">${prop.title}</h4>
@@ -5676,6 +5721,13 @@ async function syncSupabaseData() {
                     hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
                     amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
                     photo: prop.photo_url,
+                    photos: (prop.metadata && prop.metadata.photos) ? prop.metadata.photos : [prop.photo_url],
+                    description: (prop.metadata && prop.metadata.description) ? prop.metadata.description : 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
+                    agentName: (prop.metadata && prop.metadata.agentName) ? prop.metadata.agentName : 'Socio Inmobiliario',
+                    agentCompany: (prop.metadata && prop.metadata.agentCompany) ? prop.metadata.agentCompany : 'ValorGT Premium Partner',
+                    agentPhone: (prop.metadata && prop.metadata.agentPhone) ? prop.metadata.agentPhone : '50250129482',
+                    agentLogo: (prop.metadata && prop.metadata.agentLogo) ? prop.metadata.agentLogo : '',
+                    agentPlan: (prop.metadata && prop.metadata.agentPlan) ? prop.metadata.agentPlan : 'Básico',
                     youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
                     badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
                     location: zoneKey,
@@ -6050,6 +6102,356 @@ function renderB2bWithdrawalsTable() {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+}
+
+/**
+ * ==========================================================================
+ * SISTEMA MULTIMEDIA B2B: GALERÍA DE IMÁGENES PREMIUM Y WATERMARKS
+ * ==========================================================================
+ */
+
+/**
+ * Renderiza la sección de imagen de una tarjeta de propiedad.
+ * Soporta carrusel interactivo si la propiedad posee múltiples imágenes en metadata o photos.
+ * Incorpora marcas de agua (logo) para planes Pro y Premium.
+ */
+function renderCardImageHTML(prop, wrapperClass = 'card-image-wrapper', heightStyle = '165px', isSponsored = false, badgeColorClass = '', isB2B = false) {
+    const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0) 
+        ? prop.metadata.photos 
+        : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo]);
+
+    const youtubeBadge = prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 7; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : '';
+    const statusBadge = (!isB2B && badgeColorClass && !isSponsored) ? `<span class="card-status-badge ${badgeColorClass}">${prop.badge || 'DESTACADO'}</span>` : '';
+    
+    // Regla de Negocio: Cargar plan de membresía y logo del creador
+    const ownerPlan = prop.agentPlan || (loggedInB2bClient ? loggedInB2bClient.plan : 'Básico');
+    const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
+    const ownerLogo = prop.agentLogo || (loggedInB2bClient ? loggedInB2bClient.logo : '');
+    
+    const logoWatermark = (isPremiumPartner && ownerLogo) 
+        ? `<div class="card-logo-watermark" style="position: absolute; top: 10px; right: 10px; z-index: 6; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--cyan); background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); overflow: hidden;"><img src="${ownerLogo}" style="width: 100%; height: 100%; object-fit: contain;"></div>` 
+        : '';
+
+    // B2B Badges
+    const b2bCatClass = isB2B ? prop.category.toLowerCase() : '';
+    const b2bBadge = isB2B ? `<span class="inv-cat-badge ${b2bCatClass}">${prop.category.toUpperCase()}</span>` : '';
+    const b2bSponsored = (isB2B && isSponsored) ? '<span class="inv-sponsored-tag" style="z-index: 7;">★ PATROCINADO</span>' : '';
+
+    if (photos.length > 1) {
+        const sliderId = `slider-${prop.id.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
+        return `
+            <div class="card-image-slider-container ${wrapperClass}" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: ${heightStyle};">
+                <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
+                    ${photos.map(p => `<img src="${p}" alt="${prop.title}" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover;">`).join('')}
+                </div>
+                <!-- Botones del slider -->
+                <button class="slider-btn prev" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', -1, ${photos.length})" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.25); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s; z-index: 8;"><i data-lucide="chevron-left" style="width: 12px; height: 12px;"></i></button>
+                <button class="slider-btn next" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', 1, ${photos.length})" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.25); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s; z-index: 8;"><i data-lucide="chevron-right" style="width: 12px; height: 12px;"></i></button>
+                
+                <!-- Indicadores de dots -->
+                <div class="slider-indicators" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 8;">
+                    ${photos.map((_, idx) => `<span class="slider-dot ${idx === 0 ? 'active' : ''}" style="width: 6px; height: 6px; border-radius: 50%; background: ${idx === 0 ? 'var(--cyan)' : 'rgba(255,255,255,0.4)'}; transition: background 0.2s, transform 0.2s; cursor: pointer;" onclick="event.stopPropagation(); jumpToCardImageSlide('${sliderId}', ${idx}, ${photos.length})"></span>`).join('')}
+                </div>
+                ${logoWatermark}
+                ${statusBadge}
+                ${youtubeBadge}
+                ${b2bBadge}
+                ${b2bSponsored}
+            </div>
+        `;
+    } else {
+        return `
+            <div class="${wrapperClass}" style="position: relative; height: ${heightStyle}; overflow: hidden;">
+                ${logoWatermark}
+                ${statusBadge}
+                ${youtubeBadge}
+                ${b2bBadge}
+                ${b2bSponsored}
+                <img src="${prop.photo}" alt="${prop.title}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        `;
+    }
+}
+
+/**
+ * Desplaza horizontalmente la pista del slider de una tarjeta
+ */
+function changeCardImageSlide(sliderId, direction, totalSlides) {
+    const container = document.getElementById(sliderId);
+    if (!container) return;
+
+    const track = container.querySelector('.card-image-slider-track');
+    const dots = container.querySelectorAll('.slider-dot');
+    if (!track) return;
+
+    let currentSlide = parseInt(container.getAttribute('data-current-slide') || '0');
+    currentSlide += direction;
+
+    if (currentSlide < 0) {
+        currentSlide = totalSlides - 1;
+    } else if (currentSlide >= totalSlides) {
+        currentSlide = 0;
+    }
+
+    container.setAttribute('data-current-slide', currentSlide);
+    track.style.transform = `translateX(-${(currentSlide * 100) / totalSlides}%)`;
+
+    dots.forEach((dot, idx) => {
+        if (idx === currentSlide) {
+            dot.classList.add('active');
+            dot.style.background = 'var(--cyan)';
+            dot.style.transform = 'scale(1.25)';
+        } else {
+            dot.classList.remove('active');
+            dot.style.background = 'rgba(255,255,255,0.4)';
+            dot.style.transform = 'scale(1)';
+        }
+    });
+}
+
+/**
+ * Salta directamente a un slide específico de una tarjeta
+ */
+function jumpToCardImageSlide(sliderId, slideIndex, totalSlides) {
+    const container = document.getElementById(sliderId);
+    if (!container) return;
+
+    const track = container.querySelector('.card-image-slider-track');
+    const dots = container.querySelectorAll('.slider-dot');
+    if (!track) return;
+
+    container.setAttribute('data-current-slide', slideIndex);
+    track.style.transform = `translateX(-${(slideIndex * 100) / totalSlides}%)`;
+
+    dots.forEach((dot, idx) => {
+        if (idx === slideIndex) {
+            dot.classList.add('active');
+            dot.style.background = 'var(--cyan)';
+            dot.style.transform = 'scale(1.25)';
+        } else {
+            dot.classList.remove('active');
+            dot.style.background = 'rgba(255,255,255,0.4)';
+            dot.style.transform = 'scale(1)';
+        }
+    });
+}
+
+/**
+ * ==========================================================================
+ * SISTEMA DE FICHA DETALLADA (MODAL) Y CONTACTO DE WHATSAPP
+ * ==========================================================================
+ */
+
+/**
+ * Abre el Modal Premium con todos los detalles de la propiedad seleccionada
+ */
+function openPropertyDetailModal(zoneKey, index) {
+    const prop = PORTFOLIO_DATABASE[zoneKey]?.[index];
+    if (!prop) return;
+
+    const modal = document.getElementById('property-detail-modal');
+    if (!modal) return;
+
+    // Configurar metadatos y título
+    document.getElementById('modal-property-tag').innerText = prop.tag;
+    document.getElementById('modal-property-title').innerText = prop.title;
+    
+    // Configurar precio dinámico según moneda
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+    const convertedPrice = prop.priceUSD * conversion;
+    const { type } = getPropertyCategoryAndType(prop);
+    const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
+    document.getElementById('modal-property-price').innerText = `${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}`;
+
+    // Configurar descripción (usar por defecto si no tiene)
+    const desc = prop.description || (prop.metadata && prop.metadata.description) || 'Propiedad exclusiva seleccionada y tasada por el nodo inteligente de ValorGT AI.';
+    document.getElementById('modal-property-description').innerText = desc;
+
+    // Configurar especificaciones base
+    document.getElementById('modal-spec-size').innerText = prop.size;
+    document.getElementById('modal-spec-rooms').innerText = prop.rooms;
+    document.getElementById('modal-spec-baths').innerText = prop.bathrooms;
+    document.getElementById('modal-spec-parks').innerText = prop.parkings;
+
+    // Configurar tags avanzados en cian
+    const tagsArea = document.getElementById('modal-advanced-tags');
+    tagsArea.innerHTML = '';
+    
+    const tags = [];
+    if (prop.hasMasterSuite) tags.push("Suite Principal");
+    if (prop.hasVisitorBath) tags.push("Baño de Visitas");
+    if (prop.study) tags.push("Estudio");
+    if (prop.familyRoom) tags.push("Sala Familiar");
+    
+    if (prop.amenities && prop.amenities.length > 0) {
+        prop.amenities.forEach(am => {
+            if (am === "amenity-pool" || am === "pool") tags.push("Piscina / Jacuzzi");
+            if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio Equipado");
+            if (am === "amenity-security" || am === "security") tags.push("Seguridad 24/7");
+            if (am === "amenity-smart" || am === "smart") tags.push("Domótica Inteligente");
+            if (am === "amenity-view" || am === "view") tags.push("Vista Panorámica");
+        });
+    }
+
+    if (tags.length > 0) {
+        tags.forEach(t => {
+            const span = document.createElement('span');
+            span.style.cssText = "font-size: 0.65rem; background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 4px 10px; border-radius: 4px; font-weight: 500;";
+            span.innerText = t;
+            tagsArea.appendChild(span);
+        });
+    } else {
+        tagsArea.innerHTML = '<span style="font-size: 0.65rem; color: var(--text-muted);">Sin características adicionales configuradas.</span>';
+    }
+
+    // Configurar carrusel de imágenes en el modal
+    const galleryArea = document.getElementById('modal-property-gallery');
+    const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0) 
+        ? prop.metadata.photos 
+        : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo]);
+
+    if (photos.length > 1) {
+        const sliderId = `modal-slider-${prop.id.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
+        galleryArea.innerHTML = `
+            <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 260px; border-radius: 12px 12px 0 0;">
+                <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
+                    ${photos.map(p => `<img src="${p}" alt="${prop.title}" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover;">`).join('')}
+                </div>
+                <!-- Botones del slider -->
+                <button class="slider-btn prev" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', -1, ${photos.length})" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
+                <button class="slider-btn next" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', 1, ${photos.length})" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i></button>
+                
+                <!-- Indicadores de dots -->
+                <div class="slider-indicators" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 8;">
+                    ${photos.map((_, idx) => `<span class="slider-dot ${idx === 0 ? 'active' : ''}" style="width: 7px; height: 7px; border-radius: 50%; background: ${idx === 0 ? 'var(--cyan)' : 'rgba(255,255,255,0.4)'}; transition: background 0.2s, transform 0.2s; cursor: pointer;" onclick="event.stopPropagation(); jumpToCardImageSlide('${sliderId}', ${idx}, ${photos.length})"></span>`).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        galleryArea.innerHTML = `
+            <div style="width: 100%; height: 260px; overflow: hidden; border-radius: 12px 12px 0 0; position: relative;">
+                <img src="${prop.photo}" alt="${prop.title}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        `;
+    }
+
+    // Configurar información de contacto del agente creador
+    const agentName = prop.agentName || (prop.metadata && prop.metadata.agentName) || 'Asesor Inmobiliario';
+    const agentCompany = prop.agentCompany || (prop.metadata && prop.metadata.agentCompany) || 'ValorGT Premium Partner';
+    const agentLogo = prop.agentLogo || (prop.metadata && prop.metadata.agentLogo) || '';
+    const agentPhone = prop.agentPhone || (prop.metadata && prop.metadata.agentPhone) || '50250129482'; // fallback Ana Estévez
+    const ownerPlan = prop.agentPlan || (prop.metadata && prop.metadata.agentPlan) || 'Básico';
+
+    document.getElementById('modal-agent-name').innerText = agentName;
+    document.getElementById('modal-agent-company').innerText = agentCompany;
+
+    // Renderizar logo del agente si tiene plan Pro/Premium
+    const logoContainer = document.getElementById('modal-agent-logo-container');
+    const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
+    
+    if (isPremiumPartner && agentLogo) {
+        logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
+        logoContainer.style.display = "flex";
+    } else {
+        logoContainer.innerHTML = `<i data-lucide="user" style="width: 20px; height: 20px; color: var(--cyan);"></i>`;
+        logoContainer.style.display = "flex";
+    }
+
+    // Configurar enlace directo de WhatsApp con mensaje personalizado
+    const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
+    const waText = encodeURIComponent(`¡Hola! Estoy interesado en la propiedad "${prop.title}" (${prop.tag}) que vi listada en ValorGT AI. ¿Me podrías brindar más información sobre esta opción?`);
+    const waBtn = document.getElementById('modal-whatsapp-btn');
+    waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
+
+    // Configurar botón Autotasar integrado
+    const autotasarBtn = document.getElementById('modal-autotasar-btn');
+    autotasarBtn.onclick = () => {
+        closePropertyDetailModal();
+        autofillValuationForm(zoneKey, index);
+        // Desplazar suavemente a la sección de valoración
+        document.getElementById('nav-btn-dashboard').click();
+        document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Mostrar modal
+    modal.classList.remove('hidden');
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Cierra el modal de detalles de propiedad
+ */
+function closePropertyDetailModal() {
+    const modal = document.getElementById('property-detail-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+/**
+ * Guarda el WhatsApp y Logotipo de forma local (híbrida) y en la nube
+ */
+async function saveB2bAgentProfile() {
+    if (!loggedInB2bClient) return;
+
+    const whatsappInput = document.getElementById('profile-whatsapp');
+    const logoInput = document.getElementById('profile-logo-url');
+
+    if (!whatsappInput || !logoInput) return;
+
+    const whatsapp = whatsappInput.value.trim().replace(/[^0-9]/g, '');
+    const logo = logoInput.value.trim();
+
+    if (!whatsapp) {
+        alert("Por favor ingresa un número de WhatsApp de contacto válido.");
+        return;
+    }
+
+    // Actualizar localmente el cliente activo
+    loggedInB2bClient.whatsapp = whatsapp;
+    loggedInB2bClient.logo = logo;
+    loggedInB2bClient.phone = whatsapp; // Sincronizar campo telefónico genérico
+
+    // Guardar localmente en localStorage
+    localStorage.setItem(`b2b_profile_extras_${loggedInB2bClient.id}`, JSON.stringify({
+        whatsapp: whatsapp,
+        logo: logo
+    }));
+
+    // Intentar sincronizar en Supabase
+    if (isSupabaseActive) {
+        try {
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ 
+                    phone: whatsapp,
+                    // Si la base de datos lo soporta, actualizar el metadata
+                    metadata: {
+                        whatsapp: whatsapp,
+                        logo: logo
+                    }
+                })
+                .eq('id', loggedInB2bClient.id);
+
+            if (error) {
+                console.warn("Actualización exitosa en local, advertencia al guardar en Supabase:", error.message);
+            } else {
+                console.log("⚡ [ValorGT AI] Perfil sincronizado exitosamente en la nube de Supabase.");
+            }
+        } catch (err) {
+            console.error("Fallo de red al sincronizar perfil en la nube:", err);
+        }
+    }
+
+    alert("🏆 ¡PERFIL ACTUALIZADO CON ÉXITO!\n\nTu WhatsApp de contacto y marca de agua (Logo) han sido consolidados. Tus propiedades reflejarán esta información de inmediato.");
+    
+    // Re-renderizar perfil e inventarios
+    renderB2bAgentProfile();
+    renderB2bInventory();
 }
 
 
