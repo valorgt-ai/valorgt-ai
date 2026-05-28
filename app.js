@@ -3155,7 +3155,7 @@ function initCommercialView() {
     }
 
     // Sincronizar UI de retiros bancarios, pestañas por defecto y cuadrícula de suscripciones corporativas
-    switchCommercialTab('oro');
+    switchCommercialTab('home');
     renderB2bWithdrawalsTable();
     syncCommercialPricingGridUI();
 
@@ -3318,6 +3318,10 @@ function updateSaasMetricsHUD() {
     if (billingCard) {
         billingCard.innerText = billingFormatted;
     }
+    const billingHome = document.getElementById('saas-billing-val-home');
+    if (billingHome) {
+        billingHome.innerText = billingFormatted;
+    }
 
     const saasListingsEl = document.getElementById('saas-listings-count');
     if (saasListingsEl) {
@@ -3328,6 +3332,10 @@ function updateSaasMetricsHUD() {
     if (countCard) {
         countCard.innerText = agentUploadedProperties.length;
     }
+    const countHome = document.getElementById('saas-listings-count-home');
+    if (countHome) {
+        countHome.innerText = agentUploadedProperties.length;
+    }
 
     const saasImpressionsEl = document.getElementById('saas-impressions-count');
     if (saasImpressionsEl) {
@@ -3337,6 +3345,10 @@ function updateSaasMetricsHUD() {
     const impressionsCard = document.getElementById('saas-impressions-count-card');
     if (impressionsCard) {
         impressionsCard.innerText = formatNumber(saasImpressionsCount);
+    }
+    const impressionsHome = document.getElementById('saas-impressions-count-home');
+    if (impressionsHome) {
+        impressionsHome.innerText = formatNumber(saasImpressionsCount);
     }
 
     // Cartera Oro Digital (XAUt Airdrops)
@@ -6569,7 +6581,12 @@ function switchCommercialTab(tabId) {
     
     if (activeBtn) {
         activeBtn.classList.add('active');
-        if (tabId === 'oro') {
+        if (tabId === 'home') {
+            activeBtn.style.background = 'rgba(0,240,255,0.05)';
+            activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
+            activeBtn.style.color = 'var(--cyan)';
+            activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+        } else if (tabId === 'oro') {
             activeBtn.style.background = 'rgba(255,215,0,0.08)';
             activeBtn.style.borderColor = 'rgba(255,215,0,0.45)';
             activeBtn.style.color = '#ffd700';

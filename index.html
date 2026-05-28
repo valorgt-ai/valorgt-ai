@@ -1680,8 +1680,11 @@
 
                     <!-- MENÚ DE PESTAÑAS HORIZONTAL B2B -->
                     <div class="commercial-tabs-nav font-mono" style="display: flex; gap: 12px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-top: 15px;">
-                        <button id="comm-tab-btn-oro" class="comm-tab-btn active" onclick="switchCommercialTab('oro')" style="background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-                            <i data-lucide="coins" style="width: 14px; height: 14px;"></i> CARTERA DE ORO DIGITAL
+                        <button id="comm-tab-btn-home" class="comm-tab-btn active" onclick="switchCommercialTab('home')" style="background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.4); color: var(--cyan); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 12px rgba(0, 240, 255, 0.12);">
+                            <i data-lucide="layout-dashboard" style="width: 14px; height: 14px;"></i> INICIO (HOME)
+                        </button>
+                        <button id="comm-tab-btn-oro" class="comm-tab-btn" onclick="switchCommercialTab('oro')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="coins" style="width: 14px; height: 14px; color: #ffd700;"></i> CARTERA DE ORO DIGITAL
                         </button>
                         <button id="comm-tab-btn-propiedades" class="comm-tab-btn" onclick="switchCommercialTab('propiedades')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="home" style="width: 14px; height: 14px;"></i> INGRESO DE PROPIEDADES
@@ -1694,8 +1697,88 @@
                         </button>
                     </div>
 
+                    <!-- PESTAÑA 0: INICIO (HOME) -->
+                    <div id="comm-tab-content-home" class="comm-tab-content">
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+                            <!-- Columna 1: Mi Perfil Profesional -->
+                            <div class="card glassmorphism border-cyan" style="flex: 1; min-width: 320px; border-left: 3px solid var(--cyan) !important; border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important;">
+                                <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;">
+                                    <div class="header-icon cyan" style="background: rgba(0, 240, 255, 0.1) !important; color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="user"></i></div>
+                                    <h2 style="color: var(--cyan) !important;">Mi Perfil Profesional y Membresía B2B</h2>
+                                </div>
+                                <div class="commercial-section-body" id="b2b-profile-card-body" style="padding: 15px 5px;">
+                                    <!-- Poblado dinámicamente con los datos de sesión del agente -->
+                                </div>
+                            </div>
+
+                            <!-- Columna 2: Indicadores y Métricas del Agente (Facturación SaaS, Propiedades, Tráfico) -->
+                            <div style="flex: 1.5; min-width: 350px; display: flex; flex-direction: column; gap: 20px;">
+                                <!-- Grid de 3 Tarjetas de Métricas -->
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; width: 100%;">
+                                    <!-- Tarjeta 1: Facturación SaaS -->
+                                    <div class="kpi-card glassmorphism font-mono" style="border-color: rgba(52, 199, 89, 0.2) !important;">
+                                        <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--neon-emerald), transparent) !important;"></div>
+                                        <div class="kpi-header">
+                                            <span class="kpi-title">Facturación SaaS</span>
+                                            <i data-lucide="credit-card" style="color: var(--neon-emerald); width: 16px; height: 16px;"></i>
+                                        </div>
+                                        <div class="kpi-value" id="saas-billing-val-home" style="color: #fff; font-size: 1.6rem; text-shadow: 0 0 10px rgba(52, 199, 89, 0.2); font-weight: bold; margin: 5px 0;">$0</div>
+                                        <span class="kpi-sub-text">Inversión mensual SaaS</span>
+                                    </div>
+
+                                    <!-- Tarjeta 2: Propiedades Propias -->
+                                    <div class="kpi-card glassmorphism font-mono" style="border-color: rgba(0, 240, 255, 0.2) !important;">
+                                        <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, var(--cyan), transparent) !important;"></div>
+                                        <div class="kpi-header">
+                                            <span class="kpi-title">Propiedades Propias</span>
+                                            <i data-lucide="building" style="color: var(--cyan); width: 16px; height: 16px;"></i>
+                                        </div>
+                                        <div class="kpi-value" id="saas-listings-count-home" style="color: #fff; font-size: 1.6rem; text-shadow: 0 0 10px rgba(0, 240, 255, 0.2); font-weight: bold; margin: 5px 0;">0</div>
+                                        <span class="kpi-sub-text">Anuncios en catálogo</span>
+                                    </div>
+
+                                    <!-- Tarjeta 3: Tráfico e Impresiones -->
+                                    <div class="kpi-card glassmorphism font-mono" style="border-color: rgba(191, 90, 242, 0.2) !important;">
+                                        <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #bf5af2, transparent) !important;"></div>
+                                        <div class="kpi-header">
+                                            <span class="kpi-title">Tráfico / Impresiones</span>
+                                            <i data-lucide="eye" style="color: #bf5af2; width: 16px; height: 16px;"></i>
+                                        </div>
+                                        <div class="kpi-value" id="saas-impressions-count-home" style="color: #fff; font-size: 1.6rem; text-shadow: 0 0 10px rgba(191, 90, 242, 0.2); font-weight: bold; margin: 5px 0;">0</div>
+                                        <span class="kpi-sub-text">Visitas acumuladas</span>
+                                    </div>
+                                </div>
+
+                                <!-- Tarjeta de Bienvenida Informativa -->
+                                <div class="card glassmorphism border-cyan" style="border-left: 3px solid var(--cyan) !important; border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important;">
+                                    <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;">
+                                        <div class="header-icon cyan" style="background: rgba(0, 240, 255, 0.1) !important; color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="award"></i></div>
+                                        <h2 style="color: var(--cyan) !important;">Consola de Operaciones B2B - ValorGT AI</h2>
+                                    </div>
+                                    <div class="commercial-section-body font-mono" style="text-align: left; padding: 15px;">
+                                        <p style="font-size: 0.8rem; color: #fff; line-height: 1.6; margin: 0 0 12px 0;">Bienvenido a tu panel de control de agente inmobiliario. Desde esta consola integrada puedes gestionar tu portafolio de propiedades, monitorizar el alcance de tus publicaciones y potenciar tus listados con las herramientas avanzadas de ValorGT AI.</p>
+                                        <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px;">
+                                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-secondary);">
+                                                <i data-lucide="check-circle" style="width: 14px; height: 14px; color: var(--cyan);"></i>
+                                                <span>Ingreso de Propiedades: <strong style="color: var(--cyan);">Desbloqueado para todos los planes</strong></span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-secondary);">
+                                                <i data-lucide="check-circle" style="width: 14px; height: 14px; color: var(--cyan);"></i>
+                                                <span>Mis Propiedades Publicadas: <strong style="color: var(--cyan);">Desbloqueado para todos los planes</strong></span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-secondary);">
+                                                <i data-lucide="shield" style="width: 14px; height: 14px; color: #ffd700;"></i>
+                                                <span>Cartera de Oro Digital y Retiros XAUt: <strong style="color: #ffd700;">Exclusivo plan Premium (VIP)</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- PESTAÑA 1: CARTERA DE ORO DIGITAL -->
-                    <div id="comm-tab-content-oro" class="comm-tab-content" style="position: relative;">
+                    <div id="comm-tab-content-oro" class="comm-tab-content hidden" style="position: relative;">
                         <!-- Candado Holográfico Dorado (para planes no Premium) -->
                         <div id="commercial-gold-overlay-lock" class="holographic-lock-overlay hidden">
                             <div class="lock-card font-mono">
@@ -1708,18 +1791,8 @@
                             </div>
                         </div>
                         
-                        <!-- Fila de 3 Columnas: Perfil, Transferencias y Retiros -->
+                        <!-- Fila de 2 Columnas: Transferencias y Retiros -->
                         <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-                            <!-- Columna 1: Mi Perfil Profesional -->
-                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
-                                    <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="user"></i></div>
-                                    <h2 style="color: #ffd700 !important;">Mi Perfil Profesional y Membresía B2B</h2>
-                                </div>
-                                <div class="commercial-section-body" id="b2b-profile-card-body" style="padding: 15px 5px;">
-                                    <!-- Poblado dinámicamente con los datos de sesión del agente -->
-                                </div>
-                            </div>
 
                             <!-- Columna 2: Consola de Transferencias -->
                             <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
@@ -2145,18 +2218,6 @@
                     <div id="comm-tab-content-propiedades-list" class="comm-tab-content hidden">
                         <!-- COLUMNA 2: PAUTA DE PUBLICIDAD Y DESTACADOS -->
                         <div class="card glassmorphism" style="position: relative; margin-bottom: 20px; width: 100%;">
-                            <!-- Candado Holográfico Cian (para pautas comerciales) -->
-                            <div id="commercial-promo-overlay-lock" class="holographic-lock-overlay hidden">
-                                <div class="lock-card font-mono">
-                                    <div class="lock-icon cyan">
-                                        <i data-lucide="shield-alert"></i>
-                                    </div>
-                                    <h3 class="lock-title">SECCIÓN ENCRIPTADA</h3>
-                                    <p class="lock-message">La promoción premium de activos (Pauta en Portada) es un protocolo de visibilidad exclusivo de la membresía Inmobiliaria Premium. Haz un upgrade para desbloquear.</p>
-                                    <button class="btn-commercial btn-commercial-cyan" onclick="switchCommercialTab('suscripcion')">VER SUBSCRIPCIONES</button>
-                                </div>
-                            </div>
-                            
                             <div class="card-header border-cyan">
                                 <div class="header-icon cyan"><i data-lucide="sparkles"></i></div>
                                 <h2>Pauta de Publicidad & Inyección en Portada</h2>
