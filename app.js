@@ -3853,7 +3853,7 @@ async function publishAgentProperty(event) {
  * Abre el modal de pasarela de pago para cambiar de plan SaaS
  */
 function openPlanPayment(planKey) {
-    if (planKey === activeB2bPlan) {
+    if (planKey === activeB2bPlan && loggedInB2bClient && (loggedInB2bClient.status === 'Activo' || loggedInB2bClient.status === 'activo')) {
         alert(`Ya tienes activo el Plan ${planKey.toUpperCase()} corporativo.`);
         return;
     }
