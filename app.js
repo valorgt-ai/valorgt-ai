@@ -708,6 +708,31 @@ function renderFeaturedProperties(zoneKey) {
                     <div class="property-location">
                         <i data-lucide="map-pin" class="tiny-icon"></i> ${zoneName}
                     </div>
+                    ${(() => {
+                        let advancedTagsHTML = '';
+                        const tags = [];
+                        if (prop.hasMasterSuite) tags.push("Suite Principal");
+                        if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                        if (prop.study) tags.push("Estudio");
+                        if (prop.familyRoom) tags.push("Sala Fam.");
+                        if (prop.amenities && prop.amenities.length > 0) {
+                            prop.amenities.forEach(am => {
+                                if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
+                                if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
+                                if (am === "amenity-view" || am === "view") tags.push("Vista");
+                            });
+                        }
+                        if (tags.length > 0) {
+                            advancedTagsHTML = `
+                                <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
+                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.52rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 1px 4px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
+                                    ${tags.length > 3 ? `<span style="font-size: 0.52rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 1px 4px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                </div>
+                            `;
+                        }
+                        return advancedTagsHTML;
+                    })()}
                     <div class="property-specs">
                         <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
                         <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
@@ -830,6 +855,31 @@ function renderCatalogProperties() {
                     <div class="property-location">
                         <i data-lucide="map-pin" class="tiny-icon"></i> ${zoneName}
                     </div>
+                    ${(() => {
+                        let advancedTagsHTML = '';
+                        const tags = [];
+                        if (prop.hasMasterSuite) tags.push("Suite Principal");
+                        if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                        if (prop.study) tags.push("Estudio");
+                        if (prop.familyRoom) tags.push("Sala Fam.");
+                        if (prop.amenities && prop.amenities.length > 0) {
+                            prop.amenities.forEach(am => {
+                                if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
+                                if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
+                                if (am === "amenity-view" || am === "view") tags.push("Vista");
+                            });
+                        }
+                        if (tags.length > 0) {
+                            advancedTagsHTML = `
+                                <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
+                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.52rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 1px 4px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
+                                    ${tags.length > 3 ? `<span style="font-size: 0.52rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 1px 4px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                </div>
+                            `;
+                        }
+                        return advancedTagsHTML;
+                    })()}
                     <div class="property-specs">
                         <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
                         <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
@@ -4618,6 +4668,31 @@ function renderB2bInventory(filter = 'todos') {
                         <span>📍 ${prop.location.toUpperCase()}</span>
                         <span>${prop.rooms} H • ${prop.bathrooms} B</span>
                     </div>
+                    ${(() => {
+                        let advancedTagsHTML = '';
+                        const tags = [];
+                        if (prop.hasMasterSuite) tags.push("Suite Principal");
+                        if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                        if (prop.study) tags.push("Estudio");
+                        if (prop.familyRoom) tags.push("Sala Fam.");
+                        if (prop.amenities && prop.amenities.length > 0) {
+                            prop.amenities.forEach(am => {
+                                if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
+                                if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
+                                if (am === "amenity-view" || am === "view") tags.push("Vista");
+                            });
+                        }
+                        if (tags.length > 0) {
+                            advancedTagsHTML = `
+                                <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
+                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.52rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 1px 4px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
+                                    ${tags.length > 3 ? `<span style="font-size: 0.52rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 1px 4px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                </div>
+                            `;
+                        }
+                        return advancedTagsHTML;
+                    })()}
                     <div class="inv-specs" style="margin-top: 5px; display: flex; gap: 6px; font-size: 0.55rem; color: var(--text-muted);">
                         <span>📐 M²: ${prop.size}</span>
                         <span>🚗 Pq: ${prop.parkings}</span>
@@ -5541,10 +5616,12 @@ async function syncSupabaseData() {
                     rooms: parseInt(prop.rooms),
                     bathrooms: parseFloat(prop.bathrooms),
                     parkings: parseInt(prop.parkings),
-                    garden: 0,
-                    study: true,
-                    familyRoom: true,
-                    amenities: ["amenity-security", "amenity-smart"],
+                    garden: prop.metadata && prop.metadata.garden ? parseFloat(prop.metadata.garden) : 0,
+                    study: prop.metadata && prop.metadata.study ? prop.metadata.study : false,
+                    familyRoom: prop.metadata && prop.metadata.familyRoom ? prop.metadata.familyRoom : false,
+                    hasMasterSuite: prop.metadata && prop.metadata.hasMasterSuite ? prop.metadata.hasMasterSuite : false,
+                    hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
+                    amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
                     photo: prop.photo_url,
                     youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
                     badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
