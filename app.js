@@ -698,7 +698,8 @@ function renderFeaturedProperties(zoneKey) {
         
         const cardHTML = `
             <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="autofillValuationForm('${zoneKey}', ${absoluteIndex})">
-                <div class="card-image-wrapper">
+                <div class="card-image-wrapper" style="position: relative;">
+                    ${prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 5; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : ''}
                     <img src="${prop.photo}" alt="${prop.title}">
                 </div>
                 <div class="card-info">
@@ -818,8 +819,9 @@ function renderCatalogProperties() {
         
         const cardHTML = `
             <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="autofillValuationForm('${zoneKey}', ${absoluteIndex})">
-                <div class="card-image-wrapper">
+                <div class="card-image-wrapper" style="position: relative;">
                     ${isSponsored ? '' : `<span class="card-status-badge ${badgeColorClass}">${prop.badge || 'DESTACADO'}</span>`}
+                    ${prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 5; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : ''}
                     <img src="${prop.photo}" alt="${prop.title}">
                 </div>
                 <div class="card-info">
@@ -3458,7 +3460,9 @@ async function publishAgentProperty(event) {
     const rooms = parseInt(document.getElementById('pub-beds').value);
     const bathrooms = parseFloat(document.getElementById('pub-baths').value);
     const parkings = parseInt(document.getElementById('pub-parks').value);
-    const photo = document.getElementById('pub-photo').value;
+    const customPhoto = document.getElementById('pub-photo-custom') ? document.getElementById('pub-photo-custom').value.trim() : '';
+    const photo = customPhoto || document.getElementById('pub-photo').value;
+    const youtubeUrl = document.getElementById('pub-youtube') ? document.getElementById('pub-youtube').value.trim() : '';
     const lat = parseFloat(document.getElementById('pub-lat').value);
     const lng = parseFloat(document.getElementById('pub-lng').value);
 
@@ -3586,6 +3590,7 @@ async function publishAgentProperty(event) {
         near: near,
         amenities: amenities.length > 0 ? amenities : ["amenity-security"],
         photo: photo,
+        youtubeUrl: youtubeUrl,
         badge: "NUEVO LISTADO",
         location: locationKey,
         isAgentUpload: true,
@@ -3632,7 +3637,8 @@ async function publishAgentProperty(event) {
                         areas: areas,
                         materials: materials,
                         near: near,
-                        amenities: amenities
+                        amenities: amenities,
+                        youtubeUrl: youtubeUrl
                     }
                 }
             ]).select();
@@ -4599,9 +4605,10 @@ function renderB2bInventory(filter = 'todos') {
         const card = document.createElement('div');
         card.className = `b2b-inventory-card-item ${sponsoredClass}`;
         card.innerHTML = `
-            <div class="inv-img-wrap">
+            <div class="inv-img-wrap" style="position: relative;">
                 <span class="inv-cat-badge ${catClass}">${prop.category.toUpperCase()}</span>
                 ${isSponsored ? '<span class="inv-sponsored-tag">★ PATROCINADO</span>' : ''}
+                ${prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 5; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : ''}
                 <img src="${prop.photo}" alt="${prop.title}">
             </div>
             <div class="inv-info">
@@ -5539,6 +5546,7 @@ async function syncSupabaseData() {
                     familyRoom: true,
                     amenities: ["amenity-security", "amenity-smart"],
                     photo: prop.photo_url,
+                    youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
                     badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
                     location: zoneKey,
                     isAgentUpload: true,
