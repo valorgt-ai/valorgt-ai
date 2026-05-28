@@ -1670,12 +1670,25 @@
                              </div>
                         </div>
 
-                    <!-- GRID PRINCIPAL DE GESTIÓN (FILA SUPERIOR) -->
-                    <div class="commercial-grid-upper">
-                        <!-- COLUMNA 1: MI PERFIL + CONSOLA DE TRANSFERENCIA ORO -->
-                        <div class="commercial-column-flex">
-                            <!-- MI PERFIL PROFESIONAL Y MEMBRESÍA SaaS -->
-                            <div class="card glassmorphism border-gold" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                    <!-- MENÚ DE PESTAÑAS HORIZONTAL B2B -->
+                    <div class="commercial-tabs-nav font-mono" style="display: flex; gap: 12px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-top: 15px;">
+                        <button id="comm-tab-btn-oro" class="comm-tab-btn active" onclick="switchCommercialTab('oro')" style="background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="coins" style="width: 14px; height: 14px;"></i> CARTERA DE ORO DIGITAL
+                        </button>
+                        <button id="comm-tab-btn-propiedades" class="comm-tab-btn" onclick="switchCommercialTab('propiedades')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="home" style="width: 14px; height: 14px;"></i> INGRESO DE PROPIEDADES
+                        </button>
+                        <button id="comm-tab-btn-suscripcion" class="comm-tab-btn" onclick="switchCommercialTab('suscripcion')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> MI SUSCRIPCIÓN B2B
+                        </button>
+                    </div>
+
+                    <!-- PESTAÑA 1: CARTERA DE ORO DIGITAL -->
+                    <div id="comm-tab-content-oro" class="comm-tab-content">
+                        <!-- Fila de 3 Columnas: Perfil, Transferencias y Retiros -->
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+                            <!-- Columna 1: Mi Perfil Profesional -->
+                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
                                 <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
                                     <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="user"></i></div>
                                     <h2 style="color: #ffd700 !important;">Mi Perfil Profesional y Membresía B2B</h2>
@@ -1685,8 +1698,8 @@
                                 </div>
                             </div>
 
-                            <!-- CONSOLA DE TRANSFERENCIA ORO DIGITAL -->
-                            <div class="card glassmorphism border-gold" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                            <!-- Columna 2: Consola de Transferencias -->
+                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
                                 <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
                                     <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="send"></i></div>
                                     <h2 style="color: #ffd700 !important;">Transferencia de Oro Digital (XAUt)</h2>
@@ -1711,95 +1724,112 @@
                                     </form>
                                 </div>
                             </div>
+
+                            <!-- Columna 3: Nuevo Panel de Retiros Bancarios -->
+                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
+                                    <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="download-cloud"></i></div>
+                                    <h2 style="color: #ffd700 !important;">Retiro Bancario de Oro Digital (XAUt)</h2>
+                                </div>
+                                <div class="commercial-section-body font-mono">
+                                    <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Retira saldo XAUt directamente a tu cuenta bancaria nacional en Quetzales. Se aplica una comisión de red de **4%**.</p>
+                                    
+                                    <form id="b2b-withdrawal-form" class="commercial-form" onsubmit="executeB2bWithdrawal(event)">
+                                        <div class="form-row-2">
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="withdrawal-amount-xaut" style="font-size: 0.75rem;">Monto XAUt a Retirar</label>
+                                                <input type="number" id="withdrawal-amount-xaut" placeholder="Monto XAUt" min="0.0001" step="0.0001" required oninput="updateWithdrawalCalculations()" style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; text-align: center;">
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="withdrawal-bank" style="font-size: 0.75rem;">Banco de Destino</label>
+                                                <select id="withdrawal-bank" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
+                                                    <option value="Banco Industrial" selected>Banco Industrial (BI)</option>
+                                                    <option value="G&T Continental">G&T Continental</option>
+                                                    <option value="Banrural">Banrural</option>
+                                                    <option value="BAC Credomatic">BAC Credomatic</option>
+                                                    <option value="Banco Agromercantil">BAM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row-2" style="margin-top: 10px;">
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="withdrawal-account" style="font-size: 0.75rem;">Número de Cuenta</label>
+                                                <input type="text" id="withdrawal-account" placeholder="Ej: 001-234567-8" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="withdrawal-account-type" style="font-size: 0.75rem;">Tipo de Cuenta</label>
+                                                <select id="withdrawal-account-type" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
+                                                    <option value="Monetaria" selected>Monetaria</option>
+                                                    <option value="Ahorros">Ahorros</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Desglose de conversión reactiva -->
+                                        <div class="withdrawal-summary font-mono" style="margin-top: 12px; padding: 10px; background: rgba(255,215,0,0.03); border: 1px dashed rgba(255,215,0,0.2); border-radius: 6px; font-size: 0.68rem; display: flex; flex-direction: column; gap: 5px;">
+                                            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                                                <span>Equivalente Bruto (GTQ):</span>
+                                                <span id="withdrawal-gross-gtq" style="color: #fff;">Q0.00</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; color: var(--red);">
+                                                <span>Comisión de Red (4%):</span>
+                                                <span id="withdrawal-fee-gtq">-Q0.00</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,215,0,0.15); padding-top: 5px; color: #ffd700;">
+                                                <span>Neto a Recibir en Banco:</span>
+                                                <span id="withdrawal-net-gtq">Q0.00</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn-commercial btn-commercial-gold" style="width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; transition: all 0.3s; text-shadow: none;">
+                                            <i data-lucide="send" style="width: 14px; height: 14px;"></i> EFECTUAR SOLICITUD DE RETIRO
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- COLUMNA 2: TABLA DE PLANES PREMIUM B2B -->
-                        <div class="card glassmorphism">
-                            <div class="card-header border-cyan">
-                                <div class="header-icon cyan"><i data-lucide="shield-check"></i></div>
-                                <h2>Suscripciones Corporativas ValorGT AI</h2>
+                        <!-- TABLA DE HISTORIAL DE SOLICITUDES DE RETIRO -->
+                        <div class="card glassmorphism border-gold" style="margin-top: 20px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; width: 100%;">
+                            <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="history"></i></div>
+                                    <h2 style="color: #ffd700 !important;">Historial de Solicitudes de Retiro</h2>
+                                </div>
+                                <span class="badge font-mono" id="b2b-withdrawals-count" style="font-size: 0.6rem; color: #ffd700; background: rgba(255, 215, 0, 0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255, 215, 0, 0.25);">0 Solicitudes</span>
                             </div>
-                            <div class="commercial-section-body">
-                                <p class="saas-desc font-mono" style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 12px;">Escala la operativa de tu inmobiliaria con acceso ilimitado a nuestro motor predictivo B2B SaaS, modelos de valoración FHA e inyección directa en portadas premium.</p>
-                                
-                                <div class="saas-pricing-grid">
-                                    <!-- Plan 1: Básico -->
-                                    <div class="pricing-card" id="plan-card-basico">
-                                        <div class="plan-header">
-                                            <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
-                                            <h3 class="plan-title">Agente Individual</h3>
-                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para agentes pequeños.</p>
-                                        </div>
-                                        <div class="plan-price font-mono">
-                                            <span class="plan-currency-sym" id="price-sym-basico">Q</span>
-                                            <span class="plan-price-num" id="price-num-basico" data-usd="18" data-gtq="140">140</span>
-                                            <span class="plan-period">/mes</span>
-                                        </div>
-                                        <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> 20 Propiedades</li>
-                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Su Logo en Propiedades</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Radar de Calor</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Terminal de Inversion</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Portafolio IA</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Desc. en Pautas</li>
-                                        </ul>
-                                        <button class="btn-plan-action" id="btn-plan-basico" onclick="openPlanPayment('basico')">Cambiar Plan</button>
-                                    </div>
-
-                                    <!-- Plan 2: Pro (Por Defecto) -->
-                                    <div class="pricing-card active-plan" id="plan-card-pro">
-                                        <div class="active-ribbon">RECOMENDADO</div>
-                                        <div class="plan-header">
-                                            <span class="plan-badge">PRO</span>
-                                            <h3 class="plan-title">Inmobiliaria Pro</h3>
-                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para empresas en expansion</p>
-                                        </div>
-                                        <div class="plan-price font-mono">
-                                            <span class="plan-currency-sym" id="price-sym-pro">Q</span>
-                                            <span class="plan-price-num" id="price-num-pro" data-usd="31" data-gtq="240">240</span>
-                                            <span class="plan-period">/mes</span>
-                                        </div>
-                                        <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> 100 Propiedades</li>
-                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
-                                            <li><i data-lucide="check"></i> Radar de Calor</li>
-                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
-                                            <li><i data-lucide="check"></i> Portafolio IA</li>
-                                            <li><i data-lucide="check"></i> 15% Desc. Pautas Pub.</li>
-                                        </ul>
-                                        <button class="btn-plan-action" id="btn-plan-pro" onclick="openPlanPayment('pro')">Plan Activo</button>
-                                    </div>
-
-                                    <!-- Plan 3: VIP -->
-                                    <div class="pricing-card" id="plan-card-vip">
-                                        <div class="plan-header">
-                                            <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
-                                            <h3 class="plan-title">Inmobiliaria Premium</h3>
-                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para empresas en expansion</p>
-                                        </div>
-                                        <div class="plan-price font-mono">
-                                            <span class="plan-currency-sym" id="price-sym-vip">Q</span>
-                                            <span class="plan-price-num" id="price-num-vip" data-usd="82" data-gtq="640">640</span>
-                                            <span class="plan-period">/mes</span>
-                                        </div>
-                                        <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> Propiedades Ilimitadas</li>
-                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
-                                            <li><i data-lucide="check"></i> Radar de Calor</li>
-                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
-                                            <li><i data-lucide="check"></i> Portafolio IA</li>
-                                            <li><i data-lucide="check"></i> 25% Desc. Pautas Pub.</li>
-                                            <li><i data-lucide="check" style="color: #ffd700;"></i> Cartera de ORO Digital</li>
-                                        </ul>
-                                        <button class="btn-plan-action" id="btn-plan-vip" onclick="openPlanPayment('vip')">Cambiar Plan</button>
-                                    </div>
+                            <div class="commercial-section-body font-mono" style="padding: 10px 15px;">
+                                <div style="overflow-x: auto; width: 100%;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left;">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-muted);">
+                                                <th style="padding: 10px 5px;">FECHA Y REF</th>
+                                                <th style="padding: 10px 5px;">BANCO & CUENTA</th>
+                                                <th style="padding: 10px 5px; text-align: right;">BRUTO (XAUt)</th>
+                                                <th style="padding: 10px 5px; text-align: right;">COMISIÓN (4%)</th>
+                                                <th style="padding: 10px 5px; text-align: right; color: #ffd700;">NETO RECIBIDO (GTQ)</th>
+                                                <th style="padding: 10px 5px; text-align: center;">ESTADO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="b2b-withdrawals-table-body">
+                                            <tr>
+                                                <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                                    <i data-lucide="clock" style="width: 24px; height: 24px; color: var(--text-secondary); margin-bottom: 5px; opacity: 0.5; display: inline-block;"></i><br>
+                                                    No has realizado ninguna solicitud de retiro de Tether Gold.
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- PESTAÑA 2: INGRESO DE PROPIEDADES (Contenedor abierto, se cerrará al final de la terminal/inventario) -->
+                    <div id="comm-tab-content-propiedades" class="comm-tab-content hidden">
+
+                    <!-- Moveremos el cierre de esta pestaña al final del inventario -->
+
                     <!-- GRID PRINCIPAL DE GESTIÓN (FILA INFERIOR) -->
                     <div class="commercial-grid-lower" style="margin-top: 20px;">
                         <!-- COLUMNA 1: PUBLICAR NUEVA PROPIEDAD -->
@@ -2153,6 +2183,96 @@
                             <!-- Grid dinámico de tarjetas de inventario -->
                             <div id="b2b-inventory-grid" class="b2b-inventory-grid font-mono hidden" style="width: 100%;">
                                 <!-- Insertadas dinámicamente -->
+                            </div>
+                        </div>
+                    </div> <!-- Cierre de #comm-tab-content-propiedades -->
+
+                    <!-- PESTAÑA 3: MI SUSCRIPCIÓN B2B -->
+                    <div id="comm-tab-content-suscripcion" class="comm-tab-content hidden">
+                        <!-- TABLA DE PLANES PREMIUM B2B -->
+                        <div class="card glassmorphism" style="width: 100%;">
+                            <div class="card-header border-cyan">
+                                <div class="header-icon cyan"><i data-lucide="shield-check"></i></div>
+                                <h2>Suscripciones Corporativas ValorGT AI</h2>
+                            </div>
+                            <div class="commercial-section-body">
+                                <p class="saas-desc font-mono" style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 15px;">Escala la operativa de tu inmobiliaria con acceso ilimitado a nuestro motor predictivo B2B SaaS, modelos de valoración FHA e inyección directa en portadas premium.</p>
+                                
+                                <div class="saas-pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                                    <!-- Plan 1: Básico -->
+                                    <div class="pricing-card" id="plan-card-basico">
+                                        <div class="plan-header">
+                                            <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
+                                            <h3 class="plan-title">Agente Individual</h3>
+                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para agentes pequeños.</p>
+                                        </div>
+                                        <div class="plan-price font-mono">
+                                            <span class="plan-currency-sym" id="price-sym-basico">Q</span>
+                                            <span class="plan-price-num" id="price-num-basico" data-usd="18" data-gtq="140">140</span>
+                                            <span class="plan-period">/mes</span>
+                                        </div>
+                                        <ul class="plan-features font-mono">
+                                            <li><i data-lucide="check"></i> 20 Propiedades</li>
+                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Su Logo en Propiedades</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Radar de Calor</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Terminal de Inversion</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Portafolio IA</li>
+                                            <li><i data-lucide="x" class="text-red"></i> Desc. en Pautas</li>
+                                        </ul>
+                                        <button class="btn-plan-action" id="btn-plan-basico" onclick="openPlanPayment('basico')">Cambiar Plan</button>
+                                    </div>
+
+                                    <!-- Plan 2: Pro (Por Defecto) -->
+                                    <div class="pricing-card active-plan" id="plan-card-pro">
+                                        <div class="active-ribbon">RECOMENDADO</div>
+                                        <div class="plan-header">
+                                            <span class="plan-badge">PRO</span>
+                                            <h3 class="plan-title">Inmobiliaria Pro</h3>
+                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para empresas en expansion</p>
+                                        </div>
+                                        <div class="plan-price font-mono">
+                                            <span class="plan-currency-sym" id="price-sym-pro">Q</span>
+                                            <span class="plan-price-num" id="price-num-pro" data-usd="31" data-gtq="240">240</span>
+                                            <span class="plan-period">/mes</span>
+                                        </div>
+                                        <ul class="plan-features font-mono">
+                                            <li><i data-lucide="check"></i> 100 Propiedades</li>
+                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
+                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
+                                            <li><i data-lucide="check"></i> Radar de Calor</li>
+                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
+                                            <li><i data-lucide="check"></i> Portafolio IA</li>
+                                            <li><i data-lucide="check"></i> 15% Desc. Pautas Pub.</li>
+                                        </ul>
+                                        <button class="btn-plan-action" id="btn-plan-pro" onclick="openPlanPayment('pro')">Plan Activo</button>
+                                    </div>
+
+                                    <!-- Plan 3: VIP -->
+                                    <div class="pricing-card" id="plan-card-vip">
+                                        <div class="plan-header">
+                                            <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
+                                            <h3 class="plan-title">Inmobiliaria Premium</h3>
+                                            <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 3px 0 0 0;">Ideal para empresas en expansion</p>
+                                        </div>
+                                        <div class="plan-price font-mono">
+                                            <span class="plan-currency-sym" id="price-sym-vip">Q</span>
+                                            <span class="plan-price-num" id="price-num-vip" data-usd="82" data-gtq="640">640</span>
+                                            <span class="plan-period">/mes</span>
+                                        </div>
+                                        <ul class="plan-features font-mono">
+                                            <li><i data-lucide="check"></i> Propiedades Ilimitadas</li>
+                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
+                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
+                                            <li><i data-lucide="check"></i> Radar de Calor</li>
+                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
+                                            <li><i data-lucide="check"></i> Portafolio IA</li>
+                                            <li><i data-lucide="check"></i> 25% Desc. Pautas Pub.</li>
+                                            <li><i data-lucide="check" style="color: #ffd700;"></i> Cartera de ORO Digital</li>
+                                        </ul>
+                                        <button class="btn-plan-action" id="btn-plan-vip" onclick="openPlanPayment('vip')">Cambiar Plan</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

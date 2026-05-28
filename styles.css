@@ -4523,3 +4523,89 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border: none !important;
     pointer-events: none !important;
 }
+
+/* ==========================================================================
+   ESTILOS PREMIUM PARA PESTAÑAS COMERCIALES (B2B TABS) Y RETIROS
+   ========================================================================== */
+
+.comm-tab-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.comm-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.comm-tab-btn.active {
+    background: rgba(255, 215, 0, 0.08) !important;
+    border-color: rgba(255, 215, 0, 0.45) !important;
+    color: #ffd700 !important;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.12) !important;
+}
+
+#comm-tab-btn-propiedades.active {
+    background: rgba(0, 240, 255, 0.05) !important;
+    border-color: rgba(0, 240, 255, 0.4) !important;
+    color: var(--cyan) !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.12) !important;
+}
+
+#comm-tab-btn-suscripcion.active {
+    background: rgba(191, 90, 242, 0.05) !important;
+    border-color: rgba(191, 90, 242, 0.4) !important;
+    color: #bf5af2 !important;
+    box-shadow: 0 0 12px rgba(191, 90, 242, 0.12) !important;
+}
+
+.comm-tab-content {
+    animation: fadeInCommercialTab 0.35s ease-out;
+}
+
+.comm-tab-content.hidden {
+    display: none !important;
+}
+
+@keyframes fadeInCommercialTab {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Efectos de celdas para la tabla de retiros */
+#b2b-withdrawals-table-body tr {
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.2s;
+}
+
+#b2b-withdrawals-table-body tr:hover {
+    background: rgba(255, 215, 0, 0.02);
+}
+
+.status-badge-pending {
+    font-size: 0.55rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 159, 10, 0.15) !important;
+    color: #ff9f0a !important;
+    border: 1px solid rgba(255, 159, 10, 0.3) !important;
+    text-transform: uppercase;
+}
+
+.status-badge-approved {
+    font-size: 0.55rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(52, 199, 89, 0.15) !important;
+    color: var(--neon-emerald) !important;
+    border: 1px solid rgba(52, 199, 89, 0.3) !important;
+    text-transform: uppercase;
+}

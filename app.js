@@ -51,6 +51,10 @@ let b2bClients = [
     { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente' }
 ];
 let agentUploadedProperties = [];
+let b2bWithdrawals = [
+    { ref: 'WTH-984021', date: '2026-05-25 09:12', bank: 'Banco Industrial', account: '••••4820', amountXAUt: 0.0450, feeGTQ: 32.20, netGTQ: 772.80, status: 'Aprobado' },
+    { ref: 'WTH-304910', date: '2026-05-28 10:15', bank: 'G&T Continental', account: '••••8953', amountXAUt: 0.0200, feeGTQ: 14.30, netGTQ: 343.30, status: 'Pendiente' }
+];
 let pendingPaymentType = null; // 'subscription' | 'ad'
 let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { propertyId, zone }
 
@@ -3041,6 +3045,11 @@ function initCommercialView() {
     updatePromoPropertySelect();
     renderB2bInventory();
 
+    // Sincronizar UI de retiros bancarios, pestañas por defecto y cuadrícula de suscripciones corporativas
+    switchCommercialTab('oro');
+    renderB2bWithdrawalsTable();
+    syncCommercialPricingGridUI();
+
     // Sincronizar listados del agente con Supabase en tiempo real
     if (isSupabaseActive) {
         syncSupabaseData();
@@ -5603,6 +5612,289 @@ async function syncB2bClientsFromSupabase() {
         }
     } catch (err) {
         console.error("Fallo crítico al sincronizar perfiles de agentes:", err);
+    }
+}
+
+/**
+ * ==========================================================================
+ * CONTROLES Y LOGICA DE NAVEGACIÓN Y RETIROS B2B SAAS
+ * ==========================================================================
+ */
+
+/**
+ * Permite cambiar de pestaña de forma reactiva en el Dashboard de Socio B2B
+ */
+function switchCommercialTab(tabId) {
+    // Ocultar todos los contenidos de pestañas
+    document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
+    
+    // Remover clase active de todos los botones y restablecer estilos base
+    document.querySelectorAll('.comm-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = 'rgba(0,0,0,0.4)';
+        btn.style.borderColor = 'rgba(255,255,255,0.08)';
+        btn.style.color = 'var(--text-muted)';
+        btn.style.boxShadow = 'none';
+    });
+
+    // Activar pestaña actual
+    const activeContent = document.getElementById(`comm-tab-content-${tabId}`);
+    const activeBtn = document.getElementById(`comm-tab-btn-${tabId}`);
+    
+    if (activeContent) {
+        activeContent.classList.remove('hidden');
+    }
+    
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        if (tabId === 'oro') {
+            activeBtn.style.background = 'rgba(255,215,0,0.08)';
+            activeBtn.style.borderColor = 'rgba(255,215,0,0.45)';
+            activeBtn.style.color = '#ffd700';
+            activeBtn.style.boxShadow = '0 0 12px rgba(255, 215, 0, 0.12)';
+        } else if (tabId === 'propiedades') {
+            activeBtn.style.background = 'rgba(0,240,255,0.05)';
+            activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
+            activeBtn.style.color = 'var(--cyan)';
+            activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+        } else if (tabId === 'suscripcion') {
+            activeBtn.style.background = 'rgba(191,90,242,0.05)';
+            activeBtn.style.borderColor = 'rgba(191,90,242,0.4)';
+            activeBtn.style.color = '#bf5af2';
+            activeBtn.style.boxShadow = '0 0 12px rgba(191, 90, 242, 0.12)';
+        }
+    }
+}
+
+/**
+ * Sincroniza visualmente cuál es la tarjeta de membresía activa en la cuadrícula
+ */
+function syncCommercialPricingGridUI() {
+    const planKey = activeB2bPlan || 'pro';
+    ['basico', 'pro', 'vip'].forEach(p => {
+        const card = document.getElementById(`plan-card-${p}`);
+        const btn = document.getElementById(`btn-plan-${p}`);
+        if (card) {
+            if (p === planKey) {
+                card.classList.add('active-plan');
+                card.style.borderColor = p === 'vip' ? '#bf5af2' : (p === 'pro' ? 'var(--cyan)' : 'var(--neon-blue)');
+                card.style.background = p === 'vip' ? 'rgba(191, 90, 242, 0.03)' : (p === 'pro' ? 'rgba(0, 240, 255, 0.03)' : 'rgba(10, 132, 255, 0.03)');
+                if (btn) {
+                    btn.innerText = "Plan Activo";
+                    btn.disabled = true;
+                    btn.style.opacity = '0.75';
+                    btn.style.cursor = 'not-allowed';
+                }
+            } else {
+                card.classList.remove('active-plan');
+                card.style.borderColor = 'rgba(255,255,255,0.08)';
+                card.style.background = 'rgba(0,0,0,0.25)';
+                if (btn) {
+                    btn.innerText = "Cambiar Plan";
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Calcula en tiempo real las comisiones de red y los montos netos de retiros en GTQ
+ */
+function updateWithdrawalCalculations() {
+    const amountInput = document.getElementById('withdrawal-amount-xaut');
+    if (!amountInput) return;
+    
+    const amount = parseFloat(amountInput.value) || 0;
+    const xautPrice = currentAirdropXautPrice || 2380.00;
+    
+    const grossUSD = amount * xautPrice;
+    const grossGTQ = grossUSD * exchangeRate;
+    const feeGTQ = grossGTQ * 0.04;
+    const netGTQ = grossGTQ - feeGTQ;
+    
+    document.getElementById('withdrawal-gross-gtq').innerText = `Q${formatNumber(grossGTQ.toFixed(2))}`;
+    document.getElementById('withdrawal-fee-gtq').innerText = `-Q${formatNumber(feeGTQ.toFixed(2))}`;
+    document.getElementById('withdrawal-net-gtq').innerText = `Q${formatNumber(netGTQ.toFixed(2))}`;
+}
+
+/**
+ * Ejecuta la validación y el registro contable de retiros Tether Gold (XAUt) a banco local
+ */
+async function executeB2bWithdrawal(event) {
+    if (event) event.preventDefault();
+    
+    const amountInput = document.getElementById('withdrawal-amount-xaut');
+    const bankSelect = document.getElementById('withdrawal-bank');
+    const accountInput = document.getElementById('withdrawal-account');
+    const typeSelect = document.getElementById('withdrawal-account-type');
+    
+    if (!amountInput || !bankSelect || !accountInput || !typeSelect) return;
+    
+    const amount = parseFloat(amountInput.value) || 0;
+    const bank = bankSelect.value;
+    const account = accountInput.value.trim();
+    const type = typeSelect.value;
+    
+    if (amount <= 0 || !account) {
+        alert("⚠️ CAMPOS REQUERIDOS: Por favor introduce un monto de Tether Gold y datos de cuenta válidos.");
+        return;
+    }
+    
+    if (!loggedInB2bClient) {
+        alert("⚠️ ERROR DE SESIÓN: Debes iniciar sesión con tu cuenta de socio comercial para solicitar retiros.");
+        return;
+    }
+    
+    // Validar fondos del balance comercial
+    if (loggedInB2bClient.usdtBalance < amount) {
+        alert(`⚠️ FONDOS INSUFICIENTES: Tu balance actual es de ${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt. No cuentas con fondos suficientes para retirar ${amount.toFixed(4)} XAUt.`);
+        return;
+    }
+    
+    const xautPrice = currentAirdropXautPrice || 2380.00;
+    const grossUSD = amount * xautPrice;
+    const grossGTQ = grossUSD * exchangeRate;
+    const feeGTQ = grossGTQ * 0.04;
+    const netGTQ = grossGTQ - feeGTQ;
+    
+    // Validar mínimo neto Q100
+    if (netGTQ < 100) {
+        alert(`⚠️ RETIRO MÍNIMO NO ALCANZADO: El monto neto solicitado a recibir es de Q${netGTQ.toFixed(2)}. Las políticas transaccionales de ValorGT AI exigen que el monto neto a transferir en cuenta bancaria sea mayor o igual a Q100.00.`);
+        return;
+    }
+    
+    const confirmMessage = 
+        `¿Deseas confirmar la solicitud de retiro de Tether Gold (XAUt)?\n\n` +
+        `• Débito en Cartera: -${amount.toFixed(6)} XAUt\n` +
+        `• Equivalente Bruto: Q${grossGTQ.toFixed(2)}\n` +
+        `• Comisión de Red (4%): Q${feeGTQ.toFixed(2)}\n` +
+        `• Monto Neto a Recibir: Q${netGTQ.toFixed(2)}\n\n` +
+        `• Banco Destinatario: ${bank}\n` +
+        `• Cuenta: ${account} (${type})\n\n` +
+        `Este retiro se debitará de tu balance y quedará pendiente de transferencia bancaria por parte de la administración.`;
+        
+    if (!confirm(confirmMessage)) return;
+    
+    // Deducción local de balance
+    loggedInB2bClient.usdtBalance -= amount;
+    
+    // Sincronizar en Supabase si está activo
+    if (isXautPriceFetched || isSupabaseActive) {
+        try {
+            // Invocar el RPC extraer_oro seguro para deducir saldo e insertar historial airdrop como canje
+            const { error } = await supabaseClient.rpc('extraer_oro', {
+                p_user_email: loggedInB2bClient.email,
+                p_monto_xaut_por_usuario: amount,
+                p_precio_pivote: xautPrice
+            });
+            if (error) {
+                console.error("Error al procesar retiro en Supabase:", error);
+            } else {
+                if (typeof appendAdminLog === 'function') {
+                    appendAdminLog("SECURITY", `withdrawal_node: Solicitud de retiro de ${amount.toFixed(6)} XAUt procesada mediante RPC seguro para ${loggedInB2bClient.name}.`, false);
+                }
+            }
+        } catch (err) {
+            console.error("Fallo de red al registrar retiro en Supabase:", err);
+        }
+    }
+    
+    // Registrar solicitud contable
+    const refCode = "WTH-" + Math.floor(100000 + Math.random() * 900000);
+    const dateStr = new Date().toISOString().slice(0, 10) + " " + new Date().toTimeString().slice(0, 5);
+    const maskedAccount = "••••" + account.slice(-4);
+    
+    const newWithdrawal = {
+        ref: refCode,
+        date: dateStr,
+        bank: bank,
+        account: maskedAccount,
+        amountXAUt: amount,
+        feeGTQ: feeGTQ,
+        netGTQ: netGTQ,
+        status: 'Pendiente'
+    };
+    
+    b2bWithdrawals.unshift(newWithdrawal);
+    
+    // Registrar en logs del administrador
+    if (typeof appendAdminLog === 'function') {
+        appendAdminLog("SAAS", `withdrawal_node: Solicitud bancaria registrada para ${loggedInB2bClient.name} (${loggedInB2bClient.company}) - Banco: ${bank} - Neto: Q${netGTQ.toFixed(2)}.`, false);
+    }
+    
+    // Limpiar formulario
+    document.getElementById('b2b-withdrawal-form').reset();
+    updateWithdrawalCalculations();
+    
+    // Refrescar UI, Cartera y Tablas
+    updateSaasMetricsHUD();
+    renderB2bWithdrawalsTable();
+    syncB2bClientsFromSupabase(); // Refrescar en admin
+    
+    alert(`✅ SOLICITUD DE RETIRO REGISTRADA CON ÉXITO\n\n` +
+          `Referencia: #${refCode}\n` +
+          `Hemos debitado ${amount.toFixed(4)} XAUt de tu balance. La solicitud ha sido transmitida al panel de administración para su transferencia bancaria de Q${netGTQ.toFixed(2)}.`);
+}
+
+/**
+ * Renderiza la tabla de historial de solicitudes de retiro
+ */
+function renderB2bWithdrawalsTable() {
+    const tableBody = document.getElementById('b2b-withdrawals-table-body');
+    const counter = document.getElementById('b2b-withdrawals-count');
+    if (!tableBody) return;
+    
+    if (b2bWithdrawals.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    <i data-lucide="clock" style="width: 24px; height: 24px; color: var(--text-secondary); margin-bottom: 5px; opacity: 0.5; display: inline-block;"></i><br>
+                    No has realizado ninguna solicitud de retiro de Tether Gold.
+                </td>
+            </tr>
+        `;
+        if (counter) counter.innerText = "0 Solicitudes";
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+    }
+    
+    if (counter) counter.innerText = `${b2bWithdrawals.length} Solicitudes`;
+    
+    tableBody.innerHTML = '';
+    b2bWithdrawals.forEach(w => {
+        const row = document.createElement('tr');
+        const statusClass = w.status === 'Aprobado' ? 'status-badge-approved' : 'status-badge-pending';
+        
+        row.innerHTML = `
+            <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
+                <strong>${w.date}</strong><br>
+                <span class="text-muted" style="font-size: 0.55rem; font-family: monospace;">${w.ref}</span>
+            </td>
+            <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
+                <strong>${w.bank}</strong><br>
+                <span class="text-muted" style="font-size: 0.6rem;">Cuenta ${w.account}</span>
+            </td>
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; font-weight: bold;" class="font-mono">
+                ${w.amountXAUt.toFixed(4)} XAUt
+            </td>
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: var(--red);" class="font-mono">
+                -Q${w.feeGTQ.toFixed(2)}
+            </td>
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: #ffd700; font-weight: bold; font-size: 0.75rem;" class="font-mono">
+                Q${formatNumber(w.netGTQ.toFixed(2))}
+            </td>
+            <td style="padding: 10px 5px; text-align: center; vertical-align: middle;">
+                <span class="${statusClass}">${w.status}</span>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
     }
 }
 
