@@ -1714,8 +1714,35 @@
                             </div>
                         </div>
                         
-                        <!-- Fila de 2 Columnas: Transferencias y Retiros -->
+                        <!-- Fila de 3 Columnas: Balance, Transferencias y Retiros -->
                         <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+                            <!-- Columna 1: Balance de Oro Digital (XAUt) -->
+                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
+                                    <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="coins"></i></div>
+                                    <h2 style="color: #ffd700 !important;">Balance de Oro Digital</h2>
+                                </div>
+                                <div class="commercial-section-body font-mono" style="display: flex; flex-direction: column; gap: 15px; justify-content: center; align-items: center; padding: 25px 15px; text-align: center;">
+                                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Saldo Disponible XAUt</span>
+                                    <div class="kpi-value-text" id="saas-usdt-balance-card" style="font-size: 2rem; font-weight: bold; color: #fff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); margin: 5px 0;">1.0000 XAUt</div>
+                                    
+                                    <div style="background: rgba(255, 215, 0, 0.04); border: 1px dashed rgba(255, 215, 0, 0.2); border-radius: 6px; padding: 12px; font-size: 0.65rem; color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; gap: 5px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Activo de Respaldo:</span>
+                                            <strong style="color: #ffd700;">Tether Gold (XAUt)</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Red de Transmisión:</span>
+                                            <span style="color: #fff;">Ethereum ERC-20</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Firma Criptográfica:</span>
+                                            <span style="color: var(--cyan);">SSL-TLS-V1.3</span>
+                                        </div>
+                                    </div>
+                                    <p style="font-size: 0.62rem; color: var(--text-muted); line-height: 1.4; margin: 0;">Tu saldo está respaldado 1:1 en oro físico custodiado en Suiza. Puedes transferir de inmediato o solicitar un retiro directo a tu banco en Quetzales.</p>
+                                </div>
+                            </div>
 
                             <!-- Columna 2: Consola de Transferencias -->
                             <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
