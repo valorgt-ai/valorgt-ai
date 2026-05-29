@@ -13,6 +13,14 @@ const ZONES_DATABASE = {
         lat: 14.5986,
         lng: -90.5085,
         color: "red", // Alta plusvalía
+        categories: {
+            apartamentos: { priceM2: 1850, roi: 8.2, liquidity: "9.2/10", growth: 7.2, rec: "MANTENER" },
+            casas: { priceM2: 1650, roi: 6.5, liquidity: "7.8/10", growth: 5.5, rec: "COMPRAR" },
+            oficinas: { priceM2: 1950, roi: 8.8, liquidity: "8.9/10", growth: 6.8, rec: "COMPRAR" },
+            locales: { priceM2: 2300, roi: 9.5, liquidity: "9.1/10", growth: 8.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 1100, roi: 0.0, liquidity: "6.5/10", growth: 10.0, rec: "COMPRAR" },
+            bodegas: { priceM2: 950, roi: 7.9, liquidity: "8.0/10", growth: 5.0, rec: "COMPRAR" }
+        },
         advantages: [
             "Ubicación en el núcleo corporativo e industrial de la capital.",
             "Altísima demanda de ejecutivos y expatriados de embajadas y multinacionales.",
@@ -35,6 +43,14 @@ const ZONES_DATABASE = {
         lat: 14.5828,
         lng: -90.5147,
         color: "red",
+        categories: {
+            apartamentos: { priceM2: 2100, roi: 7.5, liquidity: "8.5/10", growth: 6.0, rec: "MANTENER" },
+            casas: { priceM2: 2400, roi: 6.2, liquidity: "8.0/10", growth: 5.2, rec: "MANTENER" },
+            oficinas: { priceM2: 2050, roi: 7.9, liquidity: "8.1/10", growth: 5.8, rec: "MANTENER" },
+            locales: { priceM2: 2600, roi: 8.7, liquidity: "8.3/10", growth: 6.5, rec: "MANTENER" },
+            terrenos: { priceM2: 1400, roi: 0.0, liquidity: "7.2/10", growth: 9.5, rec: "COMPRAR" },
+            bodegas: { priceM2: 1100, roi: 7.2, liquidity: "7.0/10", growth: 4.8, rec: "MANTENER" }
+        },
         advantages: [
             "Exclusividad residencial y alto estatus socioeconómico.",
             "Presencia de extensas áreas caminables como la Avenida Las Américas.",
@@ -56,6 +72,14 @@ const ZONES_DATABASE = {
         lat: 14.5956,
         lng: -90.4851,
         color: "orange", // Crecimiento
+        categories: {
+            apartamentos: { priceM2: 1950, roi: 7.8, liquidity: "8.9/10", growth: 6.4, rec: "COMPRAR" },
+            casas: { priceM2: 1800, roi: 6.6, liquidity: "8.2/10", growth: 5.8, rec: "COMPRAR" },
+            oficinas: { priceM2: 1850, roi: 7.5, liquidity: "8.0/10", growth: 6.0, rec: "COMPRAR" },
+            locales: { priceM2: 2200, roi: 8.9, liquidity: "8.5/10", growth: 7.4, rec: "COMPRAR" },
+            terrenos: { priceM2: 1250, roi: 0.0, liquidity: "6.8/10", growth: 9.0, rec: "COMPRAR" },
+            bodegas: { priceM2: 980, roi: 7.0, liquidity: "7.2/10", growth: 4.5, rec: "MANTENER" }
+        },
         advantages: [
             "Entorno residencial tranquilo pero sumamente céntrico.",
             "Acceso inmediato a prestigiosos colegios y universidades (UVALLE, URL).",
@@ -77,6 +101,14 @@ const ZONES_DATABASE = {
         lat: 14.6111,
         lng: -90.4725,
         color: "red",
+        categories: {
+            apartamentos: { priceM2: 1750, roi: 8.6, liquidity: "9.5/10", growth: 8.4, rec: "COMPRAR" },
+            casas: { priceM2: 1950, roi: 7.4, liquidity: "9.0/10", growth: 7.8, rec: "COMPRAR" },
+            oficinas: { priceM2: 1800, roi: 8.2, liquidity: "8.8/10", growth: 7.2, rec: "COMPRAR" },
+            locales: { priceM2: 2400, roi: 9.3, liquidity: "9.2/10", growth: 8.8, rec: "COMPRAR" },
+            terrenos: { priceM2: 1300, roi: 0.0, liquidity: "8.2/10", growth: 11.2, rec: "COMPRAR" },
+            bodegas: { priceM2: 1150, roi: 8.0, liquidity: "8.4/10", growth: 6.0, rec: "COMPRAR" }
+        },
         advantages: [
             "Planificación urbana avanzada estilo 'New Urbanism' alrededor de Ciudad Cayalá.",
             "Gran plusvalía traccionada por amenidades comerciales, cines, clubes y colegios premium.",
@@ -98,6 +130,14 @@ const ZONES_DATABASE = {
         lat: 14.6203,
         lng: -90.5159,
         color: "green", // Oportunidad
+        categories: {
+            apartamentos: { priceM2: 1600, roi: 9.1, liquidity: "9.0/10", growth: 9.6, rec: "COMPRAR" },
+            casas: { priceM2: 1350, roi: 6.8, liquidity: "7.2/10", growth: 6.5, rec: "COMPRAR" },
+            oficinas: { priceM2: 1500, roi: 8.5, liquidity: "8.4/10", growth: 7.8, rec: "COMPRAR" },
+            locales: { priceM2: 1950, roi: 9.8, liquidity: "9.2/10", growth: 10.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 980, roi: 0.0, liquidity: "8.0/10", growth: 12.5, rec: "COMPRAR" },
+            bodegas: { priceM2: 1200, roi: 8.9, liquidity: "8.5/10", growth: 7.0, rec: "COMPRAR" }
+        },
         advantages: [
             "Distrito cultural, gastronómico e innovador de la ciudad (Hub Tecnológico).",
             "Atracción de nómadas digitales y jóvenes profesionales que buscan 'Coliving'.",
@@ -119,6 +159,14 @@ const ZONES_DATABASE = {
         lat: 14.5501,
         lng: -90.4350,
         color: "blue", // Económico
+        categories: {
+            apartamentos: { priceM2: 1100, roi: 6.8, liquidity: "7.1/10", growth: 4.4, rec: "MANTENER" },
+            casas: { priceM2: 950, roi: 6.2, liquidity: "6.8/10", growth: 3.8, rec: "ALQUILAR" },
+            oficinas: { priceM2: 1050, roi: 7.0, liquidity: "6.5/10", growth: 4.0, rec: "MANTENER" },
+            locales: { priceM2: 1350, roi: 7.8, liquidity: "7.2/10", growth: 5.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 650, roi: 0.0, liquidity: "5.8/10", growth: 7.0, rec: "VENDER" },
+            bodegas: { priceM2: 820, roi: 6.5, liquidity: "6.9/10", growth: 3.5, rec: "MANTENER" }
+        },
         advantages: [
             "Precios de terreno por metro cuadrado inferiores a la ciudad central.",
             "Clima templado, áreas arboladas y residencias horizontales amplias con jardín.",
@@ -140,6 +188,14 @@ const ZONES_DATABASE = {
         lat: 14.4633,
         lng: -90.4412,
         color: "orange", // Crecimiento
+        categories: {
+            apartamentos: { priceM2: 1200, roi: 7.2, liquidity: "7.9/10", growth: 5.6, rec: "COMPRAR" },
+            casas: { priceM2: 1250, roi: 6.8, liquidity: "7.5/10", growth: 5.2, rec: "COMPRAR" },
+            oficinas: { priceM2: 1150, roi: 7.0, liquidity: "7.0/10", growth: 4.8, rec: "MANTENER" },
+            locales: { priceM2: 1450, roi: 8.0, liquidity: "7.8/10", growth: 6.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 750, roi: 0.0, liquidity: "6.5/10", growth: 8.0, rec: "COMPRAR" },
+            bodegas: { priceM2: 880, roi: 6.9, liquidity: "7.2/10", growth: 4.2, rec: "MANTENER" }
+        },
         advantages: [
             "Tierra residencial con costos por metro cuadrado muy competitivos.",
             "Clima de montaña templado y abundante vegetación, ideal para familias con mascotas.",
@@ -161,6 +217,14 @@ const ZONES_DATABASE = {
         lat: 14.5985,
         lng: -90.5898,
         color: "yellow", // Estable
+        categories: {
+            apartamentos: { priceM2: 1050, roi: 6.9, liquidity: "8.1/10", growth: 4.8, rec: "MANTENER" },
+            casas: { priceM2: 1150, roi: 6.5, liquidity: "7.9/10", growth: 4.5, rec: "MANTENER" },
+            oficinas: { priceM2: 1100, roi: 7.2, liquidity: "7.5/10", growth: 4.2, rec: "MANTENER" },
+            locales: { priceM2: 1400, roi: 8.2, liquidity: "8.0/10", growth: 5.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 700, roi: 0.0, liquidity: "7.0/10", growth: 7.5, rec: "COMPRAR" },
+            bodegas: { priceM2: 920, roi: 7.4, liquidity: "7.8/10", growth: 4.0, rec: "MANTENER" }
+        },
         advantages: [
             "Sector habitacional horizontal sumamente consolidado y autosuficiente.",
             "Múltiples accesos de salida hacia Calzada Roosevelt, Aguilar Batres y el Periférico.",
@@ -182,6 +246,14 @@ const ZONES_DATABASE = {
         lat: 14.5573,
         lng: -90.7332,
         color: "orange",
+        categories: {
+            apartamentos: { priceM2: 2300, roi: 8.9, liquidity: "8.7/10", growth: 7.6, rec: "ALQUILAR" },
+            casas: { priceM2: 2400, roi: 8.2, liquidity: "8.5/10", growth: 7.2, rec: "ALQUILAR" },
+            oficinas: { priceM2: 2100, roi: 7.5, liquidity: "7.8/10", growth: 6.2, rec: "MANTENER" },
+            locales: { priceM2: 2800, roi: 9.5, liquidity: "9.0/10", growth: 9.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 1800, roi: 0.0, liquidity: "8.0/10", growth: 12.0, rec: "COMPRAR" },
+            bodegas: { priceM2: 1300, roi: 7.0, liquidity: "7.2/10", growth: 5.0, rec: "MANTENER" }
+        },
         advantages: [
             "Mercado turístico internacional e histórico con demanda en moneda extranjera.",
             "Patrimonio de la Humanidad por la UNESCO, lo que garantiza escasez perpetua de inventario.",

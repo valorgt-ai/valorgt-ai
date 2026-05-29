@@ -1778,6 +1778,35 @@ function initInvestorTerminal() {
     initNewsFeed();
 }
 
+let activeTerminalCategory = 'apartamentos';
+
+/**
+ * Cambia la categoría de telemetrías seleccionada en la Terminal de Inversión (Bloomberg Style)
+ * @param {string} category - Categoría ('apartamentos' | 'casas' | 'oficinas' | 'locales' | 'terrenos' | 'bodegas')
+ */
+function switchTerminalCategory(category) {
+    activeTerminalCategory = category;
+    
+    // Actualizar estilos visuales de los botones term-tab
+    document.querySelectorAll('.term-tab').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.border = '1px solid transparent';
+        btn.style.color = 'var(--text-secondary)';
+        btn.style.textShadow = 'none';
+        btn.style.background = 'transparent';
+    });
+    
+    const activeBtn = document.getElementById(`term-tab-${category}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.border = '1px solid rgba(0, 240, 255, 0.2)';
+        activeBtn.style.color = 'var(--cyan)';
+        activeBtn.style.textShadow = '0 0 5px rgba(0,240,255,0.3)';
+    }
+    
+    renderInvestorTable();
+}
+
 /**
  * Construye la tabla con estilo de terminal Bloomberg
  */
@@ -1791,13 +1820,30 @@ function renderInvestorTable() {
 
     Object.keys(ZONES_DATABASE).forEach(key => {
         const zone = ZONES_DATABASE[key];
-        const price = zone.basePriceM2 * conversion;
-        const plusvalia = (zone.growth5Y / 5).toFixed(1);
-
-        let recColor = 'text-green';
+        
+        // Mapeo defensivo de categorías con fallback plano retrocompatible
+        let priceM2Raw = zone.basePriceM2;
+        let roiVal = zone.roi;
+        let plusvaliaVal = (zone.growth5Y / 5).toFixed(1);
+        let liquidityVal = zone.liquidityIndex;
         let recLabel = 'COMPRAR';
-        if (key === 'carretera') { recColor = 'text-red'; recLabel = 'VENDER'; }
-        if (key === 'zona14' || key === 'zona10') { recColor = 'text-cyan'; recLabel = 'MANTENER'; }
+        
+        if (key === 'carretera') recLabel = 'VENDER';
+        if (key === 'zona14' || key === 'zona10') recLabel = 'MANTENER';
+        
+        if (zone.categories && zone.categories[activeTerminalCategory]) {
+            const cat = zone.categories[activeTerminalCategory];
+            priceM2Raw = cat.priceM2;
+            roiVal = cat.roi;
+            plusvaliaVal = cat.growth ? cat.growth.toFixed(1) : plusvaliaVal;
+            liquidityVal = cat.liquidity || liquidityVal;
+            recLabel = cat.rec || recLabel;
+        }
+
+        const price = priceM2Raw * conversion;
+        let recColor = 'text-green';
+        if (recLabel === 'VENDER') recColor = 'text-red';
+        if (recLabel === 'MANTENER' || recLabel === 'ALQUILAR') recColor = 'text-cyan';
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -1805,10 +1851,10 @@ function renderInvestorTable() {
                 <span class="table-zone-name">${zone.name.split(' (')[0]}</span><br>
                 <span class="sub-title font-mono" style="font-size:0.65rem; color:var(--text-muted)">ID: ${key.toUpperCase()}_NODE</span>
             </td>
-            <td class="table-number">${currencySym}${formatNumber(price.toFixed(0))} / m²</td>
-            <td class="table-number text-green">${zone.roi}%</td>
-            <td class="table-number text-green">+${plusvalia}% / año</td>
-            <td class="table-number text-cyan font-mono">${zone.liquidityIndex}</td>
+            <td class="table-number" style="font-weight: bold; color: #fff; text-shadow: 0 0 4px rgba(255,255,255,0.1);">${currencySym}${formatNumber(price.toFixed(0))} / m²</td>
+            <td class="table-number text-green" style="font-weight: 500;">${roiVal}%</td>
+            <td class="table-number text-green">+${plusvaliaVal}% / año</td>
+            <td class="table-number text-cyan font-mono" style="letter-spacing: 0.5px;">${liquidityVal}</td>
             <td>
                 <button class="btn btn-outline font-mono ${recColor}" style="padding:4px 8px; font-size:0.65rem; border:1px solid currentColor; background:transparent; cursor:pointer;" onclick="selectMapZone('${key}')">
                     ${recLabel} <i data-lucide="external-link" style="width:10px; height:10px; display:inline-block; vertical-align:middle;"></i>

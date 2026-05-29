@@ -949,9 +949,20 @@
 
                         <!-- Tabla de Zonas con estilo Terminal Bloomberg -->
                         <div class="card glassmorphism terminal-table-card">
-                            <div class="card-header">
-                                <div class="header-icon"><i data-lucide="list"></i></div>
-                                <h2>Telemetrías Inmobiliarias - Ciudad de Guatemala</h2>
+                            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="header-icon"><i data-lucide="list"></i></div>
+                                    <h2>Telemetrías Inmobiliarias - Ciudad de Guatemala</h2>
+                                </div>
+                                <!-- SELECTOR DE CATEGORÍAS ESTILO BLOOMBERG -->
+                                <div class="terminal-category-tabs font-mono" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <button class="term-tab active" id="term-tab-apartamentos" onclick="switchTerminalCategory('apartamentos')" style="background: transparent; border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 4px 10px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s; text-shadow: 0 0 5px rgba(0,240,255,0.3);">[ Apartamentos ]</button>
+                                    <button class="term-tab" id="term-tab-casas" onclick="switchTerminalCategory('casas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 4px 10px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Casas ]</button>
+                                    <button class="term-tab" id="term-tab-oficinas" onclick="switchTerminalCategory('oficinas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 4px 10px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Oficinas ]</button>
+                                    <button class="term-tab" id="term-tab-locales" onclick="switchTerminalCategory('locales')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 4px 10px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Locales ]</button>
+                                    <button class="term-tab" id="term-tab-terrenos" onclick="switchTerminalCategory('terrenos')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 4px 10px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Terrenos ]</button>
+                                    <button class="term-tab" id="term-tab-bodegas" onclick="switchTerminalCategory('bodegas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 4px 10px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Bodegas ]</button>
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="terminal-table">
@@ -960,7 +971,7 @@
                                             <th>Zona / Segmento</th>
                                             <th>Precio Promedio m²</th>
                                             <th>Tasa Alquiler (ROI)</th>
-                                            <th>Plusvalía (1 Año)</th>
+                                            <th>Plusvalía Promedio</th>
                                             <th>Índice de Liquidez</th>
                                             <th>Recomendación IA</th>
                                         </tr>
@@ -969,6 +980,26 @@
                                         <!-- Cargado dinámicamente -->
                                     </tbody>
                                 </table>
+                            </div>
+                            
+                            <!-- PIE DE TARJETA CON METADATOS DE FUENTES Y PROTOCOLO DE ACTUALIZACIÓN -->
+                            <div class="terminal-table-metadata font-mono" style="border-top: 1px solid rgba(255,255,255,0.06); padding: 12px 15px; margin-top: 10px; background: rgba(0,0,0,0.3); display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; font-size: 0.62rem; color: var(--text-muted); line-height: 1.45; align-items: start; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                                <div style="padding-right: 10px;">
+                                    <span style="color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px; margin-bottom: 5px; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.5px;">
+                                        <i data-lucide="database" style="width: 12px; height: 12px;"></i> FUENTES PRINCIPALES DE ADQUISICIÓN
+                                    </span>
+                                    <span>Consolidación activa y mapeo de anuncios cruzados de: <strong>Encuentra24 Guatemala, CityMax Guatemala, CityMax Real Estate LATAM GT, RE/MAX Guatemala, Siuma Realty, Plusvalía Guatemala, Century 21 Guatemala, KW Guatemala, InmoGuate y Homes Guatemala.</strong></span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; border-left: 1px solid rgba(255,255,255,0.06); padding-left: 15px;">
+                                    <div>
+                                        <span style="color: #bf5af2; font-weight: bold; display: block; margin-bottom: 3px; text-transform: uppercase; font-size: 0.64rem;">⏱️ PRECIO M² & RECOMENDACIÓN IA</span>
+                                        <span>Frecuencia: <strong>Cada 24 horas (Diaria)</strong><br><span style="opacity: 0.8; font-size: 0.58rem;">Actualizado por flujo dinámico de publicaciones activas/eliminadas.</span></span>
+                                    </div>
+                                    <div>
+                                        <span style="color: #bf5af2; font-weight: bold; display: block; margin-bottom: 3px; text-transform: uppercase; font-size: 0.64rem;">⏱️ LIQUIDEZ, ROI & PLUSVALÍA</span>
+                                        <span>Liquidez: <strong>Cada 12 horas</strong><br>ROI Alquiler: <strong>Cada 7 días</strong><br>Plusvalía: <strong>Cada 30 días</strong></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
