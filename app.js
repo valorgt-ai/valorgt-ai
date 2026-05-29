@@ -5550,7 +5550,7 @@ function switchLoginTab(tabName) {
 /**
  * Captura el envío del formulario de registro y redirige al flujo de pago de suscripción
  */
-function handleRegistrationFormSubmit(event) {
+async function handleRegistrationFormSubmit(event) {
     if (event) event.preventDefault();
 
     const name = document.getElementById('com-signup-name').value.trim();
@@ -5596,37 +5596,55 @@ function handleRegistrationFormSubmit(event) {
 
     // Registrar en Supabase Auth y Profiles si está activo
     if (isSupabaseActive && supabaseClient) {
-        try {
-            (async () => {
-                const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: pass
-                });
+        // Activar spinner visual de carga de registro
+        const scanOverlay = document.getElementById('login-scanning-overlay');
+        if (scanOverlay) {
+            scanOverlay.classList.remove('hidden');
+        }
 
-                if (authErr) {
-                    alert(`⚠️ ERROR EN REGISTRO DE CREDENCIALES: ${authErr.message}`);
+        try {
+            const { data: authData, error: authErr } = await supabaseClient.auth.signUp({
+                email: email,
+                password: pass
+            });
+
+            if (authErr) {
+                if (scanOverlay) scanOverlay.classList.add('hidden');
+                alert(`⚠️ ERROR EN REGISTRO DE CREDENCIALES: ${authErr.message}`);
+                return;
+            }
+
+            if (authData && authData.user) {
+                const { error: dbErr } = await supabaseClient.from('profiles').insert([
+                    {
+                        id: authData.user.id,
+                        name: name,
+                        company: company,
+                        nit: nit,
+                        phone: phone,
+                        email: email,
+                        plan: selectedPlanName,
+                        status: 'pendiente',
+                        usdt_balance: 100.00,
+                        role: role
+                    }
+                ]);
+                
+                if (dbErr) {
+                    if (scanOverlay) scanOverlay.classList.add('hidden');
+                    alert(`⚠️ ERROR EN BASE DE DATOS B2B: ${dbErr.message}`);
                     return;
                 }
-
-                if (authData && authData.user) {
-                    await supabaseClient.from('profiles').insert([
-                        {
-                            id: authData.user.id,
-                            name: name,
-                            company: company,
-                            nit: nit,
-                            phone: phone,
-                            email: email,
-                            plan: selectedPlanName,
-                            status: 'pendiente',
-                            usdt_balance: 100.00
-                        }
-                    ]);
-                    newClient.id = authData.user.id;
-                }
-            })();
+                
+                newClient.id = authData.user.id;
+            }
         } catch (err) {
+            if (scanOverlay) scanOverlay.classList.add('hidden');
             console.error("Fallo de red al registrar en Supabase:", err);
+            alert("⚠️ FALLO DE RED: No se pudo conectar con el servidor de autenticación.");
+            return;
+        } finally {
+            if (scanOverlay) scanOverlay.classList.add('hidden');
         }
     }
 
