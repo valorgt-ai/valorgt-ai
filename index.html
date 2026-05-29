@@ -86,9 +86,15 @@
         <main class="main-content">
             <!-- CABECERA SUPERIOR (HEADER) -->
             <header class="top-header">
-                <div class="header-left">
-                    <h1 class="page-title" id="page-title">Valuador Inmobiliario IA</h1>
-                    <span class="sub-title" id="page-subtitle">Análisis predictivo de propiedades con redes neuronales</span>
+                <div class="header-left" style="display: flex; align-items: center; gap: 12px;">
+                    <!-- Botón de Menú Móvil Hamburguesa -->
+                    <button id="mobile-menu-trigger" class="mobile-menu-trigger" onclick="toggleMobileMenu()" style="display: none;">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div>
+                        <h1 class="page-title" id="page-title">Valuador Inmobiliario IA</h1>
+                        <span class="sub-title" id="page-subtitle">Análisis predictivo de propiedades con redes neuronales</span>
+                    </div>
                 </div>
                 <div class="header-right">
                     <!-- Selector de Moneda -->
@@ -3079,6 +3085,63 @@
                 <button class="btn btn-primary btn-block glowing-effect" id="modal-autotasar-btn" style="margin-top: 18px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <i data-lucide="sparkles"></i> VALORAR ESTE INMUEBLE CON IA
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAJÓN DE MENÚ MÓVIL DESLIZANTE (DRAWER) -->
+    <div id="mobile-drawer" class="mobile-drawer hidden">
+        <div class="mobile-drawer-overlay" onclick="toggleMobileMenu()"></div>
+        <div class="mobile-drawer-content glassmorphism">
+            <div class="drawer-header">
+                <div class="drawer-logo">
+                    <span class="logo-accent" style="color: var(--cyan); font-weight: bold;">VALOR</span><span class="logo-white" style="color: #fff; font-weight: bold;">GT</span><span class="logo-ai font-mono" style="color: var(--cyan); opacity: 0.8;">_AI</span>
+                </div>
+                <button class="drawer-close" onclick="toggleMobileMenu()">&times;</button>
+            </div>
+            
+            <nav class="drawer-nav font-mono">
+                <button class="drawer-item" onclick="switchViewMobile('dashboard')">
+                    <i data-lucide="layout-dashboard"></i> <span>Tasa Inteligente</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('heatmap')">
+                    <i data-lucide="map-pin"></i> <span>Radar de Calor</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('catalog')">
+                    <i data-lucide="compass"></i> <span>Catálogo General</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('mortgage')">
+                    <i data-lucide="calculator"></i> <span>Simulador Hipotecario</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('investor')">
+                    <i data-lucide="trending-up"></i> <span>Terminal de Inversión</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('portfolio')">
+                    <i data-lucide="wallet"></i> <span>Portafolio IA</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('subscriptions')">
+                    <i data-lucide="award"></i> <span>Planes de Suscripción</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('commercial')">
+                    <i data-lucide="briefcase"></i> <span>Gestión Comercial</span>
+                </button>
+                <button id="drawer-btn-admin" class="drawer-item" onclick="switchViewMobile('admin')" style="display: none;">
+                    <i data-lucide="shield-alert"></i> <span>Consola Global Admin</span>
+                </button>
+            </nav>
+            
+            <!-- Perfil del Agente actual para Móvil -->
+            <div class="drawer-profile-section" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
+                <span class="hud-label-small" style="display: block; margin-bottom: 10px; font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.5px;">AGENTE ACTIVO</span>
+                <div class="active-agent-hud" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--cyan); background: rgba(0, 240, 255, 0.05); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,240,255,0.2); flex-shrink: 0;">
+                        <i data-lucide="user" style="color: var(--cyan); width: 20px; height: 20px;"></i>
+                    </div>
+                    <div style="text-align: left;">
+                        <div id="mobile-agent-name" style="font-weight: bold; color: #fff; font-size: 0.9rem;">Cargando...</div>
+                        <div id="mobile-agent-role" style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">ADMINISTRADOR</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

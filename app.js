@@ -3470,8 +3470,17 @@ function renderB2bAgentProfile() {
                     <span style="font-size: 0.7rem; color: var(--cyan); background: rgba(0, 240, 255, 0.08); padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(0, 240, 255, 0.25);">SSL-TLS-V1.3</span>
                 </div>
             </div>
-        </div>
     `;
+
+    // Actualizar perfil del drawer móvil de forma reactiva
+    const mobileNameEl = document.getElementById('mobile-agent-name');
+    const mobileRoleEl = document.getElementById('mobile-agent-role');
+    if (mobileNameEl) {
+        mobileNameEl.innerText = client.name;
+    }
+    if (mobileRoleEl) {
+        mobileRoleEl.innerText = (client.plan.toUpperCase() === 'VIP' || client.plan.toUpperCase() === 'PREMIUM') ? "Socio Premium B2B" : (client.plan.toUpperCase() === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
+    }
 
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -7972,6 +7981,56 @@ function logAdminSecurityActivity(message) {
     } else {
         console.log(`[SECURITY] ${message}`);
     }
+}
+
+/**
+ * Alterna la visibilidad del cajón de navegación lateral (mobile drawer) en teléfonos
+ */
+function toggleMobileMenu() {
+    const drawer = document.getElementById('mobile-drawer');
+    if (drawer) {
+        const isHidden = drawer.classList.contains('hidden');
+        if (isHidden) {
+            drawer.classList.remove('hidden');
+            
+            // Sincronizar estado activo de las opciones del drawer con la vista actual
+            const activeViewSec = document.querySelector('.app-view.active');
+            const currentView = activeViewSec ? activeViewSec.id.replace('view-', '') : 'dashboard';
+            
+            document.querySelectorAll('.drawer-item').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(currentView)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Sincronizar los perfiles de agente activos
+            if (loggedInB2bClient) {
+                const mobileNameEl = document.getElementById('mobile-agent-name');
+                const mobileRoleEl = document.getElementById('mobile-agent-role');
+                if (mobileNameEl) mobileNameEl.innerText = loggedInB2bClient.name;
+                if (mobileRoleEl) {
+                    mobileRoleEl.innerText = (loggedInB2bClient.plan.toUpperCase() === 'VIP' || loggedInB2bClient.plan.toUpperCase() === 'PREMIUM') ? "Socio Premium B2B" : (loggedInB2bClient.plan.toUpperCase() === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
+                }
+            }
+            
+            // Renderizar iconos de Lucide cargados dinámicamente
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        } else {
+            drawer.classList.add('hidden');
+        }
+    }
+}
+
+/**
+ * Controla el cambio de vistas de la aplicación desde el menú deslizante en teléfonos
+ * @param {string} viewId - Identificador de la vista
+ */
+function switchViewMobile(viewId) {
+    toggleMobileMenu(); // cerrar cajón
+    switchView(viewId); // cambiar vista
 }
 
 
