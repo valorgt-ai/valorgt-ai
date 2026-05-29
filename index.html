@@ -59,6 +59,10 @@
                     <i data-lucide="wallet"></i>
                     <span>Portafolio IA</span>
                 </button>
+                <button id="nav-btn-subscriptions" class="nav-item" onclick="switchView('subscriptions')">
+                    <i data-lucide="award"></i>
+                    <span>Planes de Suscripción</span>
+                </button>
                 <button id="nav-btn-commercial" class="nav-item" onclick="switchView('commercial')">
                     <i data-lucide="briefcase"></i>
                     <span>Gestión Comercial</span>
@@ -2362,6 +2366,37 @@
                     </div> <!-- Cierre de #commercial-dashboard-area -->
                 </section>
 
+                <!-- VISTA NUEVA: PLANES DE SUSCRIPCIÓN PREMIUM CON VIDEO EXPLICATIVO -->
+                <section id="view-subscriptions" class="app-view">
+                    <div class="card glassmorphism" style="width: 100%; min-height: 530px; margin-bottom: 25px;">
+                        <div class="card-header border-purple" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                            <div class="header-icon purple" style="background: rgba(191, 90, 242, 0.1); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);"><i data-lucide="award"></i></div>
+                            <h2>Membresías y Planes Premium ValorGT AI</h2>
+                        </div>
+                        <div class="commercial-section-body" style="padding: 10px 15px;">
+                            <p class="saas-desc font-mono" style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 25px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.4;">
+                                Maximiza tus comisiones, analiza portafolios sin restricciones de tiempo y accede al radar inmobiliario de calor en tiempo real. Selecciona el nivel que se adapte a tu nivel operativo actual.
+                            </p>
+
+                            <!-- SECCIÓN "VER VIDEO": YOUTUBE VIDEO PROPORCIONADO DESDE LA CONSOLA ADMIN -->
+                            <div id="subscription-video-container" style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 35px; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; padding: 15px; background: rgba(191, 90, 242, 0.04); border: 1px solid rgba(191, 90, 242, 0.15); border-radius: 12px; box-shadow: 0 0 25px rgba(191, 90, 242, 0.05);">
+                                <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--cyan); font-size: 0.8rem; letter-spacing: 0.8px; text-transform: uppercase; font-family: var(--font-mono);">
+                                    <i data-lucide="play-circle" style="color: #bf5af2; width: 18px; height: 18px;"></i>
+                                    <span>Presentación del Ecosistema Premium (Video Explicativo)</span>
+                                </div>
+                                <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
+                                    <iframe id="subscription-youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            </div>
+
+                            <!-- GRILLA DE TARJETAS DE PLANES (DINÁMICA DESDE JS) -->
+                            <div class="saas-pricing-grid" id="public-pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                                <!-- Renderizado Dinámico reactivo mediante JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- MODAL DE PAGO POR TRANSFERENCIA BANCARIA B2B -->
                 <div id="commercial-payment-modal" class="payment-modal-overlay">
                     <div class="payment-modal-card glassmorphism">
@@ -2913,6 +2948,28 @@
                                         </div>
                                         <span style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4; margin-top: 3px;">
                                             * Modifica el precio base estándar de la pauta publicitaria. Este valor es el que se usa en la pasarela comercial para calcular los subtotales y aplicar los descuentos del plan contratado.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD: CONFIGURACIÓN DE VIDEO EXPLICATIVO DE PLANES -->
+                            <div class="card glassmorphism col-card border-white" style="margin-top: 15px; border-color: rgba(191, 90, 242, 0.25) !important;">
+                                <div class="card-header border-white" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon white" style="background: rgba(191, 90, 242, 0.1) !important; color: #bf5af2 !important; border-color: rgba(191, 90, 242, 0.3) !important;"><i data-lucide="play-circle"></i></div>
+                                    <h2 style="color: #bf5af2 !important;">Video de Planes Premium</h2>
+                                </div>
+                                <div class="commercial-section-body font-mono" style="padding: 10px 0;">
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <label for="admin-plans-video-url" style="font-size: 0.72rem; color: var(--text-secondary);">URL de Video de YouTube (Explicativo)</label>
+                                        <div style="display: flex; gap: 10px; align-items: center;">
+                                            <input type="url" id="admin-plans-video-url" placeholder="Ej. https://www.youtube.com/watch?v=..." style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(191, 90, 242, 0.3); color: #fff; border-radius: 6px; flex: 1; font-family: var(--font-mono); outline: none;">
+                                            <button onclick="saveAdminPlansVideoUrl()" class="btn-commercial-purple" style="padding: 10px 15px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%); border: none; color: #fff;">
+                                                <i data-lucide="save" style="width: 14px; height: 14px;"></i> GUARDAR
+                                            </button>
+                                        </div>
+                                        <span style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4; margin-top: 3px;">
+                                            * Configura el video explicativo de YouTube que los usuarios verán arriba de la sección de planes de suscripción. Admite enlaces estándar, cortos o directamente el ID del video.
                                         </span>
                                     </div>
                                 </div>

@@ -61,6 +61,7 @@ let uploadedBase64Image = ''; // Almacenará la foto local subida en Base64
 let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas en Base64 en un arreglo
 let coverImageIndex = 0; // Índice de la imagen de portada principal seleccionada
 let baseAdPriceGTQ = parseFloat(localStorage.getItem('valorgt_base_ad_price') || '5000'); // Tarifa base estándar de pauta comercial calibrada por el admin
+let plansVideoUrl = localStorage.getItem('valorgt_plans_video_url') || 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // URL del video de planes premium calibrada por el admin
 
 
 // Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
@@ -202,6 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
             pubFileInput.value = ''; // Resetear el valor para permitir volver a seleccionar el mismo archivo
         });
     }
+    
+    // Cargar grilla pública de precios de planes
+    renderPublicPricingGrid();
 });
 
 /**
@@ -446,6 +450,12 @@ function switchView(viewId) {
         subtitleEl.innerText = "Registro de clientes, planes corporativos y pautas publicitarias de portada";
         setTimeout(() => {
             initCommercialView();
+        }, 50);
+    } else if (viewId === 'subscriptions') {
+        titleEl.innerText = "Membresías y Planes Premium";
+        subtitleEl.innerText = "Potencia tu operativa con el motor SaaS de ValorGT AI e inteligencia de mercado";
+        setTimeout(() => {
+            initSubscriptionsView();
         }, 50);
     } else if (viewId === 'catalog') {
         titleEl.innerText = "Catálogo General de Activos";
@@ -2069,6 +2079,9 @@ function updateFormUnits() {
     if (promoBudget) {
         promoBudget.value = activeCurrency === 'GTQ' ? 450 : 58;
     }
+
+    // Re-renderizar la grilla pública de suscripciones
+    renderPublicPricingGrid();
 }
 
 /**
@@ -3250,6 +3263,7 @@ function initCommercialView() {
     if (!isCommercialAuthenticated) {
         if (loginGate) loginGate.classList.remove('hidden');
         if (dashboardArea) dashboardArea.classList.add('hidden');
+        renderPublicPricingGrid();
         return;
     } else {
         if (loginGate) loginGate.classList.add('hidden');
@@ -3288,6 +3302,8 @@ function initCommercialView() {
     if (isSupabaseActive) {
         syncSupabaseData();
     }
+    
+    renderPublicPricingGrid();
 }
 
 /**
@@ -5991,6 +6007,12 @@ function initAdminView() {
     fetchXautPriceForAirdrop().then(() => {
         calculateAdminAirdropPreview();
     });
+
+    // Cargar URL actual de video de planes en el input
+    const videoInput = document.getElementById('admin-plans-video-url');
+    if (videoInput) {
+        videoInput.value = plansVideoUrl;
+    }
 }
 
 
@@ -7616,6 +7638,265 @@ async function saveB2bAgentProfile() {
     // Re-renderizar perfil e inventarios
     renderB2bAgentProfile();
     renderB2bInventory();
+}
+
+/* ==========================================================================
+   MÓDULO DE PLANES DE SUSCRIPCIÓN PREMIUM CON VIDEO EXPLICATIVO DINÁMICO
+   ========================================================================== */
+
+/**
+ * Procesa cualquier URL de YouTube para extraer su ID y generar un enlace embed válido.
+ * Admite enlaces cortos (youtu.be), estándar (watch?v=), embebidos o directamente el ID.
+ * @param {string} url - El enlace o ID de YouTube ingresado.
+ * @returns {string} - Un enlace de tipo embed listo para ser usado en iframe.
+ */
+function getYouTubeEmbedUrl(url) {
+    if (!url) return "https://www.youtube.com/embed/dQw4w9WgXcQ"; // Default fallback
+    
+    // Si ya es un URL de embed, retornarlo directamente
+    if (url.includes("/embed/")) {
+        return url;
+    }
+    
+    let videoId = "";
+    try {
+        if (url.includes("youtu.be/")) {
+            videoId = url.split("youtu.be/")[1].split(/[?#]/)[0];
+        } else if (url.includes("v=")) {
+            videoId = url.split("v=")[1].split(/[&?#]/)[0];
+        } else if (url.includes("embed/")) {
+            videoId = url.split("embed/")[1].split(/[?#]/)[0];
+        } else {
+            // Si es solo el ID de 11 caracteres
+            videoId = url.trim();
+        }
+    } catch (e) {
+        console.error("Error al parsear YouTube URL:", e);
+        return "https://www.youtube.com/embed/dQw4w9WgXcQ";
+    }
+    
+    if (videoId && videoId.length === 11) {
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return "https://www.youtube.com/embed/dQw4w9WgXcQ";
+}
+
+/**
+ * Inicializa y refresca la vista pública de Planes de Suscripción Premium
+ */
+function initSubscriptionsView() {
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (iframe) {
+        iframe.src = plansVideoUrl;
+    }
+    
+    renderPublicPricingGrid();
+}
+
+/**
+ * Renderiza dinámicamente la grilla pública de planes con precios e interacción reactiva.
+ * Sincroniza con el tipo de moneda activo (GTQ / USD) y el estado de la sesión comercial.
+ */
+function renderPublicPricingGrid() {
+    const grid = document.getElementById('public-pricing-grid');
+    if (!grid) return;
+
+    grid.innerHTML = ''; // Limpiar
+
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+
+    const plans = [
+        {
+            key: 'basico',
+            badge: 'INDIVIDUAL',
+            badgeColor: 'var(--neon-blue)',
+            badgeBg: 'rgba(10, 132, 255, 0.15)',
+            badgeBorder: 'rgba(10, 132, 255, 0.3)',
+            title: 'Agente Individual',
+            subtitle: 'Ideal para agentes pequeños y tasadores autónomos.',
+            priceUSD: 18,
+            priceGTQ: 140,
+            features: [
+                { text: '20 Propiedades en Catálogo', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Sello de Verificación Básica', active: true },
+                { text: 'Acceso a Radar de Calor', active: true },
+                { text: 'Terminal de Inversión (Demo)', active: false },
+                { text: 'Portafolio Patrimonial IA (Demo)', active: false },
+                { text: 'Descuento en Pautas Publicitarias', active: false }
+            ]
+        },
+        {
+            key: 'pro',
+            badge: 'PRO',
+            badgeColor: 'var(--cyan)',
+            badgeBg: 'rgba(0, 240, 255, 0.1)',
+            badgeBorder: 'rgba(0, 240, 255, 0.3)',
+            title: 'Inmobiliaria Pro',
+            subtitle: 'Perfecto para agencias en expansión y brokers activos.',
+            priceUSD: 31,
+            priceGTQ: 240,
+            recommended: true,
+            features: [
+                { text: '100 Propiedades en Catálogo', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Logo Propio en Inmuebles', active: true },
+                { text: 'Acceso Completo a Radar de Calor', active: true },
+                { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
+                { text: 'Acceso Ilimitado a Portafolio IA', active: true },
+                { text: '15% Descuento en Pautas Publicitarias', active: true }
+            ]
+        },
+        {
+            key: 'vip',
+            badge: 'PREMIUM',
+            badgeColor: '#bf5af2',
+            badgeBg: 'rgba(191, 90, 242, 0.15)',
+            badgeBorder: 'rgba(191, 90, 242, 0.3)',
+            title: 'Inmobiliaria Premium',
+            subtitle: 'Operativa ilimitada con carteras de oro digital.',
+            priceUSD: 82,
+            priceGTQ: 640,
+            features: [
+                { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Logo Propio y Destacados Premium', active: true },
+                { text: 'Acceso Completo a Radar de Calor', active: true },
+                { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
+                { text: 'Acceso Ilimitado a Portafolio IA', active: true },
+                { text: '30% Descuento en Pautas Publicitarias', active: true },
+                { text: 'Cartera de ORO Digital Habilitada', active: true, color: '#ffd700' }
+            ]
+        }
+    ];
+
+    plans.forEach(plan => {
+        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
+        const priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        
+        const card = document.createElement('div');
+        card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
+        if (plan.recommended) {
+            card.style.position = 'relative';
+        }
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.justifyContent = 'space-between';
+        card.style.padding = '20px';
+        card.style.boxSizing = 'border-box';
+        card.style.height = '100%';
+
+        let featuresHtml = '';
+        plan.features.forEach(f => {
+            const colorStyle = f.color ? `style="color: ${f.color};"` : '';
+            if (f.active) {
+                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> ${f.text}</li>`;
+            } else {
+                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.5;">${f.text}</span></li>`;
+            }
+        });
+
+        let actionButtonHtml = '';
+        if (isCommercialAuthenticated) {
+            if (isUserActivePlan) {
+                actionButtonHtml = `<button class="btn-plan-action active-btn" style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled>Tu Plan Activo</button>`;
+            } else {
+                actionButtonHtml = `<button class="btn-plan-action" onclick="openPlanPayment('${plan.key}')">Cambiar Plan</button>`;
+            }
+        } else {
+            actionButtonHtml = `<button class="btn-plan-action" onclick="selectPublicPlanForSignup('${plan.key}')">Adquirir Plan</button>`;
+        }
+
+        card.innerHTML = `
+            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.5rem; padding: 1px 6px;">RECOMENDADO</div>` : ''}
+            <div>
+                <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 15px;">
+                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder};">${plan.badge}</span>
+                    <h3 class="plan-title" style="margin-top: 8px; font-size: 1rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <p class="plan-subtitle" style="font-size: 0.65rem; color: var(--text-muted); margin: 4px 0 0 0; line-height: 1.3;">${plan.subtitle}</p>
+                </div>
+                <div class="plan-price font-mono" style="font-size: 1.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 20px;">
+                    <span class="plan-currency-sym">${currencySym}</span>
+                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
+                    <span class="plan-period" style="font-size: 0.6rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                </div>
+                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.68rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 25px 0;">
+                    ${featuresHtml}
+                </ul>
+            </div>
+            ${actionButtonHtml}
+        `;
+
+        grid.appendChild(card);
+    });
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Permite pre-seleccionar un plan de suscripción en el formulario de registro comercial.
+ * @param {string} planKey - Plan seleccionado ('basico' | 'pro' | 'vip').
+ */
+function selectPublicPlanForSignup(planKey) {
+    // 1. Redirigir a la Consola Comercial
+    switchView('commercial');
+    
+    // 2. Si no está autenticado, alternar a la pestaña de registro y pre-seleccionar el plan
+    if (!isCommercialAuthenticated) {
+        switchLoginTab('signup');
+        
+        let priceUSD = 31; // Default Pro
+        if (planKey === 'basico') priceUSD = 18;
+        if (planKey === 'vip') priceUSD = 82;
+        
+        selectSignupPlan(planKey, priceUSD);
+        
+        // Desplazamiento visual suave
+        setTimeout(() => {
+            const signupForm = document.getElementById('commercial-signup-form');
+            if (signupForm) {
+                signupForm.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 100);
+    }
+}
+
+/**
+ * Permite al administrador calibrar persistentemente la URL del video de planes premium
+ */
+function saveAdminPlansVideoUrl() {
+    const input = document.getElementById('admin-plans-video-url');
+    if (input) {
+        const val = input.value.trim();
+        const embedUrl = getYouTubeEmbedUrl(val);
+        plansVideoUrl = embedUrl;
+        localStorage.setItem('valorgt_plans_video_url', embedUrl);
+        
+        // Actualizar UI
+        input.value = embedUrl;
+        const iframe = document.getElementById('subscription-youtube-iframe');
+        if (iframe) {
+            iframe.src = embedUrl;
+        }
+        
+        alert(`✔️ Video explicativo de planes premium calibrado con éxito.`);
+        logAdminSecurityActivity(`Calibración del Core: URL de video de planes configurada en ${embedUrl}`);
+    }
+}
+
+/**
+ * Módulo seguro de actividad del administrador para evitar ReferenceErrors.
+ * @param {string} message - El mensaje de seguridad a registrar.
+ */
+function logAdminSecurityActivity(message) {
+    if (typeof appendAdminLog === 'function') {
+        appendAdminLog("SECURITY", message, false);
+    } else {
+        console.log(`[SECURITY] ${message}`);
+    }
 }
 
 
