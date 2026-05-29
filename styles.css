@@ -1691,17 +1691,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border: 1px solid var(--border-light);
     border-radius: 6px;
     padding: 8px 12px;
-    min-width: 180px;
+    min-width: 200px;
 }
 
 .tick-lbl {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     letter-spacing: 0.5px;
 }
 
 .tick-val {
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -1735,13 +1735,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     width: 100%;
     border-collapse: collapse;
     font-family: var(--font-sans);
-    font-size: 0.92rem;
+    font-size: 1.05rem;
     text-align: left;
 }
 
 .terminal-table th {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1784,7 +1784,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border-radius: 6px;
     padding: 16px;
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
     min-height: 160px;
     max-height: 220px;

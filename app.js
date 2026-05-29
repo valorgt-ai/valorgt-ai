@@ -1863,16 +1863,16 @@ function renderInvestorTable() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>
-                <span class="table-zone-name" style="font-size: 1rem;">${zone.name.split(' (')[0]}</span><br>
-                <span class="sub-title font-mono" style="font-size:0.75rem; color:var(--text-muted)">ID: ${key.toUpperCase()}_NODE</span>
+                <span class="table-zone-name" style="font-size: 1.15rem;">${zone.name.split(' (')[0]}</span><br>
+                <span class="sub-title font-mono" style="font-size:0.85rem; color:var(--text-muted)">ID: ${key.toUpperCase()}_NODE</span>
             </td>
-            <td class="table-number" style="font-weight: bold; color: #fff; text-shadow: 0 0 4px rgba(255,255,255,0.1); font-size: 0.95rem;">${currencySym}${formatNumber(price.toFixed(0))} / m²</td>
-            <td class="table-number text-green" style="font-weight: 500; font-size: 0.95rem;">${roiVal}%</td>
-            <td class="table-number text-green" style="font-size: 0.95rem;">+${plusvaliaVal}% / año</td>
-            <td class="table-number text-cyan font-mono" style="letter-spacing: 0.5px; font-size: 0.95rem;">${liquidityVal}</td>
+            <td class="table-number" style="font-weight: bold; color: #fff; text-shadow: 0 0 4px rgba(255,255,255,0.1); font-size: 1.05rem;">${currencySym}${formatNumber(price.toFixed(0))} / m²</td>
+            <td class="table-number text-green" style="font-weight: 500; font-size: 1.05rem;">${roiVal}%</td>
+            <td class="table-number text-green" style="font-size: 1.05rem;">+${plusvaliaVal}% / año</td>
+            <td class="table-number text-cyan font-mono" style="letter-spacing: 0.5px; font-size: 1.05rem;">${liquidityVal}</td>
             <td>
-                <button class="btn btn-outline font-mono ${recColor}" style="padding:5px 10px; font-size:0.75rem; border:1px solid currentColor; background:transparent; cursor:pointer; font-weight: bold;" onclick="selectMapZone('${key}')">
-                    ${recLabel} <i data-lucide="external-link" style="width:11px; height:11px; display:inline-block; vertical-align:middle;"></i>
+                <button class="btn btn-outline font-mono ${recColor}" style="padding:6px 12px; font-size:0.85rem; border:1px solid currentColor; background:transparent; cursor:pointer; font-weight: bold;" onclick="selectMapZone('${key}')">
+                    ${recLabel} <i data-lucide="external-link" style="width:12px; height:12px; display:inline-block; vertical-align:middle;"></i>
                 </button>
             </td>
         `;
