@@ -3353,12 +3353,14 @@ function initCommercialView() {
     updateB2bSubscriptionPendingBanner();
     syncPendingPaymentRequests();
 
-    // Gestionar Overlays de Bloqueo Criptográficos según Plan
+    // Gestionar Overlays de Bloqueo Criptográficos según Plan y Estado de Pago
     const goldLock = document.getElementById('commercial-gold-overlay-lock');
     const promoLock = document.getElementById('commercial-promo-overlay-lock');
     const btnPromote = document.getElementById('btn-promote-property');
 
-    if (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') {
+    const isPending = loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente');
+
+    if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
         if (goldLock) goldLock.classList.add('hidden');
         if (promoLock) promoLock.classList.add('hidden');
         if (btnPromote) btnPromote.disabled = false;
@@ -3369,7 +3371,11 @@ function initCommercialView() {
     }
 
     // Sincronizar UI de retiros bancarios, pestañas por defecto y cuadrícula de suscripciones corporativas
-    switchCommercialTab('home');
+    if (isPending) {
+        switchCommercialTab('suscripcion');
+    } else {
+        switchCommercialTab('home');
+    }
     renderB2bWithdrawalsTable();
     syncCommercialPricingGridUI();
 
@@ -4420,20 +4426,46 @@ function updateB2bSubscriptionPendingBanner() {
         banner.style.textAlign = "left";
         banner.style.boxShadow = "0 0 10px rgba(255, 149, 0, 0.05)";
         
-        banner.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                <i data-lucide="clock" class="spinner-slow" style="color: #ff9500; width: 16px; height: 16px;"></i>
-                <strong style="color: #ff9500; font-size: 0.85rem; text-shadow: 0 0 5px rgba(255,149,0,0.2);">Suscripción Pendiente de Verificación Bancaria</strong>
-            </div>
-            <p style="font-size: 0.7rem; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.4;">
-                Hemos recibido tu comprobante de transferencia y tu cuenta de agente se encuentra bajo auditoría. Usualmente se completa en un plazo de <strong>1 a 24 horas hábiles</strong>.
-            </p>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20consultar%20el%20estado%20de%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(37, 211, 102, 0.2);">
-                    <i data-lucide="message-square" style="width: 12px; height: 12px;"></i> Contactar Soporte WhatsApp (+502 4041-6471)
-                </a>
-            </div>
-        `;
+        // Verificar si el cliente ya subió algún comprobante de pago
+        const hasReceiptRequest = pendingPaymentRequests && pendingPaymentRequests.some(r => 
+            (r.clientId && r.clientId === loggedInB2bClient.id) || 
+            (r.clientEmail && r.clientEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
+        );
+
+        if (hasReceiptRequest) {
+            banner.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <i data-lucide="clock" class="spinner-slow" style="color: #ff9500; width: 16px; height: 16px;"></i>
+                    <strong style="color: #ff9500; font-size: 0.85rem; text-shadow: 0 0 5px rgba(255,149,0,0.2);">Suscripción Pendiente de Verificación Bancaria</strong>
+                </div>
+                <p style="font-size: 0.7rem; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.4;">
+                    Hemos recibido tu comprobante de transferencia y tu cuenta de agente se encuentra bajo auditoría. Usualmente se completa en un plazo de <strong>1 a 24 horas hábiles</strong>.
+                </p>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20consultar%20el%20estado%20de%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(37, 211, 102, 0.2);">
+                        <i data-lucide="message-square" style="width: 12px; height: 12px;"></i> Contactar Soporte WhatsApp (+502 4041-6471)
+                    </a>
+                </div>
+            `;
+        } else {
+            banner.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <i data-lucide="alert-triangle" style="color: #ff375f; width: 16px; height: 16px;"></i>
+                    <strong style="color: #ff375f; font-size: 0.85rem; text-shadow: 0 0 5px rgba(255,55,95,0.2);">Suscripción Pendiente de Pago</strong>
+                </div>
+                <p style="font-size: 0.7rem; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.4;">
+                    Tu cuenta ha sido creada en estado Pendiente. Para activar el acceso completo, por favor realiza la transferencia bancaria y sube tu comprobante de depósito.
+                </p>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button onclick="openPlanPayment('${activeB2bPlan || 'pro'}')" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--cyan) 0%, #0066ff 100%); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(0,240,255,0.25);">
+                        <i data-lucide="upload" style="width: 12px; height: 12px;"></i> Subir Comprobante de Pago
+                    </button>
+                    <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20ayuda%20con%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text-secondary); text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s;">
+                        <i data-lucide="message-square" style="width: 12px; height: 12px;"></i> Contactar Soporte
+                    </a>
+                </div>
+            `;
+        }
         banner.style.display = "block";
     } else {
         banner.style.display = "none";
@@ -7095,6 +7127,15 @@ async function syncB2bClientsFromSupabase() {
  * Permite cambiar de pestaña de forma reactiva en el Dashboard de Socio B2B
  */
 function switchCommercialTab(tabId) {
+    // Si la suscripción del cliente está pendiente, restringir el acceso únicamente a la pestaña de Suscripción
+    if (loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
+        if (tabId !== 'suscripcion') {
+            alert("⚠️ ACCESO RESTRINGIDO: Tu cuenta se encuentra en estado 'Pendiente de Pago'. Debes subir tu comprobante de transferencia y esperar a que el administrador valide tu pago para acceder a las demás pestañas del portal.");
+            switchCommercialTab('suscripcion');
+            return;
+        }
+    }
+
     // Ocultar todos los contenidos de pestañas
     document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
     
