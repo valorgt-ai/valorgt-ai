@@ -1282,16 +1282,51 @@ select option {
 .heatmap-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
     height: 100%;
     overflow-y: auto;
-    padding-right: 6px;
+    padding-right: 8px;
+}
+
+/* Scrollbar futurista y minimalista para la barra lateral del mapa */
+.heatmap-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.heatmap-sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.heatmap-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.25);
+    border-radius: 3px;
+    border: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+.heatmap-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.45);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.gps-search-card {
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
 }
 
 .zone-info-card {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    min-height: 180px;
+    transition: all 0.3s ease;
+}
+
+.zone-info-card:has(.zone-details-active:not(.hidden)) {
+    min-height: 380px;
 }
 
 .zone-details-active {
@@ -1327,7 +1362,7 @@ select option {
 }
 
 .hud-box-lbl {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     text-transform: uppercase;
 }
@@ -1360,9 +1395,10 @@ select option {
 
 /* SEÑALES DE ARBITRAJE */
 .investor-alerts-card {
-    height: 240px;
+    height: 320px; /* Aumentado de 240px para evitar cortes de información */
     display: flex;
     flex-direction: column;
+    transition: all 0.3s ease;
 }
 
 .arbitrage-signals-list {
@@ -5054,5 +5090,34 @@ input[type="range"]::-webkit-slider-thumb:hover {
     /* Agregar margen inferior a las vistas para que el contenido no quede tapado */
     .main-content {
         padding-bottom: 75px !important;
+    }
+
+    /* Ajustes responsivos para la vista del radar de calor */
+    .heatmap-layout {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        gap: 16px !important;
+    }
+    
+    .map-wrapper {
+        height: 480px !important; /* Altura fija para interactuar correctamente en móvil/tablet */
+    }
+    
+    .heatmap-sidebar {
+        height: auto !important;
+        overflow-y: visible !important;
+        padding-right: 0 !important;
+        gap: 16px !important;
+    }
+    
+    .investor-alerts-card {
+        height: auto !important; /* Deja que crezca naturalmente según las señales en móvil */
+        min-height: 280px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-wrapper {
+        height: 380px !important; /* Altura optimizada para pantallas muy pequeñas */
     }
 }
