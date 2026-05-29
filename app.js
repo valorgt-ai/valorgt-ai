@@ -1426,7 +1426,22 @@ function calculateValuation(event) {
         baseFinishesPriceM2 = !isNaN(adminPriceEconomy) ? adminPriceEconomy : 707; // Q5,500
     }
     
-    let locationMultiplier = zoneData.basePriceM2 / 1100;
+    // Extraer precio m² de categoría específico del sector (Apartamentos, Casas, Oficinas, Locales, Terrenos, Bodegas)
+    let categoryKey = 'apartamentos';
+    if (type === 'apartamento') categoryKey = 'apartamentos';
+    else if (type === 'casa') categoryKey = 'casas';
+    else if (type === 'oficina') categoryKey = 'oficinas';
+    else if (type === 'comercial') categoryKey = 'locales';
+    else if (type === 'terreno') categoryKey = 'terrenos';
+    else if (type === 'bodega') categoryKey = 'bodegas';
+    else if (type === 'finca') categoryKey = 'casas'; // fallback
+    
+    let targetPriceM2 = zoneData.basePriceM2;
+    if (zoneData.categories && zoneData.categories[categoryKey]) {
+        targetPriceM2 = zoneData.categories[categoryKey].priceM2;
+    }
+
+    let locationMultiplier = targetPriceM2 / 1100;
     let priceM2 = baseFinishesPriceM2 * locationMultiplier * sizeRegression;
     
     // Valor Base por Construcción
@@ -3013,12 +3028,26 @@ function autofillPublishFormFromValuation() {
         const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
         document.getElementById('pub-price').value = Math.round(activeValuation * conversion);
     } else {
-        // Si no hay valuación activa, estimar un precio comercial base
+        // Si no hay valuación activa, estimar un precio comercial base según la categoría del inmueble
         const sizeVal = parseFloat(document.getElementById('pub-size').value) || 180;
         const locVal = document.getElementById('pub-location').value;
+        const pubCategory = document.getElementById('pub-category')?.value || 'Apartamento';
         const zoneData = ZONES_DATABASE[locVal];
+        
         if (zoneData) {
-            const basePrice = zoneData.basePriceM2 * sizeVal;
+            let categoryKey = 'apartamentos';
+            if (pubCategory === 'Apartamento') categoryKey = 'apartamentos';
+            else if (pubCategory === 'Casa') categoryKey = 'casas';
+            else if (pubCategory === 'Local') categoryKey = 'locales';
+            else if (pubCategory === 'Bodega') categoryKey = 'bodegas';
+            else if (pubCategory === 'Terreno') categoryKey = 'terrenos';
+            
+            let targetPriceM2 = zoneData.basePriceM2;
+            if (zoneData.categories && zoneData.categories[categoryKey]) {
+                targetPriceM2 = zoneData.categories[categoryKey].priceM2;
+            }
+            
+            const basePrice = targetPriceM2 * sizeVal;
             const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
             document.getElementById('pub-price').value = Math.round(basePrice * conversion);
         }
