@@ -7809,19 +7809,19 @@ function renderPublicPricingGrid() {
         }
 
         card.innerHTML = `
-            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.7rem; padding: 2px 8px;">RECOMENDADO</div>` : ''}
+            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">RECOMENDADO</div>` : ''}
             <div>
-                <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 15px;">
-                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder};">${plan.badge}</span>
-                    <h3 class="plan-title" style="margin-top: 8px; font-size: 1.15rem; font-weight: bold; color: #fff;">${plan.title}</h3>
-                    <p class="plan-subtitle" style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0; line-height: 1.3;">${plan.subtitle}</p>
+                <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
+                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 1.7rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 20px;">
-                    <span class="plan-currency-sym">${currencySym}</span>
+                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 22px;">
+                    <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
                     <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
-                    <span class="plan-period" style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                    <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
                 </div>
-                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 25px 0;">
+                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
                     ${featuresHtml}
                 </ul>
             </div>

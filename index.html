@@ -1458,34 +1458,34 @@
                             <div class="plan-selection-column" style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
                                 <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">1. SELECCIONAR NIVEL DE SUSCRIPCIÓN</h3>
                                 
-                                <div class="pricing-card" id="signup-plan-basico" data-usd="18" data-gtq="140" onclick="selectSignupPlan('basico', 18)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
-                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
-                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Agente Individual</span>
+                                <div class="pricing-card" id="signup-plan-basico" data-usd="18" data-gtq="140" onclick="selectSignupPlan('basico', 18)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+                                        <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">INDIVIDUAL</span>
+                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Agente Individual</span>
                                     </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: var(--neon-blue);">
-                                        <span class="plan-currency-sym">Q</span><span id="signup-price-basico">140</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
-                                    </div>
-                                </div>
-
-                                <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="31" data-gtq="240" onclick="selectSignupPlan('pro', 31)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
-                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.5rem; padding: 1px 6px;">RECOMENDADO</div>
-                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
-                                        <span class="plan-badge">PRO</span>
-                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Inmobiliaria Pro</span>
-                                    </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: var(--cyan);">
-                                        <span class="plan-currency-sym">Q</span><span id="signup-price-pro">240</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--neon-blue); font-weight: bold;">
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-basico">140</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
                                     </div>
                                 </div>
 
-                                <div class="pricing-card" id="signup-plan-vip" data-usd="82" data-gtq="640" onclick="selectSignupPlan('vip', 82)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
-                                    <div style="display: flex; flex-direction: column; gap: 3px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
-                                        <span style="font-size: 0.75rem; font-weight: bold; color: #fff;">Inmobiliaria Premium</span>
+                                <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="31" data-gtq="240" onclick="selectSignupPlan('pro', 31)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
+                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.65rem; padding: 2px 8px;">RECOMENDADO</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+                                        <span class="plan-badge" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PRO</span>
+                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inmobiliaria Pro</span>
                                     </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.1rem; margin: 0; color: #bf5af2;">
-                                        <span class="plan-currency-sym">Q</span><span id="signup-price-vip">640</span><span style="font-size: 0.55rem; color: var(--text-muted);">/mes</span>
+                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--cyan); font-weight: bold;">
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-pro">240</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                    </div>
+                                </div>
+
+                                <div class="pricing-card" id="signup-plan-vip" data-usd="82" data-gtq="640" onclick="selectSignupPlan('vip', 82)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+                                        <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PREMIUM</span>
+                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inmobiliaria Premium</span>
+                                    </div>
+                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: #bf5af2; font-weight: bold;">
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-vip">640</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
                                     </div>
                                 </div>
                             </div>
