@@ -1310,11 +1310,12 @@ select option {
 }
 
 .gps-search-card {
-    min-height: 240px;
+    min-height: 250px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .zone-info-card {
@@ -1323,10 +1324,11 @@ select option {
     flex-direction: column;
     min-height: 180px;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .zone-info-card:has(.zone-details-active:not(.hidden)) {
-    min-height: 380px;
+    min-height: 450px; /* Aumentado a 450px para dar espacio completo y aireado a la telemetría del sector */
 }
 
 .zone-details-active {
@@ -1395,10 +1397,11 @@ select option {
 
 /* SEÑALES DE ARBITRAJE */
 .investor-alerts-card {
-    height: 320px; /* Aumentado de 240px para evitar cortes de información */
+    height: 350px; /* Aumentado a 350px para dar espacio completo y aireado a las señales */
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .arbitrage-signals-list {
