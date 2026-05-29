@@ -6269,8 +6269,8 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
     
     if (!recipientsList) return;
     
-    // Obtener los clientes premium (VIP o Pro) activos de b2bClients
-    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    // Obtener los clientes premium (VIP o Pro) activos de b2bClients de forma case-insensitive
+    const eligibleClients = b2bClients.filter(c => c.plan && c.status && ['vip', 'pro', 'premium'].includes(c.plan.toLowerCase()) && c.status.toLowerCase() === 'activo');
     
     // 1. Poblar el selector de usuario único de forma dinámica
     if (singleUserSelect) {
@@ -6420,8 +6420,8 @@ function calculateAdminAirdropPreview() {
 
     if (priceEl) priceEl.innerText = `$${xautPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
     
-    // Filtrar clientes Premium (VIP o Pro) activos
-    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    // Filtrar clientes Premium (VIP o Pro) activos de forma case-insensitive
+    const eligibleClients = b2bClients.filter(c => c.plan && c.status && ['vip', 'pro', 'premium'].includes(c.plan.toLowerCase()) && c.status.toLowerCase() === 'activo');
     
     let selectedClients = [];
     
@@ -6621,7 +6621,7 @@ async function executeAdminGoldAirdrop() {
     }
     
     const xautPrice = await fetchXautPriceForAirdrop();
-    const eligibleClients = b2bClients.filter(c => ['VIP', 'Pro'].includes(c.plan) && c.status === 'Activo');
+    const eligibleClients = b2bClients.filter(c => c.plan && c.status && ['vip', 'pro', 'premium'].includes(c.plan.toLowerCase()) && c.status.toLowerCase() === 'activo');
     
     let selectedClients = [];
     if (isSingle) {
