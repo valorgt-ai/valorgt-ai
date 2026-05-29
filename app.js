@@ -154,48 +154,52 @@ document.addEventListener('DOMContentLoaded', () => {
         updateB2bFieldVisibility(); // Ejecutar inicialmente
     }
 
-    // Listener para cargar múltiples fotos locales (Desde PC del agente, máx 6) como Base64 con previsualización
+    // Listener para cargar múltiples fotos locales (Desde PC del agente, máx 6) como Base64 con previsualización acumulativa (en fila)
     const pubFileInput = document.getElementById('pub-file-input');
     if (pubFileInput) {
         pubFileInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files).slice(0, 6); // Limitar a 6 fotos máximo
-            uploadedBase64Images = [];
-            coverImageIndex = 0; // Resetear portada por defecto al cargar nuevas
+            const selectedFiles = Array.from(e.target.files);
             
-            if (files.length > 0) {
-                const readPromises = files.map(file => {
-                    return new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            resolve(event.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                });
-                
-                uploadedBase64Images = await Promise.all(readPromises);
-                console.log(`⚡ [ValorGT AI] ${uploadedBase64Images.length} imágenes locales cargadas en Base64 con éxito.`);
-                
-                // Renderizar miniaturas
-                renderThumbnailsPreview();
-                
-                // Actualización estética interactiva premium (feedback en el label e input)
-                const label = document.querySelector('label[for="pub-file-input"]');
-                if (label) {
-                    label.innerHTML = `O Subir Fotos Locales <span style="color: var(--green); font-weight: bold;">(¡${uploadedBase64Images.length} cargadas ✔️!)</span>`;
-                }
-                pubFileInput.style.border = '1px solid var(--green)';
-                pubFileInput.style.background = 'rgba(0, 255, 128, 0.1)';
-            } else {
-                uploadedBase64Images = [];
-                renderThumbnailsPreview();
-                const label = document.querySelector('label[for="pub-file-input"]');
-                if (label) {
-                    label.innerText = 'O Subir Fotos Locales (Hasta 6 desde tu PC)';
-                }
-                pubFileInput.style.border = '1px dashed var(--cyan)';
-                pubFileInput.style.background = 'rgba(0,0,0,0.4)';
+            if (selectedFiles.length === 0) return;
+            
+            // Si ya se alcanzó el límite máximo de 6 fotos, denegar
+            if (uploadedBase64Images.length >= 6) {
+                alert("⚠️ LÍMITE DE IMÁGENES ALCANZADO: Ya has cargado el máximo permitido de 6 fotos locales por propiedad.");
+                pubFileInput.value = ''; // Resetear input
+                return;
             }
+            
+            // Calcular espacios restantes
+            const remainingSlots = 6 - uploadedBase64Images.length;
+            const filesToProcess = selectedFiles.slice(0, remainingSlots);
+            
+            const readPromises = filesToProcess.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        resolve(event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+            
+            const newBase64Images = await Promise.all(readPromises);
+            
+            // Concatenar en fila (en cola) en vez de sobreescribir
+            uploadedBase64Images = uploadedBase64Images.concat(newBase64Images);
+            console.log(`⚡ [ValorGT AI] ${newBase64Images.length} fotos locales agregadas a la cola. Total: ${uploadedBase64Images.length}`);
+            
+            // Renderizar miniaturas
+            renderThumbnailsPreview();
+            
+            // Actualización estética interactiva premium (feedback en el label e input)
+            const label = document.querySelector('label[for="pub-file-input"]');
+            if (label) {
+                label.innerHTML = `O Subir Fotos Locales <span style="color: var(--green); font-weight: bold;">(¡${uploadedBase64Images.length} cargadas ✔️!)</span>`;
+            }
+            pubFileInput.style.border = '1px solid var(--green)';
+            pubFileInput.style.background = 'rgba(0, 255, 128, 0.1)';
+            pubFileInput.value = ''; // Resetear el valor para permitir volver a seleccionar el mismo archivo
         });
     }
 });
@@ -230,6 +234,7 @@ function renderThumbnailsPreview() {
         card.style.boxShadow = isCover ? '0 0 10px rgba(255, 215, 0, 0.45)' : 'none';
         card.style.transition = 'all 0.3s ease';
         card.style.background = 'rgba(0,0,0,0.5)';
+        card.style.flexShrink = '0';
         
         card.innerHTML = `
             <img src="${imgBase64}" style="width: 100%; height: 100%; object-fit: cover;">

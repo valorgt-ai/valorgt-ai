@@ -1971,21 +1971,21 @@
                                         </div>
                                     </div>
                                           <div class="form-row-3" style="margin-top: 10px; margin-bottom: 10px;">
-                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                              <label for="pub-file-input" style="font-size: 0.75rem;">O Subir Fotos Locales (Hasta 6 desde tu PC)</label>
-                                              <input type="file" id="pub-file-input" accept="image/*" multiple style="font-size: 0.72rem; padding: 6px; background: rgba(0,0,0,0.4); border: 1px dashed var(--cyan); color: #fff; border-radius: 6px; cursor: pointer; height: 35px;">
-                                              <!-- CONTENEDOR DE PREVISUALIZACIÓN DE MINIATURAS INTERACTIVO -->
-                                              <div id="pub-thumbnails-preview" class="font-mono hidden" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.25); border: 1px dashed rgba(0, 240, 255, 0.25); border-radius: 8px; width: 100%; box-sizing: border-box;"></div>
+                                              <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                  <label for="pub-file-input" style="font-size: 0.75rem;">O Subir Fotos Locales (Hasta 6 desde tu PC)</label>
+                                                  <input type="file" id="pub-file-input" accept="image/*" multiple style="font-size: 0.72rem; padding: 6px; background: rgba(0,0,0,0.4); border: 1px dashed var(--cyan); color: #fff; border-radius: 6px; cursor: pointer; height: 35px;">
+                                              </div>
+                                              <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                  <label for="pub-photo-custom" style="font-size: 0.75rem;">O URLs de Imágenes (Separadas por comas)</label>
+                                                  <input type="url" id="pub-photo-custom" placeholder="Ej. https://url1.jpg, https://url2.jpg" style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
+                                              </div>
+                                              <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                  <label for="pub-youtube" style="font-size: 0.75rem;">Enlace de Video de YouTube</label>
+                                                  <input type="url" id="pub-youtube" placeholder="https://www.youtube.com/watch?v=..." style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
+                                              </div>
                                           </div>
-                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                              <label for="pub-photo-custom" style="font-size: 0.75rem;">O URLs de Imágenes (Separadas por comas)</label>
-                                              <input type="url" id="pub-photo-custom" placeholder="Ej. https://url1.jpg, https://url2.jpg" style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
-                                          </div>
-                                          <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                              <label for="pub-youtube" style="font-size: 0.75rem;">Enlace de Video de YouTube</label>
-                                              <input type="url" id="pub-youtube" placeholder="https://www.youtube.com/watch?v=..." style="font-size: 0.8rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; height: 35px;">
-                                          </div>
-                                     </div>
+                                          <!-- CONTENEDOR DE PREVISUALIZACIÓN DE MINIATURAS INTERACTIVO FULL-WIDTH -->
+                                          <div id="pub-thumbnails-preview" class="font-mono hidden" style="display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 15px; padding: 12px; background: rgba(0,0,0,0.3); border: 1px dashed rgba(0, 240, 255, 0.35); border-radius: 8px; width: 100%; box-sizing: border-box; box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.05);"></div>
                                      <div class="form-row-2" style="margin-top: 10px; margin-bottom: 12px;">
                                           <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
                                               <label for="pub-lat" style="font-size: 0.75rem;">Coordenada Latitud (GPS)</label>
