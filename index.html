@@ -1642,50 +1642,50 @@
                         </button>
                     </div>
 
-                    <!-- NUEVA GRILLA DE TARJETAS KPI PREMIUM B2B (3 Columnas sin Oro Digital) -->
-                    <div class="portfolio-kpis-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 15px; gap: 15px; margin-bottom: 20px;">
-                        <!-- KPI 1: Facturación SaaS -->
-                        <div class="kpi-card kpi-card-premium">
-                            <div class="kpi-icon-wrapper">
-                                <i data-lucide="line-chart" class="kpi-icon-cyan"></i>
-                            </div>
-                            <div class="kpi-content">
-                                <span class="kpi-label-text">Facturación SaaS</span>
-                                <span class="kpi-value-text" id="saas-billing-val-card">Q1,159.22</span>
-                                <span class="kpi-sub-text">💳 PLAN PRO ACTIVO</span>
-                            </div>
-                            <div class="kpi-glow-bar"></div>
-                        </div>
-                        
-                        <!-- KPI 2: Propiedades Propias -->
-                        <div class="kpi-card kpi-card-premium">
-                            <div class="kpi-icon-wrapper">
-                                <i data-lucide="home" class="kpi-icon-cyan"></i>
-                            </div>
-                            <div class="kpi-content">
-                                <span class="kpi-label-text">Propiedades Propias</span>
-                                <span class="kpi-value-text" id="saas-listings-count-card">0</span>
-                                <span class="kpi-sub-text">🏠 INVENTARIO LIVE</span>
-                            </div>
-                            <div class="kpi-glow-bar"></div>
-                        </div>
-                        
-                        <!-- KPI 3: Tráfico e Impresiones -->
-                        <div class="kpi-card kpi-card-premium">
-                            <div class="kpi-icon-wrapper">
-                                <i data-lucide="eye" class="kpi-icon-cyan"></i>
-                            </div>
-                            <div class="kpi-content">
-                                <span class="kpi-label-text">Tráfico e Impresiones</span>
-                                <span class="kpi-value-text" id="saas-impressions-count-card">12,450</span>
-                                <span class="kpi-sub-text">📈 +24% ESTE MES</span>
-                            </div>
-                            <div class="kpi-glow-bar"></div>
-                        </div>
-                    </div>
-
                     <!-- PESTAÑA 0: INICIO (HOME) -->
                     <div id="comm-tab-content-home" class="comm-tab-content">
+                        <!-- GRILLA DE TARJETAS KPI PREMIUM B2B (3 Columnas de Métricas SaaS) -->
+                        <div class="portfolio-kpis-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 15px; gap: 15px; margin-bottom: 20px;">
+                            <!-- KPI 1: Facturación SaaS -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="line-chart" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Facturación SaaS</span>
+                                    <span class="kpi-value-text" id="saas-billing-val-card">Q1,159.22</span>
+                                    <span class="kpi-sub-text">💳 PLAN ACTIVO</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                            
+                            <!-- KPI 2: Propiedades Propias -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="home" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Propiedades Propias</span>
+                                    <span class="kpi-value-text" id="saas-listings-count-card">0</span>
+                                    <span class="kpi-sub-text">🏠 INVENTARIO LIVE</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                            
+                            <!-- KPI 3: Tráfico e Impresiones -->
+                            <div class="kpi-card kpi-card-premium">
+                                <div class="kpi-icon-wrapper">
+                                    <i data-lucide="eye" class="kpi-icon-cyan"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text">Tráfico e Impresiones</span>
+                                    <span class="kpi-value-text" id="saas-impressions-count-card">12,450</span>
+                                    <span class="kpi-sub-text">📈 VISITAS ACUMULADAS</span>
+                                </div>
+                                <div class="kpi-glow-bar"></div>
+                            </div>
+                        </div>
+
                         <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; justify-content: center;">
                             <!-- Columna 1: Mi Perfil Profesional -->
                             <div class="card glassmorphism border-cyan" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid var(--cyan) !important; border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important;">
@@ -1713,38 +1713,52 @@
                                 <button class="btn-commercial btn-commercial-gold" onclick="switchCommercialTab('suscripcion')">VER SUBSCRIPCIONES</button>
                             </div>
                         </div>
-                        
-                        <!-- Fila de 3 Columnas: Balance, Transferencias y Retiros -->
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-                            <!-- Columna 1: Balance de Oro Digital (XAUt) -->
-                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
-                                    <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="coins"></i></div>
-                                    <h2 style="color: #ffd700 !important;">Balance de Oro Digital</h2>
+
+                        <!-- NUEVA GRILLA DE TARJETAS KPI PREMIUM B2B DE ORO (3 Columnas, del mismo tamaño que Facturación SaaS) -->
+                        <div class="portfolio-kpis-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 15px; gap: 15px; margin-bottom: 20px;">
+                            <!-- KPI 1: Balance de Oro Digital (XAUt) -->
+                            <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.1) !important; border-color: rgba(255, 215, 0, 0.3) !important;">
+                                    <i data-lucide="coins" style="color: #ffd700;"></i>
                                 </div>
-                                <div class="commercial-section-body font-mono" style="display: flex; flex-direction: column; gap: 15px; justify-content: center; align-items: center; padding: 25px 15px; text-align: center;">
-                                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Saldo Disponible XAUt</span>
-                                    <div class="kpi-value-text" id="saas-usdt-balance-card" style="font-size: 2rem; font-weight: bold; color: #fff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5); margin: 5px 0;">1.0000 XAUt</div>
-                                    
-                                    <div style="background: rgba(255, 215, 0, 0.04); border: 1px dashed rgba(255, 215, 0, 0.2); border-radius: 6px; padding: 12px; font-size: 0.65rem; color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; gap: 5px;">
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span>Activo de Respaldo:</span>
-                                            <strong style="color: #ffd700;">Tether Gold (XAUt)</strong>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span>Red de Transmisión:</span>
-                                            <span style="color: #fff;">Ethereum ERC-20</span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span>Firma Criptográfica:</span>
-                                            <span style="color: var(--cyan);">SSL-TLS-V1.3</span>
-                                        </div>
-                                    </div>
-                                    <p style="font-size: 0.62rem; color: var(--text-muted); line-height: 1.4; margin: 0;">Tu saldo está respaldado 1:1 en oro físico custodiado en Suiza. Puedes transferir de inmediato o solicitar un retiro directo a tu banco en Quetzales.</p>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text" style="color: var(--text-secondary);">Balance de Oro Digital</span>
+                                    <span class="kpi-value-text" id="saas-usdt-balance-card" style="color: #fff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);">1.0000 XAUt</span>
+                                    <span class="kpi-sub-text" style="color: #ffd700;">🪙 RESPALDO FÍSICO 1:1 SUIZA</span>
                                 </div>
+                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
                             </div>
 
-                            <!-- Columna 2: Consola de Transferencias -->
+                            <!-- KPI 2: Activo de Respaldo Contable -->
+                            <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.1) !important; border-color: rgba(255, 215, 0, 0.3) !important;">
+                                    <i data-lucide="shield-check" style="color: #ffd700;"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text" style="color: var(--text-secondary);">Respaldo en Custodia</span>
+                                    <span class="kpi-value-text" style="font-size: 1.25rem; font-weight: bold; color: #fff; margin-top: 2px; margin-bottom: 2px;">Tether Gold (XAUt)</span>
+                                    <span class="kpi-sub-text" style="color: #ffd700;">🇨🇭 FIDEICOMISO SUIZO LONDRES</span>
+                                </div>
+                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
+                            </div>
+
+                            <!-- KPI 3: Red de Transmisión -->
+                            <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.1) !important; border-color: rgba(255, 215, 0, 0.3) !important;">
+                                    <i data-lucide="cpu" style="color: #ffd700;"></i>
+                                </div>
+                                <div class="kpi-content">
+                                    <span class="kpi-label-text" style="color: var(--text-secondary);">Canal de Transferencia</span>
+                                    <span class="kpi-value-text" style="font-size: 1.25rem; font-weight: bold; color: #fff; margin-top: 2px; margin-bottom: 2px;">Ethereum ERC-20</span>
+                                    <span class="kpi-sub-text" style="color: var(--cyan);">🔒 SEGURIDAD SSL-TLS v1.3</span>
+                                </div>
+                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fila de 2 Columnas: Transferencias y Retiros (Balance se movió arriba como KPI Premium de igual tamaño) -->
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+                            <!-- Columna 1: Consola de Transferencias -->
                             <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
                                 <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
                                     <div class="header-icon gold" style="background: rgba(255, 215, 0, 0.1) !important; color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="send"></i></div>
