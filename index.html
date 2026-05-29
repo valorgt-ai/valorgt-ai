@@ -622,7 +622,22 @@
                 <section id="view-heatmap" class="app-view" style="position: relative;">
                     <div class="heatmap-layout">
                         <!-- Mapa Contenedor -->
-                        <div class="map-wrapper card glassmorphism">
+                        <div class="map-wrapper card glassmorphism" style="display: flex; flex-direction: column;">
+                            <!-- HEADER CON SELECTOR DE SEGMENTO PARA EL RADAR -->
+                            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); z-index: 10; width: 100%; box-sizing: border-box; flex-shrink: 0;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="header-icon cyan" style="width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(0,240,255,0.25); background:rgba(0,240,255,0.05); flex-shrink:0;"><i data-lucide="map-pin" style="width:16px; height:16px; color:var(--cyan);"></i></div>
+                                    <h2 style="font-size: 1.05rem; font-weight: 600; color: #fff; margin: 0; font-family: var(--font-heading); letter-spacing: 0.5px;">Radar Geográfico de Plusvalías</h2>
+                                </div>
+                                <div class="map-category-tabs font-mono" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    <button class="map-term-tab active" id="map-tab-apartamentos" onclick="switchMapCategory('apartamentos')" style="background: transparent; border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; text-shadow: 0 0 5px rgba(0,240,255,0.3);">[ Apartamentos ]</button>
+                                    <button class="map-term-tab" id="map-tab-casas" onclick="switchMapCategory('casas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Casas ]</button>
+                                    <button class="map-term-tab" id="map-tab-oficinas" onclick="switchMapCategory('oficinas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Oficinas ]</button>
+                                    <button class="map-term-tab" id="map-tab-locales" onclick="switchMapCategory('locales')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Locales ]</button>
+                                    <button class="map-term-tab" id="map-tab-terrenos" onclick="switchMapCategory('terrenos')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Terrenos ]</button>
+                                    <button class="map-term-tab" id="map-tab-bodegas" onclick="switchMapCategory('bodegas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Bodegas ]</button>
+                                </div>
+                            </div>
                             <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
                             <div id="heatmap-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
                                 <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
@@ -705,28 +720,43 @@
                                 <p class="help-text" id="map-instructions">Mueve el mapa o haz clic en un nodo de calor para extraer las lecturas predictivas de ValorGT AI.</p>
                                 
                                 <div id="map-zone-details" class="zone-details-active hidden">
-                                    <h3 class="zone-title" id="map-zone-title">Zona 10 - La Cañada</h3>
-                                    <div class="metric-hud-grid">
+                                    <h3 class="zone-title" style="margin-bottom: 2px;" id="map-zone-title">Zona 10 - La Cañada</h3>
+                                    <span class="sub-title font-mono" id="map-zone-segment" style="color: var(--cyan); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px; display: block; margin-bottom: 12px;">SEGMENTO: APARTAMENTO</span>
+                                    
+                                    <div class="metric-hud-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
                                         <div class="metric-hud-box">
                                             <span class="hud-box-lbl">Precio Promedio m²</span>
                                             <span class="hud-box-val font-mono" id="map-zone-price-m2">Q14,500</span>
                                         </div>
                                         <div class="metric-hud-box">
-                                            <span class="hud-box-lbl">Retorno de Alquiler (ROI)</span>
+                                            <span class="hud-box-lbl">Precio Mediano m²</span>
+                                            <span class="hud-box-val font-mono text-cyan" id="map-zone-price-median">Q14,065</span>
+                                        </div>
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">ROI Alquiler</span>
                                             <span class="hud-box-val text-green font-mono" id="map-zone-roi">8.4%</span>
                                         </div>
                                         <div class="metric-hud-box">
-                                            <span class="hud-box-lbl">Demanda Inmobiliaria</span>
-                                            <span class="hud-box-val text-cyan font-mono" id="map-zone-demand">Muy Alta</span>
-                                        </div>
-                                        <div class="metric-hud-box">
-                                            <span class="hud-box-lbl">Crecimiento 5 Años</span>
+                                            <span class="hud-box-lbl">Plusvalía Estimada</span>
                                             <span class="hud-box-val text-green font-mono" id="map-zone-growth">+34%</span>
                                         </div>
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">Liquidez</span>
+                                            <span class="hud-box-val text-cyan font-mono" id="map-zone-liquidity">Muy Alta</span>
+                                        </div>
+                                        <div class="metric-hud-box">
+                                            <span class="hud-box-lbl">Score ValorGT</span>
+                                            <span class="hud-box-val text-purple font-mono" id="map-zone-score" style="color: #bf5af2; font-weight: 900;">94/100</span>
+                                        </div>
                                     </div>
-                                    <div class="zone-trend-hud">
+                                    
+                                    <div class="zone-trend-hud" style="margin-top: 10px;">
                                         <h4>Análisis del Vector IA:</h4>
                                         <p id="map-zone-ia-opinion" class="hud-opinion">Zona con altísima demanda corporativa y de perfiles ejecutivos. Altas tasas de capitalización en proyectos verticales.</p>
+                                    </div>
+                                    
+                                    <div style="text-align: right; margin-top: 8px; font-size: 0.62rem; color: var(--text-muted);" class="font-mono">
+                                        ⏱️ ACTUALIZACIÓN: <span id="map-zone-updated" style="color: var(--cyan);">Hace 12 horas</span>
                                     </div>
                                 </div>
                             </div>

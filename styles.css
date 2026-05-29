@@ -1172,6 +1172,8 @@ select option {
     padding: 0;
     overflow: hidden;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #heatmap-map {
