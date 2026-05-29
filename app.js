@@ -6097,6 +6097,7 @@ function autoValuateFromInventory(locationKey, indexInDb) {
 
 let adminLogs = [];
 let isSpeculationCalibrated = true;
+let adminSyncIntervalId = null;
 
 /**
  * Inicializa y refresca la vista del panel administrativo
@@ -6111,9 +6112,12 @@ function initAdminView() {
         appendAdminLog("SAAS", "billing_node: Orquestador de facturación SaaS activo.", false);
     }
 
-    // Sincronizar perfiles reales desde Supabase si está activo
+    // Sincronizar perfiles reales y solicitudes de pago desde Supabase
     if (isSupabaseActive) {
         syncB2bClientsFromSupabase();
+        syncPendingPaymentRequests();
+    } else {
+        syncPendingPaymentRequests();
     }
     
     // Inicializar visualmente la lista de destinatarios del airdrop
@@ -6128,6 +6132,18 @@ function initAdminView() {
     const videoInput = document.getElementById('admin-plans-video-url');
     if (videoInput) {
         videoInput.value = plansVideoUrl;
+    }
+
+    // Iniciar poller reactivo en segundo plano para auditoría bancaria (cada 8 segundos)
+    if (!adminSyncIntervalId) {
+        adminSyncIntervalId = setInterval(() => {
+            const adminView = document.getElementById('view-admin');
+            const isVisible = adminView && adminView.classList.contains('active');
+            if (isVisible) {
+                console.log("🔄 [ValorGT AI Poller] Sincronizando solicitudes de pago pendientes en segundo plano...");
+                syncPendingPaymentRequests();
+            }
+        }, 8000);
     }
 }
 
