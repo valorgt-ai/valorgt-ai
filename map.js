@@ -259,10 +259,10 @@ function drawRadarNodes() {
         const segmentSingular = activeMapCategory.substring(0, activeMapCategory.length - 1).toUpperCase();
         const popupContent = `
             <div class="map-popup-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; margin-bottom: 6px;">
-                <h4 style="margin: 0; font-weight: bold; color: #fff; font-size: 0.82rem;">${zone.name.split(' (')[0]}</h4>
-                <span class="sub-title font-mono" style="color: ${color}; text-transform: uppercase; font-size: 0.62rem; font-weight: bold; display: block; margin-top: 1px;">SEGMENTO: ${segmentSingular}</span>
+                <h4 style="margin: 0; font-weight: bold; color: #fff; font-size: 1.2rem;">${zone.name.split(' (')[0]}</h4>
+                <span class="sub-title font-mono" style="color: ${color}; text-transform: uppercase; font-size: 0.85rem; font-weight: bold; display: block; margin-top: 1px;">SEGMENTO: ${segmentSingular}</span>
             </div>
-            <div class="map-popup-body" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 4px; font-family: var(--font-mono); font-size: 0.68rem;">
+            <div class="map-popup-body" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px; font-family: var(--font-mono); font-size: 0.95rem;">
                 <span class="popup-lbl" style="color: var(--text-muted);">Precio Promedio:</span>
                 <span class="popup-val text-cyan" style="font-weight: bold; text-align: right;">${currencySym}${formatNumber(priceVal.toFixed(0))}/m²</span>
                 
@@ -281,8 +281,8 @@ function drawRadarNodes() {
                 <span class="popup-lbl" style="color: var(--text-muted); font-weight: bold;">Score ValorGT:</span>
                 <span class="popup-val text-purple" style="color: #bf5af2; font-weight: 900; text-align: right;">${scoreValorGT}/100</span>
                 
-                <span class="popup-lbl" style="color: var(--text-muted); font-size: 0.6rem;">Actualización:</span>
-                <span class="popup-val" style="color: var(--text-muted); font-size: 0.6rem; text-align: right;">${lastUpdatedText}</span>
+                <span class="popup-lbl" style="color: var(--text-muted); font-size: 0.8rem;">Actualización:</span>
+                <span class="popup-val" style="color: var(--text-muted); font-size: 0.8rem; text-align: right;">${lastUpdatedText}</span>
             </div>
         `;
 
@@ -621,10 +621,10 @@ function locateCoordinates(event) {
     // Popup interactivo de la baliza escaneada
     customGpsMarker.bindPopup(`
         <div class="map-popup-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
-            <h4 style="margin: 0; font-weight: bold; color: #fff; font-size: 0.78rem;"><i data-lucide="scan" style="width:11px; height:11px; display:inline-block;"></i> Escaneo Táctico</h4>
-            <span style="font-size: 0.6rem; color: ${activeColor}; font-weight: bold; font-family: var(--font-mono); text-transform: uppercase;">SEGMENTO: ${segmentSingular}</span>
+            <h4 style="margin: 0; font-weight: bold; color: #fff; font-size: 1.2rem;"><i data-lucide="scan" style="width:11px; height:11px; display:inline-block;"></i> Escaneo Táctico</h4>
+            <span style="font-size: 0.85rem; color: ${activeColor}; font-weight: bold; font-family: var(--font-mono); text-transform: uppercase;">SEGMENTO: ${segmentSingular}</span>
         </div>
-        <div class="map-popup-body" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 4px; font-family: var(--font-mono); font-size: 0.68rem;">
+        <div class="map-popup-body" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 6px; font-family: var(--font-mono); font-size: 0.95rem;">
             <span class="popup-lbl" style="color: var(--text-muted);">Precio Promedio:</span>
             <span class="popup-val text-cyan" style="font-weight: bold; text-align: right;">${currencySym}${formatNumber(finalPriceVal.toFixed(0))}/m²</span>
             
@@ -703,17 +703,17 @@ function drawMalls() {
         // Popup con Estilo Cyber-fintech para el centro comercial
         const popupContent = `
             <div class="map-popup-header purple-header">
-                <h4><i data-lucide="shopping-bag" class="tiny-icon inline"></i> ${mall.name}</h4>
-                <span class="sub-title font-mono" style="font-size:0.6rem; color: #bf5af2;">ANCLA COMERCIAL DE PLUSVALÍA</span>
+                <h4 style="font-size: 1.2rem; font-weight: bold;"><i data-lucide="shopping-bag" class="tiny-icon inline"></i> ${mall.name}</h4>
+                <span class="sub-title font-mono" style="font-size:0.85rem; color: #bf5af2;">ANCLA COMERCIAL DE PLUSVALÍA</span>
             </div>
-            <div class="map-popup-body" style="grid-template-columns: 1fr;">
-                <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 4px;">
+            <div class="map-popup-body" style="grid-template-columns: 1fr; font-size: 0.92rem;">
+                <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 4px;">
                     <strong style="color: #fff;">Sector:</strong> ${mall.zone}
                 </div>
-                <div style="font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">
+                <div style="font-size: 0.92rem; line-height: 1.4; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">
                     ${mall.plusvaliaImpact}
                 </div>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
                     * ${mall.details}
                 </div>
             </div>
@@ -770,19 +770,19 @@ function drawLandmarks() {
         // Popup con Estilo Cyber-fintech para el hito
         const popupContent = `
             <div class="map-popup-header ${headerClass}" style="${!isAirport ? 'border-bottom: 1px solid rgba(255, 214, 10, 0.4);' : ''}">
-                <h4 style="color: ${themeColor}; display: flex; align-items: center; gap: 4px; margin: 0;">
+                <h4 style="color: ${themeColor}; display: flex; align-items: center; gap: 4px; margin: 0; font-size: 1.2rem; font-weight: bold;">
                     <i data-lucide="${iconName}" class="tiny-icon inline"></i> ${landmark.name}
                 </h4>
-                <span class="sub-title font-mono" style="font-size:0.6rem; color: ${themeColor};">${badgeText}</span>
+                <span class="sub-title font-mono" style="font-size:0.85rem; color: ${themeColor};">${badgeText}</span>
             </div>
-            <div class="map-popup-body" style="grid-template-columns: 1fr;">
-                <div style="font-size: 0.65rem; color: var(--text-secondary); margin-bottom: 4px;">
+            <div class="map-popup-body" style="grid-template-columns: 1fr; font-size: 0.92rem;">
+                <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 4px;">
                     <strong style="color: #fff;">Sector:</strong> ${landmark.zone}
                 </div>
-                <div style="font-size: 0.7rem; line-height: 1.4; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">
+                <div style="font-size: 0.92rem; line-height: 1.4; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">
                     ${landmark.plusvaliaImpact}
                 </div>
-                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
                     * ${landmark.details}
                 </div>
             </div>
@@ -849,10 +849,10 @@ function drawAgentProperties() {
                 // 3. Popup interactivo
                 const popupContent = `
                     <div class="map-popup-header" style="border-bottom: 1px solid var(--cyan) !important;">
-                        <span style="font-size: 0.55rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono); letter-spacing: 0.5px;">⭐ SOCIO B2B SAAS</span>
-                        <h4 style="margin: 2px 0 0 0; color: #fff; font-size: 0.8rem; font-weight: bold;">${prop.title}</h4>
+                        <span style="font-size: 0.8rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono); letter-spacing: 0.5px;">⭐ SOCIO B2B SAAS</span>
+                        <h4 style="margin: 2px 0 0 0; color: #fff; font-size: 1.15rem; font-weight: bold;">${prop.title}</h4>
                     </div>
-                    <div class="map-popup-body" style="font-family: var(--font-mono); font-size: 0.65rem; display: grid; grid-template-columns: 1fr; gap: 4px; padding: 8px;">
+                    <div class="map-popup-body" style="font-family: var(--font-mono); font-size: 0.92rem; display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px;">
                         <div style="display: flex; justify-content: space-between;">
                             <span class="popup-lbl" style="color: var(--text-muted);">Precio:</span>
                             <span class="popup-val text-cyan" style="font-weight: bold; color: var(--cyan);">${currencySym}${formatNumber(convertedPrice.toFixed(0))}</span>

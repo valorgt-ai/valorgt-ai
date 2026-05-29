@@ -1243,6 +1243,13 @@ select option {
     font-family: var(--font-sans) !important;
     box-shadow: var(--glow-card) !important;
     backdrop-filter: blur(10px);
+    font-size: 1.0rem !important;
+}
+
+.leaflet-popup-content {
+    font-size: 0.98rem !important;
+    line-height: 1.45 !important;
+    margin: 14px 18px !important;
 }
 
 .leaflet-popup-tip {
@@ -1259,8 +1266,12 @@ select option {
 
 .map-popup-header h4 {
     font-family: var(--font-heading);
-    font-size: 0.85rem;
+    font-size: 1.25rem !important;
     color: var(--cyan);
+}
+
+.map-popup-header .sub-title {
+    font-size: 0.85rem !important;
 }
 
 .map-popup-body {
@@ -1268,7 +1279,7 @@ select option {
     grid-template-columns: 1fr 1fr;
     gap: 6px;
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.95rem !important;
 }
 
 .popup-lbl {
