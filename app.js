@@ -6351,9 +6351,15 @@ async function deleteAgent(clientIdx) {
     // Intentar eliminar de Supabase
     if (isSupabaseActive && supabaseClient) {
         try {
-            await supabaseClient.from('profiles').delete().eq('email', client.email);
+            const { error } = await supabaseClient.from('profiles').delete().eq('email', client.email);
+            if (error) {
+                console.error("⚠️ Error de base de datos al eliminar agente en Supabase:", error);
+                alert(`⚠️ DETECCIÓN DE SEGURIDAD SUPABASE: El agente se borró de la pantalla pero no pudo eliminarse de la nube (Razón: ${error.message}). Por favor ejecuta la política SQL en Supabase o bórralo manualmente.`);
+            } else {
+                console.log(`⚡ Agente ${client.email} eliminado exitosamente de Supabase.`);
+            }
         } catch (dbErr) {
-            console.warn("Fallo al intentar eliminar agente de Supabase profiles:", dbErr);
+            console.warn("Fallo de red al intentar eliminar agente de Supabase profiles:", dbErr);
         }
     }
 
