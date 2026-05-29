@@ -59,6 +59,9 @@ let pendingPaymentType = null; // 'subscription' | 'ad'
 let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { propertyId, zone }
 let uploadedBase64Image = ''; // Almacenará la foto local subida en Base64
 let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas en Base64 en un arreglo
+let coverImageIndex = 0; // Índice de la imagen de portada principal seleccionada
+let baseAdPriceGTQ = parseFloat(localStorage.getItem('valorgt_base_ad_price') || '5000'); // Tarifa base estándar de pauta comercial calibrada por el admin
+
 
 // Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
 let portfolioTrialTimer = null;
@@ -151,12 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateB2bFieldVisibility(); // Ejecutar inicialmente
     }
 
-    // Listener para cargar múltiples fotos locales (Desde PC del agente, máx 5) como Base64
+    // Listener para cargar múltiples fotos locales (Desde PC del agente, máx 6) como Base64 con previsualización
     const pubFileInput = document.getElementById('pub-file-input');
     if (pubFileInput) {
         pubFileInput.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files).slice(0, 5); // Limitar a 5 fotos máximo
+            const files = Array.from(e.target.files).slice(0, 6); // Limitar a 6 fotos máximo
             uploadedBase64Images = [];
+            coverImageIndex = 0; // Resetear portada por defecto al cargar nuevas
             
             if (files.length > 0) {
                 const readPromises = files.map(file => {
@@ -172,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadedBase64Images = await Promise.all(readPromises);
                 console.log(`⚡ [ValorGT AI] ${uploadedBase64Images.length} imágenes locales cargadas en Base64 con éxito.`);
                 
+                // Renderizar miniaturas
+                renderThumbnailsPreview();
+                
                 // Actualización estética interactiva premium (feedback en el label e input)
                 const label = document.querySelector('label[for="pub-file-input"]');
                 if (label) {
@@ -181,9 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 pubFileInput.style.background = 'rgba(0, 255, 128, 0.1)';
             } else {
                 uploadedBase64Images = [];
+                renderThumbnailsPreview();
                 const label = document.querySelector('label[for="pub-file-input"]');
                 if (label) {
-                    label.innerText = 'O Subir Fotos Locales (Hasta 5 desde tu PC)';
+                    label.innerText = 'O Subir Fotos Locales (Hasta 6 desde tu PC)';
                 }
                 pubFileInput.style.border = '1px dashed var(--cyan)';
                 pubFileInput.style.background = 'rgba(0,0,0,0.4)';
@@ -191,6 +199,118 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+/**
+ * Renderiza el grid de miniaturas de fotos locales pre-cargadas en el formulario
+ */
+function renderThumbnailsPreview() {
+    const previewContainer = document.getElementById('pub-thumbnails-preview');
+    if (!previewContainer) return;
+    
+    if (uploadedBase64Images.length === 0) {
+        previewContainer.classList.add('hidden');
+        previewContainer.innerHTML = '';
+        coverImageIndex = 0;
+        return;
+    }
+    
+    previewContainer.classList.remove('hidden');
+    previewContainer.innerHTML = '';
+    
+    uploadedBase64Images.forEach((imgBase64, index) => {
+        const isCover = index === coverImageIndex;
+        
+        const card = document.createElement('div');
+        card.style.position = 'relative';
+        card.style.width = '75px';
+        card.style.height = '75px';
+        card.style.borderRadius = '6px';
+        card.style.overflow = 'hidden';
+        card.style.border = isCover ? '2px solid #ffd700' : '1px solid rgba(255,255,255,0.15)';
+        card.style.boxShadow = isCover ? '0 0 10px rgba(255, 215, 0, 0.45)' : 'none';
+        card.style.transition = 'all 0.3s ease';
+        card.style.background = 'rgba(0,0,0,0.5)';
+        
+        card.innerHTML = `
+            <img src="${imgBase64}" style="width: 100%; height: 100%; object-fit: cover;">
+            
+            <!-- Botón de Eliminar -->
+            <button type="button" onclick="removePreviewImage(${index})" style="position: absolute; top: 3px; right: 3px; background: rgba(255, 55, 95, 0.85); border: none; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.65rem; font-weight: bold; transition: all 0.2s;" title="Eliminar Imagen">
+                &times;
+            </button>
+            
+            <!-- Badge / Botón de Portada -->
+            ${isCover ? `
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255, 215, 0, 0.9); color: #000; font-size: 0.52rem; font-weight: bold; text-align: center; padding: 2px 0; display: flex; align-items: center; justify-content: center; gap: 2px;">
+                    👑 PORTADA
+                </div>
+            ` : `
+                <div onclick="setAsCoverImage(${index})" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.65); color: #fff; font-size: 0.5rem; text-align: center; padding: 2px 0; cursor: pointer; opacity: 0; transition: opacity 0.2s; font-weight: 500;" class="hover-cover-btn">
+                    HACER PORTADA
+                </div>
+            `}
+        `;
+        
+        // Efecto hover para el botón de Portada
+        card.addEventListener('mouseenter', () => {
+            const btn = card.querySelector('.hover-cover-btn');
+            if (btn) btn.style.opacity = '1';
+        });
+        card.addEventListener('mouseleave', () => {
+            const btn = card.querySelector('.hover-cover-btn');
+            if (btn) btn.style.opacity = '0';
+        });
+        
+        previewContainer.appendChild(card);
+    });
+}
+
+/**
+ * Selecciona una de las imágenes de la previsualización como portada principal
+ */
+function setAsCoverImage(index) {
+    coverImageIndex = index;
+    renderThumbnailsPreview();
+    console.log(`⭐ [ValorGT AI] Imagen en índice ${index} seleccionada como Portada Principal.`);
+}
+
+/**
+ * Remueve una de las imágenes de la previsualización
+ */
+function removePreviewImage(index) {
+    uploadedBase64Images.splice(index, 1);
+    
+    // Ajustar el índice de portada
+    if (coverImageIndex === index) {
+        coverImageIndex = 0; // Resetear al primero
+    } else if (coverImageIndex > index) {
+        coverImageIndex--; // Desplazar hacia atrás
+    }
+    
+    renderThumbnailsPreview();
+    
+    // Actualizar la etiqueta del input
+    const fileInput = document.getElementById('pub-file-input');
+    const label = document.querySelector('label[for="pub-file-input"]');
+    if (uploadedBase64Images.length > 0) {
+        if (label) {
+            label.innerHTML = `O Subir Fotos Locales <span style="color: var(--green); font-weight: bold;">(¡${uploadedBase64Images.length} cargadas ✔️!)</span>`;
+        }
+        if (fileInput) {
+            fileInput.style.border = '1px solid var(--green)';
+            fileInput.style.background = 'rgba(0, 255, 128, 0.1)';
+        }
+    } else {
+        if (label) {
+            label.innerText = 'O Subir Fotos Locales (Hasta 6 desde tu PC)';
+        }
+        if (fileInput) {
+            fileInput.style.border = '1px dashed var(--cyan)';
+            fileInput.style.background = 'rgba(0,0,0,0.4)';
+            fileInput.value = ''; // Limpiar el input file nativo
+        }
+    }
+}
 
 /**
  * Controla el cambio de vistas de la aplicación (Single Page Routing)
@@ -3590,7 +3710,12 @@ async function publishAgentProperty(event) {
     const customPhoto = document.getElementById('pub-photo-custom') ? document.getElementById('pub-photo-custom').value.trim() : '';
     let photos = [];
     if (uploadedBase64Images && uploadedBase64Images.length > 0) {
+        // Clonar y reordenar el array para situar la portada elegida en la posición 0
         photos = [...uploadedBase64Images];
+        if (coverImageIndex > 0 && coverImageIndex < photos.length) {
+            const coverImage = photos.splice(coverImageIndex, 1)[0];
+            photos.unshift(coverImage);
+        }
     } else if (customPhoto) {
         photos = customPhoto.split(',').map(u => u.trim()).filter(Boolean);
     }
@@ -3836,6 +3961,8 @@ async function publishAgentProperty(event) {
     // Resetear imágenes cargadas localmente y feedback visual
     uploadedBase64Image = '';
     uploadedBase64Images = [];
+    coverImageIndex = 0;
+    renderThumbnailsPreview();
     const fileInput = document.getElementById('pub-file-input');
     if (fileInput) {
         fileInput.value = '';
@@ -3844,7 +3971,7 @@ async function publishAgentProperty(event) {
     }
     const label = document.querySelector('label[for="pub-file-input"]');
     if (label) {
-        label.innerText = 'O Subir Fotos Locales (Hasta 5 desde tu PC)';
+        label.innerText = 'O Subir Fotos Locales (Hasta 6 desde tu PC)';
     }
     const descInput = document.getElementById('pub-description');
     if (descInput) {
@@ -4530,6 +4657,7 @@ function showReceiptLightbox(reqId) {
     if (lightbox && img && title) {
         img.src = req.receipt;
         title.innerText = `Comprobante de ${req.clientName} (${req.concept})`;
+        lightbox.classList.remove('hidden'); // Corrección del bug de superposición
         lightbox.classList.add('active');
     }
 }
@@ -4541,6 +4669,226 @@ function closeReceiptLightbox() {
     const lightbox = document.getElementById('admin-receipt-lightbox');
     if (lightbox) {
         lightbox.classList.remove('active');
+        lightbox.classList.add('hidden'); // Corrección del bug de superposición
+    }
+}
+
+/**
+ * Abre el modal de pago de pauta publicitaria B2B
+ */
+let selectedAdPropertyId = null;
+let uploadedPautaReceiptBase64 = '';
+
+function openAdPaymentModal(propertyId) {
+    const prop = agentUploadedProperties.find(p => p.id === propertyId);
+    if (!prop) {
+        alert("No se encontró la propiedad seleccionada.");
+        return;
+    }
+    selectedAdPropertyId = propertyId;
+    uploadedPautaReceiptBase64 = '';
+    
+    const titlePreview = document.getElementById('pauta-property-title-preview');
+    if (titlePreview) titlePreview.innerText = prop.title;
+    
+    // Resetear formulario nativo
+    document.getElementById('pauta-transfer-form')?.reset();
+    
+    // Configurar listener para el comprobante
+    const receiptInput = document.getElementById('pauta-receipt-file');
+    if (receiptInput) {
+        receiptInput.style.border = '1px dashed var(--cyan)';
+        receiptInput.style.background = 'rgba(0,0,0,0.4)';
+        receiptInput.value = '';
+        
+        receiptInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    uploadedPautaReceiptBase64 = event.target.result;
+                    receiptInput.style.border = '1px solid var(--green)';
+                    receiptInput.style.background = 'rgba(0, 255, 128, 0.1)';
+                    console.log("⚡ [ValorGT AI] Comprobante de pauta cargado en Base64.");
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    }
+    
+    // Ocultar estados de carga y éxito, mostrar formulario
+    document.getElementById('pauta-payment-loading-view')?.classList.add('hidden');
+    document.getElementById('pauta-payment-success-view')?.classList.add('hidden');
+    document.getElementById('pauta-payment-form-view')?.classList.remove('hidden');
+    
+    // Recalcular montos
+    updatePautaPaymentCalculations();
+    
+    // Mostrar modal
+    const modal = document.getElementById('commercial-pauta-modal');
+    if (modal) modal.classList.remove('hidden');
+    
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+/**
+ * Cierra el modal de pago de pauta publicitaria B2B
+ */
+function closeAdPaymentModal() {
+    const modal = document.getElementById('commercial-pauta-modal');
+    if (modal) modal.classList.add('hidden');
+    selectedAdPropertyId = null;
+    uploadedPautaReceiptBase64 = '';
+}
+
+/**
+ * Calcula en tiempo real los costos, descuentos y el total neto de la pauta publicitaria
+ */
+function updatePautaPaymentCalculations() {
+    const durationSelect = document.getElementById('pauta-duration-select');
+    if (!durationSelect) return;
+    
+    const months = parseInt(durationSelect.value) || 1;
+    
+    // 1. Tarifa base estándar administrable
+    const basePrice = baseAdPriceGTQ;
+    const subtotal = basePrice * months;
+    
+    // 2. Descuento de plazo (10% si son 3 meses)
+    const durationDiscountRate = months === 3 ? 0.10 : 0;
+    const durationDiscount = subtotal * durationDiscountRate;
+    const subtotalAfterDuration = subtotal - durationDiscount;
+    
+    // 3. Descuento dinámico por membresía contratada (Pro: 15%, Premium: 30%, Básico: 0%)
+    let planDiscountRate = 0;
+    const planKey = activeB2bPlan || 'pro';
+    if (planKey === 'pro') {
+        planDiscountRate = 0.15;
+    } else if (planKey === 'vip' || planKey === 'premium') {
+        planDiscountRate = 0.30;
+    }
+    const membershipDiscount = subtotalAfterDuration * planDiscountRate;
+    const totalNeto = subtotalAfterDuration - membershipDiscount;
+    
+    // Inyectar en etiquetas de la pasarela
+    document.getElementById('pauta-base-price-lbl').innerText = `Q${formatNumber(basePrice.toFixed(2))}`;
+    document.getElementById('pauta-subtotal-lbl').innerText = `Q${formatNumber(subtotal.toFixed(2))}`;
+    document.getElementById('pauta-duration-discount-lbl').innerText = `-Q${formatNumber(durationDiscount.toFixed(2))} (${(durationDiscountRate * 100).toFixed(0)}%)`;
+    document.getElementById('pauta-membership-discount-lbl').innerText = `-Q${formatNumber(membershipDiscount.toFixed(2))} (${(planDiscountRate * 100).toFixed(0)}%)`;
+    document.getElementById('pauta-total-gtq-lbl').innerText = `Q${formatNumber(totalNeto.toFixed(2))}`;
+}
+
+/**
+ * Procesa la solicitud bancaria de pauta y la inyecta en la cola de auditoría admin
+ */
+async function processB2bPautaPayment(event) {
+    if (event) event.preventDefault();
+    
+    if (!uploadedPautaReceiptBase64) {
+        alert("Por favor carga una imagen de la transferencia realizada como comprobante de pago.");
+        return;
+    }
+    
+    const prop = agentUploadedProperties.find(p => p.id === selectedAdPropertyId);
+    if (!prop) {
+        alert("Error de sesión: No hay una propiedad seleccionada.");
+        return;
+    }
+    
+    // Cambiar a la vista de cargando
+    document.getElementById('pauta-payment-form-view').classList.add('hidden');
+    document.getElementById('pauta-payment-loading-view').classList.remove('hidden');
+    
+    setTimeout(async () => {
+        const durationSelect = document.getElementById('pauta-duration-select');
+        const months = parseInt(durationSelect.value) || 1;
+        
+        const basePrice = baseAdPriceGTQ;
+        const subtotal = basePrice * months;
+        const durationDiscountRate = months === 3 ? 0.10 : 0;
+        const subtotalAfterDuration = subtotal - (subtotal * durationDiscountRate);
+        
+        let planDiscountRate = 0;
+        const planKey = activeB2bPlan || 'pro';
+        if (planKey === 'pro') planDiscountRate = 0.15;
+        else if (planKey === 'vip' || planKey === 'premium') planDiscountRate = 0.30;
+        
+        const totalNeto = subtotalAfterDuration - (subtotalAfterDuration * planDiscountRate);
+        const refCode = `PAUTA-${Math.floor(1000 + Math.random() * 9000)}`;
+        
+        const newRequest = {
+            id: refCode,
+            clientId: loggedInB2bClient ? loggedInB2bClient.id : 'unknown',
+            clientName: loggedInB2bClient ? loggedInB2bClient.name : 'Asesor Inmobiliario',
+            clientEmail: loggedInB2bClient ? loggedInB2bClient.email : 'correo@empresa.com',
+            nit: loggedInB2bClient ? loggedInB2bClient.nit : '839204-2',
+            plan: activeB2bPlan,
+            concept: `Pauta: ${prop.title} [ID: ${prop.id}]`,
+            months: months,
+            totalGTQ: totalNeto,
+            receipt: uploadedPautaReceiptBase64,
+            status: 'Pendiente',
+            timestamp: new Date().toISOString()
+        };
+        
+        try {
+            if (isSupabaseActive) {
+                const { error } = await supabaseClient.from('payment_requests').insert([
+                    {
+                        id: newRequest.id,
+                        client_id: newRequest.clientId,
+                        client_name: newRequest.clientName,
+                        client_email: newRequest.clientEmail,
+                        nit: newRequest.nit,
+                        plan: newRequest.plan,
+                        concept: newRequest.concept,
+                        months: newRequest.months,
+                        total_gtq: newRequest.totalGTQ,
+                        receipt: newRequest.receipt,
+                        status: 'pendiente'
+                    }
+                ]);
+                if (error) console.error("Error al registrar pauta en Supabase:", error);
+            }
+        } catch (e) {
+            console.error("Fallo de red al registrar pauta en Supabase, usando localStorage de contingencia:", e);
+        }
+        
+        pendingPaymentRequests.push(newRequest);
+        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+        
+        // Sincronizar UI de administración
+        renderAdminPendingPaymentsTable();
+        
+        // Cambiar a la vista de éxito
+        document.getElementById('pauta-payment-loading-view').classList.add('hidden');
+        const successView = document.getElementById('pauta-payment-success-view');
+        if (successView) {
+            document.getElementById('pauta-receipt-auth-code').innerText = `#${refCode}`;
+            document.getElementById('pauta-receipt-amount-val').innerText = `Q${formatNumber(totalNeto.toFixed(2))}`;
+            successView.classList.remove('hidden');
+        }
+        
+        logAdminSecurityActivity(`Solicitud de Pauta: Asesor ${newRequest.clientName} envió comprobante para destacar propiedad [${prop.title}] por Q${totalNeto}`);
+        
+    }, 1500);
+}
+
+/**
+ * Permite al administrador calibrar persistentemente el costo base de las pautas comerciales
+ */
+function saveAdminAdBasePrice() {
+    const input = document.getElementById('admin-base-ad-price');
+    if (input) {
+        const val = parseFloat(input.value);
+        if (isNaN(val) || val <= 0) {
+            alert("Por favor ingresa una tarifa válida mayor a 0.");
+            return;
+        }
+        baseAdPriceGTQ = val;
+        localStorage.setItem('valorgt_base_ad_price', val.toString());
+        alert(`✔️ Tarifa base de pauta comercial calibrada a Q${formatNumber(val.toFixed(2))} con éxito.`);
+        logAdminSecurityActivity(`Calibración del Core: Tarifa base de pauta publicitaria configurada en Q${val}`);
     }
 }
 
@@ -4677,39 +5025,53 @@ async function approvePendingPayment(reqId) {
             }
         }
         
-        // Si el concepto es pauta, inyectar propiedad patrocinada
-        if (!isSub && planKey === 'ad') {
-            const zone = req.concept.split(': ')[1].toLowerCase();
+        // Si el concepto es pauta, inyectar propiedad patrocinada identificada por ID
+        const isPauta = req.id.startsWith('PAUTA-') || req.concept.startsWith('Pauta:');
+        if (isPauta) {
+            let propertyId = null;
+            const match = req.concept.match(/\[ID:\s*([^\]\s]+)\]/);
+            if (match) {
+                propertyId = match[1];
+            }
             
-            const propToPromote = agentUploadedProperties.find(p => p.agentEmail === req.clientEmail && p.sponsored !== true);
-            if (propToPromote) {
-                propToPromote.sponsored = true;
-                propToPromote.badge = "PATROCINADO";
-                
-                const sponsoredProp = {
-                    ...propToPromote,
-                    sponsored: true,
-                    badge: "PATROCINADO"
-                };
-                
-                if (!PORTFOLIO_DATABASE[zone]) {
-                    PORTFOLIO_DATABASE[zone] = [];
+            if (propertyId) {
+                // 1. Marcar como pautada/sponsored en agentUploadedProperties
+                const prop = agentUploadedProperties.find(p => p.id === propertyId);
+                if (prop) {
+                    prop.sponsored = true;
+                    prop.badge = "PATROCINADO";
+                    console.log(`✔️ [ValorGT AI] Propiedad local B2B #${propertyId} marcada como sponsored.`);
                 }
-                PORTFOLIO_DATABASE[zone].unshift(sponsoredProp);
                 
+                // 2. Marcar como pautada/sponsored en PORTFOLIO_DATABASE
+                Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
+                    PORTFOLIO_DATABASE[zone].forEach(p => {
+                        if (p.id === propertyId) {
+                            p.sponsored = true;
+                            p.badge = "PATROCINADO";
+                            console.log(`✔️ [ValorGT AI] Propiedad en base de datos #${propertyId} marcada como sponsored.`);
+                        }
+                    });
+                });
+                
+                // 3. Sincronizar e incrementar impresiones
                 saasImpressionsCount += 4500;
                 saasClientClicks += 180;
                 
+                // 4. Rerenderizar
                 renderB2bInventory();
                 
-                const locationSelect = document.getElementById('prop-location');
-                if (locationSelect && locationSelect.value === zone) {
-                    renderFeaturedProperties(zone);
-                }
-                
-                const catalogZoneSelect = document.getElementById('catalog-zone-select');
-                if (catalogZoneSelect && catalogZoneSelect.value === zone) {
-                    renderCatalogProperties();
+                // 5. Rerenderizar catálogo si estamos en la zona correspondiente
+                if (prop) {
+                    const zone = prop.location;
+                    const locationSelect = document.getElementById('prop-location');
+                    if (locationSelect && locationSelect.value === zone) {
+                        renderFeaturedProperties(zone);
+                    }
+                    const catalogZoneSelect = document.getElementById('catalog-zone-select');
+                    if (catalogZoneSelect && catalogZoneSelect.value === zone) {
+                        renderCatalogProperties();
+                    }
                 }
             }
         }
@@ -5534,9 +5896,20 @@ function renderB2bInventory(filter = 'todos') {
                 </div>
                 <div class="inv-price-bar" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 8px;">
                     <span class="inv-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan);">${currencySym}${formatNumber(convertedPrice.toFixed(0))}</span>
-                    <button class="btn-inv-action" onclick="autoValuateFromInventory('${prop.location}', ${dbIndex})" style="background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
-                        ⚡ TASAR IA
-                    </button>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn-inv-action" onclick="event.stopPropagation(); autoValuateFromInventory('${prop.location}', ${dbIndex})" style="background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
+                            ⚡ TASAR IA
+                        </button>
+                        ${isSponsored ? `
+                            <span style="background: rgba(255, 215, 0, 0.15); border: 1px solid #ffd700; color: #ffd700; font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-shadow: 0 0 5px rgba(255, 215, 0, 0.4); display: flex; align-items: center; gap: 3px;">
+                                ✨ PAUTADO
+                            </span>
+                        ` : `
+                            <button class="btn-inv-action" onclick="event.stopPropagation(); openAdPaymentModal('${prop.id}')" style="background: rgba(255, 215, 0, 0.15); border: 1px solid #ffd700; color: #ffd700; font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth); display: flex; align-items: center; gap: 3px;">
+                                ⭐ PAUTAR
+                            </button>
+                        `}
+                    </div>
                 </div>
             </div>
         `;
@@ -5703,6 +6076,11 @@ function renderAdminDashboard() {
         });
     });
     document.getElementById('admin-total-campaigns').innerText = `${sponsoredCount} Pautas`;
+
+    const adminAdPriceInput = document.getElementById('admin-base-ad-price');
+    if (adminAdPriceInput && !adminAdPriceInput.matches(':focus')) {
+        adminAdPriceInput.value = baseAdPriceGTQ;
+    }
 
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
