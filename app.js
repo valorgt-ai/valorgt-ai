@@ -5365,7 +5365,7 @@ async function authenticateCommercialAgent(event) {
                     email: user,
                     plan: 'Pro',
                     status: 'activo',
-                    usdt_balance: 100.00
+                    usdt_balance: 0.00
                 };
                 
                 try {
@@ -5590,7 +5590,7 @@ async function handleRegistrationFormSubmit(event) {
         plan: selectedPlanName,
         status: 'Pendiente', // Pendiente de pago de transferencia
         password: pass,
-        usdtBalance: 100.00, // Airdrop de bienvenida
+        usdtBalance: 0.00, // Inicializado en cero
         role: role
     };
 
@@ -5625,7 +5625,7 @@ async function handleRegistrationFormSubmit(event) {
                         email: email,
                         plan: selectedPlanName,
                         status: 'pendiente',
-                        usdt_balance: 100.00,
+                        usdt_balance: 0.00,
                         role: role
                     }
                 ]);
@@ -5793,7 +5793,7 @@ async function completeSignupSubscriptionTransaction() {
         plan: selectedSignupPlanKey.charAt(0).toUpperCase() + selectedSignupPlanKey.slice(1),
         status: 'Activo',
         password: pendingSignupUser.pass,
-        usdtBalance: 100.00, // Airdrop de bienvenida
+        usdtBalance: 0.00, // Inicializado en cero
         role: pendingSignupUser.role
     };
 
@@ -5825,7 +5825,7 @@ async function completeSignupSubscriptionTransaction() {
                         email: pendingSignupUser.email,
                         plan: newClient.plan,
                         status: 'activo',
-                        usdt_balance: 100.00,
+                        usdt_balance: 0.00,
                         role: pendingSignupUser.role
                     }
                 ]);
