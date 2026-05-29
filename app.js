@@ -6205,9 +6205,22 @@ function renderAdminDashboard() {
         const planClass = (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') ? 'basico' : client.plan.toLowerCase();
         
         const isSuspended = client.status === 'Suspendido';
-        const statusColorClass = isSuspended ? 'text-red' : 'text-green';
-        const actionBtnText = isSuspended ? '⚡ REACTIVAR' : '🚫 SUSPENDER';
-        const actionBtnColor = isSuspended ? 'color: var(--green); border-color: var(--green);' : 'color: var(--red); border-color: var(--red);';
+        const isPending = client.status === 'Pendiente' || client.status === 'pendiente';
+        
+        let statusColorClass = 'text-green';
+        if (isSuspended) statusColorClass = 'text-red';
+        else if (isPending) statusColorClass = 'text-warning-glow'; // orange-yellow for pending!
+        
+        let actionBtnText = '🚫 SUSPENDER';
+        let actionBtnColor = 'color: var(--red); border-color: var(--red);';
+        
+        if (isSuspended) {
+            actionBtnText = '⚡ REACTIVAR';
+            actionBtnColor = 'color: var(--green); border-color: var(--green);';
+        } else if (isPending) {
+            actionBtnText = '✔️ APROBAR';
+            actionBtnColor = 'color: var(--cyan); border-color: var(--cyan);';
+        }
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -6267,22 +6280,52 @@ function renderAdminDashboard() {
 /**
  * Suspende o reactiva una cuenta de agente comercial
  */
-function toggleAgentStatus(clientIdx) {
+async function toggleAgentStatus(clientIdx) {
     const client = b2bClients[clientIdx];
     if (!client) return;
 
-    const currentlySuspended = client.status === 'Suspendido';
-    if (currentlySuspended) {
-        client.status = 'Activo';
-        appendAdminLog("SECURITY", `agent_audit: Cuenta de ${client.name} (${client.company}) reactivada por administrador root.`, true);
-        alert(`¡Socio ${client.name} reactivado con éxito! Acceso SaaS restaurado.`);
+    const isPending = client.status === 'Pendiente' || client.status === 'pendiente';
+    const currentlySuspended = client.status === 'Suspendido' || client.status === 'suspendido';
+    
+    let newStatus = 'Activo';
+    let logMsg = '';
+    let alertMsg = '';
+    
+    if (isPending) {
+        newStatus = 'Activo';
+        logMsg = `agent_audit: Cuenta de ${client.name} (${client.company}) APROBADA y activada por administrador root.`;
+        alertMsg = `¡Socio ${client.name} aprobado con éxito! Acceso SaaS activado.`;
+    } else if (currentlySuspended) {
+        newStatus = 'Activo';
+        logMsg = `agent_audit: Cuenta de ${client.name} (${client.company}) reactivada por administrador root.`;
+        alertMsg = `¡Socio ${client.name} reactivado con éxito! Acceso SaaS restaurado.`;
     } else {
-        client.status = 'Suspendido';
-        appendAdminLog("SECURITY", `agent_audit: Cuenta de ${client.name} (${client.company}) SUSPENDIDA por administrador root.`, true);
-        alert(`¡Socio ${client.name} suspendido de forma inmediata! Acceso SaaS bloqueado de forma temporal.`);
+        newStatus = 'Suspendido';
+        logMsg = `agent_audit: Cuenta de ${client.name} (${client.company}) SUSPENDIDA por administrador root.`;
+        alertMsg = `¡Socio ${client.name} suspendido de forma inmediata! Acceso SaaS bloqueado de forma temporal.`;
     }
-
+    
+    client.status = newStatus;
+    
+    // Guardar localmente
     localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+    
+    // Guardar en Supabase profiles en la nube
+    if (isSupabaseActive && supabaseClient && client.id) {
+        try {
+            const { error } = await supabaseClient.from('profiles').update({ status: newStatus.toLowerCase() }).eq('id', client.id);
+            if (error) console.error("Error al actualizar estado en Supabase profiles:", error);
+            else console.log(`⚡ Estado de ${client.email} actualizado a ${newStatus} en Supabase.`);
+        } catch (dbErr) {
+            console.warn("Fallo de conexión al actualizar estado en Supabase profiles:", dbErr);
+        }
+    }
+    
+    if (typeof appendAdminLog === 'function') {
+        appendAdminLog("SECURITY", logMsg, true);
+    }
+    
+    alert(alertMsg);
     renderAdminDashboard();
 }
 
@@ -7003,16 +7046,80 @@ async function syncSupabaseData() {
             await syncB2bClientsFromSupabase();
         }
 
-        // 0. Sincronizar el saldo del agente activo desde Supabase
+        // 0. Sincronizar el estado, plan y saldo del agente activo desde Supabase en tiempo real
         if (loggedInB2bClient) {
-            const { data: latestProfile, error: profileErr } = await supabaseClient
-                .from('profiles')
-                .select('usdt_balance')
-                .eq('id', loggedInB2bClient.id)
-                .single();
-            if (!profileErr && latestProfile) {
-                loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
-                updateSaasMetricsHUD();
+            const isUUID = loggedInB2bClient.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(loggedInB2bClient.id);
+            if (isUUID) {
+                try {
+                    const { data: latestProfile, error: profileErr } = await supabaseClient
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', loggedInB2bClient.id)
+                        .maybeSingle();
+                    
+                    if (!profileErr && latestProfile) {
+                        // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
+                        loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
+                        loggedInB2bClient.status = latestProfile.status ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
+                        loggedInB2bClient.plan = latestProfile.plan || 'Básico';
+                        activeB2bPlan = loggedInB2bClient.plan.toLowerCase();
+                        
+                        // Actualizar en el listado local de clientes para mantener consistencia
+                        const clientIdx = b2bClients.findIndex(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+                        if (clientIdx !== -1) {
+                            b2bClients[clientIdx].status = loggedInB2bClient.status;
+                            b2bClients[clientIdx].plan = loggedInB2bClient.plan;
+                            b2bClients[clientIdx].usdtBalance = loggedInB2bClient.usdtBalance;
+                        }
+                        localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+                        
+                        // Actualizar interfaces
+                        updateSaasMetricsHUD();
+                        updateB2bSubscriptionPendingBanner();
+                        syncCommercialPricingGridUI();
+                        renderB2bAgentProfile();
+                        
+                        // Gestionar Overlays de Bloqueo dinámicamente si cambió el estado
+                        const goldLock = document.getElementById('commercial-gold-overlay-lock');
+                        const promoLock = document.getElementById('commercial-promo-overlay-lock');
+                        const btnPromote = document.getElementById('btn-promote-property');
+                        const isPending = loggedInB2bClient.status.toLowerCase() === 'pendiente';
+                        
+                        if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
+                            if (goldLock) goldLock.classList.add('hidden');
+                            if (promoLock) promoLock.classList.add('hidden');
+                            if (btnPromote) btnPromote.disabled = false;
+                        } else {
+                            if (goldLock) goldLock.classList.remove('hidden');
+                            if (promoLock) promoLock.classList.remove('hidden');
+                            if (btnPromote) btnPromote.disabled = true;
+                        }
+                    } else if (profileErr || !latestProfile) {
+                        // Auto-healing: Si el usuario existe localmente en sesión pero no tiene fila en Supabase profiles, la insertamos
+                        console.log("Auto-recuperación activa: Auto-creando perfil ausente en Supabase profiles.");
+                        const fallbackProfile = {
+                            id: loggedInB2bClient.id,
+                            name: loggedInB2bClient.name,
+                            company: loggedInB2bClient.company,
+                            nit: loggedInB2bClient.nit || 'C/F',
+                            phone: loggedInB2bClient.phone || 'N/A',
+                            email: loggedInB2bClient.email,
+                            plan: loggedInB2bClient.plan,
+                            status: loggedInB2bClient.status.toLowerCase(),
+                            usdt_balance: loggedInB2bClient.usdtBalance,
+                            role: loggedInB2bClient.role || 'agente'
+                        };
+                        
+                        const { error: insertErr } = await supabaseClient.from('profiles').insert([fallbackProfile]);
+                        if (insertErr) {
+                            console.warn("Fallo de auto-creación en Supabase profiles:", insertErr);
+                        } else {
+                            console.log("Perfil auto-creado exitosamente en Supabase para", loggedInB2bClient.email);
+                        }
+                    }
+                } catch (syncErr) {
+                    console.error("Error en sincronización en vivo del perfil comercial:", syncErr);
+                }
             }
         }
 
