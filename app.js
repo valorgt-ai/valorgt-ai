@@ -477,6 +477,9 @@ function switchView(viewId) {
         setTimeout(() => {
             initAdminView();
         }, 50);
+    } else if (viewId === 'disclaimer') {
+        titleEl.innerText = "Disclaimer Legal y Metodológico";
+        subtitleEl.innerText = "Información oficial sobre el uso de datos, algoritmos e inteligencia artificial de ValorGT®";
     }
 }
 
@@ -7439,6 +7442,11 @@ async function syncB2bClientsFromSupabase() {
  * Permite cambiar de pestaña de forma reactiva en el Dashboard de Socio B2B
  */
 function switchCommercialTab(tabId) {
+    if (tabId === 'disclaimer') {
+        switchView('disclaimer');
+        return;
+    }
+
     // Si la suscripción del cliente está pendiente, restringir el acceso únicamente a la pestaña de Suscripción y Disclaimer
     if (loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
         if (tabId !== 'suscripcion' && tabId !== 'disclaimer') {
