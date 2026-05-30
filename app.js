@@ -4673,6 +4673,12 @@ function updateDynamicB2bPaymentTotals() {
 async function processB2bTransferPayment(event) {
     if (event) event.preventDefault();
     
+    const acceptDisclaimerCheckbox = document.getElementById('payment-accept-disclaimer');
+    if (acceptDisclaimerCheckbox && !acceptDisclaimerCheckbox.checked) {
+        alert("⚠️ ADVERTENCIA LEGAL: Para continuar, debes aceptar el Disclaimer Legal y Metodológico de la plataforma ValorGT® marcando la casilla de aceptación.");
+        return;
+    }
+    
     if (!uploadedReceiptBase64) {
         alert("⚠️ ERROR DE VALIDACIÓN BANCARIA: Debes subir una foto o captura de tu comprobante de transferencia bancaria.");
         return;
@@ -7433,9 +7439,9 @@ async function syncB2bClientsFromSupabase() {
  * Permite cambiar de pestaña de forma reactiva en el Dashboard de Socio B2B
  */
 function switchCommercialTab(tabId) {
-    // Si la suscripción del cliente está pendiente, restringir el acceso únicamente a la pestaña de Suscripción
+    // Si la suscripción del cliente está pendiente, restringir el acceso únicamente a la pestaña de Suscripción y Disclaimer
     if (loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
-        if (tabId !== 'suscripcion') {
+        if (tabId !== 'suscripcion' && tabId !== 'disclaimer') {
             alert("⚠️ ACCESO RESTRINGIDO: Tu cuenta se encuentra en estado 'Pendiente de Pago'. Debes subir tu comprobante de transferencia y esperar a que el administrador valide tu pago para acceder a las demás pestañas del portal.");
             switchCommercialTab('suscripcion');
             return;
@@ -7484,6 +7490,11 @@ function switchCommercialTab(tabId) {
             activeBtn.style.borderColor = 'rgba(191,90,242,0.4)';
             activeBtn.style.color = '#bf5af2';
             activeBtn.style.boxShadow = '0 0 12px rgba(191, 90, 242, 0.12)';
+        } else if (tabId === 'disclaimer') {
+            activeBtn.style.background = 'rgba(0,240,255,0.05)';
+            activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
+            activeBtn.style.color = 'var(--cyan)';
+            activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
         }
     }
 }
