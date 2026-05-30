@@ -1887,6 +1887,80 @@ function renderInvestorTable() {
 /**
  * Simula el feed en tiempo real de noticias financieras
  */
+/**
+ * Descarga noticias reales en tiempo real desde el feed RSS de Prensa Libre (Economía) de Guatemala,
+ * utilizando un proxy CORS gratuito y parseándolas para inyectarlas dinámicamente en Supabase.
+ */
+async function fetchGuatemalaLiveNews() {
+    let liveNews = [];
+    try {
+        console.log("🛰️ [ValorGT Live] Iniciando enlace de noticias en vivo con Prensa Libre (Economía)...");
+        const feedUrl = 'https://www.prensalibre.com/seccion/economia/feed/';
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`);
+        
+        if (!response.ok) throw new Error("Fallo en la respuesta del proxy CORS");
+        
+        const data = await response.json();
+        const xmlText = data.contents;
+        
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const items = xmlDoc.getElementsByTagName("item");
+        
+        for (let i = 0; i < Math.min(items.length, 12); i++) {
+            const item = items[i];
+            const title = item.getElementsByTagName("title")[0]?.textContent || "";
+            if (title) {
+                const cleanTitle = title.trim();
+                const isAlert = cleanTitle.toLowerCase().includes("alerta") || 
+                                cleanTitle.toLowerCase().includes("urgente") || 
+                                cleanTitle.toLowerCase().includes("cae") || 
+                                cleanTitle.toLowerCase().includes("inflación") ||
+                                cleanTitle.toLowerCase().includes("petróleo") ||
+                                cleanTitle.toLowerCase().includes("combustible");
+                
+                liveNews.push({
+                    tag: isAlert ? 'ALERTA' : 'MERCADO',
+                    message: cleanTitle,
+                    isAlert: isAlert
+                });
+            }
+        }
+        
+        // Auto-sincronizar noticias frescas en Supabase de forma transparente para nutrir el feed central
+        if (liveNews.length > 0 && isSupabaseActive && supabaseClient) {
+            for (const news of liveNews) {
+                try {
+                    // Evitar duplicados revisando si ya existe el mensaje en la base de datos
+                    const { data: exists } = await supabaseClient
+                        .from('market_news')
+                        .select('id')
+                        .eq('message', news.message)
+                        .limit(1);
+                        
+                    if (!exists || exists.length === 0) {
+                        await supabaseClient.from('market_news').insert([
+                            {
+                                tag: news.tag,
+                                message: news.message,
+                                is_alert: news.isAlert
+                            }
+                        ]);
+                    }
+                } catch (dbErr) {
+                    // Continuar de forma silenciosa
+                }
+            }
+        }
+    } catch (err) {
+        console.warn("⚠️ [ValorGT Live] No se pudieron sincronizar las noticias en vivo de Prensa Libre. Razón:", err.message);
+    }
+    return liveNews;
+}
+
+/**
+ * Simula y orquesta el feed en tiempo real de noticias financieras de la terminal Bloomberg
+ */
 async function initNewsFeed() {
     const consoleEl = document.getElementById('news-console');
     if (!consoleEl) return;
@@ -1894,10 +1968,21 @@ async function initNewsFeed() {
     // Agregar primera noticia de sistema por defecto
     appendNewsLog("SYSTEM", "CORE ACTIVE V4.12. Puerto de telemetría de Guatemala ONLINE.", false);
     
-    let activeNewsList = [...SIMULATED_NEWS];
+    let activeNewsList = [];
     
-    // 1. Intentar descargar noticias reales en vivo desde Supabase
-    if (isSupabaseActive && supabaseClient) {
+    // 1. Intentar descargar noticias directamente desde el feed RSS en vivo de Guatemala
+    try {
+        const liveNews = await fetchGuatemalaLiveNews();
+        if (liveNews && liveNews.length > 0) {
+            activeNewsList = liveNews;
+            appendNewsLog("SYSTEM", `Conexión en vivo establecida. Sincronizadas ${liveNews.length} noticias de economía real desde Prensa Libre GT.`, false);
+        }
+    } catch (liveErr) {
+        console.warn("Fallo al obtener noticias RSS directas, intentando desde Supabase...", liveErr);
+    }
+    
+    // 2. Si falló el RSS, intentar descargar noticias de contingencia remota desde Supabase
+    if (activeNewsList.length === 0 && isSupabaseActive && supabaseClient) {
         try {
             const { data, error } = await supabaseClient
                 .from('market_news')
@@ -1906,10 +1991,9 @@ async function initNewsFeed() {
                 .limit(20);
                 
             if (!error && data && data.length > 0) {
-                console.log(`⚡ [ValorGT AI] Sincronizadas ${data.length} noticias en vivo desde Supabase.`);
-                appendNewsLog("SYSTEM", "Enlace satelital de noticias en vivo sincronizado con éxito con ValorGT Labs.", false);
+                console.log(`⚡ [ValorGT AI] Sincronizadas ${data.length} noticias desde Supabase.`);
+                appendNewsLog("SYSTEM", "Enlace satelital de noticias en vivo sincronizado con éxito con la nube de ValorGT.", false);
                 
-                // Mapear los datos de Supabase al formato compatible
                 activeNewsList = data.map(item => ({
                     tag: item.tag || 'MERCADO',
                     message: item.message,
@@ -1917,8 +2001,14 @@ async function initNewsFeed() {
                 }));
             }
         } catch (dbErr) {
-            console.warn("Fallo al descargar noticias en vivo de Supabase, usando contingencia local:", dbErr);
+            console.warn("Fallo al descargar noticias desde Supabase profiles:", dbErr);
         }
+    }
+    
+    // 3. Fallback absoluto de seguridad si ambas fuentes fallaron (sin internet/sin DB)
+    if (activeNewsList.length === 0) {
+        activeNewsList = [...SIMULATED_NEWS];
+        appendNewsLog("SYSTEM", "Corriendo en modo de contingencia local. Cargadas noticias pre-tasadas de ValorGT Labs.", false);
     }
     
     // Función auxiliar para obtener el objeto de noticia de forma estructurada
