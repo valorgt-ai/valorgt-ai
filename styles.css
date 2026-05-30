@@ -5128,9 +5128,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
         display: grid !important;
     }
     
-    /* Agregar margen inferior a las vistas para que el contenido no quede tapado */
+    /* Ajuste de límites para evitar recortes y desbordamiento en la pantalla */
     .main-content {
-        padding-bottom: 75px !important;
+        padding-bottom: 0 !important;
+        height: 100vh !important;
+        box-sizing: border-box !important;
+    }
+    
+    .view-viewport {
+        height: calc(100vh - 145px) !important; /* Acortar la altura del viewport para dejar espacio libre a la barra inferior sin desbordar */
+        padding-bottom: 80px !important; /* Espacio de seguridad para scroll */
+        overflow-y: auto !important;
     }
 
     /* Ajustes responsivos para la vista del radar de calor */
