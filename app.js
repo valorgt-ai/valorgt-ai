@@ -1887,24 +1887,68 @@ function renderInvestorTable() {
 /**
  * Simula el feed en tiempo real de noticias financieras
  */
-function initNewsFeed() {
+async function initNewsFeed() {
     const consoleEl = document.getElementById('news-console');
     if (!consoleEl) return;
 
-    // Agregar primeras noticias por defecto
+    // Agregar primera noticia de sistema por defecto
     appendNewsLog("SYSTEM", "CORE ACTIVE V4.12. Puerto de telemetría de Guatemala ONLINE.", false);
-    appendNewsLog("ALERTA", "Fuerte tracción inmobiliaria detectada en Zona 4. Plusvalías superan proyecciones.", true);
     
-    // Loop de noticias simulado cada 8 segundos
-    let newsIdx = 0;
+    let activeNewsList = [...SIMULATED_NEWS];
+    
+    // 1. Intentar descargar noticias reales en vivo desde Supabase
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('market_news')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+                
+            if (!error && data && data.length > 0) {
+                console.log(`⚡ [ValorGT AI] Sincronizadas ${data.length} noticias en vivo desde Supabase.`);
+                appendNewsLog("SYSTEM", "Enlace satelital de noticias en vivo sincronizado con éxito con ValorGT Labs.", false);
+                
+                // Mapear los datos de Supabase al formato compatible
+                activeNewsList = data.map(item => ({
+                    tag: item.tag || 'MERCADO',
+                    message: item.message,
+                    isAlert: item.is_alert || false
+                }));
+            }
+        } catch (dbErr) {
+            console.warn("Fallo al descargar noticias en vivo de Supabase, usando contingencia local:", dbErr);
+        }
+    }
+    
+    // Función auxiliar para obtener el objeto de noticia de forma estructurada
+    const getNewsObject = (idx) => {
+        const item = activeNewsList[idx];
+        if (typeof item === 'string') {
+            const isAlert = Math.random() > 0.5;
+            return {
+                tag: isAlert ? "MERCADO" : "INDICE",
+                message: item,
+                isAlert: isAlert
+            };
+        }
+        return item;
+    };
+
+    // Mostrar primera noticia de la lista
+    if (activeNewsList.length > 0) {
+        const firstNews = getNewsObject(0);
+        appendNewsLog(firstNews.tag, firstNews.message, firstNews.isAlert);
+    }
+    
+    // Loop de noticias dinámico en bucle continuo cada 8 segundos
+    let newsIdx = 1 % activeNewsList.length;
     setInterval(() => {
-        const isAlert = Math.random() > 0.5;
-        const tag = isAlert ? "MERCADO" : "INDICE";
-        const msg = SIMULATED_NEWS[newsIdx];
-        
-        appendNewsLog(tag, msg, isAlert);
-        
-        newsIdx = (newsIdx + 1) % SIMULATED_NEWS.length;
+        if (activeNewsList.length > 0) {
+            const newsItem = getNewsObject(newsIdx);
+            appendNewsLog(newsItem.tag, newsItem.message, newsItem.isAlert);
+            newsIdx = (newsIdx + 1) % activeNewsList.length;
+        }
     }, 8000);
 }
 
