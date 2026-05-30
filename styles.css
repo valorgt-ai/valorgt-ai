@@ -5564,3 +5564,32 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 }
 
+/* Regla de doble seguro de desplazamiento para la vista de suscripciones */
+#view-subscriptions {
+    overflow-y: auto !important;
+    max-height: calc(100vh - 120px) !important;
+    padding-right: 12px;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+}
+
+#view-subscriptions::-webkit-scrollbar {
+    width: 6px;
+}
+
+#view-subscriptions::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+#view-subscriptions::-webkit-scrollbar-thumb {
+    background: rgba(191, 90, 242, 0.3);
+    border-radius: 3px;
+    border: 1px solid rgba(191, 90, 242, 0.15);
+}
+
+#view-subscriptions::-webkit-scrollbar-thumb:hover {
+    background: rgba(191, 90, 242, 0.6);
+    box-shadow: 0 0 10px rgba(191, 90, 242, 0.5);
+}
+
