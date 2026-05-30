@@ -5530,3 +5530,37 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 }
 
+/* ==========================================================================
+   ESTILOS PREMIUM DE LA VISTA DE PLANES DE SUSCRIPCIÓN (BLOOMBERG STYLE)
+   ========================================================================== */
+.subscriptions-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 28px;
+    align-items: start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1150px) {
+    .subscriptions-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .profile-segmented-control {
+        flex-direction: row !important;
+    }
+    
+    .profile-segmented-control .segmented-btn {
+        width: auto !important;
+        flex: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-segmented-control {
+        flex-direction: column !important;
+    }
+}
+
