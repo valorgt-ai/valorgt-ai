@@ -134,6 +134,14 @@
                         <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
                     </div>
 
+                    <!-- BANNER PROMOCIONAL CONTROLADO POR EL ADMINISTRADOR -->
+                    <div id="admin-promo-banner" class="admin-promo-banner hidden">
+                        <div class="promo-content">
+                            <i data-lucide="megaphone" class="promo-icon"></i>
+                            <span id="promo-banner-text">Cargando anuncios del sistema...</span>
+                        </div>
+                    </div>
+
                     <div class="deck-cta-container">
                         <button type="button" class="btn-glowing-cta" onclick="switchView('catalog')">
                             <span>EXPLORAR CATÁLOGO COMPLETO</span>
@@ -3037,6 +3045,37 @@
                                         </div>
                                         <span style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4; margin-top: 3px;">
                                             * Configura el video explicativo de YouTube que los usuarios verán arriba de la sección de planes de suscripción. Admite enlaces estándar, cortos o directamente el ID del video.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD: CONFIGURACIÓN DEL BANNER PROMOCIONAL / INFORMATIVO -->
+                            <div class="card glassmorphism col-card border-white" style="margin-top: 15px; border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important;">
+                                <div class="card-header border-white" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon white" style="background: rgba(0, 240, 255, 0.1) !important; color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="megaphone"></i></div>
+                                    <h2 style="color: var(--cyan) !important;">Banner Promocional e Informativo</h2>
+                                </div>
+                                <div class="commercial-section-body font-mono" style="padding: 10px 0;">
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                                            <label for="admin-promo-input" style="font-size: 0.72rem; color: var(--text-secondary);">Mensaje del Banner</label>
+                                            <textarea id="admin-promo-input" rows="2" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; border-radius: 6px; font-family: var(--font-sans); outline: none; resize: vertical;" placeholder="Escribe la promoción o información aquí..."></textarea>
+                                        </div>
+                                        
+                                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                                            <label class="checkbox-container" style="margin: 0;">
+                                                <input type="checkbox" id="admin-promo-active">
+                                                <span class="checkmark border-white" style="border-color: rgba(0, 240, 255, 0.3);"></span>
+                                                <span class="label-text" style="font-size: 0.75rem; color: var(--text-secondary);">Activar visibilidad del banner en pantalla principal</span>
+                                            </label>
+                                            
+                                            <button onclick="saveAdminPromoBannerSettings()" class="btn-commercial-cyan" style="padding: 10px 15px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                                <i data-lucide="save" style="width: 14px; height: 14px;"></i> GUARDAR BANNER
+                                            </button>
+                                        </div>
+                                        <span style="font-size: 0.6rem; color: var(--text-muted); line-height: 1.4; margin-top: 3px;">
+                                            * Permite colocar información o promociones arriba de la acción "Explorar catálogo completo" en la pantalla de Tasa Inteligente. Se sincroniza reactivamente en tiempo real.
                                         </span>
                                     </div>
                                 </div>

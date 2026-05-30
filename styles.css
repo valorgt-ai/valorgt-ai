@@ -5367,3 +5367,92 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .drawer-item.active i {
     color: var(--cyan);
 }
+
+/* ==========================================================================
+   ADMIN PROMOTIONAL/ANNOUNCEMENT BANNER
+   ========================================================================== */
+.admin-promo-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto 20px auto;
+    padding: 14px 22px;
+    width: calc(100% - 30px);
+    max-width: 1200px;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.04) 0%, rgba(0, 102, 255, 0.04) 50%, rgba(0, 240, 255, 0.04) 100%);
+    border: 1px solid rgba(0, 240, 255, 0.22);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.05), inset 0 0 10px rgba(0, 240, 255, 0.02);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    animation: promoGlowPulse 4s infinite alternate ease-in-out;
+}
+
+.admin-promo-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.12), transparent);
+    transform: skewX(-25deg);
+    animation: promoLaserSweep 5.5s infinite ease-in-out;
+}
+
+@keyframes promoGlowPulse {
+    0% {
+        border-color: rgba(0, 240, 255, 0.2);
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);
+    }
+    100% {
+        border-color: rgba(0, 240, 255, 0.45);
+        box-shadow: 0 0 22px rgba(0, 240, 255, 0.18);
+    }
+}
+
+@keyframes promoLaserSweep {
+    0% { left: -100%; }
+    40% { left: 150%; }
+    100% { left: 150%; }
+}
+
+.admin-promo-banner.hidden {
+    display: none !important;
+}
+
+.admin-promo-banner .promo-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 2;
+    text-align: center;
+}
+
+.admin-promo-banner .promo-icon {
+    color: var(--cyan);
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.5));
+    animation: promoIconShake 5s infinite ease-in-out;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+@keyframes promoIconShake {
+    0%, 90%, 100% { transform: rotate(0deg) scale(1); }
+    92% { transform: rotate(-14deg) scale(1.15); }
+    94% { transform: rotate(11deg) scale(1.15); }
+    96% { transform: rotate(-9deg) scale(1.15); }
+    98% { transform: rotate(7deg) scale(1.15); }
+}
+
+.admin-promo-banner span {
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: 0.3px;
+    line-height: 1.45;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}

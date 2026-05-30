@@ -62,6 +62,9 @@ let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas e
 let coverImageIndex = 0; // Índice de la imagen de portada principal seleccionada
 let baseAdPriceGTQ = parseFloat(localStorage.getItem('valorgt_base_ad_price') || '5000'); // Tarifa base estándar de pauta comercial calibrada por el admin
 let plansVideoUrl = localStorage.getItem('valorgt_plans_video_url') || 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // URL del video de planes premium calibrada por el admin
+let promoBannerMessage = localStorage.getItem('valorgt_promo_message') || '✨ ¡Oportunidad Prime! Descuento especial del 15% en pautas comerciales contratadas esta semana. Destaca tu propiedad ahora.';
+let isPromoBannerActive = localStorage.getItem('valorgt_promo_active') !== 'false';
+
 
 
 // Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
@@ -117,6 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar Terminal de Inversión y Gráficos Base
     initInvestorTerminal();
+
+    // Inicializar Banner Promocional
+    initPromoBanner();
 
     // Sincronizar datos de Supabase si está activo
     if (isSupabaseActive) {
@@ -423,6 +429,8 @@ function switchView(viewId) {
     if (viewId === 'dashboard') {
         titleEl.innerText = "Valuador Inmobiliario IA";
         subtitleEl.innerText = "Análisis predictivo de propiedades con redes neuronales";
+        // Descargar anuncio fresco en segundo plano al regresar al Dashboard
+        fetchPromoBannerFromSupabase();
     } else if (viewId === 'heatmap') {
         titleEl.innerText = "Radar de Plusvalía e Inversión";
         subtitleEl.innerText = "Mapas de calor interactivos y telemetrías inmobiliarias";
@@ -6286,6 +6294,16 @@ function initAdminView() {
         videoInput.value = plansVideoUrl;
     }
 
+    // Cargar mensaje y estado del banner promocional en los controles de administración
+    const promoInput = document.getElementById('admin-promo-input');
+    if (promoInput) {
+        promoInput.value = promoBannerMessage;
+    }
+    const promoCheckbox = document.getElementById('admin-promo-active');
+    if (promoCheckbox) {
+        promoCheckbox.checked = isPromoBannerActive;
+    }
+
     // Iniciar poller reactivo en segundo plano para auditoría bancaria (cada 8 segundos)
     if (!adminSyncIntervalId) {
         adminSyncIntervalId = setInterval(() => {
@@ -8353,6 +8371,130 @@ function toggleMobileMenu() {
 function switchViewMobile(viewId) {
     toggleMobileMenu(); // cerrar cajón
     switchView(viewId); // cambiar vista
+}
+
+/**
+ * Inicializa el banner de anuncios promocionales con caché local
+ */
+async function initPromoBanner() {
+    syncPromoBannerUI();
+    if (isSupabaseActive) {
+        await fetchPromoBannerFromSupabase();
+    }
+}
+
+/**
+ * Descarga y sincroniza reactivamente los datos del banner desde Supabase
+ */
+async function fetchPromoBannerFromSupabase() {
+    if (!isSupabaseActive) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('system_announcements')
+            .select('*')
+            .eq('id', 'main_promo')
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+            promoBannerMessage = data.message;
+            isPromoBannerActive = data.is_active;
+            
+            // Persistir localmente como contingencia
+            localStorage.setItem('valorgt_promo_message', promoBannerMessage);
+            localStorage.setItem('valorgt_promo_active', isPromoBannerActive.toString());
+            
+            syncPromoBannerUI();
+        }
+    } catch (err) {
+        console.warn("⚠️ [ValorGT AI] Error al descargar banner promocional de Supabase, usando caché local:", err);
+    }
+}
+
+/**
+ * Sincroniza la interfaz de usuario en base al estado activo
+ */
+function syncPromoBannerUI() {
+    const banner = document.getElementById('admin-promo-banner');
+    const textEl = document.getElementById('promo-banner-text');
+    
+    if (banner && textEl) {
+        textEl.innerText = promoBannerMessage;
+        if (isPromoBannerActive) {
+            banner.classList.remove('hidden');
+        } else {
+            banner.classList.add('hidden');
+        }
+    }
+    
+    // Sincronizar inputs en la Consola del Admin
+    const promoInput = document.getElementById('admin-promo-input');
+    const promoCheckbox = document.getElementById('admin-promo-active');
+    
+    if (promoInput && !promoInput.matches(':focus')) {
+        promoInput.value = promoBannerMessage;
+    }
+    if (promoCheckbox) {
+        promoCheckbox.checked = isPromoBannerActive;
+    }
+    
+    // Crear o recrear íconos Lucide si es necesario
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Guarda los cambios realizados por el administrador de forma persistente
+ */
+async function saveAdminPromoBannerSettings() {
+    const promoInput = document.getElementById('admin-promo-input');
+    const promoCheckbox = document.getElementById('admin-promo-active');
+    
+    if (!promoInput) return;
+    
+    const message = promoInput.value.trim();
+    if (!message) {
+        alert("⚠️ Por favor, ingresa un mensaje válido para el banner.");
+        return;
+    }
+    
+    const isActive = promoCheckbox ? promoCheckbox.checked : false;
+    
+    // Actualizar estado local
+    promoBannerMessage = message;
+    isPromoBannerActive = isActive;
+    
+    localStorage.setItem('valorgt_promo_message', message);
+    localStorage.setItem('valorgt_promo_active', isActive.toString());
+    
+    syncPromoBannerUI();
+    
+    // Persistir en Supabase
+    if (isSupabaseActive) {
+        try {
+            const { error } = await supabaseClient
+                .from('system_announcements')
+                .upsert({
+                    id: 'main_promo',
+                    message: message,
+                    is_active: isActive,
+                    updated_at: new Date().toISOString()
+                });
+                
+            if (error) throw error;
+            
+            alert("✨ Configuración del banner promocional sincronizada en la nube exitosamente.");
+            logAdminSecurityActivity(`Anuncio del Sistema Actualizado: "${message.substring(0, 30)}..." [Activo: ${isActive}]`);
+        } catch (err) {
+            console.error("❌ Error al guardar banner en Supabase:", err);
+            alert("⚠️ Guardado en caché local con éxito, pero falló la sincronización con Supabase.");
+        }
+    } else {
+        alert("✨ Configuración del banner promocional guardada localmente con éxito.");
+        logAdminSecurityActivity(`Anuncio del Sistema Actualizado (Local): "${message.substring(0, 30)}..." [Activo: ${isActive}]`);
+    }
 }
 
 
