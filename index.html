@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=2.4">
+    <link rel="stylesheet" href="styles.css?v=2.5">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -2549,10 +2549,6 @@
                                 </p>
 
                                 <h3 style="color: #fff; font-size: 0.9rem; margin-top: 20px; margin-bottom: 8px; border-left: 2px solid var(--cyan); padding-left: 8px;">9. Modificaciones</h3>
-                                <p style="margin-bottom: 15px;">
-                                    ValorGT® podrá modificar, actualizar o mejorar sus metodologías, indicadores, algoritmos, fuentes de información y funcionalidades en cualquier momento sin previo aviso, con el objetivo de mejorar la precisión y utilidad de sus análisis.
-                                </p>
-
                                 <h3 style="color: #fff; font-size: 0.9rem; margin-top: 20px; margin-bottom: 8px; border-left: 2px solid var(--cyan); padding-left: 8px;">10. Aceptación</h3>
                                 <p style="margin-bottom: 15px;">
                                     Al utilizar ValorGT®, el usuario reconoce haber leído, comprendido y aceptado íntegramente los términos establecidos en este Disclaimer, así como las políticas y condiciones de uso vigentes de la plataforma.
@@ -2569,61 +2565,67 @@
                 <section id="view-subscriptions" class="app-view">
                     <div class="subscriptions-layout">
                         
-                        <!-- COLUMNA IZQUIERDA: CONTROLES Y VIDEO -->
-                        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%; box-sizing: border-box;">
-                            <!-- Encabezado de Planes Premium -->
-                            <div class="featured-header" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 0;">
-                                <div class="fh-left">
-                                    <span class="hud-label-small">MEMBRESÍAS Y PLANES</span>
-                                    <h3 class="section-title-premium" style="color: #bf5af2; text-shadow: 0 0 10px rgba(191, 90, 242, 0.35); font-family: var(--font-sans); font-size: 1.35rem; font-weight: bold; margin: 5px 0 0 0;">Planes Premium ValorGT AI</h3>
-                                </div>
-                            </div>
-                            
-                            <p class="saas-desc font-mono" style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; margin: 0;">
-                                Maximiza tus comisiones, analiza portafolios sin restricciones de tiempo y accede al radar inmobiliario de calor en tiempo real. Selecciona el perfil operativo que se adapte a tu nivel actual.
+                        <!-- Encabezado de Planes Premium Centrado -->
+                        <div class="featured-header" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 25px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%;">
+                            <span class="hud-label-small" style="font-family: var(--font-mono); letter-spacing: 2px; color: var(--cyan); font-size: 0.7rem; font-weight: bold;">[ CORE UPGRADE ACTIVATION ]</span>
+                            <h2 class="section-title-premium" style="color: #bf5af2; text-shadow: 0 0 15px rgba(191, 90, 242, 0.4); font-family: var(--font-sans); font-size: 1.8rem; font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Planes de Suscripción Premium</h2>
+                            <p class="saas-desc font-mono" style="font-size: 0.78rem; color: var(--text-secondary); max-width: 700px; line-height: 1.6; margin: 10px 0 0 0;">
+                                Maximiza tus comisiones, analiza portafolios de inversión inmobiliaria sin restricciones de tiempo y accede al radar predictivo de calor en tiempo real. Selecciona el perfil operativo que se adapte a tu nivel actual.
                             </p>
-
-                            <!-- Selector de Perfiles Segmentado (Cyberpunk Neon) -->
-                            <div class="profile-segmented-container" style="display: flex; justify-content: flex-start; margin: 5px 0;">
-                                <div class="profile-segmented-control glassmorphism" style="display: flex; flex-direction: column; padding: 6px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); width: 100%; gap: 6px; box-sizing: border-box;">
-                                    <button type="button" id="btn-profile-agente" class="segmented-btn active" onclick="switchPublicPlansProfile('agente')" style="padding: 10px 16px; border: 1px solid rgba(0, 240, 255, 0.3); background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); transition: all 0.3s ease; justify-content: center; width: 100%;">
-                                        <i data-lucide="users" style="width: 14px; height: 14px;"></i>
-                                        <span>Soy Agente Inmobiliario</span>
-                                    </button>
-                                    <button type="button" id="btn-profile-inversionista" class="segmented-btn" onclick="switchPublicPlansProfile('inversionista')" style="padding: 10px 16px; border: none; background: transparent; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); transition: all 0.3s ease; justify-content: center; width: 100%;">
-                                        <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
-                                        <span>Soy Inversionista</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- SECCIÓN "VER VIDEO": YOUTUBE VIDEO PROPORCIONADO DESDE LA CONSOLA ADMIN -->
-                            <div id="subscription-video-container" style="display: flex; flex-direction: column; gap: 12px; padding: 15px; background: rgba(191, 90, 242, 0.04); border: 1px solid rgba(191, 90, 242, 0.15); border-radius: 12px; box-shadow: 0 0 25px rgba(191, 90, 242, 0.05); box-sizing: border-box; width: 100%;">
-                                <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--cyan); font-size: 0.75rem; letter-spacing: 0.8px; text-transform: uppercase; font-family: var(--font-mono);">
-                                    <i data-lucide="play-circle" style="color: #bf5af2; width: 16px; height: 16px;"></i>
-                                    <span>Video Explicativo</span>
-                                </div>
-                                <div class="video-wrapper" id="subscription-video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 20px rgba(0,0,0,0.5); cursor: pointer; background: linear-gradient(135deg, rgba(10, 14, 20, 0.95), rgba(191, 90, 242, 0.15));" onclick="playPremiumPlansVideo()">
-                                    <!-- Portada del Video Holográfica Premium -->
-                                    <div class="video-cover-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(191, 90, 242, 0.1) 0%, rgba(5,6,8,0.85) 80%); transition: all 0.4s ease; z-index: 2;">
-                                        <!-- Megáfono / Símbolo de Play de Neón -->
-                                        <div class="play-btn-circle" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 2px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); transition: all 0.3s ease; margin-bottom: 8px; position: relative;">
-                                            <i data-lucide="play" style="width: 22px; height: 22px; color: var(--cyan); margin-left: 2px; filter: drop-shadow(0 0 5px var(--cyan));"></i>
-                                            <div class="play-btn-pulse" style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid var(--cyan); animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; opacity: 0.6;"></div>
-                                        </div>
-                                        <span class="font-mono text-cyan" style="font-size: 0.7rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 8px rgba(0, 240, 255, 0.35);">VER PRESENTACIÓN</span>
-                                    </div>
-                                    <!-- Imagen de fondo premium abstracta -->
-                                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80') center center / cover no-repeat; opacity: 0.3; z-index: 1;"></div>
-                                </div>
-                            </div>
                         </div>
 
-                        <!-- COLUMNA DERECHA: GRILLA DE TARJETAS DE PLANES -->
-                        <div class="saas-pricing-grid" id="public-pricing-grid" style="padding-bottom: 40px;">
+                        <!-- Barra de Controles y Selector de Perfiles Segmentado (Cyberpunk Neon) -->
+                        <div class="subscriptions-controls-bar" style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; width: 100%; max-width: 750px; box-sizing: border-box;">
+                            <div class="profile-segmented-control glassmorphism" style="display: flex; padding: 4px; background: rgba(8, 6, 12, 0.72); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 30px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); gap: 4px; min-width: 440px; box-sizing: border-box; justify-content: space-between; flex: 1;">
+                                <button type="button" id="btn-profile-agente" class="segmented-btn active" onclick="switchPublicPlansProfile('agente')" style="padding: 10px 24px; border: 1px solid rgba(0, 240, 255, 0.3); background: rgba(0, 240, 255, 0.15); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); justify-content: center; flex: 1;">
+                                    <i data-lucide="users" style="width: 14px; height: 14px;"></i>
+                                    <span>Soy Agente Inmobiliario</span>
+                                </button>
+                                <button type="button" id="btn-profile-inversionista" class="segmented-btn" onclick="switchPublicPlansProfile('inversionista')" style="padding: 10px 24px; border: 1px solid transparent; background: transparent; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); justify-content: center; flex: 1;">
+                                    <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i>
+                                    <span>Soy Inversionista</span>
+                                </button>
+                            </div>
+
+                            <!-- Botón de Video Explicativo -->
+                            <button type="button" class="btn-commercial-purple" onclick="playPremiumPlansVideoModal()" style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; cursor: pointer; font-family: var(--font-mono); background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%); border: none; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.4); box-shadow: 0 0 15px rgba(191, 90, 242, 0.35); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); min-width: 210px; justify-content: center;">
+                                <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i>
+                                <span>VER VIDEO EXPLICATIVO</span>
+                            </button>
+                        </div>
+
+                        <!-- Grilla de precios (ancho completo centrado) -->
+                        <div class="saas-pricing-grid" id="public-pricing-grid" style="padding-bottom: 40px; width: 100%;">
                             <!-- Renderizado Dinámico reactivo mediante JavaScript -->
                         </div>
 
+                    </div>
+
+                    <!-- MODAL DE VIDEO EXPLICATIVO PREMIUM -->
+                    <div id="premium-video-modal" class="payment-modal-overlay" onclick="if(event.target === this) closePremiumPlansVideoModal();">
+                        <div class="payment-modal-card glassmorphism" style="width: 800px; max-width: 95vw; border: 1px solid rgba(191, 90, 242, 0.35); box-shadow: 0 0 35px rgba(191, 90, 242, 0.25); background: rgba(5, 6, 8, 0.96); padding: 20px; overflow: hidden; display: flex; flex-direction: column; gap: 15px; border-radius: 12px; margin: auto;">
+                            <div class="modal-card-glow" style="background: radial-gradient(circle, rgba(191, 90, 242, 0.08) 0%, transparent 70%);"></div>
+                            <button class="modal-close-btn" onclick="closePremiumPlansVideoModal()" style="font-size: 1.8rem; top: 12px; right: 15px;">&times;</button>
+                            
+                            <div class="modal-header-payment" style="margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; text-align: left; display: flex; align-items: center; gap: 10px;">
+                                <i data-lucide="play-circle" class="text-purple" style="width: 24px; height: 24px; filter: drop-shadow(0 0 5px rgba(191,90,242,0.5));"></i>
+                                <div>
+                                    <h3 class="font-mono" style="margin: 0; font-size: 1rem; color: #fff; text-transform: uppercase;">Presentación Oficial ValorGT AI</h3>
+                                    <p class="font-mono text-muted" style="font-size: 0.65rem; margin: 2px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">Conoce los detalles de las herramientas premium en 3 minutos</p>
+                                </div>
+                            </div>
+
+                            <!-- Iframe del video con aspecto 16:9 -->
+                            <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: #000;">
+                                <iframe id="subscription-youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                                <button class="btn-commercial-purple" onclick="closePremiumPlansVideoModal()" style="padding: 8px 20px; font-size: 0.75rem; border-radius: 20px; font-family: var(--font-mono); border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; transition: all 0.2s;">
+                                    CERRAR REPRODUCTOR
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -3656,9 +3658,9 @@
     </div>
 
     <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=2.4"></script>
-    <script src="charts.js?v=2.4"></script>
-    <script src="map.js?v=2.4"></script>
-    <script src="app.js?v=2.4"></script>
+    <script src="mockData.js?v=2.5"></script>
+    <script src="charts.js?v=2.5"></script>
+    <script src="map.js?v=2.5"></script>
+    <script src="app.js?v=2.5"></script>
 </body>
 </html>

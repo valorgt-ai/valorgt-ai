@@ -8468,12 +8468,23 @@ function selectPublicPlanForSignup(planKey) {
 }
 
 /**
- * Activa dinámicamente el reproductor de video de los planes premium
+ * Controladores dinámicos del reproductor modal de video de planes premium
  */
-function playPremiumPlansVideo() {
-    const wrapper = document.getElementById('subscription-video-wrapper');
-    if (wrapper) {
-        wrapper.innerHTML = `<iframe id="subscription-youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="${plansVideoUrl}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+function playPremiumPlansVideoModal() {
+    const modal = document.getElementById('premium-video-modal');
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (modal && iframe) {
+        iframe.src = `${plansVideoUrl}?autoplay=1`;
+        modal.classList.add('active');
+    }
+}
+
+function closePremiumPlansVideoModal() {
+    const modal = document.getElementById('premium-video-modal');
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (modal && iframe) {
+        iframe.src = '';
+        modal.classList.remove('active');
     }
 }
 
