@@ -5456,3 +5456,51 @@ input[type="range"]::-webkit-slider-thumb:hover {
     line-height: 1.45;
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
+
+/* ==========================================================================
+   ADMIN CONSOLE UX & ICON TRANSPARENCY
+   ========================================================================== */
+.header-icon,
+.header-icon.cyan,
+.header-icon.green,
+.header-icon.red,
+.header-icon.magenta,
+.header-icon.white,
+.header-icon.purple,
+.header-icon.gold {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+.kpi-icon-wrapper {
+    background: transparent !important;
+}
+
+/* Grilla Horizontal de Ajustes en Consola Admin */
+.admin-settings-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Media Queries para Responsividad y Teléfonos */
+@media (max-width: 1350px) {
+    .admin-settings-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-settings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Evitar desbordamiento en tablas del admin en mobile */
+    .commercial-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
