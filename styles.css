@@ -369,9 +369,12 @@ body::before {
 /* CONTENEDOR DE LA VISTA */
 .view-viewport {
     flex-grow: 1;
-    overflow-y: auto;
+    overflow-y: auto !important;
     padding: 24px;
-    height: calc(100vh - 75px); /* Restringir altura para activar barra de scroll vertical */
+    height: calc(100vh - 75px) !important;
+    max-height: calc(100vh - 75px) !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
 }
 
 /* CARDS GLASSMORPHISM */
