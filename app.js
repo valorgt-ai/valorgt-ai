@@ -4813,10 +4813,17 @@ async function processB2bTransferPayment(event) {
             if (waBtn) {
                 waBtn.href = whatsappUrl;
             }
+
+            // Abrir automáticamente la pestaña de WhatsApp para agilizar el envío
+            try {
+                window.open(whatsappUrl, '_blank');
+            } catch (err) {
+                console.warn("El bloqueador de popups interceptó la apertura automática de WhatsApp:", err);
+            }
             
             // 6. Notificación de logs
             if (typeof appendAdminLog === 'function') {
-                appendAdminLog("SAAS", `pago_transferencia: Solicitud ${txnId} de ${request.clientName} registrada. [EMAIL DESPACHADO] Alerta enviada a admin@valorgt.com. [WHATSAPP LISTO] Enlace directo de comprobante configurado para el admin (+502 4041-6471).`, false);
+                appendAdminLog("SAAS", `pago_transferencia: Solicitud ${txnId} de ${request.clientName} registrada. [EMAIL DESPACHADO] Alerta enviada a valorgt.ai@gmail.com. [WHATSAPP LISTO] Enlace directo de comprobante configurado para el admin (+502 4041-6471).`, false);
             }
             
             // 7. Recargar vistas
@@ -5425,7 +5432,7 @@ async function authenticateCommercialAgent(event) {
     const pass = document.getElementById('com-login-pass').value.trim();
 
     // 0. Verificar si es administrador ingresando credenciales admin
-    if ((user === 'admin@valorgt.com' || user === 'admin') && (pass === 'valorgt' || pass === 'admin')) {
+    if ((user === 'admin@valorgt.com' || user === 'valorgt.ai@gmail.com' || user === 'admin') && (pass === 'valorgt' || pass === 'admin')) {
         // Mostrar el botón de administración en el menú lateral
         const adminBtn = document.getElementById('nav-btn-admin');
         if (adminBtn) {
