@@ -513,8 +513,8 @@ function switchView(viewId) {
             initPortfolioView();
         }, 50);
     } else if (viewId === 'commercial') {
-        titleEl.innerText = "Consola de Gestión Comercial B2B";
-        subtitleEl.innerText = "Registro de clientes, planes corporativos y pautas publicitarias de portada";
+        titleEl.innerText = "Área de Ingreso Inmobiliario B2B";
+        subtitleEl.innerText = "Acceso a herramientas avanzadas de tasación, plusvalías y gestión patrimonial";
         setTimeout(() => {
             initCommercialView();
         }, 50);
@@ -5783,23 +5783,35 @@ async function handleRegistrationFormSubmit(event) {
     if (event) event.preventDefault();
 
     const name = document.getElementById('com-signup-name').value.trim();
-    const company = document.getElementById('com-signup-company').value.trim();
-    const nit = document.getElementById('com-signup-nit').value.trim();
-    const phone = document.getElementById('com-signup-phone').value.trim();
-    const email = document.getElementById('com-signup-email').value.trim().toLowerCase();
-    const pass = document.getElementById('com-signup-pass').value.trim();
     const roleSelect = document.getElementById('com-signup-type');
     const role = roleSelect ? roleSelect.value : 'agente';
 
-    if (!name || !company || !nit || !phone || !email || !pass) {
-        alert("Por favor completa todos los campos del registro.");
-        return;
+    const companyRaw = document.getElementById('com-signup-company') ? document.getElementById('com-signup-company').value.trim() : '';
+    const nitRaw = document.getElementById('com-signup-nit') ? document.getElementById('com-signup-nit').value.trim() : '';
+    
+    const company = role === 'inversionista' ? 'Inversionista Particular' : companyRaw;
+    const nit = role === 'inversionista' ? 'C/F' : nitRaw;
+
+    const phone = document.getElementById('com-signup-phone').value.trim();
+    const email = document.getElementById('com-signup-email').value.trim().toLowerCase();
+    const pass = document.getElementById('com-signup-pass').value.trim();
+
+    if (role === 'agente') {
+        if (!name || !companyRaw || !nitRaw || !phone || !email || !pass) {
+            alert("Por favor completa todos los campos del registro.");
+            return;
+        }
+    } else {
+        if (!name || !phone || !email || !pass) {
+            alert("Por favor completa todos los campos del registro.");
+            return;
+        }
     }
 
     // Verificar si el usuario ya está registrado
     const existing = b2bClients.find(c => c.email.toLowerCase() === email);
     if (existing || email === 'agente@valorgt.com') {
-        alert("⚠️ REGISTRO DENEGADO: El correo electrónico corporativo ingresado ya está asociado a una cuenta activa.");
+        alert("⚠️ REGISTRO DENEGADO: El correo electrónico ingresado ya está asociado a una cuenta activa.");
         return;
     }
 
@@ -5808,7 +5820,7 @@ async function handleRegistrationFormSubmit(event) {
 
     const planSelect = document.getElementById('com-signup-plan');
     const selectedPlanKey = planSelect ? planSelect.value : 'pro'; // basico | pro | vip
-    const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : 'Básico');
+    const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : (selectedPlanKey === 'premium' ? 'Premium' : 'Básico'));
 
     const newClient = {
         name: name,
@@ -8694,6 +8706,70 @@ async function saveAdminPromoBannerSettings() {
     } else {
         alert("✨ Configuración del banner promocional guardada localmente con éxito.");
         logAdminSecurityActivity(`Anuncio del Sistema Actualizado (Local): "${message.substring(0, 30)}..." [Activo: ${isActive}]`);
+    }
+}
+
+/**
+ * Alterna la visibilidad de los campos de contraseña
+ * @param {string} inputId - ID del input de contraseña
+ */
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const eyeIcon = document.getElementById(`${inputId}-eye`);
+    if (!input) return;
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (eyeIcon) {
+            eyeIcon.setAttribute('data-lucide', 'eye-off');
+        }
+    } else {
+        input.type = 'password';
+        if (eyeIcon) {
+            eyeIcon.setAttribute('data-lucide', 'eye');
+        }
+    }
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Cambia el rol de registro de forma interactiva y adapta los campos dinámicos
+ * @param {string} role - 'agente' | 'inversionista'
+ */
+function setSignupRole(role) {
+    const typeSelect = document.getElementById('com-signup-type');
+    if (typeSelect) {
+        typeSelect.value = role;
+        typeSelect.dispatchEvent(new Event('change'));
+    }
+    
+    const cardAgente = document.getElementById('role-card-agente');
+    const cardInversionista = document.getElementById('role-card-inversionista');
+    const agentFields = document.getElementById('agent-only-fields');
+    const companyInput = document.getElementById('com-signup-company');
+    const nitInput = document.getElementById('com-signup-nit');
+    
+    if (role === 'agente') {
+        if (cardAgente) cardAgente.classList.add('active');
+        if (cardInversionista) cardInversionista.classList.remove('active');
+        if (agentFields) agentFields.style.display = 'flex';
+        if (companyInput) companyInput.required = true;
+        if (nitInput) nitInput.required = true;
+    } else {
+        if (cardAgente) cardAgente.classList.remove('active');
+        if (cardInversionista) cardInversionista.classList.add('active');
+        if (agentFields) agentFields.style.display = 'none';
+        if (companyInput) {
+            companyInput.required = false;
+            companyInput.value = '';
+        }
+        if (nitInput) {
+            nitInput.required = false;
+            nitInput.value = '';
+        }
     }
 }
 

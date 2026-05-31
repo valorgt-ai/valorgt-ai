@@ -5609,4 +5609,57 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+/* ==========================================================================
+   ESTILOS PREMIUM DE TARJETAS DE SELECCIÓN DE ROL (CYBERPUNK NEON)
+   ========================================================================== */
+.signup-role-card {
+    flex: 1;
+    padding: 14px 10px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(8, 6, 12, 0.72) !important;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-sizing: border-box !important;
+}
+
+.signup-role-card:hover {
+    border-color: rgba(0, 240, 255, 0.3) !important;
+    background: rgba(0, 240, 255, 0.03) !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.1) !important;
+}
+
+.signup-role-card.active {
+    border-color: var(--cyan) !important;
+    background: rgba(0, 240, 255, 0.08) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.15) !important;
+}
+
+.signup-role-card.active i {
+    color: var(--cyan) !important;
+}
+
+.signup-role-card.active span {
+    color: #fff !important;
+}
+
+.signup-role-card span:nth-child(2) {
+    font-size: 0.78rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.signup-role-card span:nth-child(3) {
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
+
+
 

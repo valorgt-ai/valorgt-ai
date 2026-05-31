@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=2.8">
+    <link rel="stylesheet" href="styles.css?v=2.9">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -65,7 +65,7 @@
                 </button>
                 <button id="nav-btn-commercial" class="nav-item" onclick="switchView('commercial')">
                     <i data-lucide="briefcase"></i>
-                    <span>Gestión Comercial</span>
+                    <span>Área de Ingreso</span>
                 </button>
                 <button id="nav-btn-disclaimer" class="nav-item" onclick="switchView('disclaimer')">
                     <i data-lucide="scale"></i>
@@ -1453,9 +1453,14 @@
                                     <label for="com-login-user">Usuario / Email Corporativo</label>
                                     <input type="email" id="com-login-user" placeholder="agente@valorgt.com" required style="padding: 10px; font-size: 0.8rem;">
                                 </div>
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; position: relative;">
                                     <label for="com-login-pass">Clave de Encriptación</label>
-                                    <input type="password" id="com-login-pass" placeholder="••••••••" required style="padding: 10px; font-size: 0.8rem;">
+                                    <div style="position: relative; width: 100%;">
+                                        <input type="password" id="com-login-pass" placeholder="••••••••" required style="padding: 10px 35px 10px 10px; font-size: 0.8rem; width: 100%; box-sizing: border-box;">
+                                        <button type="button" onclick="togglePasswordVisibility('com-login-pass')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; outline: none;">
+                                            <i data-lucide="eye" id="com-login-pass-eye" style="width: 16px; height: 16px;"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="demo-credentials font-mono" style="border: 1px dashed rgba(0,240,255,0.3); background: rgba(0,240,255,0.05); color: var(--cyan); font-size: 0.65rem; border-radius: 6px; padding: 10px; line-height: 1.4;">
@@ -1475,13 +1480,61 @@
                                     <label for="com-signup-name">Nombre Completo</label>
                                     <input type="text" id="com-signup-name" placeholder="Ej. Carlos Mendoza" required style="padding: 8px; font-size: 0.75rem;">
                                 </div>
+
                                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-type">Perfil de Suscripción / Rol</label>
-                                    <select id="com-signup-type" required style="padding: 8px; font-size: 0.75rem;">
-                                        <option value="agente" selected>Agente Inmobiliario (B2B SaaS)</option>
-                                        <option value="inversionista">Inversionista Inmobiliario (Portafolio IA)</option>
+                                    <label for="com-signup-email">Usuario / Email Corporativo</label>
+                                    <input type="email" id="com-signup-email" placeholder="carlos@multibienes.com" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                    <label for="com-signup-phone">Teléfono de Contacto</label>
+                                    <input type="tel" id="com-signup-phone" placeholder="Ej. 5002-8593" required style="padding: 8px; font-size: 0.75rem;">
+                                </div>
+
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px; position: relative;">
+                                    <label for="com-signup-pass">Clave de Acceso</label>
+                                    <div style="position: relative; width: 100%;">
+                                        <input type="password" id="com-signup-pass" placeholder="••••••••" required style="padding: 8px 35px 8px 8px; font-size: 0.75rem; width: 100%; box-sizing: border-box;">
+                                        <button type="button" onclick="togglePasswordVisibility('com-signup-pass')" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; outline: none;">
+                                            <i data-lucide="eye" id="com-signup-pass-eye" style="width: 16px; height: 16px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- SELECTOR DE PERFIL CON TARJETAS INTERACTIVAS NEÓN -->
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 0.72rem;">Selecciona tu Tipo de Perfil</label>
+                                    <div style="display: flex; gap: 12px; width: 100%; box-sizing: border-box;">
+                                        <div id="role-card-agente" class="signup-role-card active" onclick="setSignupRole('agente')">
+                                            <i data-lucide="briefcase" style="width: 18px; height: 18px; color: var(--cyan);"></i>
+                                            <span>Agente Inmobiliario</span>
+                                            <span>B2B SaaS y listado de propiedades</span>
+                                        </div>
+                                        <div id="role-card-inversionista" class="signup-role-card" onclick="setSignupRole('inversionista')">
+                                            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+                                            <span>Inversionista</span>
+                                            <span>Portafolio Patrimonial y Radar IA</span>
+                                        </div>
+                                    </div>
+                                    <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
+                                    <select id="com-signup-type" style="display: none;">
+                                        <option value="agente" selected>agente</option>
+                                        <option value="inversionista">inversionista</option>
                                     </select>
                                 </div>
+
+                                <!-- SECCIÓN DINÁMICA: CAMPOS EXCLUSIVOS DE AGENTE INMOBILIARIO -->
+                                <div id="agent-only-fields" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                        <label for="com-signup-company">Empresa / Inmobiliaria</label>
+                                        <input type="text" id="com-signup-company" placeholder="Ej. MultiBienes S.A." required style="padding: 8px; font-size: 0.75rem;">
+                                    </div>
+                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                        <label for="com-signup-nit">NIT Comercial</label>
+                                        <input type="text" id="com-signup-nit" placeholder="Ej. 8493021-9" required style="padding: 8px; font-size: 0.75rem;">
+                                    </div>
+                                </div>
+
                                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
                                     <label for="com-signup-plan">Plan de Membresía SaaS</label>
                                     <select id="com-signup-plan" required style="padding: 8px; font-size: 0.75rem;">
@@ -1489,26 +1542,6 @@
                                         <option value="pro" selected>Inmobiliaria Pro (Q240 / mes) - RECOMENDADO</option>
                                         <option value="vip">Inmobiliaria Premium / VIP (Q640 / mes)</option>
                                     </select>
-                                </div>
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-company">Empresa / Inmobiliaria</label>
-                                    <input type="text" id="com-signup-company" placeholder="Ej. MultiBienes S.A." required style="padding: 8px; font-size: 0.75rem;">
-                                </div>
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-nit">NIT Comercial</label>
-                                    <input type="text" id="com-signup-nit" placeholder="Ej. 8493021-9" required style="padding: 8px; font-size: 0.75rem;">
-                                </div>
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-phone">Teléfono de Contacto</label>
-                                    <input type="tel" id="com-signup-phone" placeholder="Ej. 5002-8593" required style="padding: 8px; font-size: 0.75rem;">
-                                </div>
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-email">Usuario / Email Corporativo</label>
-                                    <input type="email" id="com-signup-email" placeholder="carlos@multibienes.com" required style="padding: 8px; font-size: 0.75rem;">
-                                </div>
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-pass">Clave de Acceso</label>
-                                    <input type="password" id="com-signup-pass" placeholder="••••••••" required style="padding: 8px; font-size: 0.75rem;">
                                 </div>
 
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; font-weight: bold; padding: 12px; background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%);">
@@ -3508,7 +3541,7 @@
         </button>
         <button id="mobile-nav-btn-commercial" class="mobile-nav-item" onclick="switchView('commercial')">
             <i data-lucide="briefcase"></i>
-            <span>B2B</span>
+            <span>Ingreso</span>
         </button>
         <button id="mobile-nav-btn-portfolio" class="mobile-nav-item" onclick="switchView('portfolio')">
             <i data-lucide="wallet"></i>
@@ -3655,9 +3688,9 @@
     </div>
 
     <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=2.8"></script>
-    <script src="charts.js?v=2.8"></script>
-    <script src="map.js?v=2.8"></script>
-    <script src="app.js?v=2.8"></script>
+    <script src="mockData.js?v=2.9"></script>
+    <script src="charts.js?v=2.9"></script>
+    <script src="map.js?v=2.9"></script>
+    <script src="app.js?v=2.9"></script>
 </body>
 </html>
