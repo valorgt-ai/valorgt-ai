@@ -743,13 +743,37 @@ function drawLandmarks() {
     mapLandmarks = [];
 
     LANDMARKS_DATABASE.forEach(landmark => {
-        // Asignar colores de baliza e íconos en base al tipo de hito
-        const isAirport = landmark.type === 'airport';
-        const beaconClass = isAirport ? 'beacon-pink' : 'beacon-yellow';
-        const headerClass = isAirport ? 'pink-header' : 'yellow-header';
-        const iconName = isAirport ? 'plane' : 'graduation-cap';
-        const badgeText = isAirport ? 'INFRAESTRUCTURA Y CONECTIVIDAD' : 'DISTRITO ACADÉMICO / ESTUDIANTIL';
-        const themeColor = isAirport ? '#ff2d55' : '#ffd60a';
+        // Estructura de mapeo modular y limpia para la identidad visual de los hitos
+        const typeConfig = {
+            airport: {
+                beaconClass: 'beacon-pink',
+                headerClass: 'pink-header',
+                iconName: 'plane',
+                badgeText: 'INFRAESTRUCTURA Y CONECTIVIDAD',
+                themeColor: '#ff2d55'
+            },
+            temple: {
+                beaconClass: 'beacon-cyan',
+                headerClass: 'cyan-header',
+                iconName: 'home',
+                badgeText: 'CENTRO METROPOLITANO / HITOS',
+                themeColor: 'var(--cyan)'
+            },
+            default: {
+                beaconClass: 'beacon-yellow',
+                headerClass: 'yellow-header',
+                iconName: 'graduation-cap',
+                badgeText: 'DISTRITO ACADÉMICO / ESTUDIANTIL',
+                themeColor: '#ffd60a'
+            }
+        };
+
+        const config = typeConfig[landmark.type] || typeConfig.default;
+        const beaconClass = config.beaconClass;
+        const headerClass = config.headerClass;
+        const iconName = config.iconName;
+        const badgeText = config.badgeText;
+        const themeColor = config.themeColor;
 
         // Marcador de baliza interactiva (HTML personalizado con efecto pulso CSS)
         const landmarkIcon = L.divIcon({
@@ -768,8 +792,9 @@ function drawLandmarks() {
         mapLandmarks.push(landmarkMarker);
 
         // Popup con Estilo Cyber-fintech para el hito
+        const borderCol = landmark.type === 'temple' ? 'rgba(0, 240, 255, 0.35)' : (landmark.type === 'airport' ? 'rgba(255, 45, 85, 0.35)' : 'rgba(255, 214, 10, 0.35)');
         const popupContent = `
-            <div class="map-popup-header ${headerClass}" style="${!isAirport ? 'border-bottom: 1px solid rgba(255, 214, 10, 0.4);' : ''}">
+            <div class="map-popup-header ${headerClass}" style="border-bottom: 1px solid ${borderCol};">
                 <h4 style="color: ${themeColor}; display: flex; align-items: center; gap: 4px; margin: 0; font-size: 1.2rem; font-weight: bold;">
                     <i data-lucide="${iconName}" class="tiny-icon inline"></i> ${landmark.name}
                 </h4>

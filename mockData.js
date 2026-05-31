@@ -929,6 +929,15 @@ const LANDMARKS_DATABASE = [
         lng: -90.4180,
         plusvaliaImpact: "Ancla académica y ecológica del sector oriente. Su traslado a Fraijanes actuó como un potente imán habitacional, estimulando el desarrollo de condominios residenciales de alto perfil, residencias de estudiantes y plazas comerciales de conveniencia.",
         details: "Prestigioso campus privado ubicado en Fraijanes, diseñado con altos criterios ecológicos y eficiencia energética."
+    },
+    {
+        name: "Mega-Templo Casa de Dios",
+        type: "temple",
+        zone: "Fraijanes / Km 22",
+        lat: 14.4752,
+        lng: -90.4357,
+        plusvaliaImpact: "Hito de congregación masiva. Dinamiza intensamente el tráfico de fin de semana y cataliza el desarrollo de residenciales horizontales cerrados premium y plazas de servicio a lo largo de la Carretera a El Salvador (Km 18-Km 25).",
+        details: "Uno de los templos cristianos más grandes de Latinoamérica, punto de referencia geográfico y de influencia socioeconómica en el sector oriente."
     }
 ];
 
