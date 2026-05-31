@@ -63,6 +63,7 @@ let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas e
 let coverImageIndex = 0; // Índice de la imagen de portada principal seleccionada
 let baseAdPriceGTQ = parseFloat(localStorage.getItem('valorgt_base_ad_price') || '5000'); // Tarifa base estándar de pauta comercial calibrada por el admin
 let plansVideoUrl = localStorage.getItem('valorgt_plans_video_url') || 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // URL del video de planes premium calibrada por el admin
+let welcomeVideoUrl = localStorage.getItem('valorgt_welcome_video_url') || 'https://www.youtube.com/embed/wIwASoMVtNs'; // URL del video de bienvenida principal calibrada por el admin
 let promoBannerMessage = localStorage.getItem('valorgt_promo_message') || '✨ ¡Oportunidad Prime! Descuento especial del 15% en pautas comerciales contratadas esta semana. Destaca tu propiedad ahora.';
 let isPromoBannerActive = localStorage.getItem('valorgt_promo_active') !== 'false';
 
@@ -124,6 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar Banner Promocional
     initPromoBanner();
+
+    // Lanzar Lightbox de Bienvenida automáticamente al ingresar (con 1.5s de retardo)
+    setTimeout(() => {
+        openWelcomeVideoModal();
+    }, 1500);
 
     // Sincronizar datos de Supabase si está activo
     if (isSupabaseActive) {
@@ -6396,6 +6402,12 @@ function initAdminView() {
         videoInput.value = plansVideoUrl;
     }
 
+    // Cargar URL actual de video de bienvenida en el input
+    const welcomeVideoInput = document.getElementById('admin-welcome-video-url');
+    if (welcomeVideoInput) {
+        welcomeVideoInput.value = welcomeVideoUrl;
+    }
+
     // Cargar mensaje y estado del banner promocional en los controles de administración
     const promoInput = document.getElementById('admin-promo-input');
     if (promoInput) {
@@ -8499,6 +8511,53 @@ function closePremiumPlansVideoModal() {
         modal.classList.remove('active');
     }
 }
+
+/**
+ * Control del modal multimedia de Bienvenida (Lightbox)
+ */
+function openWelcomeVideoModal() {
+    const modal = document.getElementById('welcome-video-modal');
+    const iframe = document.getElementById('welcome-youtube-iframe');
+    if (modal && iframe) {
+        // Cargar video con autoplay para una experiencia interactiva fluida
+        iframe.src = `${welcomeVideoUrl}?autoplay=1`;
+        modal.classList.add('active');
+        
+        // Inicializar iconos Lucide por si acaso
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+}
+
+function closeWelcomeVideoModal() {
+    const modal = document.getElementById('welcome-video-modal');
+    const iframe = document.getElementById('welcome-youtube-iframe');
+    if (modal && iframe) {
+        iframe.src = '';
+        modal.classList.remove('active');
+    }
+}
+
+/**
+ * Permite al administrador calibrar persistentemente la URL del video de bienvenida principal
+ */
+function saveAdminWelcomeVideoUrl() {
+    const input = document.getElementById('admin-welcome-video-url');
+    if (input) {
+        const val = input.value.trim();
+        const embedUrl = getYouTubeEmbedUrl(val);
+        welcomeVideoUrl = embedUrl;
+        localStorage.setItem('valorgt_welcome_video_url', embedUrl);
+        
+        // Actualizar UI
+        input.value = embedUrl;
+        
+        alert(`✔️ Video de bienvenida principal configurado con éxito.`);
+        logAdminSecurityActivity(`Calibración del Core: URL de video de bienvenida configurada en ${embedUrl}`);
+    }
+}
+
 
 /**
  * Permite al administrador calibrar persistentemente la URL del video de planes premium
