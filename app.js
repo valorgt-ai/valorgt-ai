@@ -8751,6 +8751,8 @@ function setSignupRole(role) {
     const agentFields = document.getElementById('agent-only-fields');
     const companyInput = document.getElementById('com-signup-company');
     const nitInput = document.getElementById('com-signup-nit');
+    const agentPlans = document.getElementById('agent-plans-container');
+    const inversionistaPlans = document.getElementById('inversionista-plans-container');
     
     if (role === 'agente') {
         if (cardAgente) cardAgente.classList.add('active');
@@ -8758,6 +8760,10 @@ function setSignupRole(role) {
         if (agentFields) agentFields.style.display = 'flex';
         if (companyInput) companyInput.required = true;
         if (nitInput) nitInput.required = true;
+        
+        if (agentPlans) agentPlans.style.display = 'flex';
+        if (inversionistaPlans) inversionistaPlans.style.display = 'none';
+        selectSignupPlanCard('pro'); // Plan Pro por defecto
     } else {
         if (cardAgente) cardAgente.classList.remove('active');
         if (cardInversionista) cardInversionista.classList.add('active');
@@ -8770,7 +8776,36 @@ function setSignupRole(role) {
             nitInput.required = false;
             nitInput.value = '';
         }
+        
+        if (agentPlans) agentPlans.style.display = 'none';
+        if (inversionistaPlans) inversionistaPlans.style.display = 'flex';
+        selectSignupPlanCard('premium'); // Plan Inversionista Premium por defecto
     }
+}
+
+/**
+ * Selecciona una tarjeta de plan de forma interactiva y sincroniza el select oculto
+ * @param {string} planKey - 'basico' | 'pro' | 'vip' | 'premium'
+ */
+function selectSignupPlanCard(planKey) {
+    const planSelect = document.getElementById('com-signup-plan');
+    if (planSelect) {
+        planSelect.value = planKey;
+        planSelect.dispatchEvent(new Event('change'));
+    }
+    
+    // Lista de todas las tarjetas de plan visuales
+    const cards = ['basico', 'pro', 'vip', 'premium'];
+    cards.forEach(key => {
+        const card = document.getElementById(`plan-card-signup-${key}`);
+        if (card) {
+            if (key === planKey) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        }
+    });
 }
 
 

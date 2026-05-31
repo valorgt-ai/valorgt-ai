@@ -5661,5 +5661,55 @@ input[type="range"]::-webkit-slider-thumb:hover {
     line-height: 1.2;
 }
 
+/* ==========================================================================
+   ESTILOS PREMIUM DE TARJETAS DE PLANES EN EL REGISTRO (FINTECH CYBERPUNK)
+   ========================================================================== */
+.signup-plan-card {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(8, 6, 12, 0.72) !important;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-sizing: border-box !important;
+}
+
+.signup-plan-card:hover {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05) !important;
+}
+
+.signup-plan-card.active {
+    border-color: var(--cyan) !important;
+    background: rgba(0, 240, 255, 0.06) !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.1) !important;
+}
+
+.signup-plan-card.active span {
+    color: #fff !important;
+}
+
+.signup-plan-card .plan-card-badge {
+    font-size: 0.55rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.signup-plan-card .plan-card-price {
+    font-family: var(--font-mono);
+}
+
 
 

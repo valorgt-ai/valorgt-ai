@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=2.9">
+    <link rel="stylesheet" href="styles.css?v=3.0">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -1476,6 +1476,28 @@
 
                             <!-- FORMULARIO 2: REGISTRO DE NUEVO USUARIO -->
                             <form id="commercial-signup-form" class="commercial-form hidden" onsubmit="handleRegistrationFormSubmit(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                                <!-- SELECTOR DE PERFIL CON TARJETAS INTERACTIVAS NEÓN (AHORA AL INICIO) -->
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 0.72rem;">Selecciona tu Tipo de Perfil</label>
+                                    <div style="display: flex; gap: 12px; width: 100%; box-sizing: border-box;">
+                                        <div id="role-card-agente" class="signup-role-card active" onclick="setSignupRole('agente')">
+                                            <i data-lucide="briefcase" style="width: 18px; height: 18px; color: var(--cyan);"></i>
+                                            <span>Agente Inmobiliario</span>
+                                            <span>B2B SaaS y listado de propiedades</span>
+                                        </div>
+                                        <div id="role-card-inversionista" class="signup-role-card" onclick="setSignupRole('inversionista')">
+                                            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+                                            <span>Inversionista</span>
+                                            <span>Portafolio Patrimonial y Radar IA</span>
+                                        </div>
+                                    </div>
+                                    <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
+                                    <select id="com-signup-type" style="display: none;">
+                                        <option value="agente" selected>agente</option>
+                                        <option value="inversionista">inversionista</option>
+                                    </select>
+                                </div>
+
                                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
                                     <label for="com-signup-name">Nombre Completo</label>
                                     <input type="text" id="com-signup-name" placeholder="Ej. Carlos Mendoza" required style="padding: 8px; font-size: 0.75rem;">
@@ -1501,28 +1523,6 @@
                                     </div>
                                 </div>
 
-                                <!-- SELECTOR DE PERFIL CON TARJETAS INTERACTIVAS NEÓN -->
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
-                                    <label style="font-size: 0.72rem;">Selecciona tu Tipo de Perfil</label>
-                                    <div style="display: flex; gap: 12px; width: 100%; box-sizing: border-box;">
-                                        <div id="role-card-agente" class="signup-role-card active" onclick="setSignupRole('agente')">
-                                            <i data-lucide="briefcase" style="width: 18px; height: 18px; color: var(--cyan);"></i>
-                                            <span>Agente Inmobiliario</span>
-                                            <span>B2B SaaS y listado de propiedades</span>
-                                        </div>
-                                        <div id="role-card-inversionista" class="signup-role-card" onclick="setSignupRole('inversionista')">
-                                            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
-                                            <span>Inversionista</span>
-                                            <span>Portafolio Patrimonial y Radar IA</span>
-                                        </div>
-                                    </div>
-                                    <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
-                                    <select id="com-signup-type" style="display: none;">
-                                        <option value="agente" selected>agente</option>
-                                        <option value="inversionista">inversionista</option>
-                                    </select>
-                                </div>
-
                                 <!-- SECCIÓN DINÁMICA: CAMPOS EXCLUSIVOS DE AGENTE INMOBILIARIO -->
                                 <div id="agent-only-fields" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
                                     <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
@@ -1535,14 +1535,50 @@
                                     </div>
                                 </div>
 
-                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                    <label for="com-signup-plan">Plan de Membresía SaaS</label>
-                                    <select id="com-signup-plan" required style="padding: 8px; font-size: 0.75rem;">
-                                        <option value="basico">Agente Individual (Q140 / mes)</option>
-                                        <option value="pro" selected>Inmobiliaria Pro (Q240 / mes) - RECOMENDADO</option>
-                                        <option value="vip">Inmobiliaria Premium / VIP (Q640 / mes)</option>
-                                    </select>
+                                <!-- SECTOR PREMIUM DE TARJETAS DE SELECCIÓN DE PLANES -->
+                                <!-- 1. Contenedor de planes de Agente -->
+                                <div id="agent-plans-container" class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 0.72rem;">Selecciona tu Plan de Membresía</label>
+                                    <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+                                        <div id="plan-card-signup-basico" class="signup-plan-card" onclick="selectSignupPlanCard('basico')">
+                                            <span class="plan-card-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
+                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Individual</span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--neon-blue); margin-top: 4px;">Q140<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                        </div>
+                                        <div id="plan-card-signup-pro" class="signup-plan-card active" onclick="selectSignupPlanCard('pro')">
+                                            <div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>
+                                            <span class="plan-card-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">PRO</span>
+                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Empresa Pro</span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); margin-top: 4px;">Q240<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                        </div>
+                                        <div id="plan-card-signup-vip" class="signup-plan-card" onclick="selectSignupPlanCard('vip')">
+                                            <span class="plan-card-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
+                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Inmobiliaria VIP</span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #bf5af2; margin-top: 4px;">Q640<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- 2. Contenedor de plan de Inversionista -->
+                                <div id="inversionista-plans-container" class="input-group" style="display: none; flex-direction: column; gap: 6px;">
+                                    <label style="font-size: 0.72rem;">Selecciona tu Plan de Membresía</label>
+                                    <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; justify-content: center;">
+                                        <div id="plan-card-signup-premium" class="signup-plan-card active" onclick="selectSignupPlanCard('premium')" style="flex: 1; max-width: 320px;">
+                                            <div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>
+                                            <span class="plan-card-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3);">INVERSIONISTA</span>
+                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Inversionista Premium</span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #ffd700; margin-top: 4px;">Q340<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
+                                <select id="com-signup-plan" style="display: none;">
+                                    <option value="basico">Agente Individual (Q140 / mes)</option>
+                                    <option value="pro" selected>Inmobiliaria Pro (Q240 / mes) - RECOMENDADO</option>
+                                    <option value="vip">Inmobiliaria Premium / VIP (Q640 / mes)</option>
+                                    <option value="premium">Inversionista Premium (Q340 / mes)</option>
+                                </select>
 
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; font-weight: bold; padding: 12px; background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%);">
                                     <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> REGISTRARSE Y CONTINUAR
@@ -3688,9 +3724,9 @@
     </div>
 
     <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=2.9"></script>
-    <script src="charts.js?v=2.9"></script>
-    <script src="map.js?v=2.9"></script>
-    <script src="app.js?v=2.9"></script>
+    <script src="mockData.js?v=3.0"></script>
+    <script src="charts.js?v=3.0"></script>
+    <script src="map.js?v=3.0"></script>
+    <script src="app.js?v=3.0"></script>
 </body>
 </html>
