@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=3.1">
+    <link rel="stylesheet" href="styles.css?v=3.2">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -1580,7 +1580,7 @@
                                     <option value="premium">Inversionista Premium (Q340 / mes)</option>
                                 </select>
 
-                                <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; font-weight: bold; padding: 12px; background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%);">
+                                <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">
                                     <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> REGISTRARSE Y CONTINUAR
                                 </button>
                             </form>
@@ -2654,7 +2654,7 @@
                             </div>
 
                             <!-- Botón de Video Explicativo -->
-                            <button type="button" class="btn-commercial-purple" onclick="playPremiumPlansVideoModal()" style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; cursor: pointer; font-family: var(--font-mono); background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%); border: none; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.4); box-shadow: 0 0 15px rgba(191, 90, 242, 0.35); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); min-width: 210px; justify-content: center;">
+                            <button type="button" class="btn-commercial-purple" onclick="playPremiumPlansVideoModal()" style="display: flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 30px; font-size: 0.8rem; font-weight: bold; cursor: pointer; font-family: var(--font-mono); background: rgba(191, 90, 242, 0.1); border: 1px solid #bf5af2; color: #bf5af2; text-shadow: 0 0 5px rgba(191, 90, 242, 0.3); box-shadow: 0 0 15px rgba(191, 90, 242, 0.35); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); min-width: 210px; justify-content: center;">
                                 <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i>
                                 <span>VER VIDEO EXPLICATIVO</span>
                             </button>
@@ -3278,7 +3278,7 @@
                                     <label for="admin-plans-video-url" style="font-size: 0.72rem; color: var(--text-secondary);">URL de Video de YouTube (Explicativo)</label>
                                     <div style="display: flex; flex-direction: column; gap: 8px;">
                                         <input type="url" id="admin-plans-video-url" placeholder="Ej. https://www.youtube.com/watch?v=..." style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(191, 90, 242, 0.3); color: #fff; border-radius: 6px; width: 100%; font-family: var(--font-mono); outline: none;">
-                                        <button onclick="saveAdminPlansVideoUrl()" class="btn-commercial-purple" style="width: 100%; padding: 10px 15px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; background: linear-gradient(135deg, #bf5af2 0%, #00f0ff 100%); border: none; color: #fff;">
+                                        <button onclick="saveAdminPlansVideoUrl()" class="btn-commercial-purple" style="width: 100%; padding: 10px 15px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
                                             <i data-lucide="save" style="width: 14px; height: 14px;"></i> GUARDAR
                                         </button>
                                     </div>
@@ -3724,9 +3724,9 @@
     </div>
 
     <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=3.1"></script>
-    <script src="charts.js?v=3.1"></script>
-    <script src="map.js?v=3.1"></script>
-    <script src="app.js?v=3.1"></script>
+    <script src="mockData.js?v=3.2"></script>
+    <script src="charts.js?v=3.2"></script>
+    <script src="map.js?v=3.2"></script>
+    <script src="app.js?v=3.2"></script>
 </body>
 </html>
