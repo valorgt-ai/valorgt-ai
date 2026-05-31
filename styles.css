@@ -3097,44 +3097,53 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .btn-commercial-emerald {
-    background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%);
-    color: #000;
+    background: rgba(0, 255, 128, 0.1) !important;
+    border: 1px solid var(--neon-emerald) !important;
+    color: var(--neon-emerald) !important;
+    font-weight: bold !important;
+    text-shadow: 0 0 5px rgba(0, 255, 128, 0.3) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.15) !important;
 }
 
 .btn-commercial-cyan {
-    background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%) !important;
-    color: #ffffff !important;
+    background: rgba(0, 240, 255, 0.1) !important;
+    border: 1px solid var(--cyan) !important;
+    color: var(--cyan) !important;
     font-weight: 800 !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
-    border: 1px solid rgba(0, 240, 255, 0.35) !important;
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3) !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.15) !important;
 }
 
 .btn-commercial-gold {
-    background: linear-gradient(135deg, #ffd700 0%, #ff9f0a 100%) !important;
-    color: #000000 !important;
-    font-weight: 900 !important;
+    background: rgba(255, 215, 0, 0.1) !important;
+    border: 1px solid #ffd700 !important;
+    color: #ffd700 !important;
+    font-weight: bold !important;
     font-family: var(--font-mono) !important;
-    border: 1px solid rgba(255, 215, 0, 0.5) !important;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
-    text-shadow: none !important;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3) !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.15) !important;
     transition: all 0.3s ease !important;
 }
 
 .btn-commercial-emerald:hover {
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.45);
-    filter: brightness(1.1);
+    background: rgba(0, 255, 128, 0.25) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(0, 255, 128, 0.45) !important;
+    transform: translateY(-1px) !important;
 }
 
 .btn-commercial-cyan:hover {
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5) !important;
-    filter: brightness(1.1);
+    background: rgba(0, 240, 255, 0.25) !important;
     color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.45) !important;
+    transform: translateY(-1px) !important;
 }
 
 .btn-commercial-gold:hover {
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7) !important;
-    transform: translateY(-2px) !important;
-    filter: brightness(1.1) !important;
+    background: rgba(255, 215, 0, 0.25) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.45) !important;
+    transform: translateY(-1px) !important;
 }
 
 .btn-commercial-purple {
