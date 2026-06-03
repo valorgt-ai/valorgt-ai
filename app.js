@@ -4851,7 +4851,7 @@ async function processB2bTransferPayment(event) {
             // 2. Intentar guardar en Supabase 'payment_requests'
             if (isSupabaseActive && supabaseClient) {
                 try {
-                    supabaseClient.from('payment_requests').insert([
+                    const { error: dbErr } = await supabaseClient.from('payment_requests').insert([
                         {
                             id: request.id,
                             client_id: request.clientId,
@@ -4866,13 +4866,14 @@ async function processB2bTransferPayment(event) {
                             status: request.status,
                             timestamp: request.timestamp
                         }
-                    ]).then(() => {
+                    ]);
+                    if (dbErr) {
+                        console.error("Error al guardar solicitud en Supabase payment_requests:", dbErr);
+                    } else {
                         console.log("Solicitud de pago registrada exitosamente en Supabase.");
-                    }).catch(dbErr => {
-                        console.warn("Advertencia al guardar solicitud en Supabase payment_requests:", dbErr);
-                    });
+                    }
                 } catch (supabaseErr) {
-                    console.error("Fallo sincrónico al llamar a Supabase insert:", supabaseErr);
+                    console.error("Fallo de red al insertar en Supabase payment_requests:", supabaseErr);
                 }
             }
             
