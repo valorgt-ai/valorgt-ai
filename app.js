@@ -4728,19 +4728,19 @@ function updateDynamicB2bPaymentTotals() {
     else if (months === 6) discount = 0.05;
     else if (months === 12) discount = 0.10;
     
-    let baseUSD = 0;
-    if (pendingPaymentTarget === 'basico') baseUSD = 18;
-    else if (pendingPaymentTarget === 'pro') baseUSD = 31;
-    else if (pendingPaymentTarget === 'vip') baseUSD = 82;
-    else if (pendingPaymentTarget === 'premium') baseUSD = 43.70;
+    let baseGTQ = 0;
+    if (pendingPaymentTarget === 'basico') baseGTQ = 140;
+    else if (pendingPaymentTarget === 'pro') baseGTQ = 240;
+    else if (pendingPaymentTarget === 'vip') baseGTQ = 640;
+    else if (pendingPaymentTarget === 'premium') baseGTQ = 340;
     else if (pendingPaymentType === 'ad') {
-        baseUSD = 58;
+        baseGTQ = 450;
         durationSelect.disabled = true;
     }
     
-    const subtotalUSD = baseUSD * months;
-    const totalUSD = subtotalUSD * (1 - discount);
-    const totalGTQ = totalUSD * exchangeRate;
+    const subtotalGTQ = baseGTQ * months;
+    const totalGTQ = subtotalGTQ * (1 - discount);
+    const totalUSD = totalGTQ / exchangeRate;
     
     const durationLabel = document.getElementById('payment-duration-label');
     const discountLabel = document.getElementById('payment-discount-label');
@@ -4805,16 +4805,16 @@ async function processB2bTransferPayment(event) {
             const pTarget = pendingPaymentTarget || 'basico';
             const pType = pendingPaymentType || 'subscription';
             
-            let baseUSD = 0;
-            if (pTarget === 'basico') baseUSD = 18;
-            else if (pTarget === 'pro') baseUSD = 31;
-            else if (pTarget === 'vip') baseUSD = 82;
-            else if (pTarget === 'premium') baseUSD = 43.70;
-            else if (pType === 'ad') baseUSD = 58;
-            else baseUSD = 31; // fallback
+            let baseGTQ = 0;
+            if (pTarget === 'basico') baseGTQ = 140;
+            else if (pTarget === 'pro') baseGTQ = 240;
+            else if (pTarget === 'vip') baseGTQ = 640;
+            else if (pTarget === 'premium') baseGTQ = 340;
+            else if (pType === 'ad') baseGTQ = 450;
+            else baseGTQ = 240; // fallback (Pro)
             
-            const totalUSD = (baseUSD * months) * (1 - discount);
-            const totalGTQ = totalUSD * exchangeRate;
+            const totalGTQ = (baseGTQ * months) * (1 - discount);
+            const totalUSD = totalGTQ / exchangeRate;
             const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
             
             let conceptText = "";
@@ -5965,7 +5965,13 @@ async function handleRegistrationFormSubmit(event) {
  */
 function selectSignupPlan(planKey, priceUSD) {
     selectedSignupPlanKey = planKey;
-    selectedSignupPlanPrice = priceUSD;
+    
+    let priceGTQ = 240; // Default Pro
+    if (planKey === 'basico') priceGTQ = 140;
+    else if (planKey === 'vip') priceGTQ = 640;
+    else if (planKey === 'premium') priceGTQ = 340;
+    
+    selectedSignupPlanPrice = priceGTQ / exchangeRate;
 
     // Actualizar clases activas en las tarjetas de plan
     ['basico', 'pro', 'vip', 'premium'].forEach(p => {
@@ -5983,15 +5989,21 @@ function selectSignupPlan(planKey, priceUSD) {
         }
     });
 
-    // Calcular conversión y símbolo
-    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-    const priceConverted = priceUSD * conversion;
-
     let planName = "Suscripción Inmobiliaria Pro";
     if (planKey === 'basico') planName = "Suscripción Agente Individual";
     if (planKey === 'vip') planName = "Suscripción Inmobiliaria Premium";
     if (planKey === 'premium') planName = "Suscripción Inversionista Premium";
+
+    // Calcular conversión y símbolo basado en GTQ dominante
+    let priceConverted = 0;
+    let currencySym = '';
+    if (activeCurrency === 'GTQ') {
+        priceConverted = priceGTQ;
+        currencySym = 'Q';
+    } else {
+        priceConverted = priceGTQ / exchangeRate;
+        currencySym = '$';
+    }
 
     // Actualizar labels
     document.getElementById('signup-payment-concept-lbl').innerText = planName;
@@ -6487,11 +6499,13 @@ function renderAdminDashboard() {
         totalSubscribers++;
         
         // Calcular cobro total del plan
-        let planPriceUSD = 0;
-        if (client.plan.toLowerCase() === 'vip') planPriceUSD = 82;
-        else if (client.plan.toLowerCase() === 'premium') planPriceUSD = 43.70;
-        else if (client.plan.toLowerCase() === 'pro') planPriceUSD = 31;
-        else if (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') planPriceUSD = 18;
+        let planPriceGTQ = 0;
+        if (client.plan.toLowerCase() === 'vip') planPriceGTQ = 640;
+        else if (client.plan.toLowerCase() === 'premium') planPriceGTQ = 340;
+        else if (client.plan.toLowerCase() === 'pro') planPriceGTQ = 240;
+        else if (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') planPriceGTQ = 140;
+        
+        let planPriceUSD = planPriceGTQ / exchangeRate;
         
         // Sumar facturaciones por pauta publicitaria (si las tiene)
         let totalClientAdBillingUSD = 0;
@@ -6503,7 +6517,9 @@ function renderAdminDashboard() {
         const clientTotalUSD = planPriceUSD + totalClientAdBillingUSD;
         totalRevenueUSD += clientTotalUSD;
 
-        const convertedTotal = clientTotalUSD * conversion;
+        const convertedTotal = (activeCurrency === 'GTQ') 
+            ? (planPriceGTQ + (totalClientAdBillingUSD * exchangeRate)) 
+            : (planPriceUSD + totalClientAdBillingUSD);
         const planClass = (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') ? 'basico' : client.plan.toLowerCase();
         
         const isSuspended = client.status === 'Suspendido';
@@ -8498,10 +8514,12 @@ function selectPublicPlanForSignup(planKey) {
     if (!isCommercialAuthenticated) {
         switchLoginTab('signup');
         
-        let priceUSD = 31; // Default Pro
-        if (planKey === 'basico') priceUSD = 18;
-        if (planKey === 'vip') priceUSD = 82;
-        if (planKey === 'premium') priceUSD = 43.70;
+        let priceGTQ = 240; // Default Pro
+        if (planKey === 'basico') priceGTQ = 140;
+        else if (planKey === 'vip') priceGTQ = 640;
+        else if (planKey === 'premium') priceGTQ = 340;
+        
+        let priceUSD = priceGTQ / exchangeRate;
         
         // Sincronizar select de rol y gatillar evento de actualización
         const roleSelect = document.getElementById('com-signup-type');
