@@ -5843,10 +5843,17 @@ async function handleRegistrationFormSubmit(event) {
     }
 
     // Verificar si el usuario ya está registrado
-    const existing = b2bClients.find(c => c.email.toLowerCase() === email);
-    if (existing || email === 'agente@valorgt.com') {
-        alert("⚠️ REGISTRO DENEGADO: El correo electrónico ingresado ya está asociado a una cuenta activa.");
-        return;
+    if (!isSupabaseActive) {
+        const existing = b2bClients.find(c => c.email.toLowerCase() === email);
+        if (existing || email === 'agente@valorgt.com') {
+            alert("⚠️ REGISTRO DENEGADO: El correo electrónico ingresado ya está asociado a una cuenta activa.");
+            return;
+        }
+    } else {
+        if (email === 'agente@valorgt.com') {
+            alert("⚠️ REGISTRO DENEGADO: El correo electrónico ingresado ya está asociado a una cuenta activa.");
+            return;
+        }
     }
 
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
