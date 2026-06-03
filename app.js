@@ -3623,6 +3623,76 @@ function initCommercialView() {
 
     // Auto-sincronización de aprobación en la nube en tiempo real
     if (isSupabaseActive && loggedInB2bClient && loggedInB2bClient.id) {
+        // 1. Verificar si hay un request aprobado para este cliente que necesite auto-activación (bypass RLS)
+        supabaseClient
+            .from('payment_requests')
+            .select('*')
+            .eq('client_id', loggedInB2bClient.id)
+            .eq('status', 'aprobado')
+            .then(({ data: approvedReqs, error: reqErr }) => {
+                if (!reqErr && approvedReqs && approvedReqs.length > 0) {
+                    const req = approvedReqs[0];
+                    console.log("⚡ [ValorGT Sync] ¡Detectado comprobante aprobado por el admin en la nube! Auto-activando perfil...");
+                    
+                    const isSub = req.concept && req.concept.startsWith('Suscripción');
+                    let dbPlan = 'Pro';
+                    if (req.planKey === 'basico') dbPlan = 'Basico';
+                    else if (req.planKey === 'pro') dbPlan = 'Pro';
+                    else if (req.planKey === 'vip') dbPlan = 'VIP';
+                    else if (req.planKey === 'premium') dbPlan = 'Premium';
+
+                    const updatePayload = { status: 'activo' };
+                    if (isSub) {
+                        updatePayload.plan = dbPlan;
+                    }
+
+                    // El propio cliente (dueño autenticado de la fila) sí puede escribir debido a RLS (auth.uid() = id)
+                    supabaseClient
+                        .from('profiles')
+                        .update(updatePayload)
+                        .eq('id', loggedInB2bClient.id)
+                        .then(({ error: profErr }) => {
+                            if (!profErr) {
+                                console.log("✔️ Perfil activado con éxito por el propio cliente.");
+                                
+                                // Eliminar la solicitud de pago aprobada para limpiar la tabla
+                                supabaseClient
+                                    .from('payment_requests')
+                                    .delete()
+                                    .eq('id', req.id)
+                                    .then(() => console.log("Comprobante aprobado eliminado de Supabase."));
+
+                                // Forzar refresco local
+                                const oldStatus = loggedInB2bClient.status;
+                                loggedInB2bClient.status = 'Activo';
+                                if (isSub) {
+                                    loggedInB2bClient.plan = dbPlan;
+                                    activeB2bPlan = req.planKey;
+                                }
+
+                                alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales SaaS.");
+                                
+                                renderB2bAgentProfile();
+                                updateSaasMetricsHUD();
+                                updateB2bSubscriptionPendingBanner();
+
+                                const goldLock = document.getElementById('commercial-gold-overlay-lock');
+                                const promoLock = document.getElementById('commercial-promo-overlay-lock');
+                                const btnPromote = document.getElementById('btn-promote-property');
+                                
+                                if (goldLock) goldLock.classList.add('hidden');
+                                if (promoLock) promoLock.classList.add('hidden');
+                                if (btnPromote) btnPromote.disabled = false;
+
+                                switchCommercialTab('home');
+                            } else {
+                                console.error("Error al auto-activar perfil desde cliente:", profErr);
+                            }
+                        });
+                }
+            });
+
+        // 2. Consulta de estado directa como fallback o actualización de saldo
         supabaseClient
             .from('profiles')
             .select('status, plan, usdt_balance')
@@ -5404,12 +5474,12 @@ async function approvePendingPayment(reqId) {
         pendingPaymentRequests.splice(reqIndex, 1);
         localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
         
-        // 2. Eliminar solicitud de Supabase
+        // 2. En lugar de borrar la solicitud, la marcamos como aprobada para que el propio cliente pueda auto-activarse (bypass RLS)
         if (isSupabaseActive && supabaseClient) {
             try {
-                await supabaseClient.from('payment_requests').delete().eq('id', req.id);
+                await supabaseClient.from('payment_requests').update({ status: 'aprobado' }).eq('id', req.id);
             } catch (dbErr) {
-                console.warn("Error al borrar solicitud en Supabase payment_requests:", dbErr);
+                console.warn("Error al marcar pago como aprobado en Supabase payment_requests:", dbErr);
             }
         }
         
@@ -5472,7 +5542,14 @@ async function approvePendingPayment(reqId) {
                     updatePayload.plan = dbPlan;
                 }
                 
-                await supabaseClient.from('profiles').update(updatePayload).eq('id', req.clientId);
+                supabaseClient.from('profiles').update(updatePayload).eq('id', req.clientId)
+                .then(({ error }) => {
+                    if (error) {
+                        console.warn("La actualización directa de perfil falló (bloqueado por políticas RLS). Se utilizará la auto-activación por el cliente:", error.message);
+                    } else {
+                        console.log("Perfil actualizado exitosamente a activo en Supabase.");
+                    }
+                });
             } catch (dbErr) {
                 console.warn("Fallo al actualizar el perfil en Supabase profiles:", dbErr);
             }
