@@ -176,15 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (selectedFiles.length === 0) return;
             
-            // Si ya se alcanzó el límite máximo de 6 fotos, denegar
-            if (uploadedBase64Images.length >= 6) {
-                alert("⚠️ LÍMITE DE IMÁGENES ALCANZADO: Ya has cargado el máximo permitido de 6 fotos locales por propiedad.");
+            // Si ya se alcanzó el límite máximo de 10 fotos, denegar
+            if (uploadedBase64Images.length >= 10) {
+                alert("⚠️ LÍMITE DE IMÁGENES ALCANZADO: Ya has cargado el máximo permitido de 10 fotos locales por propiedad.");
                 pubFileInput.value = ''; // Resetear input
                 return;
             }
             
             // Calcular espacios restantes
-            const remainingSlots = 6 - uploadedBase64Images.length;
+            const remainingSlots = 10 - uploadedBase64Images.length;
             const filesToProcess = selectedFiles.slice(0, remainingSlots);
             
             const readPromises = filesToProcess.map(file => {
@@ -382,7 +382,7 @@ function removePreviewImage(index) {
         }
     } else {
         if (label) {
-            label.innerText = 'O Subir Fotos Locales (Hasta 6 desde tu PC)';
+            label.innerText = 'O Subir Fotos Locales (Hasta 10 desde tu PC)';
         }
         if (fileInput) {
             fileInput.style.border = '1px dashed var(--cyan)';
@@ -4449,7 +4449,7 @@ async function publishAgentProperty(event) {
     }
     const label = document.querySelector('label[for="pub-file-input"]');
     if (label) {
-        label.innerText = 'O Subir Fotos Locales (Hasta 6 desde tu PC)';
+        label.innerText = 'O Subir Fotos Locales (Hasta 10 desde tu PC)';
     }
     const descInput = document.getElementById('pub-description');
     if (descInput) {

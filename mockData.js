@@ -264,6 +264,238 @@ const ZONES_DATABASE = {
             "Mantenimiento costoso debido a la edad y naturaleza estructural de las propiedades coloniales."
         ],
         recommendation: "ALQUILAR (AIRBNB). El turismo internacional e interno empuja tarifas por noche sumamente rentables. Estilo colonial bien mantenido con conectividad Wi-Fi de alta velocidad es un activo generador de cashflow invaluable."
+    },
+    carretera_high: {
+        name: "Carretera a El Salvador (Km 18 - Km 25)",
+        basePriceM2: 950,
+        roi: 6.4,
+        growth5Y: 20,
+        demandScore: "Media",
+        liquidityIndex: "6.8/10",
+        lat: 14.5123,
+        lng: -90.4102,
+        color: "blue",
+        categories: {
+            apartamentos: { priceM2: 950, roi: 6.4, liquidity: "6.8/10", growth: 4.0, rec: "COMPRAR" },
+            casas: { priceM2: 850, roi: 6.0, liquidity: "6.5/10", growth: 3.5, rec: "ALQUILAR" },
+            oficinas: { priceM2: 900, roi: 6.5, liquidity: "6.0/10", growth: 3.2, rec: "MANTENER" },
+            locales: { priceM2: 1100, roi: 7.2, liquidity: "6.9/10", growth: 4.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 500, roi: 0.0, liquidity: "5.5/10", growth: 6.0, rec: "VENDER" },
+            bodegas: { priceM2: 750, roi: 6.2, liquidity: "6.2/10", growth: 3.0, rec: "MANTENER" }
+        },
+        advantages: [
+            "Costos de tierra muy bajos por metro cuadrado.",
+            "Condominios horizontales de gran tamaño con extensos jardines.",
+            "Clima de montaña agradable alejado de la contaminación de la ciudad."
+        ],
+        risks: [
+            "Tiempos de traslado prolongados debido al único embudo de ingreso.",
+            "Menor cobertura de agua municipal en proyectos residenciales antiguos."
+        ],
+        recommendation: "ALQUILAR/COMPRAR. Ideal para familias grandes que priorizan la amplitud física y la naturaleza frente a la cercanía corporativa."
+    },
+    pinula: {
+        name: "San José Pinula (Condominios / Clubes)",
+        basePriceM2: 850,
+        roi: 6.2,
+        growth5Y: 18,
+        demandScore: "Media",
+        liquidityIndex: "6.5/10",
+        lat: 14.5456,
+        lng: -90.4132,
+        color: "blue",
+        categories: {
+            apartamentos: { priceM2: 800, roi: 6.0, liquidity: "6.0/10", growth: 3.5, rec: "COMPRAR" },
+            casas: { priceM2: 850, roi: 6.2, liquidity: "6.5/10", growth: 3.6, rec: "COMPRAR" },
+            oficinas: { priceM2: 780, roi: 5.8, liquidity: "5.5/10", growth: 3.0, rec: "MANTENER" },
+            locales: { priceM2: 1050, roi: 7.0, liquidity: "6.7/10", growth: 4.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 450, roi: 0.0, liquidity: "5.8/10", growth: 5.5, rec: "COMPRAR" },
+            bodegas: { priceM2: 700, roi: 6.0, liquidity: "6.0/10", growth: 2.8, rec: "MANTENER" }
+        },
+        advantages: [
+            "Excelente oferta de colegios bilingües y campos de golf residenciales.",
+            "Tierra fértil y entorno natural boscoso muy tranquilo.",
+            "Precios de primera vivienda sumamente competitivos para clase media."
+        ],
+        risks: [
+            "Tránsito pesado durante el tramo de salida hacia el Km 17.",
+            "Menor cantidad de alternativas comerciales de gran escala."
+        ],
+        recommendation: "COMPRAR. Excelente opción para familias con niños en edad escolar que buscan condominios cerrados con áreas recreativas amplias."
+    },
+    zona11: {
+        name: "Zona 11 (Majadas / Las Charcas)",
+        basePriceM2: 1550,
+        roi: 7.9,
+        growth5Y: 34,
+        demandScore: "Muy Alta",
+        liquidityIndex: "9.0/10",
+        lat: 14.6190,
+        lng: -90.5510,
+        color: "orange",
+        categories: {
+            apartamentos: { priceM2: 1550, roi: 7.9, liquidity: "9.0/10", growth: 6.8, rec: "COMPRAR" },
+            casas: { priceM2: 1450, roi: 6.8, liquidity: "8.2/10", growth: 5.5, rec: "COMPRAR" },
+            oficinas: { priceM2: 1600, roi: 8.2, liquidity: "8.5/10", growth: 6.5, rec: "COMPRAR" },
+            locales: { priceM2: 2100, roi: 9.2, liquidity: "9.0/10", growth: 8.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 950, roi: 0.0, liquidity: "7.5/10", growth: 9.8, rec: "COMPRAR" },
+            bodegas: { priceM2: 1100, roi: 7.8, liquidity: "8.0/10", growth: 5.2, rec: "MANTENER" }
+        },
+        advantages: [
+            "Gran conectividad comercial gracias al polo de desarrollo de Majadas.",
+            "Ubicación céntrica con salidas rápidas hacia el Periférico y Roosevelt.",
+            "Fuerte crecimiento vertical en zonas habitacionales consolidadas."
+        ],
+        risks: [
+            "Congestión vehicular intensa en nodos clave de la Roosevelt.",
+            "Precios de preventa en alza constante en los últimos 3 años."
+        ],
+        recommendation: "COMPRAR/ALQUILAR. Zona 11 ofrece una de las tasas de absorción y renta más dinámicas de la ciudad. Muy atractiva para profesionales jóvenes."
+    },
+    zona12: {
+        name: "Zona 12 (El Trébol / Reformita)",
+        basePriceM2: 1100,
+        roi: 7.4,
+        growth5Y: 26,
+        demandScore: "Alta",
+        liquidityIndex: "8.2/10",
+        lat: 14.6020,
+        lng: -90.5360,
+        color: "yellow",
+        categories: {
+            apartamentos: { priceM2: 1050, roi: 7.4, liquidity: "8.2/10", growth: 5.2, rec: "COMPRAR" },
+            casas: { priceM2: 1100, roi: 6.5, liquidity: "7.8/10", growth: 4.8, rec: "MANTENER" },
+            oficinas: { priceM2: 1000, roi: 6.8, liquidity: "7.2/10", growth: 4.2, rec: "MANTENER" },
+            locales: { priceM2: 1350, roi: 8.5, liquidity: "8.1/10", growth: 6.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 680, roi: 0.0, liquidity: "6.9/10", growth: 7.8, rec: "COMPRAR" },
+            bodegas: { priceM2: 890, roi: 7.6, liquidity: "7.9/10", growth: 4.0, rec: "MANTENER" }
+        },
+        advantages: [
+            "Cercanía inmediata a la Universidad de San Carlos de Guatemala (USAC).",
+            "Polo comercial e industrial muy activo y de alta densidad laboral.",
+            "Precios de alquiler accesibles para el mercado estudiantil y comercial."
+        ],
+        risks: [
+            "Problemas de seguridad en sectores no controlados del interior.",
+            "Congestión vial de transporte pesado en la Calzada Atanasio Tzul."
+        ],
+        recommendation: "COMPRAR (INVERSIONISTAS). Ideal para construir apartamentos pequeños para estudiantes (coliving estudiantil) debido a la inmensa demanda de la USAC."
+    },
+    zona9: {
+        name: "Zona 9 (Terminal / Montúfar)",
+        basePriceM2: 1300,
+        roi: 7.8,
+        growth5Y: 30,
+        demandScore: "Media-Alta",
+        liquidityIndex: "7.8/10",
+        lat: 14.6120,
+        lng: -90.5180,
+        color: "yellow",
+        categories: {
+            apartamentos: { priceM2: 1250, roi: 7.5, liquidity: "7.5/10", growth: 5.6, rec: "COMPRAR" },
+            casas: { priceM2: 1150, roi: 6.2, liquidity: "6.8/10", growth: 4.5, rec: "MANTENER" },
+            oficinas: { priceM2: 1300, roi: 7.8, liquidity: "7.8/10", growth: 5.8, rec: "COMPRAR" },
+            locales: { priceM2: 1750, roi: 8.9, liquidity: "8.3/10", growth: 7.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 850, roi: 0.0, liquidity: "7.0/10", growth: 8.5, rec: "COMPRAR" },
+            bodegas: { priceM2: 980, roi: 8.0, liquidity: "8.0/10", growth: 4.8, rec: "COMPRAR" }
+        },
+        advantages: [
+            "Ubicación central óptima con acceso inmediato a transporte público.",
+            "Distrito corporativo tradicional de oficinas e importadoras.",
+            "Gran demanda para bodegas de última milla y distribución local."
+        ],
+        risks: [
+            "Contaminación auditiva y visual debido a la alta densidad de tránsito comercial.",
+            "Sectores comerciales desordenados alrededor del mercado de la Terminal."
+        ],
+        recommendation: "MANTENER/ALQUILAR. Fuerte desempeño comercial para oficinas corporativas de tamaño medio e importadoras. Excelente retorno en bodegas urbanas."
+    },
+    zona13: {
+        name: "Zona 13 (Aurora / Hincapié)",
+        basePriceM2: 1450,
+        roi: 8.0,
+        growth5Y: 31,
+        demandScore: "Muy Alta",
+        liquidityIndex: "8.6/10",
+        lat: 14.5900,
+        lng: -90.5280,
+        color: "orange",
+        categories: {
+            apartamentos: { priceM2: 1450, roi: 8.0, liquidity: "8.6/10", growth: 6.2, rec: "COMPRAR" },
+            casas: { priceM2: 1350, roi: 6.8, liquidity: "7.5/10", growth: 5.0, rec: "COMPRAR" },
+            oficinas: { priceM2: 1400, roi: 7.5, liquidity: "7.8/10", growth: 5.6, rec: "COMPRAR" },
+            locales: { priceM2: 1850, roi: 8.6, liquidity: "8.2/10", growth: 6.8, rec: "COMPRAR" },
+            terrenos: { priceM2: 900, roi: 0.0, liquidity: "7.2/10", growth: 8.8, rec: "COMPRAR" },
+            bodegas: { priceM2: 1050, roi: 7.8, liquidity: "8.1/10", growth: 4.5, rec: "MANTENER" }
+        },
+        advantages: [
+            "Cercanía estratégica al Aeropuerto Internacional La Aurora.",
+            "Rodeado de áreas culturales de museos y del Zoológico La Aurora.",
+            "Gran demanda de ejecutivos de aerolíneas e inversores en Airbnb."
+        ],
+        risks: [
+            "Limitaciones de altura por el cono de aproximación aeronáutica.",
+            "Niveles de ruido de turbinas en sub-sectores de paso de aeronaves."
+        ],
+        recommendation: "COMPRAR (AIRBNB). Excelente zona para desarrollar edificios de apartamentos pequeños orientados a hospedajes de corta duración (turistas y viajeros)."
+    },
+    zona7: {
+        name: "Zona 7 (El Naranjo / Landívar)",
+        basePriceM2: 1280,
+        roi: 7.5,
+        growth5Y: 29,
+        demandScore: "Alta",
+        liquidityIndex: "8.0/10",
+        lat: 14.6380,
+        lng: -90.5480,
+        color: "yellow",
+        categories: {
+            apartamentos: { priceM2: 1220, roi: 7.2, liquidity: "7.8/10", growth: 5.8, rec: "COMPRAR" },
+            casas: { priceM2: 1280, roi: 6.8, liquidity: "8.0/10", growth: 5.4, rec: "COMPRAR" },
+            oficinas: { priceM2: 1200, roi: 7.0, liquidity: "7.2/10", growth: 4.8, rec: "MANTENER" },
+            locales: { priceM2: 1550, roi: 8.2, liquidity: "8.0/10", growth: 6.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 780, roi: 0.0, liquidity: "6.8/10", growth: 8.2, rec: "COMPRAR" },
+            bodegas: { priceM2: 950, roi: 7.5, liquidity: "7.5/10", growth: 4.2, rec: "MANTENER" }
+        },
+        advantages: [
+            "Crecimiento explosivo residencial y de comercio en Condado El Naranjo.",
+            "Infraestructura vial de primer nivel en el Boulevard Principal.",
+            "Excelente nivel de seguridad y garitas de acceso vecinales."
+        ],
+        risks: [
+            "Embudos viales en el tramo de incorporación hacia el Periférico y Roosevelt.",
+            "Precios de terreno por vara cuadrada en alza acelerada."
+        ],
+        recommendation: "COMPRAR. El Naranjo es un polo habitacional muy cotizado para primera vivienda residencial por familias jóvenes de clase media y alta."
+    },
+    zona1: {
+        name: "Zona 1 (Centro Histórico)",
+        basePriceM2: 1200,
+        roi: 8.5,
+        growth5Y: 35,
+        demandScore: "Muy Alta",
+        liquidityIndex: "8.3/10",
+        lat: 14.6349,
+        lng: -90.5113,
+        color: "green",
+        categories: {
+            apartamentos: { priceM2: 1150, roi: 8.5, liquidity: "8.3/10", growth: 7.2, rec: "COMPRAR" },
+            casas: { priceM2: 1200, roi: 7.5, liquidity: "7.8/10", growth: 5.8, rec: "COMPRAR" },
+            oficinas: { priceM2: 1100, roi: 7.2, liquidity: "7.0/10", growth: 4.5, rec: "MANTENER" },
+            locales: { priceM2: 1650, roi: 9.2, liquidity: "8.5/10", growth: 8.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 780, roi: 0.0, liquidity: "6.5/10", growth: 9.2, rec: "COMPRAR" },
+            bodegas: { priceM2: 850, roi: 7.0, liquidity: "7.0/10", growth: 3.8, rec: "MANTENER" }
+        },
+        advantages: [
+            "Gentrificación cultural muy activa de jóvenes universitarios e inversores.",
+            "Polo gastronómico, comercial y bohemio consolidado en Paseo de la Sexta.",
+            "Arquitectura patrimonial histórica de alto valor estético."
+        ],
+        risks: [
+            "Falta de parqueos privados y alta congestión peatonal.",
+            "Normativas de remodelación históricas estrictas por el IDAEH."
+        ],
+        recommendation: "COMPRAR (INVERSIONISTAS). La gentrificación de apartamentos antiguos renovados y cafés de moda ofrece un crecimiento de plusvalía y demanda de alquiler muy veloz."
     }
 };
 
