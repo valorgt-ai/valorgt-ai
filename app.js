@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (role === 'inversionista') {
                 const opt = document.createElement('option');
                 opt.value = 'premium';
-                opt.innerText = 'Inversionista Premium (Q340 / mes) - RECOMENDADO';
+                opt.innerText = 'Inversionista Premium (Q340 / mes - $43.70 USD) - RECOMENDADO';
                 opt.selected = true;
                 signupPlanSelect.appendChild(opt);
                 
@@ -249,18 +249,18 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const opt1 = document.createElement('option');
                 opt1.value = 'basico';
-                opt1.innerText = 'Agente Individual (Q140 / mes)';
+                opt1.innerText = 'Agente Individual (Q140 / mes - $18 USD)';
                 signupPlanSelect.appendChild(opt1);
                 
                 const opt2 = document.createElement('option');
                 opt2.value = 'pro';
-                opt2.innerText = 'Inmobiliaria Pro (Q240 / mes) - RECOMENDADO';
+                opt2.innerText = 'Inmobiliaria Pro (Q240 / mes - $31 USD) - RECOMENDADO';
                 opt2.selected = true;
                 signupPlanSelect.appendChild(opt2);
                 
                 const opt3 = document.createElement('option');
                 opt3.value = 'vip';
-                opt3.innerText = 'Inmobiliaria Premium / VIP (Q640 / mes)';
+                opt3.innerText = 'Inmobiliaria Premium / VIP (Q640 / mes - $82 USD)';
                 signupPlanSelect.appendChild(opt3);
                 
                 // Mostrar tarjetas de agentes y ocultar premium
@@ -2327,13 +2327,20 @@ function updateFormUnits() {
     document.querySelectorAll('.commercial-currency-unit').forEach(el => el.innerText = unitSymbol);
     document.querySelectorAll('.commercial-currency-symbol').forEach(el => el.innerText = unitSymbol);
     
-    // Sincronizar números de precios de planes
-    ['basico', 'pro', 'vip'].forEach(plan => {
+    // Sincronizar números de precios de planes y sus equivalentes
+    ['basico', 'pro', 'vip', 'premium'].forEach(plan => {
         const numEl = document.getElementById(`price-num-${plan}`);
         if (numEl) {
             numEl.innerText = activeCurrency === 'GTQ' 
                 ? formatNumber(numEl.getAttribute('data-gtq')) 
                 : formatNumber(numEl.getAttribute('data-usd'));
+        }
+        
+        const equivEl = document.getElementById(`price-equiv-${plan}`);
+        if (equivEl && numEl) {
+            equivEl.innerText = activeCurrency === 'GTQ'
+                ? `(equiv. $${numEl.getAttribute('data-usd')} USD)`
+                : `(equiv. Q${numEl.getAttribute('data-gtq')})`;
         }
         
         const signupNumEl = document.getElementById(`signup-price-${plan}`);
@@ -2342,6 +2349,13 @@ function updateFormUnits() {
             signupNumEl.innerText = activeCurrency === 'GTQ'
                 ? formatNumber(signupCardEl.getAttribute('data-gtq'))
                 : formatNumber(signupCardEl.getAttribute('data-usd'));
+        }
+
+        const signupEquivEl = document.getElementById(`signup-equiv-${plan}`);
+        if (signupEquivEl && signupCardEl) {
+            signupEquivEl.innerText = activeCurrency === 'GTQ'
+                ? `(equiv. $${signupCardEl.getAttribute('data-usd')} USD)`
+                : `(equiv. Q${signupCardEl.getAttribute('data-gtq')})`;
         }
     });
 

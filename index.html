@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=3.7">
+    <link rel="stylesheet" href="styles.css?v=3.8">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -1543,18 +1543,18 @@
                                         <div id="plan-card-signup-basico" class="signup-plan-card" onclick="selectSignupPlanCard('basico')">
                                             <span class="plan-card-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
                                             <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Individual</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--neon-blue); margin-top: 4px;">Q140<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--neon-blue); margin-top: 4px;">Q140<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes ($18 USD)</span></span>
                                         </div>
                                         <div id="plan-card-signup-pro" class="signup-plan-card active" onclick="selectSignupPlanCard('pro')">
                                             <div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>
                                             <span class="plan-card-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">PRO</span>
                                             <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Empresa Pro</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); margin-top: 4px;">Q240<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); margin-top: 4px;">Q240<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes ($31 USD)</span></span>
                                         </div>
                                         <div id="plan-card-signup-vip" class="signup-plan-card" onclick="selectSignupPlanCard('vip')">
                                             <span class="plan-card-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
                                             <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Inmobiliaria VIP</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #bf5af2; margin-top: 4px;">Q640<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #bf5af2; margin-top: 4px;">Q640<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes ($82 USD)</span></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1567,17 +1567,17 @@
                                             <div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>
                                             <span class="plan-card-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3);">INVERSIONISTA</span>
                                             <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Inversionista Premium</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #ffd700; margin-top: 4px;">Q340<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #ffd700; margin-top: 4px;">Q340<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes ($43.70 USD)</span></span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
                                 <select id="com-signup-plan" style="display: none;">
-                                    <option value="basico">Agente Individual (Q140 / mes)</option>
-                                    <option value="pro" selected>Inmobiliaria Pro (Q240 / mes) - RECOMENDADO</option>
-                                    <option value="vip">Inmobiliaria Premium / VIP (Q640 / mes)</option>
-                                    <option value="premium">Inversionista Premium (Q340 / mes)</option>
+                                    <option value="basico">Agente Individual (Q140 / mes - $18 USD)</option>
+                                    <option value="pro" selected>Inmobiliaria Pro (Q240 / mes - $31 USD) - RECOMENDADO</option>
+                                    <option value="vip">Inmobiliaria Premium / VIP (Q640 / mes - $82 USD)</option>
+                                    <option value="premium">Inversionista Premium (Q340 / mes - $43.70 USD)</option>
                                 </select>
 
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">
@@ -1612,7 +1612,7 @@
                                         <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Agente Individual</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--neon-blue); font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-basico">140</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-basico">140</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-basico" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $18 USD)</span></span>
                                     </div>
                                 </div>
 
@@ -1623,7 +1623,7 @@
                                         <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inmobiliaria Pro</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--cyan); font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-pro">240</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-pro">240</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-pro" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $31 USD)</span></span>
                                     </div>
                                 </div>
 
@@ -1633,7 +1633,7 @@
                                         <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inmobiliaria Premium</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: #bf5af2; font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-vip">640</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-vip">640</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-vip" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $82 USD)</span></span>
                                     </div>
                                 </div>
 
@@ -1643,7 +1643,7 @@
                                         <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inversionista Premium</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: #ffd700; font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-premium">340</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-premium">340</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-premium" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $43.70 USD)</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -2457,7 +2457,7 @@
                                         <div class="plan-price font-mono">
                                             <span class="plan-currency-sym" id="price-sym-basico">Q</span>
                                             <span class="plan-price-num" id="price-num-basico" data-usd="18" data-gtq="140">140</span>
-                                            <span class="plan-period">/mes</span>
+                                            <span class="plan-period">/mes <span class="plan-equiv" id="price-equiv-basico" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $18 USD)</span></span>
                                         </div>
                                         <ul class="plan-features font-mono">
                                             <li><i data-lucide="check"></i> 20 Propiedades</li>
@@ -2482,7 +2482,7 @@
                                         <div class="plan-price font-mono">
                                             <span class="plan-currency-sym" id="price-sym-pro">Q</span>
                                             <span class="plan-price-num" id="price-num-pro" data-usd="31" data-gtq="240">240</span>
-                                            <span class="plan-period">/mes</span>
+                                            <span class="plan-period">/mes <span class="plan-equiv" id="price-equiv-pro" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $31 USD)</span></span>
                                         </div>
                                         <ul class="plan-features font-mono">
                                             <li><i data-lucide="check"></i> 100 Propiedades</li>
@@ -2506,7 +2506,7 @@
                                         <div class="plan-price font-mono">
                                             <span class="plan-currency-sym" id="price-sym-vip">Q</span>
                                             <span class="plan-price-num" id="price-num-vip" data-usd="82" data-gtq="640">640</span>
-                                            <span class="plan-period">/mes</span>
+                                            <span class="plan-period">/mes <span class="plan-equiv" id="price-equiv-vip" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $82 USD)</span></span>
                                         </div>
                                         <ul class="plan-features font-mono">
                                             <li><i data-lucide="check"></i> Propiedades Ilimitadas</li>
@@ -3776,9 +3776,9 @@
         </div>
 
         <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=3.7"></script>
-    <script src="charts.js?v=3.7"></script>
-    <script src="map.js?v=3.7"></script>
-    <script src="app.js?v=3.7"></script>
+    <script src="mockData.js?v=3.8"></script>
+    <script src="charts.js?v=3.8"></script>
+    <script src="map.js?v=3.8"></script>
+    <script src="app.js?v=3.8"></script>
 </body>
 </html>
