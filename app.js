@@ -3620,6 +3620,65 @@ function initCommercialView() {
     if (isSupabaseActive) {
         syncSupabaseData();
     }
+
+    // Auto-sincronización de aprobación en la nube en tiempo real
+    if (isSupabaseActive && loggedInB2bClient && loggedInB2bClient.id) {
+        supabaseClient
+            .from('profiles')
+            .select('status, plan, usdt_balance')
+            .eq('id', loggedInB2bClient.id)
+            .maybeSingle()
+            .then(({ data, error }) => {
+                if (data && !error) {
+                    const dbStatus = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                    const dbPlan = data.plan;
+                    const dbBalance = parseFloat(data.usdt_balance || 0);
+                    
+                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance) {
+                        const oldStatus = loggedInB2bClient.status;
+                        
+                        loggedInB2bClient.status = dbStatus;
+                        loggedInB2bClient.plan = dbPlan;
+                        loggedInB2bClient.usdtBalance = dbBalance;
+                        activeB2bPlan = dbPlan.toLowerCase();
+                        
+                        console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}`);
+                        
+                        // Si pasó de Pendiente a Activo, lanzar alerta al usuario
+                        if ((oldStatus === 'Pendiente' || oldStatus.toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
+                            alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales SaaS.");
+                        }
+                        
+                        // Re-inicializar UI
+                        renderB2bAgentProfile();
+                        updateSaasMetricsHUD();
+                        updateB2bSubscriptionPendingBanner();
+                        
+                        const isPending = dbStatus === 'Pendiente' || dbStatus.toLowerCase() === 'pendiente';
+                        const goldLock = document.getElementById('commercial-gold-overlay-lock');
+                        const promoLock = document.getElementById('commercial-promo-overlay-lock');
+                        const btnPromote = document.getElementById('btn-promote-property');
+                        
+                        if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
+                            if (goldLock) goldLock.classList.add('hidden');
+                            if (promoLock) promoLock.classList.add('hidden');
+                            if (btnPromote) btnPromote.disabled = false;
+                        } else {
+                            if (goldLock) goldLock.classList.remove('hidden');
+                            if (promoLock) promoLock.classList.remove('hidden');
+                            if (btnPromote) btnPromote.disabled = true;
+                        }
+                        
+                        if (isPending) {
+                            switchCommercialTab('suscripcion');
+                        } else {
+                            switchCommercialTab('home');
+                        }
+                    }
+                }
+            })
+            .catch(err => console.warn("Error en sincronización en segundo plano de perfil:", err));
+    }
     
     renderPublicPricingGrid();
 }
@@ -5573,8 +5632,8 @@ async function authenticateCommercialAgent(event) {
     }
 
     // Bypass de cuentas Demo locales para permitir acceso de pruebas rápido sin requerir registro manual previo en Supabase Auth
-    const isDemoAccount = (user === 'agente@valorgt.com' && pass === 'valorgt') || 
-                          b2bClients.some(c => c.email.toLowerCase() === user && (c.password === pass || pass === 'valorgt'));
+    const demoEmails = ['agente@valorgt.com', 'ana@estevezinmobiliaria.com', 'roberto@inversionesrv.com', 'sofia@alianzagt.com'];
+    const isDemoAccount = demoEmails.includes(user) && pass === 'valorgt';
 
     // SI SUPABASE ESTÁ ACTIVO Y NO ES CUENTA DEMO, AUTENTICAR CONTRA EL SERVIDOR DE SUPABASE
     if (isSupabaseActive && !isDemoAccount) {
