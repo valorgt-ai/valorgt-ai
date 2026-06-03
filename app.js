@@ -409,9 +409,19 @@ function switchView(viewId) {
     // 2. Control del trial de marketing para las vistas Premium (Portafolio, Radar de Calor, Terminal de Inversión)
     const premiumViews = ['portfolio', 'heatmap', 'investor'];
     if (premiumViews.includes(viewId)) {
-        const hasUnlimitedAccess = isCommercialAuthenticated && loggedInB2bClient && (
-            loggedInB2bClient.role === 'inversionista' || 
-            (loggedInB2bClient.role === 'agente' && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro'))
+        const clientEmail = (loggedInB2bClient && loggedInB2bClient.email) ? loggedInB2bClient.email.toLowerCase() : '';
+        const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
+        const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
+        
+        const hasUnlimitedAccess = isCommercialAuthenticated && (
+            clientEmail.includes('admin') ||
+            clientEmail.includes('sgalindo') ||
+            clientPlan === 'vip' ||
+            clientPlan === 'pro' ||
+            clientPlan === 'premium' ||
+            clientRole === 'inversionista' ||
+            (activeB2bPlan && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro' || activeB2bPlan === 'premium')) ||
+            (!loggedInB2bClient && isCommercialAuthenticated) // ROOT Admin bypass
         );
 
         const activeBlocker = document.getElementById(`${viewId}-trial-blocker`);
@@ -7729,7 +7739,9 @@ async function syncB2bClientsFromSupabase() {
  */
 function switchCommercialTab(tabId) {
     // Si la suscripción del cliente está pendiente, restringir el acceso únicamente a la pestaña de Suscripción y Disclaimer
-    if (loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
+    const clientEmail = (loggedInB2bClient && loggedInB2bClient.email) ? loggedInB2bClient.email.toLowerCase() : '';
+    const isVipBypass = clientEmail.includes('admin') || clientEmail.includes('sgalindo');
+    if (!isVipBypass && loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
         if (tabId !== 'suscripcion' && tabId !== 'disclaimer') {
             alert("⚠️ ACCESO RESTRINGIDO: Tu cuenta se encuentra en estado 'Pendiente de Pago'. Debes subir tu comprobante de transferencia y esperar a que el administrador valide tu pago para acceder a las demás pestañas del portal.");
             switchCommercialTab('suscripcion');
