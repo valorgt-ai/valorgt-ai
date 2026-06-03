@@ -63,7 +63,7 @@ let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas e
 let coverImageIndex = 0; // Índice de la imagen de portada principal seleccionada
 let baseAdPriceGTQ = parseFloat(localStorage.getItem('valorgt_base_ad_price') || '5000'); // Tarifa base estándar de pauta comercial calibrada por el admin
 let plansVideoUrl = localStorage.getItem('valorgt_plans_video_url') || 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // URL del video de planes premium calibrada por el admin
-let welcomeVideoUrl = localStorage.getItem('valorgt_welcome_video_url') || 'https://www.youtube.com/embed/wIwASoMVtNs'; // URL del video de bienvenida principal calibrada por el admin
+let welcomeVideoUrl = localStorage.getItem('valorgt_welcome_video_url') || 'https://www.youtube.com/embed/M55qqyxcFSI'; // URL del video de bienvenida principal calibrada por el admin
 let promoBannerMessage = localStorage.getItem('valorgt_promo_message') || '✨ ¡Oportunidad Prime! Descuento especial del 15% en pautas comerciales contratadas esta semana. Destaca tu propiedad ahora.';
 let isPromoBannerActive = localStorage.getItem('valorgt_promo_active') !== 'false';
 
