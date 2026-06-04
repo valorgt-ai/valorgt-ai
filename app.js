@@ -159,15 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar Terminal de Inversión y Gráficos Base
     initInvestorTerminal();
 
-    // Inicializar Banner Promocional
-    initPromoBanner();
-
-    // Lanzar Lightbox de Bienvenida automáticamente al ingresar (con 1.5s de retardo) si la URL está configurada
-    setTimeout(() => {
-        if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
-            openWelcomeVideoModal();
-        }
-    }, 1500);
+    // Inicializar Banner Promocional y Configuraciones Globales
+    initPromoBannerAndSettings();
 
     // Sincronizar datos de Supabase si está activo
     if (isSupabaseActive) {
@@ -555,8 +548,8 @@ function switchView(viewId) {
     if (viewId === 'dashboard') {
         titleEl.innerText = "Valuador Inmobiliario IA";
         subtitleEl.innerText = "Análisis predictivo de propiedades con redes neuronales";
-        // Descargar anuncio fresco en segundo plano al regresar al Dashboard
-        fetchPromoBannerFromSupabase();
+        // Descargar configuración fresca en segundo plano al regresar al Dashboard
+        fetchSystemSettingsFromSupabase();
     } else if (viewId === 'heatmap') {
         titleEl.innerText = "Radar de Plusvalía e Inversión";
         subtitleEl.innerText = "Mapas de calor interactivos y telemetrías inmobiliarias";
@@ -7014,10 +7007,16 @@ async function deleteAgentProperty(propId) {
     // 5. Rerenderizar B2B Inventory
     renderB2bInventory();
 
-    // 6. Rerenderizar vistas asociadas si están activas
+    // 6. Actualizar marcadores de agentes en el mapa de calor si está inicializado
+    if (typeof drawAgentProperties === 'function') {
+        drawAgentProperties();
+    }
+
+    // 7. Rerenderizar vistas asociadas si están activas
     const locationSelect = document.getElementById('prop-location');
-    if (locationSelect && locationSelect.value === zone) {
-        renderFeaturedProperties(zone);
+    const activeZone = locationSelect ? locationSelect.value : 'zona14';
+    if (typeof renderFeaturedProperties === 'function') {
+        renderFeaturedProperties(activeZone);
     }
     const catalogZoneSelect = document.getElementById('catalog-zone-select');
     if (catalogZoneSelect && (catalogZoneSelect.value === zone || catalogZoneSelect.value === 'todas')) {
@@ -8003,6 +8002,9 @@ async function syncSupabaseData() {
     if (!isSupabaseActive) return;
 
     try {
+        // Sincronizar configuraciones globales (videos, banner) de Supabase en segundo plano
+        await fetchSystemSettingsFromSupabase();
+
         // Sincronizar perfiles de agentes para la tabla admin si la vista admin está activa
         const adminViewEl = document.getElementById('view-admin');
         if (adminViewEl && adminViewEl.classList.contains('active')) {
@@ -8096,67 +8098,79 @@ async function syncSupabaseData() {
             return;
         }
 
-        if (remoteProperties && remoteProperties.length > 0) {
-            remoteProperties.forEach(prop => {
-                const zoneKey = prop.location_key;
-                
-                // Estructurar al formato interno compatible con mockData.js
-                const formattedProp = {
-                    id: prop.id,
-                    title: prop.title,
-                    category: prop.category,
-                    type: prop.type,
-                    tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
-                    priceUSD: parseFloat(prop.price_usd),
-                    size: parseFloat(prop.size_m2),
-                    rooms: parseInt(prop.rooms),
-                    bathrooms: parseFloat(prop.bathrooms),
-                    parkings: parseInt(prop.parkings),
-                    garden: prop.metadata && prop.metadata.garden ? parseFloat(prop.metadata.garden) : 0,
-                    study: prop.metadata && prop.metadata.study ? prop.metadata.study : false,
-                    familyRoom: prop.metadata && prop.metadata.familyRoom ? prop.metadata.familyRoom : false,
-                    hasMasterSuite: prop.metadata && prop.metadata.hasMasterSuite ? prop.metadata.hasMasterSuite : false,
-                    hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
-                    amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
-                    photo: prop.photo_url,
-                    photos: (prop.metadata && prop.metadata.photos) ? prop.metadata.photos : [prop.photo_url],
-                    description: (prop.metadata && prop.metadata.description) ? prop.metadata.description : 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
-                    agentName: (prop.metadata && prop.metadata.agentName) ? prop.metadata.agentName : 'Socio Inmobiliario',
-                    agentCompany: (prop.metadata && prop.metadata.agentCompany) ? prop.metadata.agentCompany : 'ValorGT Premium Partner',
-                    agentPhone: (prop.metadata && prop.metadata.agentPhone) ? prop.metadata.agentPhone : '50250129482',
-                    agentLogo: (prop.metadata && prop.metadata.agentLogo) ? prop.metadata.agentLogo : '',
-                    agentPlan: (prop.metadata && prop.metadata.agentPlan) ? prop.metadata.agentPlan : 'Básico',
-                    youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
-                    badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
-                    location: zoneKey,
-                    isAgentUpload: true,
-                    sponsored: prop.sponsored,
-                    lat: parseFloat(prop.latitude),
-                    lng: parseFloat(prop.longitude)
-                };
+        if (remoteProperties) {
+            const remoteIds = new Set(remoteProperties.map(p => p.id));
+            
+            // Limpiar de agentUploadedProperties las propiedades que ya no están en Supabase
+            agentUploadedProperties = agentUploadedProperties.filter(p => !p.id || remoteIds.has(p.id));
 
-                // Evitar duplicación de listados
-                if (!PORTFOLIO_DATABASE[zoneKey]) {
-                    PORTFOLIO_DATABASE[zoneKey] = [];
-                }
-
-                const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
-                if (!exists) {
-                    if (formattedProp.sponsored) {
-                        PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
-                    } else {
-                        PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
-                    }
-                }
-
-                // Cargar al inventario de pauta si le pertenece al usuario logueado
-                if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
-                    const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
-                    if (!agentExists) {
-                        agentUploadedProperties.push(formattedProp);
-                    }
-                }
+            // Limpiar de PORTFOLIO_DATABASE las propiedades de agente que ya no están en Supabase
+            Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
+                PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => !p.isAgentUpload || !p.id || remoteIds.has(p.id));
             });
+
+            if (remoteProperties.length > 0) {
+                remoteProperties.forEach(prop => {
+                    const zoneKey = prop.location_key;
+                    
+                    // Estructurar al formato interno compatible con mockData.js
+                    const formattedProp = {
+                        id: prop.id,
+                        title: prop.title,
+                        category: prop.category,
+                        type: prop.type,
+                        tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
+                        priceUSD: parseFloat(prop.price_usd),
+                        size: parseFloat(prop.size_m2),
+                        rooms: parseInt(prop.rooms),
+                        bathrooms: parseFloat(prop.bathrooms),
+                        parkings: parseInt(prop.parkings),
+                        garden: prop.metadata && prop.metadata.garden ? parseFloat(prop.metadata.garden) : 0,
+                        study: prop.metadata && prop.metadata.study ? prop.metadata.study : false,
+                        familyRoom: prop.metadata && prop.metadata.familyRoom ? prop.metadata.familyRoom : false,
+                        hasMasterSuite: prop.metadata && prop.metadata.hasMasterSuite ? prop.metadata.hasMasterSuite : false,
+                        hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
+                        amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
+                        photo: prop.photo_url,
+                        photos: (prop.metadata && prop.metadata.photos) ? prop.metadata.photos : [prop.photo_url],
+                        description: (prop.metadata && prop.metadata.description) ? prop.metadata.description : 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
+                        agentName: (prop.metadata && prop.metadata.agentName) ? prop.metadata.agentName : 'Socio Inmobiliario',
+                        agentCompany: (prop.metadata && prop.metadata.agentCompany) ? prop.metadata.agentCompany : 'ValorGT Premium Partner',
+                        agentPhone: (prop.metadata && prop.metadata.agentPhone) ? prop.metadata.agentPhone : '50250129482',
+                        agentLogo: (prop.metadata && prop.metadata.agentLogo) ? prop.metadata.agentLogo : '',
+                        agentPlan: (prop.metadata && prop.metadata.agentPlan) ? prop.metadata.agentPlan : 'Básico',
+                        youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
+                        badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
+                        location: zoneKey,
+                        isAgentUpload: true,
+                        sponsored: prop.sponsored,
+                        lat: parseFloat(prop.latitude),
+                        lng: parseFloat(prop.longitude)
+                    };
+
+                    // Evitar duplicación de listados
+                    if (!PORTFOLIO_DATABASE[zoneKey]) {
+                        PORTFOLIO_DATABASE[zoneKey] = [];
+                    }
+
+                    const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
+                    if (!exists) {
+                        if (formattedProp.sponsored) {
+                            PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
+                        } else {
+                            PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
+                        }
+                    }
+
+                    // Cargar al inventario de pauta si le pertenece al usuario logueado
+                    if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
+                        const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
+                        if (!agentExists) {
+                            agentUploadedProperties.push(formattedProp);
+                        }
+                    }
+                });
+            }
 
             // Actualizar la interfaz de forma reactiva según la sección visible
             const activeViewEl = document.querySelector('.app-view.active');
@@ -8166,6 +8180,7 @@ async function syncSupabaseData() {
                     renderCatalogProperties();
                 } else if (activeId === 'view-heatmap') {
                     if (typeof initHeatmap === 'function') initHeatmap();
+                    if (typeof drawAgentProperties === 'function') drawAgentProperties();
                 } else if (activeId === 'view-commercial') {
                     renderB2bInventory();
                     updatePromoPropertySelect();
@@ -9209,7 +9224,10 @@ function closePremiumPlansVideoModal() {
 /**
  * Control del modal multimedia de Bienvenida (Lightbox)
  */
+let hasWelcomeModalLaunched = false;
+
 function openWelcomeVideoModal() {
+    if (hasWelcomeModalLaunched) return;
     if (!welcomeVideoUrl || welcomeVideoUrl.trim() === '') return;
     const modal = document.getElementById('welcome-video-modal');
     const iframe = document.getElementById('welcome-youtube-iframe');
@@ -9217,6 +9235,7 @@ function openWelcomeVideoModal() {
         // Cargar video con autoplay para una experiencia interactiva fluida
         iframe.src = `${welcomeVideoUrl}?autoplay=1`;
         modal.classList.add('active');
+        hasWelcomeModalLaunched = true;
         
         // Inicializar iconos Lucide por si acaso
         if (typeof lucide !== 'undefined') {
@@ -9237,44 +9256,81 @@ function closeWelcomeVideoModal() {
 /**
  * Permite al administrador calibrar persistentemente la URL del video de bienvenida principal
  */
-function saveAdminWelcomeVideoUrl() {
+async function saveAdminWelcomeVideoUrl() {
     const input = document.getElementById('admin-welcome-video-url');
-    if (input) {
-        const val = input.value.trim();
-        const embedUrl = getYouTubeEmbedUrl(val);
-        welcomeVideoUrl = embedUrl;
-        localStorage.setItem('valorgt_welcome_video_url', embedUrl);
-        
-        // Actualizar UI
-        input.value = embedUrl;
-        
-        alert(`✔️ Video de bienvenida principal configurado con éxito.`);
-        logAdminSecurityActivity(`Calibración del Core: URL de video de bienvenida configurada en ${embedUrl}`);
+    if (!input) return;
+
+    const val = input.value.trim();
+    const embedUrl = getYouTubeEmbedUrl(val);
+    welcomeVideoUrl = embedUrl;
+    localStorage.setItem('valorgt_welcome_video_url', embedUrl);
+    input.value = embedUrl;
+
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('system_announcements')
+                .upsert({
+                    id: 'welcome_video_url',
+                    message: embedUrl,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                });
+            if (error) throw error;
+            alert(`✔️ Video de bienvenida principal configurado y sincronizado en la nube.`);
+        } catch (err) {
+            console.error("Error al sincronizar video de bienvenida en Supabase:", err);
+            alert(`✔️ Guardado localmente, pero falló la sincronización con Supabase.`);
+        }
+    } else {
+        alert(`✔️ Video de bienvenida principal guardado localmente.`);
     }
+    logAdminSecurityActivity(`Calibración del Core: URL de video de bienvenida configurada en ${embedUrl}`);
 }
 
-
-/**
- * Permite al administrador calibrar persistentemente la URL del video de planes premium
- */
-function saveAdminPlansVideoUrl() {
+async function saveAdminPlansVideoUrl() {
     const input = document.getElementById('admin-plans-video-url');
-    if (input) {
-        const val = input.value.trim();
-        const embedUrl = getYouTubeEmbedUrl(val);
-        plansVideoUrl = embedUrl;
-        localStorage.setItem('valorgt_plans_video_url', embedUrl);
-        
-        // Actualizar UI
-        input.value = embedUrl;
-        const iframe = document.getElementById('subscription-youtube-iframe');
-        if (iframe) {
-            iframe.src = embedUrl;
-        }
-        
-        alert(`✔️ Video explicativo de planes premium calibrado con éxito.`);
-        logAdminSecurityActivity(`Calibración del Core: URL de video de planes configurada en ${embedUrl}`);
+    if (!input) return;
+
+    const val = input.value.trim();
+    const embedUrl = getYouTubeEmbedUrl(val);
+    plansVideoUrl = embedUrl;
+    localStorage.setItem('valorgt_plans_video_url', embedUrl);
+    input.value = embedUrl;
+
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (iframe) {
+        iframe.src = embedUrl;
     }
+
+    // Mostrar u ocultar el botón del video explicativo según el valor configurado
+    const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
+    if (plansVideoUrl && plansVideoUrl.trim() !== '') {
+        if (plansBtn) plansBtn.style.display = 'flex';
+    } else {
+        if (plansBtn) plansBtn.style.display = 'none';
+    }
+
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('system_announcements')
+                .upsert({
+                    id: 'plans_video_url',
+                    message: embedUrl,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                });
+            if (error) throw error;
+            alert(`✔️ Video explicativo de planes configurado y sincronizado en la nube.`);
+        } catch (err) {
+            console.error("Error al sincronizar video de planes en Supabase:", err);
+            alert(`✔️ Guardado localmente, pero falló la sincronización con Supabase.`);
+        }
+    } else {
+        alert(`✔️ Video explicativo de planes guardado localmente.`);
+    }
+    logAdminSecurityActivity(`Calibración del Core: URL de video de planes configurada en ${embedUrl}`);
 }
 
 /**
@@ -9339,42 +9395,89 @@ function switchViewMobile(viewId) {
     switchView(viewId); // cambiar vista
 }
 
-/**
- * Inicializa el banner de anuncios promocionales con caché local
- */
-async function initPromoBanner() {
+async function initPromoBannerAndSettings() {
     syncPromoBannerUI();
+    
+    // Ocultar o mostrar botón de video de planes preliminarmente con caché local
+    const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
+    if (plansVideoUrl && plansVideoUrl.trim() !== '') {
+        if (plansBtn) plansBtn.style.display = 'flex';
+    } else {
+        if (plansBtn) plansBtn.style.display = 'none';
+    }
+
     if (isSupabaseActive) {
-        await fetchPromoBannerFromSupabase();
+        await fetchSystemSettingsFromSupabase();
+    } else {
+        // Fallback local: lanzar bienvenida si está configurado en localStorage
+        setTimeout(() => {
+            if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
+                openWelcomeVideoModal();
+            }
+        }, 1500);
     }
 }
 
-/**
- * Descarga y sincroniza reactivamente los datos del banner desde Supabase
- */
-async function fetchPromoBannerFromSupabase() {
-    if (!isSupabaseActive) return;
+async function fetchSystemSettingsFromSupabase() {
+    if (!isSupabaseActive || !supabaseClient) return;
     try {
         const { data, error } = await supabaseClient
             .from('system_announcements')
-            .select('*')
-            .eq('id', 'main_promo')
-            .maybeSingle();
+            .select('*');
 
         if (error) throw error;
 
-        if (data) {
-            promoBannerMessage = data.message;
-            isPromoBannerActive = data.is_active;
-            
-            // Persistir localmente como contingencia
-            localStorage.setItem('valorgt_promo_message', promoBannerMessage);
-            localStorage.setItem('valorgt_promo_active', isPromoBannerActive.toString());
-            
-            syncPromoBannerUI();
+        let supabaseWelcomeVideoUrl = welcomeVideoUrl;
+
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                if (item.id === 'main_promo') {
+                    promoBannerMessage = item.message;
+                    isPromoBannerActive = item.is_active;
+                    localStorage.setItem('valorgt_promo_message', promoBannerMessage);
+                    localStorage.setItem('valorgt_promo_active', isPromoBannerActive.toString());
+                    syncPromoBannerUI();
+                } else if (item.id === 'welcome_video_url') {
+                    supabaseWelcomeVideoUrl = item.message;
+                    welcomeVideoUrl = item.message;
+                    localStorage.setItem('valorgt_welcome_video_url', welcomeVideoUrl);
+                    const adminInput = document.getElementById('admin-welcome-video-url');
+                    if (adminInput) adminInput.value = welcomeVideoUrl;
+                } else if (item.id === 'plans_video_url') {
+                    plansVideoUrl = item.message;
+                    localStorage.setItem('valorgt_plans_video_url', plansVideoUrl);
+                    const adminInput = document.getElementById('admin-plans-video-url');
+                    if (adminInput) adminInput.value = plansVideoUrl;
+                    
+                    const plansIframe = document.getElementById('plans-youtube-iframe');
+                    if (plansIframe) plansIframe.src = plansVideoUrl;
+                }
+            });
         }
+
+        // Mostrar u ocultar el botón de planes según la configuración en la nube
+        const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
+        if (plansVideoUrl && plansVideoUrl.trim() !== '') {
+            if (plansBtn) plansBtn.style.display = 'flex';
+        } else {
+            if (plansBtn) plansBtn.style.display = 'none';
+        }
+
+        // Lanzar Lightbox de Bienvenida automáticamente si la URL descargada de la nube no está vacía
+        setTimeout(() => {
+            if (supabaseWelcomeVideoUrl && supabaseWelcomeVideoUrl.trim() !== '') {
+                openWelcomeVideoModal();
+            }
+        }, 1000);
+
     } catch (err) {
-        console.warn("⚠️ [ValorGT AI] Error al descargar banner promocional de Supabase, usando caché local:", err);
+        console.warn("⚠️ [ValorGT AI] Error al descargar configuraciones globales de Supabase:", err);
+        // Fallback en caso de error
+        setTimeout(() => {
+            if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
+                openWelcomeVideoModal();
+            }
+        }, 1500);
     }
 }
 
