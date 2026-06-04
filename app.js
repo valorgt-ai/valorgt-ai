@@ -8578,7 +8578,8 @@ function renderCardImageHTML(prop, wrapperClass = 'card-image-wrapper', heightSt
     const b2bSponsored = (isB2B && isSponsored) ? '<span class="inv-sponsored-tag" style="z-index: 7;">★ PATROCINADO</span>' : '';
 
     if (photos.length > 1) {
-        const sliderId = `slider-${prop.id.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
+        const rawId = prop.id || prop.title || Math.random().toString();
+        const sliderId = `slider-${rawId.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
         return `
             <div class="card-image-slider-container ${wrapperClass}" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: ${heightStyle};">
                 <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
@@ -8752,7 +8753,8 @@ function openPropertyDetailModal(zoneKey, index) {
         : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo]);
 
     if (photos.length > 1) {
-        const sliderId = `modal-slider-${prop.id.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
+        const rawId = prop.id || prop.title || Math.random().toString();
+        const sliderId = `modal-slider-${rawId.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
         galleryArea.innerHTML = `
             <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 260px; border-radius: 12px 12px 0 0;">
                 <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
