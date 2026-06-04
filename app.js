@@ -4435,7 +4435,7 @@ async function publishAgentProperty(event) {
 
     if (editingPropertyId) {
         // Modo Edición: Encontrar y actualizar propiedad existente
-        newProperty = agentUploadedProperties.find(p => p.id === editingPropertyId);
+        newProperty = agentUploadedProperties.find(p => String(p.id) === String(editingPropertyId));
         if (newProperty) {
             const oldLocationKey = newProperty.location;
 
@@ -4477,13 +4477,13 @@ async function publishAgentProperty(event) {
             // Sincronizar en PORTFOLIO_DATABASE
             if (oldLocationKey && PORTFOLIO_DATABASE[oldLocationKey]) {
                 if (oldLocationKey !== locationKey) {
-                    PORTFOLIO_DATABASE[oldLocationKey] = PORTFOLIO_DATABASE[oldLocationKey].filter(p => p.id !== editingPropertyId);
+                    PORTFOLIO_DATABASE[oldLocationKey] = PORTFOLIO_DATABASE[oldLocationKey].filter(p => String(p.id) !== String(editingPropertyId));
                 }
             }
             if (!PORTFOLIO_DATABASE[locationKey]) {
                 PORTFOLIO_DATABASE[locationKey] = [];
             }
-            const dbIndex = PORTFOLIO_DATABASE[locationKey].findIndex(p => p.id === editingPropertyId);
+            const dbIndex = PORTFOLIO_DATABASE[locationKey].findIndex(p => String(p.id) === String(editingPropertyId));
             if (dbIndex >= 0) {
                 PORTFOLIO_DATABASE[locationKey][dbIndex] = newProperty;
             } else {
@@ -6798,7 +6798,7 @@ function filterB2bInventory(category) {
  * Carga una propiedad publicada en el formulario B2B para editarla
  */
 function editAgentProperty(propId) {
-    const prop = agentUploadedProperties.find(p => p.id === propId);
+    const prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
     if (!prop) {
         alert("No se encontró la propiedad seleccionada.");
         return;
@@ -6966,8 +6966,11 @@ function editAgentProperty(propId) {
  * Elimina una propiedad del agente de forma permanente de Supabase y del estado local
  */
 async function deleteAgentProperty(propId) {
-    const prop = agentUploadedProperties.find(p => p.id === propId);
-    if (!prop) return;
+    const prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
+    if (!prop) {
+        console.warn(`No se encontró la propiedad con ID: ${propId} para eliminar.`);
+        return;
+    }
 
     if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente la propiedad "${prop.title}"?`)) {
         return;
@@ -6993,12 +6996,12 @@ async function deleteAgentProperty(propId) {
     }
 
     // 2. Eliminar de agentUploadedProperties
-    agentUploadedProperties = agentUploadedProperties.filter(p => p.id !== propId);
+    agentUploadedProperties = agentUploadedProperties.filter(p => String(p.id) !== String(propId));
 
     // 3. Eliminar de PORTFOLIO_DATABASE
     const zone = prop.location;
     if (PORTFOLIO_DATABASE[zone]) {
-        PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => p.id !== propId);
+        PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => String(p.id) !== String(propId));
     }
 
     // 4. Guardar en localStorage
@@ -9228,7 +9231,13 @@ let hasWelcomeModalLaunched = false;
 
 function openWelcomeVideoModal() {
     if (hasWelcomeModalLaunched) return;
+    const dismissed = localStorage.getItem('valorgt_welcome_video_dismissed');
+    const lastUrl = localStorage.getItem('valorgt_last_welcome_video_url');
+    
+    // Si ya fue descartado y la URL no cambió, no volver a mostrar
+    if (dismissed === 'true' && lastUrl === welcomeVideoUrl) return;
     if (!welcomeVideoUrl || welcomeVideoUrl.trim() === '') return;
+    
     const modal = document.getElementById('welcome-video-modal');
     const iframe = document.getElementById('welcome-youtube-iframe');
     if (modal && iframe) {
@@ -9236,6 +9245,10 @@ function openWelcomeVideoModal() {
         iframe.src = `${welcomeVideoUrl}?autoplay=1`;
         modal.classList.add('active');
         hasWelcomeModalLaunched = true;
+        
+        // Registrar última URL y marcar como activa para este video
+        localStorage.setItem('valorgt_last_welcome_video_url', welcomeVideoUrl);
+        localStorage.setItem('valorgt_welcome_video_dismissed', 'false');
         
         // Inicializar iconos Lucide por si acaso
         if (typeof lucide !== 'undefined') {
@@ -9250,6 +9263,8 @@ function closeWelcomeVideoModal() {
     if (modal && iframe) {
         iframe.src = '';
         modal.classList.remove('active');
+        // Persistir que el usuario cerró el video de bienvenida
+        localStorage.setItem('valorgt_welcome_video_dismissed', 'true');
     }
 }
 
