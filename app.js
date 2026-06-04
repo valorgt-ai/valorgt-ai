@@ -559,6 +559,33 @@ function switchView(viewId) {
 }
 
 /**
+ * Alterna el estado de pantalla completa (fullscreen) del mapa del radar geográfico
+ */
+function toggleMapFullscreen() {
+    const wrapper = document.querySelector('.map-wrapper');
+    const btn = document.getElementById('btn-toggle-fullscreen');
+    if (!wrapper) return;
+    
+    const isFullscreen = wrapper.classList.toggle('map-fullscreen');
+    
+    if (btn) {
+        if (isFullscreen) {
+            btn.innerHTML = '<i data-lucide="minimize-2" style="width:12px; height:12px;"></i> Minimizar';
+        } else {
+            btn.innerHTML = '<i data-lucide="maximize-2" style="width:12px; height:12px;"></i> Ampliar Mapa';
+        }
+        lucide.createIcons();
+    }
+    
+    // Invalidar el tamaño del mapa de Leaflet para re-centrar y cargar las celdas
+    if (typeof leafletMapInstance !== 'undefined' && leafletMapInstance) {
+        setTimeout(() => {
+            leafletMapInstance.invalidateSize();
+        }, 300);
+    }
+}
+
+/**
  * Alterna el estado colapsado del menú lateral (sidebar)
  */
 function toggleSidebar() {
@@ -1861,7 +1888,7 @@ function updateMortgageValues() {
     } else {
         viabilityBadge.innerText = "ALTO RIESGO";
         viabilityBadge.className = 'viability-badge text-red';
-        recText.innerHTML = `Sistemas de prevención reportan <strong>ALTO RIESGO</strong>. La cuota mensual estimada sobrepasa los márgenes de seguridad recomendados del 45% sobre ingresos promedio. <strong>Sugerencia de la IA:</strong> Busca una propiedad en una zona con precio por m² más competitivo (como Carretera a El Salvador) o incrementa el enganche para reducir el capital a financiar.`;
+        recText.innerHTML = `Sistemas de prevención reportan <strong>ALTO RIESGO</strong>. La cuota mensual estimada sobrepasa los márgenes de seguridad recomendados del 45% sobre ingresos promedio. <strong>Sugerencia de la IA:</strong> Busca una propiedad en una zona con precio por m² más competitivo (como CAES) o incrementa el enganche para reducir el capital a financiar.`;
     }
 }
 
@@ -3482,7 +3509,7 @@ function sendPortfolioAiChatMessage() {
         if (cleanMsg.includes('local') || cleanMsg.includes('locales') || cleanMsg.includes('comercial') || cleanMsg.includes('comerciales') || cleanMsg.includes('plaza') || cleanMsg.includes('strip') || cleanMsg.includes('mall') || cleanMsg.includes('tienda')) {
             const hasCommercial = userPortfolio.filter(a => a.type === 'comercial' || a.type === 'office' || a.type === 'oficina').length;
             reply = `🏬 <strong>Análisis Estratégico de Activos Comerciales (SÍ Rotundo):</strong><br><br>
-            • <strong>¿Te aconsejo comprar locales comerciales? SÍ, absolutamente.</strong> En el mercado actual de Guatemala (principalmente en Zona 10, Zona 14, Zona 16 Cayalá y el corredor metropolitano de Carretera a El Salvador), los locales comerciales y strip malls representan una de las inversiones más rentables y estables del sector inmobiliario.<br><br>
+            • <strong>¿Te aconsejo comprar locales comerciales? SÍ, absolutamente.</strong> En el mercado actual de Guatemala (principalmente en Zona 10, Zona 14, Zona 16 Cayalá y el corredor metropolitano de CAES), los locales comerciales y strip malls representan una de las inversiones más rentables y estables del sector inmobiliario.<br><br>
             • <strong>Rendimientos Financieros (Yields) Superiores:</strong> Mientras que un apartamento de renta tradicional en Zona 14 o Zona 15 ofrece retornos anuales netos de entre <strong>5.5% y 6.8%</strong>, los locales comerciales de conveniencia reportan yields brutos estables del <strong>7.8% al 9.5% anual</strong> (hasta un 2.5% más de rentabilidad sobre tu capital invertido).<br><br>
             • <strong>La Ventaja de los Contratos Triple Neto (NNN):</strong> A diferencia de los inmuebles residenciales, los locales comerciales en Guatemala se arriendan bajo contratos Triple Neto (NNN). Esto significa que **el inquilino asume el costo total del mantenimiento, el seguro del inmueble y el IUSI**. Tu flujo de caja pasivo se mantiene limpio y totalmente blindado contra incrementos de costes operativos o inflación.<br><br>
             • <strong>Estabilidad y Plazos Contractuales:</strong> Los contratos comerciales con marcas o empresas corporativas se pactan a plazos mínimos de 3 a 5 años (con incrementos anuales de renta indexados de entre 3% y 5% en dólares), en comparación con el estándar de 1 año residencial. Esto reduce significativamente la vacancia y la rotación.<br><br>
@@ -3504,7 +3531,7 @@ function sendPortfolioAiChatMessage() {
         }
         else if (cleanMsg.includes('terreno') || cleanMsg.includes('terrenos') || cleanMsg.includes('lote') || cleanMsg.includes('lotes') || cleanMsg.includes('tierra') || cleanMsg.includes('finca')) {
             reply = `🌱 <strong>Análisis de Lotes y Terrenos en Guatemala:</strong><br><br>
-            • <strong>Plusvalía Especulativa Pura:</strong> Los terrenos en áreas de alta expansión de condominios como Fraijanes, San José Pinula, San Lucas Sacatepéquez y Carretera a El Salvador (Km 18 al 28) reportan crecimientos de valor de hasta el **12% anual** en fases tempranas de urbanización.<br><br>
+            • <strong>Plusvalía Especulativa Pura:</strong> Los terrenos en áreas de alta expansión de condominios como Fraijanes, San José Pinula, San Lucas Sacatepéquez y CAES (Km 18 al 28) reportan crecimientos de valor de hasta el **12% anual** en fases tempranas de urbanización.<br><br>
             • <strong>Advertencia Crítica de Flujo:</strong> Un terreno es un activo de **flujo de caja libre nulo o negativo** (tienes que pagar IUSI y mantenimiento de condominio sin recibir ingresos mensuales), a menos que lo arriendes comercialmente para parqueos o antenas de telecomunicación. Esto penaliza tu capacidad de crédito y liquidez en el portafolio.<br><br>
             • <strong>Consejo IA:</strong> Invierte en tierras únicamente si ya cuentas con un flujo robusto y excedentes mensuales que provengan de locales comerciales arriendados u oficinas. Los terrenos son excelentes vehículos de preservación de riqueza generacional, pero pésimos generadores de estilo de vida en el corto plazo.`;
         } 
@@ -3524,7 +3551,7 @@ function sendPortfolioAiChatMessage() {
             • <strong>Zona 16 (Cayalá, Lomas, Cardales):</strong> Máxima plusvalía del mercado residencial (+8.4% anualizado) y alta absorción en preventas. Atrae perfiles familiares de altos ingresos.<br><br>
             • <strong>Zona 10 y Zona 14 (El Corazón Financiero):</strong> Las mejores ubicaciones para oficinas premium e inversión en apartamentos boutique para renta corporativa. yields estables del 6.2% residencial y 7.8% comercial.<br><br>
             • <strong>Zona 4 (Cuatro Grados Norte):</strong> El distrito más dinámico para **rentas cortas de Airbnb**. yields netos de hasta el 9.5% por ocupación de turismo joven e internacional.<br><br>
-            • <strong>Carretera a El Salvador (Km 14 al 25) y Fraijanes:</strong> La mayor plusvalía especulativa de mediano plazo en terrenos residenciales debido al crecimiento metropolitano periférico. Excelente retorno si inviertes en strip malls pequeños.`;
+            • <strong>CAES (Km 14 al 25) y Fraijanes:</strong> La mayor plusvalía especulativa de mediano plazo en terrenos residenciales debido al crecimiento metropolitano periférico. Excelente retorno si inviertes en strip malls pequeños.`;
         }
         else if (cleanMsg.includes('que me aconsejas') || cleanMsg.includes('que aconsejas') || cleanMsg.includes('que me recomiendas') || cleanMsg.includes('recomiendas comprar') || cleanMsg.includes('que comprar') || cleanMsg.includes('cual es mejor') || cleanMsg.includes('en que invertir') || cleanMsg.includes('consejo inversion') || cleanMsg.includes('donde invertir') || cleanMsg.includes('que hago') || cleanMsg.includes('estrategia') || cleanMsg.includes('aconsejaria') || cleanMsg.includes('aconsejas')) {
             reply = `💡 <strong>Estrategia de Inversión Comparativa para tu Patrimonio:</strong><br><br>

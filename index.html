@@ -190,8 +190,8 @@
                                             <option value="zona14">Zona 14 (La Cañada / Américas)</option>
                                             <option value="zona15">Zona 15 (Vista Hermosa)</option>
                                             <option value="zona16">Zona 16 (Cayalá / Lomas)</option>
-                                            <option value="carretera">Carretera a El Salvador (Km 10-17)</option>
-                                            <option value="carretera_high">Carretera a El Salvador (Km 18-25)</option>
+                                            <option value="carretera">CAES (Km 10-17)</option>
+                                            <option value="carretera_high">CAES (Km 18-25)</option>
                                             <option value="pinula">San José Pinula (Condominios)</option>
                                             <option value="fraijanes">Fraijanes (Condominios)</option>
                                             <option value="mixco">Mixco (San Cristóbal / Blvd)</option>
@@ -649,19 +649,24 @@
                                     <div class="header-icon cyan" style="width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid rgba(0,240,255,0.25); background:rgba(0,240,255,0.05); flex-shrink:0;"><i data-lucide="map-pin" style="width:16px; height:16px; color:var(--cyan);"></i></div>
                                     <h2 style="font-size: 1.05rem; font-weight: 600; color: #fff; margin: 0; font-family: var(--font-heading); letter-spacing: 0.5px;">Radar Geográfico de Plusvalías</h2>
                                 </div>
-                                <div class="map-category-tabs font-mono" style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                    <button class="map-term-tab active" id="map-tab-apartamentos" onclick="switchMapCategory('apartamentos')" style="background: transparent; border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; text-shadow: 0 0 5px rgba(0,240,255,0.3);">[ Apartamentos ]</button>
-                                    <button class="map-term-tab" id="map-tab-casas" onclick="switchMapCategory('casas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Casas ]</button>
-                                    <button class="map-term-tab" id="map-tab-oficinas" onclick="switchMapCategory('oficinas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Oficinas ]</button>
-                                    <button class="map-term-tab" id="map-tab-locales" onclick="switchMapCategory('locales')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Locales ]</button>
-                                    <button class="map-term-tab" id="map-tab-terrenos" onclick="switchMapCategory('terrenos')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Terrenos ]</button>
-                                    <button class="map-term-tab" id="map-tab-bodegas" onclick="switchMapCategory('bodegas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Bodegas ]</button>
+                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <div class="map-category-tabs font-mono" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <button class="map-term-tab active" id="map-tab-apartamentos" onclick="switchMapCategory('apartamentos')" style="background: transparent; border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; text-shadow: 0 0 5px rgba(0,240,255,0.3);">[ Apartamentos ]</button>
+                                        <button class="map-term-tab" id="map-tab-casas" onclick="switchMapCategory('casas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Casas ]</button>
+                                        <button class="map-term-tab" id="map-tab-oficinas" onclick="switchMapCategory('oficinas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Oficinas ]</button>
+                                        <button class="map-term-tab" id="map-tab-locales" onclick="switchMapCategory('locales')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Locales ]</button>
+                                        <button class="map-term-tab" id="map-tab-terrenos" onclick="switchMapCategory('terrenos')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Terrenos ]</button>
+                                        <button class="map-term-tab" id="map-tab-bodegas" onclick="switchMapCategory('bodegas')" style="background: transparent; border: 1px solid transparent; color: var(--text-secondary); padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s;">[ Bodegas ]</button>
+                                    </div>
+                                    <button id="btn-toggle-fullscreen" onclick="toggleMapFullscreen()" class="btn-commercial btn-commercial-cyan" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 0.72rem; border-radius: 6px; font-weight: bold; cursor: pointer; border: 1px solid rgba(0, 240, 255, 0.4); background: rgba(0, 240, 255, 0.05); color: var(--cyan); transition: all 0.3s; height: 30px;">
+                                        <i data-lucide="maximize-2" style="width:12px; height:12px;"></i> Ampliar Mapa
+                                    </button>
                                 </div>
                             </div>
                             <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
                             <div id="heatmap-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
                                 <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
-                                <span>VISTA PREVIA MOCK: <span id="heatmap-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
+                                <span>VISTA PREVIA: <span id="heatmap-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
                             </div>
 
                             <!-- MÁSCARA BLOQUEADORA DE RADAR DE CALOR EXPIRADA -->
@@ -801,7 +806,7 @@
                                     </div>
                                     <div class="signal-item">
                                         <span class="signal-badge info">CRECIMIENTO</span>
-                                        <span class="signal-name">Carretera a El Salvador</span>
+                                        <span class="signal-name">CAES</span>
                                         <span class="signal-desc">Aumento del 12% en alquiler de bodegas industriales / residenciales cerrados.</span>
                                     </div>
                                 </div>
@@ -947,7 +952,7 @@
                     <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
                     <div id="investor-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
                         <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
-                        <span>VISTA PREVIA MOCK: <span id="investor-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
+                        <span>VISTA PREVIA: <span id="investor-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
                     </div>
 
                     <!-- MÁSCARA BLOQUEADORA DE TERMINAL DE INVERSIÓN EXPIRADA -->
@@ -1077,7 +1082,7 @@
                     <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
                     <div id="portfolio-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
                         <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
-                        <span>VISTA PREVIA MOCK: <span id="portfolio-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
+                        <span>VISTA PREVIA: <span id="portfolio-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
                     </div>
 
                     <!-- MÁSCARA BLOQUEADORA DE PORTAFOLIO EXPIRADA -->
@@ -1236,7 +1241,7 @@
                                                 <option value="zona15">Zona 15</option>
                                                 <option value="zona16">Zona 16</option>
                                                 <option value="zona4">Zona 4</option>
-                                                <option value="carretera">Carretera a El Salvador</option>
+                                                <option value="carretera">CAES</option>
                                                 <option value="fraijanes">Fraijanes</option>
                                                 <option value="mixco">Mixco</option>
                                                 <option value="antigua">Antigua Guatemala</option>
@@ -1469,12 +1474,6 @@
                                             <i data-lucide="eye" id="com-login-pass-eye" style="width: 16px; height: 16px;"></i>
                                         </button>
                                     </div>
-                                </div>
-
-                                <div class="demo-credentials font-mono" style="border: 1px dashed rgba(0,240,255,0.3); background: rgba(0,240,255,0.05); color: var(--cyan); font-size: 0.65rem; border-radius: 6px; padding: 10px; line-height: 1.4;">
-                                    <span style="font-weight: bold; display: block; margin-bottom: 2px;">🔑 CREDENCIALES DEMO (YA SUSCRITOS):</span>
-                                    Usuario: <strong style="text-decoration: underline;">agente@valorgt.com</strong> o <strong style="text-decoration: underline;">roberto@inversionesrv.com</strong><br>
-                                    Clave: <strong style="text-decoration: underline;">valorgt</strong>
                                 </div>
 
                                 <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 10px; font-weight: bold; padding: 12px;">
@@ -2112,8 +2111,8 @@
                                             <option value="zona14">Zona 14 (La Cañada / Américas)</option>
                                             <option value="zona15">Zona 15 (Vista Hermosa)</option>
                                             <option value="zona16">Zona 16 (Cayalá / Lomas)</option>
-                                            <option value="carretera">Carretera a El Salvador (Km 10-17)</option>
-                                            <option value="carretera_high">Carretera a El Salvador (Km 18-25)</option>
+                                            <option value="carretera">CAES (Km 10-17)</option>
+                                            <option value="carretera_high">CAES (Km 18-25)</option>
                                             <option value="pinula">San José Pinula (Condominios)</option>
                                             <option value="fraijanes">Fraijanes (Condominios)</option>
                                             <option value="mixco">Mixco (San Cristóbal / Blvd)</option>
@@ -2902,7 +2901,7 @@
                                     <option value="zona15">Zona 15 (Vista Hermosa)</option>
                                     <option value="zona16">Zona 16 (Cayalá)</option>
                                     <option value="zona4">Zona 4 (Hub Tecnológico)</option>
-                                    <option value="carretera">Carretera a El Salvador</option>
+                                    <option value="carretera">CAES</option>
                                     <option value="fraijanes">Fraijanes</option>
                                     <option value="mixco">Mixco (San Cristóbal)</option>
                                     <option value="antigua">Antigua Guatemala</option>
@@ -3797,9 +3796,9 @@
         </div>
 
         <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=4.7"></script>
-    <script src="charts.js?v=4.7"></script>
-    <script src="map.js?v=4.7"></script>
-    <script src="app.js?v=4.7"></script>
+    <script src="mockData.js?v=4.8"></script>
+    <script src="charts.js?v=4.8"></script>
+    <script src="map.js?v=4.8"></script>
+    <script src="app.js?v=4.8"></script>
 </body>
 </html>

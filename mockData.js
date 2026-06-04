@@ -150,7 +150,7 @@ const ZONES_DATABASE = {
         recommendation: "COMPRAR/ALQUILAR (RECOMENDADO). El ROI más alto de la ciudad. Diseñar unidades de tamaño reducido (micro-apartamentos) enfocados en Airbnb o rentas temporales para optimizar el rendimiento."
     },
     carretera: {
-        name: "Carretera a El Salvador (Km 10 - Km 17)",
+        name: "CAES (Km 10 - Km 17)",
         basePriceM2: 1100,
         roi: 6.8,
         growth5Y: 22,
@@ -202,7 +202,7 @@ const ZONES_DATABASE = {
             "Rápido desarrollo de centros educativos de primer nivel y plazas comerciales de conveniencia."
         ],
         risks: [
-            "Tránsito pesado durante horas pico en el embudo vial de Carretera a El Salvador.",
+            "Tránsito pesado durante horas pico en el embudo vial de CAES.",
             "Dependencia absoluta de vehículos motorizados para movilización a centros de trabajo."
         ],
         recommendation: "COMPRAR. Fraijanes es una excelente opción de vivienda horizontal familiar estable. El desarrollo de plazas comerciales de conveniencia locales reduce la necesidad de viajar al núcleo diariamente."
@@ -266,7 +266,7 @@ const ZONES_DATABASE = {
         recommendation: "ALQUILAR (AIRBNB). El turismo internacional e interno empuja tarifas por noche sumamente rentables. Estilo colonial bien mantenido con conectividad Wi-Fi de alta velocidad es un activo generador de cashflow invaluable."
     },
     carretera_high: {
-        name: "Carretera a El Salvador (Km 18 - Km 25)",
+        name: "CAES (Km 18 - Km 25)",
         basePriceM2: 950,
         roi: 6.4,
         growth5Y: 20,
@@ -1084,10 +1084,10 @@ const MALLS_DATABASE = [
     },
     {
         name: "Pradera Concepción",
-        zone: "Carretera a El Salvador",
+        zone: "CAES",
         lat: 14.5422,
         lng: -90.4285,
-        plusvaliaImpact: "Eje suburbano primario. Consolida la demanda habitacional de Carretera a El Salvador y Fraijanes, incrementando el interés comercial y mitigando la necesidad de movilización diaria a la capital.",
+        plusvaliaImpact: "Eje suburbano primario. Consolida la demanda habitacional de CAES y Fraijanes, incrementando el interés comercial y mitigando la necesidad de movilización diaria a la capital.",
         details: "Complejo comercial de gran escala que sirve como hub de conveniencia e infraestructura para el sector oriente."
     },
     {
@@ -1156,7 +1156,7 @@ const LANDMARKS_DATABASE = [
     {
         name: "Universidad del Istmo (UNIS)",
         type: "university",
-        zone: "Carretera a El Salvador",
+        zone: "CAES",
         lat: 14.4820,
         lng: -90.4180,
         plusvaliaImpact: "Ancla académica y ecológica del sector oriente. Su traslado a Fraijanes actuó como un potente imán habitacional, estimulando el desarrollo de condominios residenciales de alto perfil, residencias de estudiantes y plazas comerciales de conveniencia.",
@@ -1168,7 +1168,7 @@ const LANDMARKS_DATABASE = [
         zone: "Fraijanes / Km 22",
         lat: 14.4752,
         lng: -90.4357,
-        plusvaliaImpact: "Hito de congregación masiva. Dinamiza intensamente el tráfico de fin de semana y cataliza el desarrollo de residenciales horizontales cerrados premium y plazas de servicio a lo largo de la Carretera a El Salvador (Km 18-Km 25).",
+        plusvaliaImpact: "Hito de congregación masiva. Dinamiza intensamente el tráfico de fin de semana y cataliza el desarrollo de residenciales horizontales cerrados premium y plazas de servicio a lo largo de la CAES (Km 18-Km 25).",
         details: "Uno de los templos cristianos más grandes de Latinoamérica, punto de referencia geográfico y de influencia socioeconómica en el sector oriente."
     }
 ];
