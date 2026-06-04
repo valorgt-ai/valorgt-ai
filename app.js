@@ -3078,55 +3078,57 @@ function updatePortfolioMapMarkers() {
 
         const roi = (rentVal * 12) / (asset.buyValue * conversion) * 100;
 
-        // Círculo de Concentración Financiera (el radio depende del valor del activo)
-        const radius = Math.min(Math.max((asset.currentValue / 1000) * 2, 400), 1600);
-        
-        const circle = L.circle([asset.lat, asset.lng], {
-            color: '#bf5af2',
-            fillColor: '#bf5af2',
-            fillOpacity: 0.12,
-            weight: 1,
-            radius: radius
-        }).addTo(portfolioMapInstance);
+        // Círculo de Concentración Financiera y marcador GPS (solo si tiene coordenadas)
+        let marker;
+        if (asset.lat && asset.lng) {
+            const radius = Math.min(Math.max((asset.currentValue / 1000) * 2, 400), 1600);
+            const circle = L.circle([asset.lat, asset.lng], {
+                color: '#bf5af2',
+                fillColor: '#bf5af2',
+                fillOpacity: 0.12,
+                weight: 1,
+                radius: radius
+            }).addTo(portfolioMapInstance);
 
-        portfolioCircles.push(circle);
+            portfolioCircles.push(circle);
 
-        // Marcador Morado Wealth Management
-        const beaconIcon = L.divIcon({
-            className: 'radar-beacon-container',
-            html: `
-                <div class="radar-beacon beacon-purple">
-                    <div class="beacon-pulse" style="animation-duration: 1.6s"></div>
-                    <div class="beacon-dot"></div>
+            // Marcador Morado Wealth Management
+            const beaconIcon = L.divIcon({
+                className: 'radar-beacon-container',
+                html: `
+                    <div class="radar-beacon beacon-purple">
+                        <div class="beacon-pulse" style="animation-duration: 1.6s"></div>
+                        <div class="beacon-dot"></div>
+                    </div>
+                `,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            marker = L.marker([asset.lat, asset.lng], { icon: beaconIcon }).addTo(portfolioMapInstance);
+            portfolioMarkers.push(marker);
+
+            // Popup del activo geolocalizado
+            const popupContent = `
+                <div class="map-popup-header purple-header">
+                    <h4><i data-lucide="building" class="tiny-icon inline"></i> ${asset.title}</h4>
+                    <span class="sub-title font-mono" style="font-size:0.55rem; color: #bf5af2;">ACTIVO DEL PORTAFOLIO</span>
                 </div>
-            `,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-        });
+                <div class="map-popup-body">
+                    <span class="popup-lbl">Valor Actual:</span>
+                    <span class="popup-val text-cyan">${currencySym}${formatNumber(valVal.toFixed(0))}</span>
+                    <span class="popup-lbl">Flujo Renta:</span>
+                    <span class="popup-val text-green">${currencySym}${formatNumber(rentVal.toFixed(0))}/m</span>
+                    <span class="popup-lbl">ROI Renta:</span>
+                    <span class="popup-val text-green">${roi.toFixed(1)}%</span>
+                </div>
+            `;
 
-        const marker = L.marker([asset.lat, asset.lng], { icon: beaconIcon }).addTo(portfolioMapInstance);
-        portfolioMarkers.push(marker);
-
-        // Popup del activo geolocalizado
-        const popupContent = `
-            <div class="map-popup-header purple-header">
-                <h4><i data-lucide="building" class="tiny-icon inline"></i> ${asset.title}</h4>
-                <span class="sub-title font-mono" style="font-size:0.55rem; color: #bf5af2;">ACTIVO DEL PORTAFOLIO</span>
-            </div>
-            <div class="map-popup-body">
-                <span class="popup-lbl">Valor Actual:</span>
-                <span class="popup-val text-cyan">${currencySym}${formatNumber(valVal.toFixed(0))}</span>
-                <span class="popup-lbl">Flujo Renta:</span>
-                <span class="popup-val text-green">${currencySym}${formatNumber(rentVal.toFixed(0))}/m</span>
-                <span class="popup-lbl">ROI Renta:</span>
-                <span class="popup-val text-green">${roi.toFixed(1)}%</span>
-            </div>
-        `;
-
-        marker.bindPopup(popupContent, {
-            closeButton: false,
-            offset: L.point(0, -5)
-        });
+            marker.bindPopup(popupContent, {
+                closeButton: false,
+                offset: L.point(0, -5)
+            });
+        }
 
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
@@ -3151,8 +3153,12 @@ function updatePortfolioMapMarkers() {
             `;
             
             signalItem.onclick = () => {
-                marker.openPopup();
-                portfolioMapInstance.setView([asset.lat, asset.lng], 13, { animate: true });
+                if (asset.lat && asset.lng && marker) {
+                    marker.openPopup();
+                    portfolioMapInstance.setView([asset.lat, asset.lng], 13, { animate: true });
+                } else {
+                    alert("Este activo no tiene coordenadas GPS válidas cargadas (registrado con 0,0).");
+                }
             };
             
             signalListEl.appendChild(signalItem);
@@ -4252,8 +4258,10 @@ async function publishAgentProperty(event) {
     
     const photo = photos[0];
     const youtubeUrl = document.getElementById('pub-youtube') ? document.getElementById('pub-youtube').value.trim() : '';
-    const lat = parseFloat(document.getElementById('pub-lat').value);
-    const lng = parseFloat(document.getElementById('pub-lng').value);
+    const latVal = document.getElementById('pub-lat').value.trim();
+    const lngVal = document.getElementById('pub-lng').value.trim();
+    const lat = latVal === '' ? 0 : (parseFloat(latVal) || 0);
+    const lng = lngVal === '' ? 0 : (parseFloat(lngVal) || 0);
 
     // Parámetros avanzados del Acordeón B2B
     const city = document.getElementById('pub-prop-city') ? document.getElementById('pub-prop-city').value : 'Guatemala';
