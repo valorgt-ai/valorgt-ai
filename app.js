@@ -1144,6 +1144,17 @@ function renderCatalogProperties() {
         properties = PORTFOLIO_DATABASE[zoneKey] || [];
     }
 
+    // Filtrar duplicados por ID o Título
+    const seen = new Set();
+    properties = properties.filter(prop => {
+        const uniqueId = prop.id || prop.title;
+        if (seen.has(uniqueId)) {
+            return false;
+        }
+        seen.add(uniqueId);
+        return true;
+    });
+
     if (!properties || properties.length === 0) {
         counter.innerText = "0 ACTIVOS ENCONTRADOS";
         return;
