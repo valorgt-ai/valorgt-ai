@@ -66,6 +66,7 @@ let plansVideoUrl = localStorage.getItem('valorgt_plans_video_url') || 'https://
 let welcomeVideoUrl = localStorage.getItem('valorgt_welcome_video_url') || 'https://www.youtube.com/embed/M55qqyxcFSI'; // URL del video de bienvenida principal calibrada por el admin
 let promoBannerMessage = localStorage.getItem('valorgt_promo_message') || '✨ ¡Oportunidad Prime! Descuento especial del 15% en pautas comerciales contratadas esta semana. Destaca tu propiedad ahora.';
 let isPromoBannerActive = localStorage.getItem('valorgt_promo_active') !== 'false';
+let editingPropertyId = null;
 
 
 
@@ -166,6 +167,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pubCategorySelect) {
         pubCategorySelect.addEventListener('change', updateB2bFieldVisibility);
         updateB2bFieldVisibility(); // Ejecutar inicialmente
+    }
+
+    // Resetear formulario de edición B2B
+    const publishFormEl = document.getElementById('publish-property-form');
+    if (publishFormEl) {
+        publishFormEl.addEventListener('reset', () => {
+            editingPropertyId = null;
+            const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i data-lucide="plus-circle"></i> Publicar Listado en Inventario';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        });
     }
 
     // Listener para cargar múltiples fotos locales (Desde PC del agente, máx 6) como Base64 con previsualización acumulativa (en fila)
@@ -4218,7 +4232,7 @@ async function publishAgentProperty(event) {
         planLabel = "Inmobiliaria Premium";
     }
 
-    if (agentUploadedProperties.length >= maxProperties) {
+    if (!editingPropertyId && agentUploadedProperties.length >= maxProperties) {
         alert(`⚠️ LÍMITE DE PUBLICACIONES ALCANZADO: Tu plan "${planLabel}" posee un límite máximo de ${maxProperties} propiedades publicadas de forma simultánea. Para aumentar tu capacidad e inyectar más nodos, adquiere un plan corporativo superior.`);
         return;
     }
@@ -4357,121 +4371,240 @@ async function publishAgentProperty(event) {
     const locationName = zoneData ? zoneData.name.split(' (')[0] : "Guatemala";
 
     // Estructurar propiedad que combine perfectamente con PORTFOLIO_DATABASE y soporte la tasación multivariable
-    const newProperty = {
-        id: 'agent-' + Date.now(),
-        title: title,
-        category: category,
-        type: type,
-        tag: `${category.toUpperCase()} EN ${type.toUpperCase()}`,
-        priceUSD: priceUSD,
-        size: size,
-        rooms: rooms,
-        bathrooms: bathrooms,
-        parkings: parkings,
-        city: city,
-        residential: residential,
-        landArea: landArea,
-        landUnit: landUnit,
-        secondaryRooms: secondaryRooms,
-        fullBathrooms: fullBathrooms,
-        parkingType: parkingType,
-        garden: garden,
-        finishes: finishes,
-        conservation: conservation,
-        hasMasterSuite: hasMasterSuite,
-        hasVisitorBath: hasVisitorBath,
-        study: study,
-        familyRoom: familyRoom,
-        areas: areas,
-        materials: materials,
-        near: near,
-        amenities: amenities.length > 0 ? amenities : ["amenity-security"],
-        photo: photo,
-        photos: photos,
-        description: description,
-        agentName: agentName,
-        agentCompany: agentCompany,
-        agentPhone: agentPhone,
-        agentLogo: agentLogo,
-        agentPlan: agentPlan,
-        youtubeUrl: youtubeUrl,
-        badge: "NUEVO LISTADO",
-        location: locationKey,
-        isAgentUpload: true,
-        sponsored: false,
-        lat: lat,
-        lng: lng
-    };
+    let newProperty = null;
 
-    if (isSupabaseActive) {
-        try {
-            // Guardar en Supabase incluyendo los campos avanzados en el payload de properties
-            const { data, error } = await supabaseClient.from('properties').insert([
-                {
-                    title: title,
-                    category: category,
-                    type: type,
-                    tag: newProperty.tag,
-                    price_usd: priceUSD,
-                    size_m2: size,
-                    rooms: rooms,
-                    bathrooms: bathrooms,
-                    parkings: parkings,
-                    photo_url: photo,
-                    location_key: locationKey,
-                    sponsored: false,
-                    latitude: lat,
-                    longitude: lng,
-                    agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
-                    metadata: {
-                        city: city,
-                        residential: residential,
-                        landArea: landArea,
-                        landUnit: landUnit,
-                        secondaryRooms: secondaryRooms,
-                        fullBathrooms: fullBathrooms,
-                        parkingType: parkingType,
-                        garden: garden,
-                        finishes: finishes,
-                        conservation: conservation,
-                        hasMasterSuite: hasMasterSuite,
-                        hasVisitorBath: hasVisitorBath,
-                        study: study,
-                        familyRoom: familyRoom,
-                        areas: areas,
-                        materials: materials,
-                        near: near,
-                        amenities: amenities,
-                        youtubeUrl: youtubeUrl,
-                        photos: photos,
-                        description: description,
-                        agentName: agentName,
-                        agentCompany: agentCompany,
-                        agentPhone: agentPhone,
-                        agentLogo: agentLogo,
-                        agentPlan: agentPlan
-                    }
+    if (editingPropertyId) {
+        // Modo Edición: Encontrar y actualizar propiedad existente
+        newProperty = agentUploadedProperties.find(p => p.id === editingPropertyId);
+        if (newProperty) {
+            const oldLocationKey = newProperty.location;
+
+            newProperty.title = title;
+            newProperty.category = category;
+            newProperty.type = type;
+            newProperty.tag = `${category.toUpperCase()} EN ${type.toUpperCase()}`;
+            newProperty.priceUSD = priceUSD;
+            newProperty.size = size;
+            newProperty.rooms = rooms;
+            newProperty.bathrooms = bathrooms;
+            newProperty.parkings = parkings;
+            newProperty.city = city;
+            newProperty.residential = residential;
+            newProperty.landArea = landArea;
+            newProperty.landUnit = landUnit;
+            newProperty.secondaryRooms = secondaryRooms;
+            newProperty.fullBathrooms = fullBathrooms;
+            newProperty.parkingType = parkingType;
+            newProperty.garden = garden;
+            newProperty.finishes = finishes;
+            newProperty.conservation = conservation;
+            newProperty.hasMasterSuite = hasMasterSuite;
+            newProperty.hasVisitorBath = hasVisitorBath;
+            newProperty.study = study;
+            newProperty.familyRoom = familyRoom;
+            newProperty.areas = areas;
+            newProperty.materials = materials;
+            newProperty.near = near;
+            newProperty.amenities = amenities.length > 0 ? amenities : ["amenity-security"];
+            newProperty.photo = photo;
+            newProperty.photos = photos;
+            newProperty.description = description;
+            newProperty.youtubeUrl = youtubeUrl;
+            newProperty.location = locationKey;
+            newProperty.lat = lat;
+            newProperty.lng = lng;
+
+            // Sincronizar en PORTFOLIO_DATABASE
+            if (oldLocationKey && PORTFOLIO_DATABASE[oldLocationKey]) {
+                if (oldLocationKey !== locationKey) {
+                    PORTFOLIO_DATABASE[oldLocationKey] = PORTFOLIO_DATABASE[oldLocationKey].filter(p => p.id !== editingPropertyId);
                 }
-            ]).select();
-
-            if (error) {
-                console.error("Error al registrar propiedad en Supabase:", error);
-            } else if (data && data[0]) {
-                newProperty.id = data[0].id; // Reemplazar con el UUID generado en Supabase
             }
-        } catch (err) {
-            console.error("Fallo de red al registrar propiedad en Supabase:", err);
+            if (!PORTFOLIO_DATABASE[locationKey]) {
+                PORTFOLIO_DATABASE[locationKey] = [];
+            }
+            const dbIndex = PORTFOLIO_DATABASE[locationKey].findIndex(p => p.id === editingPropertyId);
+            if (dbIndex >= 0) {
+                PORTFOLIO_DATABASE[locationKey][dbIndex] = newProperty;
+            } else {
+                PORTFOLIO_DATABASE[locationKey].push(newProperty);
+            }
+
+            // Supabase
+            if (isSupabaseActive) {
+                try {
+                    await supabaseClient.from('properties').update({
+                        title: title,
+                        category: category,
+                        type: type,
+                        tag: newProperty.tag,
+                        price_usd: priceUSD,
+                        size_m2: size,
+                        rooms: rooms,
+                        bathrooms: bathrooms,
+                        parkings: parkings,
+                        photo_url: photo,
+                        location_key: locationKey,
+                        latitude: lat,
+                        longitude: lng,
+                        metadata: {
+                            city: city,
+                            residential: residential,
+                            landArea: landArea,
+                            landUnit: landUnit,
+                            secondaryRooms: secondaryRooms,
+                            fullBathrooms: fullBathrooms,
+                            parkingType: parkingType,
+                            garden: garden,
+                            finishes: finishes,
+                            conservation: conservation,
+                            hasMasterSuite: hasMasterSuite,
+                            hasVisitorBath: hasVisitorBath,
+                            study: study,
+                            familyRoom: familyRoom,
+                            areas: areas,
+                            materials: materials,
+                            near: near,
+                            amenities: amenities,
+                            youtubeUrl: youtubeUrl,
+                            photos: photos,
+                            description: description,
+                            agentName: newProperty.agentName,
+                            agentCompany: newProperty.agentCompany,
+                            agentPhone: newProperty.agentPhone,
+                            agentLogo: newProperty.agentLogo,
+                            agentPlan: newProperty.agentPlan
+                        }
+                    }).eq('id', editingPropertyId);
+                } catch (err) {
+                    console.error("Error al actualizar propiedad en Supabase:", err);
+                }
+            }
         }
-    }
 
-    // Agregar al portafolio local del B2B
-    agentUploadedProperties.push(newProperty);
+        editingPropertyId = null;
+        const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i data-lucide="plus-circle"></i> Publicar Listado en Inventario';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    } else {
+        // Modo Creación: Nueva propiedad
+        newProperty = {
+            id: 'agent-' + Date.now(),
+            title: title,
+            category: category,
+            type: type,
+            tag: `${category.toUpperCase()} EN ${type.toUpperCase()}`,
+            priceUSD: priceUSD,
+            size: size,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            parkings: parkings,
+            city: city,
+            residential: residential,
+            landArea: landArea,
+            landUnit: landUnit,
+            secondaryRooms: secondaryRooms,
+            fullBathrooms: fullBathrooms,
+            parkingType: parkingType,
+            garden: garden,
+            finishes: finishes,
+            conservation: conservation,
+            hasMasterSuite: hasMasterSuite,
+            hasVisitorBath: hasVisitorBath,
+            study: study,
+            familyRoom: familyRoom,
+            areas: areas,
+            materials: materials,
+            near: near,
+            amenities: amenities.length > 0 ? amenities : ["amenity-security"],
+            photo: photo,
+            photos: photos,
+            description: description,
+            agentName: agentName,
+            agentCompany: agentCompany,
+            agentPhone: agentPhone,
+            agentLogo: agentLogo,
+            agentPlan: agentPlan,
+            youtubeUrl: youtubeUrl,
+            badge: "NUEVO LISTADO",
+            location: locationKey,
+            isAgentUpload: true,
+            sponsored: false,
+            lat: lat,
+            lng: lng
+        };
 
-    // Inyectar en el inventario real del sistema
-    if (!PORTFOLIO_DATABASE[locationKey]) {
-        PORTFOLIO_DATABASE[locationKey] = [];
+        if (isSupabaseActive) {
+            try {
+                const { data, error } = await supabaseClient.from('properties').insert([
+                    {
+                        title: title,
+                        category: category,
+                        type: type,
+                        tag: newProperty.tag,
+                        price_usd: priceUSD,
+                        size_m2: size,
+                        rooms: rooms,
+                        bathrooms: bathrooms,
+                        parkings: parkings,
+                        photo_url: photo,
+                        location_key: locationKey,
+                        sponsored: false,
+                        latitude: lat,
+                        longitude: lng,
+                        agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
+                        metadata: {
+                            city: city,
+                            residential: residential,
+                            landArea: landArea,
+                            landUnit: landUnit,
+                            secondaryRooms: secondaryRooms,
+                            fullBathrooms: fullBathrooms,
+                            parkingType: parkingType,
+                            garden: garden,
+                            finishes: finishes,
+                            conservation: conservation,
+                            hasMasterSuite: hasMasterSuite,
+                            hasVisitorBath: hasVisitorBath,
+                            study: study,
+                            familyRoom: familyRoom,
+                            areas: areas,
+                            materials: materials,
+                            near: near,
+                            amenities: amenities,
+                            youtubeUrl: youtubeUrl,
+                            photos: photos,
+                            description: description,
+                            agentName: agentName,
+                            agentCompany: agentCompany,
+                            agentPhone: agentPhone,
+                            agentLogo: agentLogo,
+                            agentPlan: agentPlan
+                        }
+                    }
+                ]).select();
+
+                if (error) {
+                    console.error("Error al registrar propiedad en Supabase:", error);
+                } else if (data && data[0]) {
+                    newProperty.id = data[0].id;
+                }
+            } catch (err) {
+                console.error("Fallo de red al registrar propiedad en Supabase:", err);
+            }
+        }
+
+        // Agregar al portafolio local del B2B
+        agentUploadedProperties.push(newProperty);
+
+        // Inyectar en el inventario real del sistema
+        if (!PORTFOLIO_DATABASE[locationKey]) {
+            PORTFOLIO_DATABASE[locationKey] = [];
+        }
+        PORTFOLIO_DATABASE[locationKey].push(newProperty);
     }
-    PORTFOLIO_DATABASE[locationKey].push(newProperty);
 
     // Limpiar formulario y restablecer valores del acordeón
     document.getElementById('publish-property-form').reset();
@@ -6541,6 +6674,9 @@ function renderB2bInventory(filter = 'todos') {
                 <div class="inv-price-bar" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 8px;">
                     <span class="inv-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan);">${currencySym}${formatNumber(convertedPrice.toFixed(0))}</span>
                     <div style="display: flex; gap: 5px;">
+                        <button class="btn-inv-action" onclick="event.stopPropagation(); editAgentProperty('${prop.id}')" style="background: rgba(191, 90, 242, 0.1); border: 1px solid #bf5af2; color: #bf5af2; font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
+                            ✏️ EDITAR
+                        </button>
                         <button class="btn-inv-action" onclick="event.stopPropagation(); autoValuateFromInventory('${prop.location}', ${dbIndex})" style="background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
                             ⚡ TASAR IA
                         </button>
@@ -6582,6 +6718,174 @@ function filterB2bInventory(category) {
 
     // Rerenderizar
     renderB2bInventory(category);
+}
+
+/**
+ * Carga una propiedad publicada en el formulario B2B para editarla
+ */
+function editAgentProperty(propId) {
+    const prop = agentUploadedProperties.find(p => p.id === propId);
+    if (!prop) {
+        alert("No se encontró la propiedad seleccionada.");
+        return;
+    }
+
+    // Cambiar a la pestaña de ingreso de propiedades (Terminal de Publicación)
+    switchCommercialTab('propiedades');
+
+    // Establecer variable de edición
+    editingPropertyId = propId;
+
+    // Rellenar formulario principal
+    document.getElementById('pub-title').value = prop.title || '';
+    document.getElementById('pub-category').value = prop.category || 'Apartamento';
+    document.getElementById('pub-type').value = prop.type || 'Venta';
+    document.getElementById('pub-location').value = prop.location || '';
+    
+    // Convertir precio de vuelta a la moneda activa si fue guardado en USD
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    document.getElementById('pub-price').value = Math.round(prop.priceUSD * conversion);
+    
+    document.getElementById('pub-size').value = prop.size || '';
+    document.getElementById('pub-beds').value = prop.rooms || 0;
+    document.getElementById('pub-baths').value = prop.bathrooms || 0;
+    document.getElementById('pub-parks').value = prop.parkings || 0;
+    document.getElementById('pub-lat').value = prop.lat || '';
+    document.getElementById('pub-lng').value = prop.lng || '';
+    
+    const descInput = document.getElementById('pub-description');
+    if (descInput) {
+        descInput.value = prop.description || '';
+    }
+    
+    const youtubeInput = document.getElementById('pub-youtube');
+    if (youtubeInput) {
+        youtubeInput.value = prop.youtubeUrl || '';
+    }
+    
+    // Manejo de fotos locales cargadas
+    if (prop.photos && prop.photos.length > 0) {
+        uploadedBase64Images = [...prop.photos];
+        renderThumbnailsPreview();
+        const fileInput = document.getElementById('pub-file-input');
+        const label = document.querySelector('label[for="pub-file-input"]');
+        if (label) {
+            label.innerHTML = `O Subir Fotos Locales <span style="color: var(--green); font-weight: bold;">(¡${uploadedBase64Images.length} cargadas ✔️!)</span>`;
+        }
+        if (fileInput) {
+            fileInput.style.border = '1px solid var(--green)';
+            fileInput.style.background = 'rgba(0, 255, 128, 0.1)';
+        }
+    } else {
+        uploadedBase64Images = [];
+        renderThumbnailsPreview();
+        const fileInput = document.getElementById('pub-file-input');
+        const label = document.querySelector('label[for="pub-file-input"]');
+        if (label) {
+            label.innerText = 'O Subir Fotos Locales (Hasta 10 desde tu PC)';
+        }
+        if (fileInput) {
+            fileInput.style.border = '1px dashed var(--cyan)';
+            fileInput.style.background = 'rgba(0,0,0,0.4)';
+            fileInput.value = '';
+        }
+    }
+
+    // Parámetros avanzados
+    if (document.getElementById('pub-prop-city')) {
+        document.getElementById('pub-prop-city').value = prop.city || 'Guatemala';
+    }
+    if (document.getElementById('pub-prop-residential')) {
+        document.getElementById('pub-prop-residential').value = prop.residential || '';
+    }
+    if (document.getElementById('pub-prop-land-area')) {
+        document.getElementById('pub-prop-land-area').value = prop.landArea || 0;
+    }
+    if (document.getElementById('pub-prop-land-unit')) {
+        document.getElementById('pub-prop-land-unit').value = prop.landUnit || 'v2';
+    }
+    if (document.getElementById('pub-room-secondary-count')) {
+        document.getElementById('pub-room-secondary-count').value = prop.secondaryRooms || 0;
+    }
+    if (document.getElementById('pub-bath-full-count')) {
+        document.getElementById('pub-bath-full-count').value = prop.fullBathrooms || 0;
+    }
+    if (document.getElementById('pub-parking-type')) {
+        document.getElementById('pub-parking-type').value = prop.parkingType || 'techados';
+    }
+    if (document.getElementById('pub-prop-garden')) {
+        document.getElementById('pub-prop-garden').value = prop.garden || 0;
+    }
+    if (document.getElementById('pub-prop-finishes')) {
+        document.getElementById('pub-prop-finishes').value = prop.finishes || 'standard';
+    }
+    if (document.getElementById('pub-prop-conservation')) {
+        document.getElementById('pub-prop-conservation').value = prop.conservation || 'nueva';
+    }
+
+    // Checkboxes
+    const checkboxMapping = {
+        'pub-room-master-suite': prop.hasMasterSuite,
+        'pub-bath-visitor': prop.hasVisitorBath,
+        'pub-prop-family-room': prop.familyRoom,
+        'pub-prop-study': prop.study,
+        
+        'pub-amenity-pool': prop.amenities?.includes('amenity-pool') || prop.amenities?.includes('pool'),
+        'pub-amenity-gym': prop.amenities?.includes('amenity-gym') || prop.amenities?.includes('gym'),
+        'pub-amenity-security': prop.amenities?.includes('amenity-security') || prop.amenities?.includes('security'),
+        'pub-amenity-clubhouse': prop.amenities?.includes('amenity-clubhouse') || prop.amenities?.includes('clubhouse'),
+        'pub-amenity-view': prop.amenities?.includes('amenity-view') || prop.amenities?.includes('view'),
+        'pub-amenity-smart': prop.amenities?.includes('amenity-smart') || prop.amenities?.includes('smart'),
+        'pub-amenity-solar': prop.amenities?.includes('amenity-solar') || prop.amenities?.includes('solar'),
+        'pub-amenity-cistern': prop.amenities?.includes('amenity-cistern') || prop.amenities?.includes('cistern'),
+        'pub-amenity-elevator': prop.amenities?.includes('amenity-elevator') || prop.amenities?.includes('elevator'),
+        
+        'pub-mat-porcelain': prop.materials?.includes('mat-porcelain'),
+        'pub-mat-marble': prop.materials?.includes('mat-marble'),
+        'pub-mat-wood': prop.materials?.includes('mat-wood'),
+        'pub-mat-pvc': prop.materials?.includes('mat-pvc'),
+        'pub-mat-kitchen-luxe': prop.materials?.includes('mat-kitchen-luxe'),
+        
+        'pub-near-malls': prop.near?.includes('near-malls'),
+        'pub-near-schools': prop.near?.includes('near-schools'),
+        'pub-near-supers': prop.near?.includes('near-supers'),
+        'pub-near-roads': prop.near?.includes('near-roads'),
+
+        'pub-area-living': prop.areas?.includes('area-living'),
+        'pub-area-dining': prop.areas?.includes('area-dining'),
+        'pub-area-kitchen': prop.areas?.includes('area-kitchen'),
+        'pub-area-breakfast': prop.areas?.includes('area-breakfast'),
+        'pub-area-maid': prop.areas?.includes('area-maid'),
+        'pub-area-laundry': prop.areas?.includes('area-laundry'),
+        'pub-area-storage': prop.areas?.includes('area-storage'),
+        'pub-area-terrace': prop.areas?.includes('area-terrace'),
+        'pub-area-balcony': prop.areas?.includes('area-balcony'),
+        'pub-area-patio': prop.areas?.includes('area-patio')
+    };
+
+    for (const [id, value] of Object.entries(checkboxMapping)) {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!value;
+    }
+
+    // Actualizar visibilidad dinámica B2B en base a categoría/tipo
+    updateB2bFieldVisibility();
+
+    // Cambiar el texto del botón de publicar
+    const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i data-lucide="check-circle"></i> Guardar Correcciones Inmobiliarias';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // Scroll suave al formulario de ingreso
+    const tabContainer = document.getElementById('view-commercial');
+    if (tabContainer) {
+        tabContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Alerta descriptiva
+    alert(`✏️ MODO EDICIÓN ACTIVO: Se cargaron los datos de "${prop.title}". Realiza los ajustes necesarios y haz clic en "Guardar Correcciones Inmobiliarias" para confirmarlos.`);
 }
 
 /**
