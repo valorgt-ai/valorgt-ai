@@ -51,7 +51,42 @@ let b2bClients = JSON.parse(localStorage.getItem('b2b_clients_local')) || [
     { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Premium', status: 'Activo', password: 'valorgt', usdtBalance: 100, role: 'inversionista', whatsapp: '50240028593', logo: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?auto=format&fit=crop&w=100&h=100&q=80' },
     { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente', whatsapp: '50239482049', logo: '' }
 ];
+
+// Asegurar IDs para b2bClients si no los tienen
+b2bClients.forEach((client, idx) => {
+    if (!client.id) {
+        if (client.email === 'ana@estevezinmobiliaria.com') client.id = 'demo-ana-estevez';
+        else if (client.email === 'roberto@inversionesrv.com') client.id = 'demo-roberto-valenzuela';
+        else if (client.email === 'sofia@alianzagt.com') client.id = 'demo-sofia-rodas';
+        else client.id = 'local-client-' + idx;
+    }
+});
+localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+
 let agentUploadedProperties = [];
+
+// Cargar propiedades locales de contingencia
+const savedLocalProps = localStorage.getItem('valorgt_local_properties');
+if (savedLocalProps) {
+    try {
+        const localProps = JSON.parse(savedLocalProps);
+        localProps.forEach(prop => {
+            agentUploadedProperties.push(prop);
+            const zoneKey = prop.location;
+            if (zoneKey && typeof PORTFOLIO_DATABASE !== 'undefined') {
+                if (!PORTFOLIO_DATABASE[zoneKey]) {
+                    PORTFOLIO_DATABASE[zoneKey] = [];
+                }
+                const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === prop.id || p.title === prop.title);
+                if (!exists) {
+                    PORTFOLIO_DATABASE[zoneKey].push(prop);
+                }
+            }
+        });
+    } catch (e) {
+        console.error("Error al decodificar propiedades locales:", e);
+    }
+}
 let b2bWithdrawals = [
     { ref: 'WTH-984021', date: '2026-05-25 09:12', bank: 'Banco Industrial', account: '••••4820', amountXAUt: 0.0450, feeGTQ: 32.20, netGTQ: 772.80, status: 'Aprobado' },
     { ref: 'WTH-304910', date: '2026-05-28 10:15', bank: 'G&T Continental', account: '••••8953', amountXAUt: 0.0200, feeGTQ: 14.30, netGTQ: 343.30, status: 'Pendiente' }
@@ -4606,6 +4641,9 @@ async function publishAgentProperty(event) {
         PORTFOLIO_DATABASE[locationKey].push(newProperty);
     }
 
+    // Guardar en localStorage de contingencia local
+    localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+
     // Limpiar formulario y restablecer valores del acordeón
     document.getElementById('publish-property-form').reset();
     
@@ -4874,6 +4912,9 @@ function completeB2bTransaction() {
             // Marcar en nuestro listado local también
             prop.sponsored = true;
             prop.badge = "PATROCINADO";
+
+            // Guardar en localStorage de contingencia local
+            localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
 
             // Re-renderizar el catálogo comercial de propiedades
             renderB2bInventory();
@@ -5773,6 +5814,9 @@ async function approvePendingPayment(reqId) {
                     });
                 });
                 
+                // Guardar en localStorage de contingencia local
+                localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+                
                 // 3. Sincronizar e incrementar impresiones
                 saasImpressionsCount += 4500;
                 saasClientClicks += 180;
@@ -6189,6 +6233,7 @@ async function handleRegistrationFormSubmit(event) {
     const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : (selectedPlanKey === 'premium' ? 'Premium' : 'Básico'));
 
     const newClient = {
+        id: 'agent-' + Date.now(),
         name: name,
         company: company,
         nit: nit,
