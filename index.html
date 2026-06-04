@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=5.8">
+    <link rel="stylesheet" href="styles.css?v=5.9">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -2911,12 +2911,20 @@
                             <div class="catalog-zone-selector" style="display: flex; align-items: center; gap: 8px;">
                                 <label for="catalog-zone-select" class="hud-label-small" style="margin-bottom: 0;">ZONA:</label>
                                 <select id="catalog-zone-select" onchange="renderCatalogProperties()" style="background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: var(--cyan); font-family: var(--font-mono); outline: none; cursor: pointer; transition: all 0.3s;">
+                                    <option value="zona1">Zona 1 (Centro Histórico)</option>
+                                    <option value="zona4">Zona 4 (Hub Tecnológico)</option>
+                                    <option value="zona7">Zona 7 (El Naranjo / Landívar)</option>
+                                    <option value="zona9">Zona 9 (Terminal / Montúfar)</option>
                                     <option value="zona10">Zona 10 (Zona Viva)</option>
+                                    <option value="zona11">Zona 11 (Majadas / Las Charcas)</option>
+                                    <option value="zona12">Zona 12 (El Trébol / Reformita)</option>
+                                    <option value="zona13">Zona 13 (Aurora / Hincapié)</option>
                                     <option value="zona14" selected>Zona 14 (Américas)</option>
                                     <option value="zona15">Zona 15 (Vista Hermosa)</option>
                                     <option value="zona16">Zona 16 (Cayalá)</option>
-                                    <option value="zona4">Zona 4 (Hub Tecnológico)</option>
-                                    <option value="carretera">CAES</option>
+                                    <option value="carretera">CAES (Km 10-17)</option>
+                                    <option value="carretera_high">CAES (Km 18-25)</option>
+                                    <option value="pinula">San José Pinula</option>
                                     <option value="fraijanes">Fraijanes</option>
                                     <option value="mixco">Mixco (San Cristóbal)</option>
                                     <option value="antigua">Antigua Guatemala</option>
@@ -3811,9 +3819,9 @@
         </div>
 
         <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=5.8"></script>
-    <script src="charts.js?v=5.8"></script>
-    <script src="map.js?v=5.8"></script>
-    <script src="app.js?v=5.8"></script>
+    <script src="mockData.js?v=5.9"></script>
+    <script src="charts.js?v=5.9"></script>
+    <script src="map.js?v=5.9"></script>
+    <script src="app.js?v=5.9"></script>
 </body>
 </html>
