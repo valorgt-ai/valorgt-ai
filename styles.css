@@ -3686,7 +3686,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* B2B Inventory Grid Styles */
 .b2b-inventory-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin-top: 10px;
 }

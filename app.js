@@ -1135,15 +1135,20 @@ function renderCatalogProperties() {
     counter.innerText = "BUSCANDO ACTIVOS...";
 
     const zoneKey = zoneSelect.value;
-    const properties = PORTFOLIO_DATABASE[zoneKey];
-    if (!properties) {
+    let properties = [];
+    if (zoneKey === 'todas') {
+        Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
+            properties = properties.concat(PORTFOLIO_DATABASE[zk] || []);
+        });
+    } else {
+        properties = PORTFOLIO_DATABASE[zoneKey] || [];
+    }
+
+    if (!properties || properties.length === 0) {
         counter.innerText = "0 ACTIVOS ENCONTRADOS";
         return;
     }
 
-    const zoneData = ZONES_DATABASE[zoneKey];
-    const zoneName = zoneData.name.split(' (')[0];
-    const zoneColor = zoneData.color; // 'red', 'orange', 'yellow', 'green', 'blue'
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
@@ -1184,23 +1189,27 @@ function renderCatalogProperties() {
 
         renderedCount++;
         
-        // Find absolute index in original array to ensure autotasar works flawlessly
-        const absoluteIndex = PORTFOLIO_DATABASE[zoneKey].indexOf(prop);
+        const propZoneKey = prop.location || zoneKey;
+        const absoluteIndex = PORTFOLIO_DATABASE[propZoneKey] ? PORTFOLIO_DATABASE[propZoneKey].indexOf(prop) : -1;
+        const propZoneData = ZONES_DATABASE[propZoneKey];
+        const propZoneName = propZoneData ? propZoneData.name.split(' (')[0] : 'Guatemala';
+        const propZoneColor = propZoneData ? propZoneData.color : 'cyan';
+
         const convertedPrice = prop.priceUSD * conversion;
         const isSponsored = prop.sponsored === true;
         const sponsoredClass = isSponsored ? 'sponsored' : '';
-        const badgeColorClass = isSponsored ? 'green' : zoneColor;
+        const badgeColorClass = isSponsored ? 'green' : propZoneColor;
         
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
         
         const cardHTML = `
-            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${zoneKey}', ${absoluteIndex})">
+            <div class="card glassmorphism featured-card glow-${propZoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${propZoneKey}', ${absoluteIndex})">
                 ${renderCardImageHTML(prop, 'card-image-wrapper', '165px', isSponsored, badgeColorClass)}
                 <div class="card-info">
                     <span class="property-tag">${prop.tag}</span>
                     <h4>${prop.title}</h4>
                     <div class="property-location">
-                        <i data-lucide="map-pin" class="tiny-icon"></i> ${zoneName}
+                        <i data-lucide="map-pin" class="tiny-icon"></i> ${propZoneName}
                     </div>
                     ${(() => {
                         let advancedTagsHTML = '';
@@ -6731,9 +6740,12 @@ function renderB2bInventory(filter = 'todos') {
                 </div>
                 <div class="inv-price-bar" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 8px;">
                     <span class="inv-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan);">${currencySym}${formatNumber(convertedPrice.toFixed(0))}</span>
-                    <div style="display: flex; gap: 5px;">
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end;">
                         <button class="btn-inv-action" onclick="event.stopPropagation(); editAgentProperty('${prop.id}')" style="background: rgba(191, 90, 242, 0.1); border: 1px solid #bf5af2; color: #bf5af2; font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
                             ✏️ EDITAR
+                        </button>
+                        <button class="btn-inv-action" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" style="background: rgba(255, 55, 95, 0.1); border: 1px solid #ff375f; color: #ff375f; font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
+                            🗑️ BORRAR
                         </button>
                         <button class="btn-inv-action" onclick="event.stopPropagation(); autoValuateFromInventory('${prop.location}', ${dbIndex})" style="background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.55rem; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: var(--transition-smooth);">
                             ⚡ TASAR IA
@@ -6944,6 +6956,68 @@ function editAgentProperty(propId) {
 
     // Alerta descriptiva
     alert(`✏️ MODO EDICIÓN ACTIVO: Se cargaron los datos de "${prop.title}". Realiza los ajustes necesarios y haz clic en "Guardar Correcciones Inmobiliarias" para confirmarlos.`);
+}
+
+/**
+ * Elimina una propiedad del agente de forma permanente de Supabase y del estado local
+ */
+async function deleteAgentProperty(propId) {
+    const prop = agentUploadedProperties.find(p => p.id === propId);
+    if (!prop) return;
+
+    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente la propiedad "${prop.title}"?`)) {
+        return;
+    }
+
+    // 1. Eliminar de Supabase si está activo
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('properties')
+                .delete()
+                .eq('id', propId);
+            if (error) {
+                console.error("Error al eliminar propiedad en Supabase:", error);
+                alert("Hubo un error al eliminar la propiedad de la base de datos remota. Intenta de nuevo.");
+                return;
+            }
+        } catch (err) {
+            console.error("Fallo de conexión al eliminar de Supabase:", err);
+            alert("Error de conexión al eliminar la propiedad.");
+            return;
+        }
+    }
+
+    // 2. Eliminar de agentUploadedProperties
+    agentUploadedProperties = agentUploadedProperties.filter(p => p.id !== propId);
+
+    // 3. Eliminar de PORTFOLIO_DATABASE
+    const zone = prop.location;
+    if (PORTFOLIO_DATABASE[zone]) {
+        PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => p.id !== propId);
+    }
+
+    // 4. Guardar en localStorage
+    localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+
+    // 5. Rerenderizar B2B Inventory
+    renderB2bInventory();
+
+    // 6. Rerenderizar vistas asociadas si están activas
+    const locationSelect = document.getElementById('prop-location');
+    if (locationSelect && locationSelect.value === zone) {
+        renderFeaturedProperties(zone);
+    }
+    const catalogZoneSelect = document.getElementById('catalog-zone-select');
+    if (catalogZoneSelect && (catalogZoneSelect.value === zone || catalogZoneSelect.value === 'todas')) {
+        renderCatalogProperties();
+    }
+
+    // Actualizar selectores
+    updatePromoPropertySelect();
+    updateSaasMetricsHUD();
+
+    alert("Propiedad eliminada exitosamente.");
 }
 
 /**
