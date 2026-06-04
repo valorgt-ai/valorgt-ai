@@ -162,9 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar Banner Promocional
     initPromoBanner();
 
-    // Lanzar Lightbox de Bienvenida automáticamente al ingresar (con 1.5s de retardo)
+    // Lanzar Lightbox de Bienvenida automáticamente al ingresar (con 1.5s de retardo) si la URL está configurada
     setTimeout(() => {
-        openWelcomeVideoModal();
+        if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
+            openWelcomeVideoModal();
+        }
     }, 1500);
 
     // Sincronizar datos de Supabase si está activo
@@ -592,9 +594,15 @@ function switchView(viewId) {
     } else if (viewId === 'catalog') {
         titleEl.innerText = "Catálogo General de Activos";
         subtitleEl.innerText = "Buscador masivo y catálogo de propiedades en Ciudad de Guatemala";
-        setTimeout(() => {
-            renderCatalogProperties();
-        }, 50);
+        if (isSupabaseActive) {
+            syncSupabaseData().then(() => {
+                renderCatalogProperties();
+            });
+        } else {
+            setTimeout(() => {
+                renderCatalogProperties();
+            }, 50);
+        }
     } else if (viewId === 'admin') {
         titleEl.innerText = "Consola Global Admin & Telemetría";
         subtitleEl.innerText = "Panel central de control y auditoría de la plataforma ValorGT AI";
@@ -9112,6 +9120,7 @@ function closePremiumPlansVideoModal() {
  * Control del modal multimedia de Bienvenida (Lightbox)
  */
 function openWelcomeVideoModal() {
+    if (!welcomeVideoUrl || welcomeVideoUrl.trim() === '') return;
     const modal = document.getElementById('welcome-video-modal');
     const iframe = document.getElementById('welcome-youtube-iframe');
     if (modal && iframe) {
