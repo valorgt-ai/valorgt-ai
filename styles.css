@@ -756,15 +756,16 @@ select option {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    color: #fff;
-    border: 1px solid rgba(0, 240, 255, 0.25);
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: var(--glow-cyan);
     border-color: var(--cyan);
+    background: rgba(0, 240, 255, 0.2);
 }
 
 .btn-block {
@@ -4931,10 +4932,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
 }
 
+.btn-whatsapp {
+    background: rgba(37, 211, 102, 0.1) !important;
+    border: 1px solid #25D366 !important;
+    color: #25D366 !important;
+    text-shadow: 0 0 5px rgba(37, 211, 102, 0.3) !important;
+}
+
 .btn-whatsapp:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(37, 211, 102, 0.35) !important;
-    background: linear-gradient(135deg, #2ae771, #159b8c) !important;
+    background: rgba(37, 211, 102, 0.2) !important;
 }
 
 @keyframes slideInUpModal {
@@ -5061,14 +5069,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: linear-gradient(135deg, #25D366, #128C7E);
-    color: #fff;
+    background: rgba(37, 211, 102, 0.1);
+    color: #25D366;
     text-decoration: none;
     border-radius: 4px;
     font-size: 0.65rem;
     font-weight: bold;
     padding: 6px 12px;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid #25D366;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 0 8px rgba(37, 211, 102, 0.15);
@@ -5077,7 +5085,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .btn-whatsapp-small:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(37, 211, 102, 0.35) !important;
-    background: linear-gradient(135deg, #2ae771, #159b8c) !important;
+    background: rgba(37, 211, 102, 0.2) !important;
 }
 
 .spinner-slow {
