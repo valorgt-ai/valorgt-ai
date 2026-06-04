@@ -18,7 +18,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1650, roi: 6.5, liquidity: "7.8/10", growth: 5.5, rec: "COMPRAR" },
             oficinas: { priceM2: 1950, roi: 8.8, liquidity: "8.9/10", growth: 6.8, rec: "COMPRAR" },
             locales: { priceM2: 2300, roi: 9.5, liquidity: "9.1/10", growth: 8.0, rec: "COMPRAR" },
-            terrenos: { priceM2: 1100, roi: 0.0, liquidity: "6.5/10", growth: 10.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 1350, roi: 0.0, liquidity: "6.5/10", growth: 10.0, rec: "COMPRAR" },
             bodegas: { priceM2: 950, roi: 7.9, liquidity: "8.0/10", growth: 5.0, rec: "COMPRAR" }
         },
         advantages: [
@@ -48,7 +48,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 2400, roi: 6.2, liquidity: "8.0/10", growth: 5.2, rec: "MANTENER" },
             oficinas: { priceM2: 2050, roi: 7.9, liquidity: "8.1/10", growth: 5.8, rec: "MANTENER" },
             locales: { priceM2: 2600, roi: 8.7, liquidity: "8.3/10", growth: 6.5, rec: "MANTENER" },
-            terrenos: { priceM2: 1400, roi: 0.0, liquidity: "7.2/10", growth: 9.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 1500, roi: 0.0, liquidity: "7.2/10", growth: 9.5, rec: "COMPRAR" },
             bodegas: { priceM2: 1100, roi: 7.2, liquidity: "7.0/10", growth: 4.8, rec: "MANTENER" }
         },
         advantages: [
@@ -77,7 +77,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1800, roi: 6.6, liquidity: "8.2/10", growth: 5.8, rec: "COMPRAR" },
             oficinas: { priceM2: 1850, roi: 7.5, liquidity: "8.0/10", growth: 6.0, rec: "COMPRAR" },
             locales: { priceM2: 2200, roi: 8.9, liquidity: "8.5/10", growth: 7.4, rec: "COMPRAR" },
-            terrenos: { priceM2: 1250, roi: 0.0, liquidity: "6.8/10", growth: 9.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 1150, roi: 0.0, liquidity: "6.8/10", growth: 9.0, rec: "COMPRAR" },
             bodegas: { priceM2: 980, roi: 7.0, liquidity: "7.2/10", growth: 4.5, rec: "MANTENER" }
         },
         advantages: [
@@ -106,7 +106,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1950, roi: 7.4, liquidity: "9.0/10", growth: 7.8, rec: "COMPRAR" },
             oficinas: { priceM2: 1800, roi: 8.2, liquidity: "8.8/10", growth: 7.2, rec: "COMPRAR" },
             locales: { priceM2: 2400, roi: 9.3, liquidity: "9.2/10", growth: 8.8, rec: "COMPRAR" },
-            terrenos: { priceM2: 1300, roi: 0.0, liquidity: "8.2/10", growth: 11.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 800, roi: 0.0, liquidity: "8.2/10", growth: 11.2, rec: "COMPRAR" },
             bodegas: { priceM2: 1150, roi: 8.0, liquidity: "8.4/10", growth: 6.0, rec: "COMPRAR" }
         },
         advantages: [
@@ -135,7 +135,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1350, roi: 6.8, liquidity: "7.2/10", growth: 6.5, rec: "COMPRAR" },
             oficinas: { priceM2: 1500, roi: 8.5, liquidity: "8.4/10", growth: 7.8, rec: "COMPRAR" },
             locales: { priceM2: 1950, roi: 9.8, liquidity: "9.2/10", growth: 10.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 980, roi: 0.0, liquidity: "8.0/10", growth: 12.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 1000, roi: 0.0, liquidity: "8.0/10", growth: 12.5, rec: "COMPRAR" },
             bodegas: { priceM2: 1200, roi: 8.9, liquidity: "8.5/10", growth: 7.0, rec: "COMPRAR" }
         },
         advantages: [
@@ -164,7 +164,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 950, roi: 6.2, liquidity: "6.8/10", growth: 3.8, rec: "ALQUILAR" },
             oficinas: { priceM2: 1050, roi: 7.0, liquidity: "6.5/10", growth: 4.0, rec: "MANTENER" },
             locales: { priceM2: 1350, roi: 7.8, liquidity: "7.2/10", growth: 5.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 650, roi: 0.0, liquidity: "5.8/10", growth: 7.0, rec: "VENDER" },
+            terrenos: { priceM2: 250, roi: 0.0, liquidity: "5.8/10", growth: 7.0, rec: "VENDER" },
             bodegas: { priceM2: 820, roi: 6.5, liquidity: "6.9/10", growth: 3.5, rec: "MANTENER" }
         },
         advantages: [
@@ -193,7 +193,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1250, roi: 6.8, liquidity: "7.5/10", growth: 5.2, rec: "COMPRAR" },
             oficinas: { priceM2: 1150, roi: 7.0, liquidity: "7.0/10", growth: 4.8, rec: "MANTENER" },
             locales: { priceM2: 1450, roi: 8.0, liquidity: "7.8/10", growth: 6.0, rec: "COMPRAR" },
-            terrenos: { priceM2: 750, roi: 0.0, liquidity: "6.5/10", growth: 8.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 185, roi: 0.0, liquidity: "6.5/10", growth: 8.0, rec: "COMPRAR" },
             bodegas: { priceM2: 880, roi: 6.9, liquidity: "7.2/10", growth: 4.2, rec: "MANTENER" }
         },
         advantages: [
@@ -222,7 +222,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1150, roi: 6.5, liquidity: "7.9/10", growth: 4.5, rec: "MANTENER" },
             oficinas: { priceM2: 1100, roi: 7.2, liquidity: "7.5/10", growth: 4.2, rec: "MANTENER" },
             locales: { priceM2: 1400, roi: 8.2, liquidity: "8.0/10", growth: 5.5, rec: "COMPRAR" },
-            terrenos: { priceM2: 700, roi: 0.0, liquidity: "7.0/10", growth: 7.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 270, roi: 0.0, liquidity: "7.0/10", growth: 7.5, rec: "COMPRAR" },
             bodegas: { priceM2: 920, roi: 7.4, liquidity: "7.8/10", growth: 4.0, rec: "MANTENER" }
         },
         advantages: [
@@ -251,7 +251,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 2400, roi: 8.2, liquidity: "8.5/10", growth: 7.2, rec: "ALQUILAR" },
             oficinas: { priceM2: 2100, roi: 7.5, liquidity: "7.8/10", growth: 6.2, rec: "MANTENER" },
             locales: { priceM2: 2800, roi: 9.5, liquidity: "9.0/10", growth: 9.0, rec: "COMPRAR" },
-            terrenos: { priceM2: 1800, roi: 0.0, liquidity: "8.0/10", growth: 12.0, rec: "COMPRAR" },
+            terrenos: { priceM2: 500, roi: 0.0, liquidity: "8.0/10", growth: 12.0, rec: "COMPRAR" },
             bodegas: { priceM2: 1300, roi: 7.0, liquidity: "7.2/10", growth: 5.0, rec: "MANTENER" }
         },
         advantages: [
@@ -280,7 +280,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 850, roi: 6.0, liquidity: "6.5/10", growth: 3.5, rec: "ALQUILAR" },
             oficinas: { priceM2: 900, roi: 6.5, liquidity: "6.0/10", growth: 3.2, rec: "MANTENER" },
             locales: { priceM2: 1100, roi: 7.2, liquidity: "6.9/10", growth: 4.5, rec: "COMPRAR" },
-            terrenos: { priceM2: 500, roi: 0.0, liquidity: "5.5/10", growth: 6.0, rec: "VENDER" },
+            terrenos: { priceM2: 170, roi: 0.0, liquidity: "5.5/10", growth: 6.0, rec: "VENDER" },
             bodegas: { priceM2: 750, roi: 6.2, liquidity: "6.2/10", growth: 3.0, rec: "MANTENER" }
         },
         advantages: [
@@ -309,7 +309,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 850, roi: 6.2, liquidity: "6.5/10", growth: 3.6, rec: "COMPRAR" },
             oficinas: { priceM2: 780, roi: 5.8, liquidity: "5.5/10", growth: 3.0, rec: "MANTENER" },
             locales: { priceM2: 1050, roi: 7.0, liquidity: "6.7/10", growth: 4.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 450, roi: 0.0, liquidity: "5.8/10", growth: 5.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 100, roi: 0.0, liquidity: "5.8/10", growth: 5.5, rec: "COMPRAR" },
             bodegas: { priceM2: 700, roi: 6.0, liquidity: "6.0/10", growth: 2.8, rec: "MANTENER" }
         },
         advantages: [
@@ -338,7 +338,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1450, roi: 6.8, liquidity: "8.2/10", growth: 5.5, rec: "COMPRAR" },
             oficinas: { priceM2: 1600, roi: 8.2, liquidity: "8.5/10", growth: 6.5, rec: "COMPRAR" },
             locales: { priceM2: 2100, roi: 9.2, liquidity: "9.0/10", growth: 8.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 950, roi: 0.0, liquidity: "7.5/10", growth: 9.8, rec: "COMPRAR" },
+            terrenos: { priceM2: 590, roi: 0.0, liquidity: "7.5/10", growth: 9.8, rec: "COMPRAR" },
             bodegas: { priceM2: 1100, roi: 7.8, liquidity: "8.0/10", growth: 5.2, rec: "MANTENER" }
         },
         advantages: [
@@ -367,7 +367,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1100, roi: 6.5, liquidity: "7.8/10", growth: 4.8, rec: "MANTENER" },
             oficinas: { priceM2: 1000, roi: 6.8, liquidity: "7.2/10", growth: 4.2, rec: "MANTENER" },
             locales: { priceM2: 1350, roi: 8.5, liquidity: "8.1/10", growth: 6.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 680, roi: 0.0, liquidity: "6.9/10", growth: 7.8, rec: "COMPRAR" },
+            terrenos: { priceM2: 340, roi: 0.0, liquidity: "6.9/10", growth: 7.8, rec: "COMPRAR" },
             bodegas: { priceM2: 890, roi: 7.6, liquidity: "7.9/10", growth: 4.0, rec: "MANTENER" }
         },
         advantages: [
@@ -396,7 +396,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1150, roi: 6.2, liquidity: "6.8/10", growth: 4.5, rec: "MANTENER" },
             oficinas: { priceM2: 1300, roi: 7.8, liquidity: "7.8/10", growth: 5.8, rec: "COMPRAR" },
             locales: { priceM2: 1750, roi: 8.9, liquidity: "8.3/10", growth: 7.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 850, roi: 0.0, liquidity: "7.0/10", growth: 8.5, rec: "COMPRAR" },
+            terrenos: { priceM2: 670, roi: 0.0, liquidity: "7.0/10", growth: 8.5, rec: "COMPRAR" },
             bodegas: { priceM2: 980, roi: 8.0, liquidity: "8.0/10", growth: 4.8, rec: "COMPRAR" }
         },
         advantages: [
@@ -425,7 +425,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1350, roi: 6.8, liquidity: "7.5/10", growth: 5.0, rec: "COMPRAR" },
             oficinas: { priceM2: 1400, roi: 7.5, liquidity: "7.8/10", growth: 5.6, rec: "COMPRAR" },
             locales: { priceM2: 1850, roi: 8.6, liquidity: "8.2/10", growth: 6.8, rec: "COMPRAR" },
-            terrenos: { priceM2: 900, roi: 0.0, liquidity: "7.2/10", growth: 8.8, rec: "COMPRAR" },
+            terrenos: { priceM2: 590, roi: 0.0, liquidity: "7.2/10", growth: 8.8, rec: "COMPRAR" },
             bodegas: { priceM2: 1050, roi: 7.8, liquidity: "8.1/10", growth: 4.5, rec: "MANTENER" }
         },
         advantages: [
@@ -454,7 +454,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1280, roi: 6.8, liquidity: "8.0/10", growth: 5.4, rec: "COMPRAR" },
             oficinas: { priceM2: 1200, roi: 7.0, liquidity: "7.2/10", growth: 4.8, rec: "MANTENER" },
             locales: { priceM2: 1550, roi: 8.2, liquidity: "8.0/10", growth: 6.2, rec: "COMPRAR" },
-            terrenos: { priceM2: 780, roi: 0.0, liquidity: "6.8/10", growth: 8.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 400, roi: 0.0, liquidity: "6.8/10", growth: 8.2, rec: "COMPRAR" },
             bodegas: { priceM2: 950, roi: 7.5, liquidity: "7.5/10", growth: 4.2, rec: "MANTENER" }
         },
         advantages: [
@@ -483,7 +483,7 @@ const ZONES_DATABASE = {
             casas: { priceM2: 1200, roi: 7.5, liquidity: "7.8/10", growth: 5.8, rec: "COMPRAR" },
             oficinas: { priceM2: 1100, roi: 7.2, liquidity: "7.0/10", growth: 4.5, rec: "MANTENER" },
             locales: { priceM2: 1650, roi: 9.2, liquidity: "8.5/10", growth: 8.0, rec: "COMPRAR" },
-            terrenos: { priceM2: 780, roi: 0.0, liquidity: "6.5/10", growth: 9.2, rec: "COMPRAR" },
+            terrenos: { priceM2: 400, roi: 0.0, liquidity: "6.5/10", growth: 9.2, rec: "COMPRAR" },
             bodegas: { priceM2: 850, roi: 7.0, liquidity: "7.0/10", growth: 3.8, rec: "MANTENER" }
         },
         advantages: [
