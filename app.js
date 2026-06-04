@@ -77,7 +77,7 @@ if (savedLocalProps) {
                 if (!PORTFOLIO_DATABASE[zoneKey]) {
                     PORTFOLIO_DATABASE[zoneKey] = [];
                 }
-                const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === prop.id || p.title === prop.title);
+                const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === prop.id);
                 if (!exists) {
                     PORTFOLIO_DATABASE[zoneKey].push(prop);
                 }
@@ -1274,7 +1274,7 @@ function autofillValuationForm(zoneKey, index) {
 
     // Determinar el tipo en base al tag
     let typeValue = "apartamento";
-    const tagLower = prop.tag.toLowerCase();
+    const tagLower = (prop.tag || "").toLowerCase();
     if (tagLower.includes("casa") || tagLower.includes("villa") || tagLower.includes("townhouse")) {
         typeValue = "casa";
     } else if (tagLower.includes("local") || tagLower.includes("oficina") || tagLower.includes("clínica") || tagLower.includes("comercial")) {
@@ -4275,7 +4275,11 @@ async function publishAgentProperty(event) {
         planLabel = "Inmobiliaria Premium";
     }
 
-    if (!editingPropertyId && agentUploadedProperties.length >= maxProperties) {
+    const myPropertiesCount = agentUploadedProperties.filter(p => 
+        loggedInB2bClient && (p.agent_id === loggedInB2bClient.id || p.agentName === loggedInB2bClient.name)
+    ).length;
+
+    if (!editingPropertyId && myPropertiesCount >= maxProperties) {
         alert(`⚠️ LÍMITE DE PUBLICACIONES ALCANZADO: Tu plan "${planLabel}" posee un límite máximo de ${maxProperties} propiedades publicadas de forma simultánea. Para aumentar tu capacidad e inyectar más nodos, adquiere un plan corporativo superior.`);
         return;
     }
@@ -4576,7 +4580,8 @@ async function publishAgentProperty(event) {
             isAgentUpload: true,
             sponsored: false,
             lat: lat,
-            lng: lng
+            lng: lng,
+            agent_id: loggedInB2bClient ? loggedInB2bClient.id : null
         };
 
         if (isSupabaseActive) {
@@ -8016,7 +8021,7 @@ async function syncSupabaseData() {
                     title: prop.title,
                     category: prop.category,
                     type: prop.type,
-                    tag: prop.tag,
+                    tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
                     priceUSD: parseFloat(prop.price_usd),
                     size: parseFloat(prop.size_m2),
                     rooms: parseInt(prop.rooms),
@@ -8050,7 +8055,7 @@ async function syncSupabaseData() {
                     PORTFOLIO_DATABASE[zoneKey] = [];
                 }
 
-                const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id || p.title === formattedProp.title);
+                const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
                 if (!exists) {
                     if (formattedProp.sponsored) {
                         PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
@@ -8061,7 +8066,7 @@ async function syncSupabaseData() {
 
                 // Cargar al inventario de pauta si le pertenece al usuario logueado
                 if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
-                    const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id || p.title === formattedProp.title);
+                    const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
                     if (!agentExists) {
                         agentUploadedProperties.push(formattedProp);
                     }
@@ -8797,7 +8802,7 @@ async function saveB2bAgentProfile() {
  * @returns {string} - Un enlace de tipo embed listo para ser usado en iframe.
  */
 function getYouTubeEmbedUrl(url) {
-    if (!url) return "https://www.youtube.com/embed/dQw4w9WgXcQ"; // Default fallback
+    if (!url || url.trim() === "") return "";
     
     // Si ya es un URL de embed, retornarlo directamente
     if (url.includes("/embed/")) {
