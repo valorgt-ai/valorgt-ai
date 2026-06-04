@@ -4359,8 +4359,8 @@ async function publishAgentProperty(event) {
         if (el && el.checked) near.push(item.key);
     });
 
-    if (!title || !priceRaw || !size || !rooms || !bathrooms || !parkings || isNaN(lat) || isNaN(lng)) {
-        alert("Por favor completa todos los campos del listado, incluyendo coordenadas GPS válidas.");
+    if (!title || isNaN(priceRaw) || priceRaw <= 0 || isNaN(size) || size <= 0 || isNaN(rooms) || rooms < 0 || isNaN(bathrooms) || bathrooms < 0 || isNaN(parkings) || parkings < 0 || isNaN(lat) || isNaN(lng)) {
+        alert("Por favor completa todos los campos del listado con valores válidos (las habitaciones, baños y parqueos pueden ser 0 si el tipo de propiedad lo amerita).");
         return;
     }
 
