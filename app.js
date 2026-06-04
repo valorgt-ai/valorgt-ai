@@ -788,7 +788,9 @@ function updateSuggestedValues() {
         'prop-finishes-group': type !== 'terreno',
         'prop-conservation-group': type !== 'terreno',
         'land-area-group': ['casa', 'terreno', 'finca'].includes(type),
-        'land-unit-group': ['casa', 'terreno', 'finca'].includes(type)
+        'land-unit-group': ['casa', 'terreno', 'finca'].includes(type),
+        'land-type-group': type === 'terreno',
+        'land-topography-group': type === 'terreno'
     };
 
     Object.keys(b2cGroups).forEach(id => {
@@ -1569,7 +1571,16 @@ function calculateValuation(event) {
     
     // Para Terrenos puros, el valor principal es el suelo y el tamaño de construcción es irrelevante
     if (type === 'terreno') {
-        baseValue = landAreaM2 * (priceM2 * 0.85); // 85% del precio m² del sector
+        let landTypeFactor = 1.0;
+        const landType = document.getElementById('prop-land-type')?.value || 'standard';
+        if (landType === 'premium') landTypeFactor = 1.25;
+        else if (landType === 'rustico') landTypeFactor = 0.55;
+
+        let topographyFactor = 1.0;
+        const topography = document.getElementById('prop-topography')?.value || 'plana';
+        if (topography === 'inclinada') topographyFactor = 0.80;
+
+        baseValue = landAreaM2 * (priceM2 * 0.85) * landTypeFactor * topographyFactor;
         landValue = 0;
     }
 
