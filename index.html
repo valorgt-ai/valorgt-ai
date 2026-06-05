@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=6.7">
+    <link rel="stylesheet" href="styles.css?v=6.8">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -3156,6 +3156,64 @@
                         </div>
                     </div>
 
+                    <!-- CARD: BASE DE DATOS DE REFERENCIA Y TASACIÓN IA -->
+                    <div id="admin-reference-database-card" class="card glassmorphism col-card border-white" style="margin-bottom: 20px; width: 100%; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border-color: rgba(0, 240, 255, 0.2) !important;">
+                        <div class="card-header border-white" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="header-icon white" style="box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border-color: var(--cyan);"><i data-lucide="database" class="text-cyan"></i></div>
+                                <div style="text-align: left;">
+                                    <h2 style="color: #ffffff !important; font-size: 1.15rem !important; text-shadow: 0 0 8px rgba(0, 240, 255, 0.3); margin: 0;">Base de Datos de Referencia (Calibración IA)</h2>
+                                    <span class="sub-title font-mono" style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">PUNTOS DE TASACIÓN DE MERCADO PARA APRENDIZAJE DEL SIMULADOR</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div class="input-group" style="flex-direction: row; align-items: center; gap: 6px;">
+                                    <label class="font-mono" style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin: 0;">ZONA DE CALIBRACIÓN:</label>
+                                    <select id="admin-ref-zone-select" onchange="renderAdminReferenceDatabase()" style="padding: 6px 12px; font-size: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; border-radius: 4px; outline: none; font-family: var(--font-mono);">
+                                        <option value="zona10">Zona 10</option>
+                                        <option value="zona14" selected>Zona 14</option>
+                                        <option value="zona15">Zona 15</option>
+                                        <option value="zona16">Zona 16</option>
+                                        <option value="zona4">Zona 4</option>
+                                        <option value="carretera">CAES Km 10-17</option>
+                                        <option value="carretera_high">CAES Km 18-25</option>
+                                        <option value="pinula">San José Pinula</option>
+                                        <option value="zona11">Zona 11</option>
+                                        <option value="zona12">Zona 12</option>
+                                        <option value="zona13">Zona 13</option>
+                                        <option value="zona9">Zona 9</option>
+                                        <option value="zona7">Zona 7</option>
+                                        <option value="zona1">Zona 1</option>
+                                        <option value="antigua">Antigua Guatemala</option>
+                                        <option value="san_cristobal">San Cristóbal</option>
+                                    </select>
+                                </div>
+                                <button class="btn-commercial btn-commercial-cyan" onclick="openAdminReferencePropertyModal()" style="padding: 6px 12px; font-size: 0.7rem; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-weight: bold; background: rgba(0, 240, 255, 0.1);">
+                                    <i data-lucide="plus-circle" class="tiny-icon"></i> AGREGAR REFERENCIA
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="commercial-table-wrapper" style="max-height: 350px; overflow-y: auto;">
+                            <table class="commercial-table font-mono" style="font-size: 0.7rem; width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 10px; vertical-align: middle; width: 60px;">FOTO</th>
+                                        <th style="text-align: left; padding: 10px; vertical-align: middle;">TÍTULO / INMUEBLE</th>
+                                        <th style="text-align: center; padding: 10px; vertical-align: middle;">CATEGORÍA</th>
+                                        <th style="text-align: center; padding: 10px; vertical-align: middle;">TIPO</th>
+                                        <th style="text-align: right; padding: 10px; vertical-align: middle;">TAMAÑO</th>
+                                        <th style="text-align: right; padding: 10px; vertical-align: middle; color: var(--cyan);">PRECIO (USD)</th>
+                                        <th style="text-align: center; padding: 10px; vertical-align: middle;">ACCIÓN</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-reference-properties-table-body">
+                                    <!-- Poblado dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- CARD DE APROBACIONES DE TRANSFERENCIA BANCARIA -->
                     <div id="admin-pending-payments-card" class="card glassmorphism col-card border-white" style="margin-bottom: 20px; width: 100%; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border-color: rgba(0, 240, 255, 0.2) !important;">
                         <div class="card-header border-white" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
@@ -3819,10 +3877,97 @@
             </div>
         </div>
 
+    <!-- MODAL DE CREACIÓN DE PROPIEDADES DE REFERENCIA (IA) -->
+    <div id="admin-reference-property-modal" class="payment-modal-overlay hidden" onclick="if(event.target === this) closeAdminReferencePropertyModal();">
+        <div class="payment-modal-card glassmorphism" style="width: 550px; max-width: 95vw; border: 1px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 30px rgba(0, 240, 255, 0.2); background: rgba(5, 6, 8, 0.98); padding: 22px; border-radius: 12px; margin: auto; text-align: left; display: flex; flex-direction: column; gap: 15px; position: relative;">
+            <div class="modal-card-glow" style="background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, transparent 70%);"></div>
+            <button class="modal-close-btn" onclick="closeAdminReferencePropertyModal()" style="font-size: 1.8rem; top: 12px; right: 15px; position: absolute; background: none; border: none; color: var(--text-muted); cursor: pointer;">&times;</button>
+            
+            <div class="modal-header-payment" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="plus-circle" class="text-cyan" style="width: 22px; height: 22px;"></i>
+                <div>
+                    <h3 class="font-mono" style="margin: 0; font-size: 1rem; color: #fff; text-transform: uppercase;">Nuevo Punto de Referencia (IA)</h3>
+                    <p class="font-mono text-muted" style="font-size: 0.65rem; margin: 2px 0 0 0; text-transform: uppercase;">Añade datos de mercado para calibrar las predicciones del Simulador</p>
+                </div>
+            </div>
+
+            <form id="admin-ref-property-form" style="display: flex; flex-direction: column; gap: 12px;" onsubmit="event.preventDefault(); submitAdminReferenceProperty();">
+                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                    <label for="admin-ref-title" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Título de la Propiedad</label>
+                    <input type="text" id="admin-ref-title" placeholder="Ej. Casa en Condominio Las Luces" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;" required>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-category" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Categoría</label>
+                        <select id="admin-ref-category" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding: 10px; font-size: 0.8rem; outline: none;">
+                            <option value="apartamentos">Apartamento</option>
+                            <option value="casas">Casa</option>
+                            <option value="oficinas">Oficina</option>
+                            <option value="locales">Local Comercial</option>
+                            <option value="terrenos">Terreno</option>
+                            <option value="bodegas">Bodega</option>
+                        </select>
+                    </div>
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-type" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Tipo de Esquema</label>
+                        <select id="admin-ref-type" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding: 10px; font-size: 0.8rem; outline: none;">
+                            <option value="venta">Venta</option>
+                            <option value="renta">Renta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-price" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Precio (USD)</label>
+                        <input type="number" id="admin-ref-price" placeholder="Ej. 185000" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;" required>
+                    </div>
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-size" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Área de Construcción (m²)</label>
+                        <input type="number" id="admin-ref-size" placeholder="Ej. 150" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-rooms" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Habitaciones</label>
+                        <input type="number" id="admin-ref-rooms" value="3" min="0" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;">
+                    </div>
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-bathrooms" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Baños</label>
+                        <input type="number" id="admin-ref-bathrooms" value="2.5" min="0" step="0.5" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;">
+                    </div>
+                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                        <label for="admin-ref-parkings" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Parqueos</label>
+                        <input type="number" id="admin-ref-parkings" value="2" min="0" style="padding: 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; outline: none;">
+                    </div>
+                </div>
+
+                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                    <label for="admin-ref-photo" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Imagen de la Propiedad (URL Unsplash)</label>
+                    <select id="admin-ref-photo" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding: 10px; font-size: 0.8rem; outline: none;">
+                        <option value="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85">Casa Moderna (Fachada)</option>
+                        <option value="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=85">Edificio Premium Loft (Vista)</option>
+                        <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85">Casa de Campo (Jardín)</option>
+                        <option value="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85">Apartamento Moderno (Interior)</option>
+                        <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=85">Oficina Corporativa (Tech)</option>
+                        <option value="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85">Bodega de Distribución (Nave)</option>
+                        <option value="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85">Terreno Verde (Campo)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; padding: 12px; font-weight: bold; margin-top: 5px; font-size: 0.8rem; border-radius: 6px;">
+                    <i data-lucide="save" class="tiny-icon"></i> REGISTRAR PUNTO DE REFERENCIA
+                </button>
+            </form>
+        </div>
+    </div>
+
         <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=6.7"></script>
-    <script src="charts.js?v=6.7"></script>
-    <script src="map.js?v=6.7"></script>
-    <script src="app.js?v=6.7"></script>
+    <script src="mockData.js?v=6.8"></script>
+    <script src="charts.js?v=6.8"></script>
+    <script src="map.js?v=6.8"></script>
+    <script src="app.js?v=6.8"></script>
 </body>
 </html>

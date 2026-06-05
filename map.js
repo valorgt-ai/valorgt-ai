@@ -830,74 +830,84 @@ function drawLandmarks() {
 function drawAgentProperties() {
     if (!leafletMapInstance) return;
 
-    // Limpiar capas previas de agentes
+    // Limpiar capas previas de agentes/referencia
     agentMapMarkers.forEach(marker => leafletMapInstance.removeLayer(marker));
     agentMapCircles.forEach(circle => leafletMapInstance.removeLayer(circle));
     agentMapMarkers = [];
     agentMapCircles = [];
 
-    // Recorrer todas las propiedades en agentUploadedProperties
-    if (typeof agentUploadedProperties !== 'undefined' && agentUploadedProperties.length > 0) {
-        agentUploadedProperties.forEach(prop => {
-            if (prop.lat && prop.lng) {
-                const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-                const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-                const convertedPrice = prop.priceUSD * conversion;
-                
-                // 1. Círculo de calor color Celeste/Cyan
-                const agentCircle = L.circle([prop.lat, prop.lng], {
-                    color: '#00f0ff',
-                    fillColor: '#00f0ff',
-                    fillOpacity: 0.22,
-                    weight: 1.5,
-                    radius: 400, // Círculo de 400m de radio
-                    className: 'heat-circle-agent-upload'
-                }).addTo(leafletMapInstance);
-                agentMapCircles.push(agentCircle);
+    // Recorrer todas las propiedades en PORTFOLIO_DATABASE que tengan coordenadas GPS y sean de agente o de referencia
+    if (typeof PORTFOLIO_DATABASE !== 'undefined') {
+        Object.keys(PORTFOLIO_DATABASE).forEach(zoneKey => {
+            const properties = PORTFOLIO_DATABASE[zoneKey] || [];
+            properties.forEach(prop => {
+                if (prop.lat && prop.lng && (prop.isAgentUpload || prop.isReferenceData)) {
+                    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+                    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+                    const convertedPrice = prop.priceUSD * conversion;
+                    
+                    const isRef = prop.isReferenceData === true;
+                    const circleColor = isRef ? '#00ff80' : '#00f0ff'; // Verde esmeralda para referencia, Cián para agente
+                    const pulseColor = isRef ? 'rgba(0, 255, 128, 0.4)' : 'rgba(0, 240, 255, 0.4)';
+                    const dotColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
+                    const badgeTitle = isRef ? '📍 CALIBRACIÓN IA' : '⭐ SOCIO B2B SAAS';
+                    const badgeStyleColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
 
-                // 2. Icono de radar pulsing especial
-                const agentIcon = L.divIcon({
-                    className: 'radar-beacon-container',
-                    html: `
-                        <div class="radar-beacon beacon-cyan">
-                            <div class="beacon-pulse" style="animation-duration: 1.8s; background: rgba(0, 240, 255, 0.4);"></div>
-                            <div class="beacon-dot" style="background-color: var(--cyan); box-shadow: 0 0 12px var(--cyan);"></div>
-                        </div>
-                    `,
-                    iconSize: [22, 22],
-                    iconAnchor: [11, 11]
-                });
+                    // 1. Círculo de calor
+                    const agentCircle = L.circle([prop.lat, prop.lng], {
+                        color: circleColor,
+                        fillColor: circleColor,
+                        fillOpacity: 0.22,
+                        weight: 1.5,
+                        radius: 400,
+                        className: isRef ? 'heat-circle-ref-data' : 'heat-circle-agent-upload'
+                    }).addTo(leafletMapInstance);
+                    agentMapCircles.push(agentCircle);
 
-                const agentMarker = L.marker([prop.lat, prop.lng], { icon: agentIcon }).addTo(leafletMapInstance);
-                agentMapMarkers.push(agentMarker);
+                    // 2. Icono de radar pulsing especial
+                    const agentIcon = L.divIcon({
+                        className: 'radar-beacon-container',
+                        html: `
+                            <div class="radar-beacon ${isRef ? 'beacon-emerald' : 'beacon-cyan'}">
+                                <div class="beacon-pulse" style="animation-duration: 1.8s; background: ${pulseColor};"></div>
+                                <div class="beacon-dot" style="background-color: ${dotColor}; box-shadow: 0 0 12px ${dotColor};"></div>
+                            </div>
+                        `,
+                        iconSize: [22, 22],
+                        iconAnchor: [11, 11]
+                    });
 
-                // 3. Popup interactivo
-                const popupContent = `
-                    <div class="map-popup-header" style="border-bottom: 1px solid var(--cyan) !important;">
-                        <span style="font-size: 0.8rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono); letter-spacing: 0.5px;">⭐ SOCIO B2B SAAS</span>
-                        <h4 style="margin: 2px 0 0 0; color: #fff; font-size: 1.15rem; font-weight: bold;">${prop.title}</h4>
-                    </div>
-                    <div class="map-popup-body" style="font-family: var(--font-mono); font-size: 0.92rem; display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span class="popup-lbl" style="color: var(--text-muted);">Precio:</span>
-                            <span class="popup-val text-cyan" style="font-weight: bold; color: var(--cyan);">${currencySym}${formatNumber(convertedPrice.toFixed(0))}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span class="popup-lbl" style="color: var(--text-muted);">Tipo:</span>
-                            <span class="popup-val" style="color: #fff;">${prop.tag}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span class="popup-lbl" style="color: var(--text-muted);">Dimensión:</span>
-                            <span class="popup-val" style="color: #fff;">${prop.size} M²</span>
-                        </div>
-                    </div>
-                `;
+                    const agentMarker = L.marker([prop.lat, prop.lng], { icon: agentIcon }).addTo(leafletMapInstance);
+                    agentMapMarkers.push(agentMarker);
 
-                agentMarker.bindPopup(popupContent, {
-                    closeButton: false,
-                    offset: L.point(0, -5)
-                });
-            }
+                    // 3. Popup interactivo
+                    const popupContent = `
+                        <div class="map-popup-header" style="border-bottom: 1px solid ${badgeStyleColor} !important;">
+                            <span style="font-size: 0.8rem; color: ${badgeStyleColor}; font-weight: bold; font-family: var(--font-mono); letter-spacing: 0.5px;">${badgeTitle}</span>
+                            <h4 style="margin: 2px 0 0 0; color: #fff; font-size: 1.15rem; font-weight: bold;">${prop.title}</h4>
+                        </div>
+                        <div class="map-popup-body" style="font-family: var(--font-mono); font-size: 0.92rem; display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="popup-lbl" style="color: var(--text-muted);">Precio:</span>
+                                <span class="popup-val" style="font-weight: bold; color: ${badgeStyleColor};">${currencySym}${formatNumber(convertedPrice.toFixed(0))}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="popup-lbl" style="color: var(--text-muted);">Tipo:</span>
+                                <span class="popup-val" style="color: #fff;">${prop.tag}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="popup-lbl" style="color: var(--text-muted);">Dimensión:</span>
+                                <span class="popup-val" style="color: #fff;">${prop.size} M²</span>
+                            </div>
+                        </div>
+                    `;
+
+                    agentMarker.bindPopup(popupContent, {
+                        closeButton: false,
+                        offset: L.point(0, -5)
+                    });
+                }
+            });
         });
     }
 }
