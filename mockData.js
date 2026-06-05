@@ -561,7 +561,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 555000,
             size: 300, rooms: 4, bathrooms: 4.5, parkings: 3, garden: 60, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym"],
-            photos: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600585154340-be6161a55a0c?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85",
             badge: "PREMIUM"
         },
@@ -571,7 +571,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 310000,
             size: 160, rooms: 3, bathrooms: 2.5, parkings: 2, garden: 0, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-rooftop", "amenity-smart"],
-            photos: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1502005229762-fc1b2b812ca5?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85",
             badge: "IA SUGGESTED"
         },
@@ -581,7 +581,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 4500,
             size: 450, rooms: 0, bathrooms: 2.0, parkings: 4, garden: 0, study: false, familyRoom: false,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1553413719-875871274712?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85",
             badge: "EXCELENTE RENTA",
             category: "Bodega",
@@ -593,7 +593,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 950000,
             size: 1200, rooms: 0, bathrooms: 0, parkings: 0, garden: 0, study: false, familyRoom: false,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85",
             badge: "ZONA PRIME",
             category: "Terreno",
@@ -607,7 +607,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 385000,
             size: 180, rooms: 3, bathrooms: 3.5, parkings: 3, garden: 0, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-pool", "amenity-rooftop"],
-            photos: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1502005229762-fc1b2b812ca5?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1527030280862-64139fbe04ca?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=85",
             badge: "RECOMENDADO",
             sponsored: true
@@ -618,8 +618,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 525000,
             size: 250, rooms: 3, bathrooms: 3.5, parkings: 3, garden: 0, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-pool", "amenity-smart"],
-            photos: ["https://images.unsplash.com/photo-1502005229762-fc1b2b812ca5?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1527030280862-64139fbe04ca?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1502005229762-fc1b2b812ca5?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=85",
             badge: "LUJO EXCLUSIVO",
             sponsored: true
         },
@@ -629,8 +629,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 630000,
             size: 300, rooms: 4, bathrooms: 4.5, parkings: 3, garden: 80, study: true, familyRoom: true,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1600585154340-be6161a55a0c?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1600585154340-be6161a55a0c?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85",
             badge: "EXCLUSIVA",
             sponsored: true
         },
@@ -640,8 +640,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 840000,
             size: 400, rooms: 4, bathrooms: 4.5, parkings: 4, garden: 0, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-pool", "amenity-rooftop", "amenity-smart"],
-            photos: ["https://images.unsplash.com/photo-1527030280862-64139fbe04ca?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1527030280862-64139fbe04ca?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=85",
             badge: "PATRIMONIAL",
             sponsored: true
         },
@@ -662,8 +662,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 5200,
             size: 550, rooms: 0, bathrooms: 2.0, parkings: 5, garden: 0, study: false, familyRoom: false,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1553413719-875871274712?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1553413719-875871274712?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85",
             badge: "LOGÍSTICA PRIME",
             category: "Bodega",
             type: "Renta"
@@ -674,8 +674,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 1450000,
             size: 1800, rooms: 0, bathrooms: 0, parkings: 0, garden: 0, study: false, familyRoom: false,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85",
             badge: "DESARROLLO VERTICAL",
             category: "Terreno",
             type: "Venta"
@@ -708,7 +708,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 351000,
             size: 180, rooms: 3, bathrooms: 3.5, parkings: 2, garden: 0, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-pool", "amenity-rooftop"],
-            photos: ["https://images.unsplash.com/photo-1499955085172-a104c9463ece?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1493201481021-fb65123d5c4a?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1499955085172-a104c9463ece?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1499955085172-a104c9463ece?auto=format&fit=crop&w=800&q=85",
             photo: "https://images.unsplash.com/photo-1499955085172-a104c9463ece?auto=format&fit=crop&w=800&q=85",
             badge: "IA TOP CHOICE"
@@ -729,7 +729,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 265000,
             size: 130, rooms: 2, bathrooms: 2.0, parkings: 2, garden: 0, study: false, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-smart"],
-            photos: ["https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1493201481021-fb65123d5c4a?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=85",
             badge: "EXCELENTE ROI"
         },
@@ -775,8 +775,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 315000,
             size: 180, rooms: 3, bathrooms: 3.5, parkings: 2, garden: 0, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-gym", "amenity-pool", "amenity-rooftop"],
-            photos: ["https://images.unsplash.com/photo-1493201481021-fb65123d5c4a?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1501183007986-d0d080b147f9?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1493201481021-fb65123d5c4a?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1501183007986-d0d080b147f9?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85",
             badge: "EXCELENTE ROI"
         },
         {
@@ -1009,7 +1009,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 295000,
             size: 260, rooms: 3, bathrooms: 3.5, parkings: 3, garden: 100, study: true, familyRoom: true,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1592595896551-12b371d546d5?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1588880331149-6ee4b2888151?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1592595896551-12b371d546d5?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=85",
             badge: "CRECIMIENTO"
         }
@@ -1021,7 +1021,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 287500,
             size: 250, rooms: 3, bathrooms: 3.5, parkings: 3, garden: 80, study: true, familyRoom: true,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1592595896551-12b371d546d5?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1588880331149-6ee4b2888151?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1592595896551-12b371d546d5?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1592595896551-12b371d546d5?auto=format&fit=crop&w=800&q=85",
             badge: "SECTOR EXCLUSIVO"
         },
@@ -1031,8 +1031,8 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 207000,
             size: 180, rooms: 3, bathrooms: 2.5, parkings: 2, garden: 40, study: false, familyRoom: true,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1588880331149-6ee4b2888151?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?auto=format&fit=crop&w=800&q=85"],
-            photo: "https://images.unsplash.com/photo-1588880331149-6ee4b2888151?auto=format&fit=crop&w=800&q=85",
+            photos: ["https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?auto=format&fit=crop&w=800&q=85"],
+            photo: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=85",
             badge: "EXCELENTE PRECIO"
         },
         {
@@ -1113,7 +1113,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 720000,
             size: 280, rooms: 4, bathrooms: 4.5, parkings: 2, garden: 90, study: true, familyRoom: true,
             amenities: ["amenity-security", "amenity-pool"],
-            photos: ["https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600585154340-be6161a55a0c?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=85",
             badge: "TOP AIRBNB"
         }
