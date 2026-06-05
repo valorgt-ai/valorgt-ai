@@ -43,6 +43,18 @@ let activeB2bPlan = 'pro'; // 'basico' | 'pro' | 'vip' | 'premium'
 let adminMonthlyRevenueUSD = 1000.00;
 let isCommercialAuthenticated = false;
 let loggedInB2bClient = null;
+
+const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
+if (savedB2bClient) {
+    try {
+        loggedInB2bClient = JSON.parse(savedB2bClient);
+        isCommercialAuthenticated = true;
+        activeB2bPlan = loggedInB2bClient.plan.toLowerCase();
+    } catch (e) {
+        console.error("Error al restaurar sesión de agente B2B:", e);
+    }
+}
+
 let saasBillingAmountUSD = 31; // Inicializado con el cobro mensual del plan Pro por defecto
 let saasImpressionsCount = 12450;
 let saasClientClicks = 320;
@@ -3931,7 +3943,7 @@ function initCommercialView() {
             }
         }
 
-        syncSupabaseData().then(() => {
+        syncSupabaseData(true).then(() => {
             isB2bInventoryLoading = false;
             const syncBadge = document.getElementById('b2b-sync-indicator');
             if (syncBadge) syncBadge.remove();
@@ -6355,6 +6367,7 @@ async function authenticateCommercialAgent(event) {
                 usdtBalance: parseFloat(profile.usdt_balance)
             };
             activeB2bPlan = profile.plan.toLowerCase();
+            localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
 
             const partnerLevelEl = document.getElementById('commercial-partner-level');
             if (partnerLevelEl) {
@@ -6423,6 +6436,7 @@ async function authenticateCommercialAgent(event) {
                 partnerLevelEl.innerText = isPremium ? (loggedInB2bClient.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (loggedInB2bClient.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
             }
         }
+        localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
 
         // Registrar en logs de administración de forma inmediata
         if (typeof appendAdminLog === 'function') {
@@ -6938,6 +6952,9 @@ function formatSignupExpiry(input) {
 function logoutCommercialAgent() {
     isCommercialAuthenticated = false;
     loggedInB2bClient = null;
+    agentUploadedProperties = [];
+    localStorage.removeItem('valorgt_active_b2b_client');
+    saveLocalPropertiesToStorage();
     
     // Resetear formulario
     const loginForm = document.getElementById('commercial-login-form');
@@ -8819,7 +8836,7 @@ let lastSupabaseSyncTime = 0;
 /**
  * Sincroniza las propiedades e inventario desde el servidor Supabase a la aplicación local (Wrapper con throttling y reuso de promesas)
  */
-async function syncSupabaseData() {
+async function syncSupabaseData(force = false) {
     if (!isSupabaseActive) return;
 
     if (isSyncingSupabase && currentSyncPromise) {
@@ -8827,7 +8844,7 @@ async function syncSupabaseData() {
     }
 
     const elapsed = Date.now() - lastSupabaseSyncTime;
-    if (elapsed < 20000 && Object.values(PORTFOLIO_DATABASE).flat().length > 0) {
+    if (!force && elapsed < 20000 && Object.values(PORTFOLIO_DATABASE).flat().length > 0) {
         console.log(`⚡ [SWR] Usando caché de red reciente (sincronizada hace ${Math.round(elapsed / 1000)}s).`);
         return;
     }
@@ -8996,7 +9013,8 @@ async function _syncSupabaseDataInternal() {
                         isReferenceData: isRef,
                         sponsored: prop.sponsored,
                         lat: parseFloat(prop.latitude),
-                        lng: parseFloat(prop.longitude)
+                        lng: parseFloat(prop.longitude),
+                        agent_id: prop.agent_id
                     };
 
                     allRemoteFormatted.push(formattedProp);
