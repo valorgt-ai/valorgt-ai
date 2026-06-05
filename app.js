@@ -88,6 +88,17 @@ if (savedLocalProps) {
         console.error("Error al decodificar propiedades locales:", e);
     }
 }
+
+/**
+ * Guarda el inventario local de propiedades de forma segura en localStorage, previniendo excepciones QuotaExceededError.
+ */
+function saveLocalPropertiesToStorage() {
+    try {
+        localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+    } catch (storageErr) {
+        console.warn("⚠️ No se pudo guardar el inventario local en localStorage (límite de cuota excedido por fotos Base64):", storageErr);
+    }
+}
 let b2bWithdrawals = [
     { ref: 'WTH-984021', date: '2026-05-25 09:12', bank: 'Banco Industrial', account: '••••4820', amountXAUt: 0.0450, feeGTQ: 32.20, netGTQ: 772.80, status: 'Aprobado' },
     { ref: 'WTH-304910', date: '2026-05-28 10:15', bank: 'G&T Continental', account: '••••8953', amountXAUt: 0.0200, feeGTQ: 14.30, netGTQ: 343.30, status: 'Pendiente' }
@@ -4934,7 +4945,7 @@ async function publishAgentProperty(event) {
     }
 
     // Guardar en localStorage de contingencia local
-    localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+    saveLocalPropertiesToStorage();
 
     // Limpiar formulario y restablecer valores del acordeón
     document.getElementById('publish-property-form').reset();
@@ -5221,7 +5232,7 @@ function completeB2bTransaction() {
             prop.badge = "PATROCINADO";
 
             // Guardar en localStorage de contingencia local
-            localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+            saveLocalPropertiesToStorage();
 
             // Re-renderizar el catálogo comercial de propiedades
             renderB2bInventory();
@@ -6117,7 +6128,7 @@ async function approvePendingPayment(reqId) {
                 }
                 
                 // Guardar en localStorage de contingencia local
-                localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+                saveLocalPropertiesToStorage();
                 
                 // 3. Sincronizar e incrementar impresiones
                 saasImpressionsCount += 4500;
@@ -7315,7 +7326,7 @@ async function deleteAgentProperty(propId) {
     }
 
     // 4. Guardar en localStorage y actualizar caché SWR
-    localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+    saveLocalPropertiesToStorage();
     try {
         const cachedPropsJson = localStorage.getItem('valorgt_remote_properties_cache');
         if (cachedPropsJson) {
@@ -9001,7 +9012,7 @@ async function _syncSupabaseDataInternal() {
                 });
                 
                 // Guardar en localStorage las propiedades sincronizadas
-                localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+                saveLocalPropertiesToStorage();
                 localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
             }
 
