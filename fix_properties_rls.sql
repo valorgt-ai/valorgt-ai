@@ -1,23 +1,28 @@
 -- =========================================================================
--- VALORGT - CORRECCIÓN DE POLÍTICAS RLS: ELIMINACIÓN DE PROPIEDADES (ADMIN)
+-- VALORGT - RESOLUCIÓN INTEGRAL DE POLÍTICAS RLS EN TABLA PROPERTIES
 -- =========================================================================
 -- Ejecuta este script en el SQL Editor de tu consola de Supabase.
--- Esto resolverá el error RLS al eliminar propiedades de prueba desde el catálogo.
+-- Esto resolverá todos los errores de permisos (RLS) al insertar,
+-- actualizar y eliminar propiedades desde la plataforma.
 
 BEGIN;
 
--- 1. Eliminar políticas de DELETE previas de la tabla properties para evitar duplicados
+-- Opción A: Deshabilitar RLS por completo en la tabla properties (Recomendado para desarrollo/pruebas públicas)
+ALTER TABLE public.properties DISABLE ROW LEVEL SECURITY;
+
+-- Opción B: Si prefieres mantener RLS activo, limpiamos y recreamos las políticas permisivas
+DROP POLICY IF EXISTS "Permitir lectura publica" ON public.properties;
+DROP POLICY IF EXISTS "Permitir insertar propiedades" ON public.properties;
+DROP POLICY IF EXISTS "Permitir actualizar propiedades" ON public.properties;
+DROP POLICY IF EXISTS "Permitir eliminar propiedades a todos" ON public.properties;
 DROP POLICY IF EXISTS "Permitir eliminar propiedades" ON public.properties;
 DROP POLICY IF EXISTS "Permitir borrar a propietarios" ON public.properties;
 DROP POLICY IF EXISTS "Permitir borrar a propietarios y administradores" ON public.properties;
-DROP POLICY IF EXISTS "Permitir eliminar propiedades a todos" ON public.properties;
 
--- 2. Crear una política permisiva que permita el borrado físico (DELETE)
--- Esto permite que la llamada .delete() de la app se ejecute con éxito
--- tanto para el agente dueño de la propiedad como para el Administrador Root.
-CREATE POLICY "Permitir eliminar propiedades a todos" 
-ON public.properties 
-FOR DELETE 
-USING (true);
+-- Crear políticas universales y permisivas para todas las operaciones DML
+CREATE POLICY "Permitir lectura publica" ON public.properties FOR SELECT USING (true);
+CREATE POLICY "Permitir insertar propiedades" ON public.properties FOR INSERT WITH CHECK (true);
+CREATE POLICY "Permitir actualizar propiedades" ON public.properties FOR UPDATE USING (true);
+CREATE POLICY "Permitir eliminar propiedades a todos" ON public.properties FOR DELETE USING (true);
 
 COMMIT;

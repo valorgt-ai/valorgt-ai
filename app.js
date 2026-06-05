@@ -4926,6 +4926,8 @@ async function publishAgentProperty(event) {
 
                 if (error) {
                     console.error("Error al registrar propiedad en Supabase:", error);
+                    alert(`⚠️ ERROR DE SEGURIDAD (RLS) O BASE DE DATOS:\nNo se pudo registrar la propiedad en Supabase.\n\nDetalle: ${error.message || 'El usuario podría no tener permisos de inserción (INSERT) configurados.'}`);
+                    return;
                 } else if (data && data[0]) {
                     newProperty.id = data[0].id;
                 }
