@@ -84,7 +84,6 @@ if (savedLocalProps) {
     try {
         const localProps = JSON.parse(savedLocalProps);
         localProps.forEach(prop => {
-            agentUploadedProperties.push(prop);
             const zoneKey = prop.location;
             if (zoneKey && typeof PORTFOLIO_DATABASE !== 'undefined') {
                 if (!PORTFOLIO_DATABASE[zoneKey]) {
@@ -102,11 +101,58 @@ if (savedLocalProps) {
 }
 
 /**
- * Guarda el inventario local de propiedades de forma segura en localStorage, previniendo excepciones QuotaExceededError.
+ * Filtra las propiedades locales del agente autenticado y las carga en agentUploadedProperties
+ */
+function filterAgentProperties() {
+    agentUploadedProperties = [];
+    if (!loggedInB2bClient) return;
+
+    const saved = localStorage.getItem('valorgt_local_properties');
+    if (saved) {
+        try {
+            const localProps = JSON.parse(saved);
+            agentUploadedProperties = localProps.filter(p => 
+                p.agent_id === loggedInB2bClient.id || 
+                (p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) ||
+                (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
+            );
+        } catch (e) {
+            console.error("Error al filtrar propiedades locales para el agente:", e);
+        }
+    }
+}
+
+/**
+ * Guarda las propiedades locales del agente de forma segura en el almacenamiento local global,
+ * asegurando que no sobrescriba las propiedades de otros agentes.
  */
 function saveLocalPropertiesToStorage() {
     try {
-        localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+        // Si no hay agente logueado, no podemos filtrar ni guardar
+        if (!loggedInB2bClient) return;
+
+        // Obtener todas las propiedades locales guardadas
+        let allLocalProps = [];
+        const saved = localStorage.getItem('valorgt_local_properties');
+        if (saved) {
+            try {
+                allLocalProps = JSON.parse(saved);
+            } catch (e) {
+                allLocalProps = [];
+            }
+        }
+
+        // Remover del listado global las propiedades del agente actual para re-insertarlas actualizadas
+        allLocalProps = allLocalProps.filter(p => 
+            p.agent_id !== loggedInB2bClient.id && 
+            !(p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) &&
+            !(p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
+        );
+
+        // Concatenar las propiedades del agente actual
+        allLocalProps = allLocalProps.concat(agentUploadedProperties);
+
+        localStorage.setItem('valorgt_local_properties', JSON.stringify(allLocalProps));
     } catch (storageErr) {
         console.warn("⚠️ No se pudo guardar el inventario local en localStorage (límite de cuota excedido por fotos Base64):", storageErr);
     }
@@ -230,6 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sincronizar datos de Supabase si está activo
     if (isSupabaseActive) {
         syncSupabaseData();
+    } else {
+        filterAgentProperties();
     }
 
     // Autocompletado de coordenadas GPS automático B2B al cambiar zona de ubicación
@@ -3883,6 +3931,10 @@ function initCommercialView() {
         if (dashboardArea) dashboardArea.classList.remove('hidden');
     }
 
+    if (!isSupabaseActive) {
+        filterAgentProperties();
+    }
+
     updateFormUnits();
     renderB2bAgentProfile();
     updateSaasMetricsHUD();
@@ -4240,7 +4292,60 @@ function updateSaasMetricsHUD() {
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
-    const billingConverted = saasBillingAmountUSD * conversion;
+    let billingUSD = 0;
+    let impressions = 0;
+    let clicks = 0;
+
+    if (loggedInB2bClient) {
+        const email = (loggedInB2bClient.email || '').toLowerCase();
+        const isPending = loggedInB2bClient.status && (loggedInB2bClient.status.toLowerCase() === 'pendiente');
+
+        // 1. Determinar facturación SaaS real según plan contratado y estado de pago
+        if (!isPending) {
+            const plan = (loggedInB2bClient.plan || '').toLowerCase();
+            if (plan === 'básico' || plan === 'basico') {
+                billingUSD = 17.99; // Q140
+            } else if (plan === 'pro') {
+                billingUSD = 30.85; // Q240
+            } else if (plan === 'premium') {
+                billingUSD = 43.70; // Q340
+            } else if (plan === 'vip') {
+                billingUSD = 82.26; // Q640
+            }
+        } else {
+            billingUSD = 0;
+        }
+
+        // 2. Determinar base de impresiones e históricos de clics (para cuentas demo y nuevos agentes)
+        if (email === 'ana@estevezinmobiliaria.com') {
+            impressions = 24500;
+            clicks = 680;
+        } else if (email === 'roberto@inversionesrv.com' || email === 'agente@valorgt.com') {
+            impressions = 12450;
+            clicks = 320;
+        } else if (email === 'sofia@alianzagt.com') {
+            impressions = 4200;
+            clicks = 95;
+        } else {
+            // Cuentas nuevas inician en cero absoluto
+            impressions = 0;
+            clicks = 0;
+        }
+
+        // 3. Calcular aportes adicionales dinámicos basados en sus propiedades activas reales
+        const totalProperties = agentUploadedProperties.length;
+        const sponsoredProperties = agentUploadedProperties.filter(p => p.sponsored === true).length;
+        const standardProperties = totalProperties - sponsoredProperties;
+
+        impressions += (standardProperties * 180) + (sponsoredProperties * 2200);
+        clicks += (standardProperties * 8) + (sponsoredProperties * 110);
+        
+        // Sincronizar clicks con variable de estado por si se incrementa externamente
+        saasClientClicks = clicks;
+        saasImpressionsCount = impressions;
+    }
+
+    const billingConverted = billingUSD * conversion;
     const billingFormatted = `${currencySym}${formatNumber(billingConverted.toFixed(2))}`;
 
     const saasBillingEl = document.getElementById('saas-billing-val');
@@ -4894,7 +4999,8 @@ async function publishAgentProperty(event) {
             sponsored: false,
             lat: lat,
             lng: lng,
-            agent_id: loggedInB2bClient ? loggedInB2bClient.id : null
+            agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
+            agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
         };
 
         if (isSupabaseActive) {
@@ -4942,7 +5048,8 @@ async function publishAgentProperty(event) {
                             agentCompany: agentCompany,
                             agentPhone: agentPhone,
                             agentLogo: agentLogo,
-                            agentPlan: agentPlan
+                            agentPlan: agentPlan,
+                            agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
                         }
                     }
                 ]).select();
