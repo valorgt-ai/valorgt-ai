@@ -4289,10 +4289,9 @@ function registerB2bClient(event) {
  * Actualiza el HUD comercial (Facturación, propiedades e impresiones)
  */
 function updateSaasMetricsHUD() {
-    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
-    let billingUSD = 0;
+    let billingGTQ = 0;
     let impressions = 0;
     let clicks = 0;
 
@@ -4300,20 +4299,20 @@ function updateSaasMetricsHUD() {
         const email = (loggedInB2bClient.email || '').toLowerCase();
         const isPending = loggedInB2bClient.status && (loggedInB2bClient.status.toLowerCase() === 'pendiente');
 
-        // 1. Determinar facturación SaaS real según plan contratado y estado de pago
+        // 1. Determinar facturación SaaS real en Quetzales (moneda dominante) según plan contratado y estado de pago
         if (!isPending) {
             const plan = (loggedInB2bClient.plan || '').toLowerCase();
             if (plan === 'básico' || plan === 'basico') {
-                billingUSD = 17.99; // Q140
+                billingGTQ = 140;
             } else if (plan === 'pro') {
-                billingUSD = 30.85; // Q240
+                billingGTQ = 240;
             } else if (plan === 'premium') {
-                billingUSD = 43.70; // Q340
+                billingGTQ = 340;
             } else if (plan === 'vip') {
-                billingUSD = 82.26; // Q640
+                billingGTQ = 640;
             }
         } else {
-            billingUSD = 0;
+            billingGTQ = 0;
         }
 
         // 2. Determinar base de impresiones e históricos de clics (para cuentas demo y nuevos agentes)
@@ -4345,7 +4344,7 @@ function updateSaasMetricsHUD() {
         saasImpressionsCount = impressions;
     }
 
-    const billingConverted = billingUSD * conversion;
+    const billingConverted = activeCurrency === 'GTQ' ? billingGTQ : (billingGTQ / exchangeRate);
     const billingFormatted = `${currencySym}${formatNumber(billingConverted.toFixed(2))}`;
 
     const saasBillingEl = document.getElementById('saas-billing-val');
