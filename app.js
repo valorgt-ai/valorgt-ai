@@ -5063,7 +5063,7 @@ function promotePropertyOnCover(event) {
     resetReceiptUploadUI();
 
     // Actualizar interfaz del modal
-    document.getElementById('payment-concept-label').innerText = `Pauta Destacada: ${selectedProp.title} en Portada ${zoneKey.toUpperCase()}`;
+    document.getElementById('payment-concept-label').innerText = `Pauta Destacada: ${selectedProp.title} [ID: ${selectedProp.id}]`;
     updateDynamicB2bPaymentTotals();
 
     // Mostrar modal
@@ -5474,7 +5474,9 @@ async function processB2bTransferPayment(event) {
             
             const totalGTQ = (baseGTQ * months) * (1 - discount);
             const totalUSD = totalGTQ / exchangeRate;
-            const txnId = "TXN-" + Math.floor(100000 + Math.random() * 900000);
+            const txnId = pType === 'ad'
+                ? "PAUTA-" + Math.floor(100000 + Math.random() * 900000)
+                : "TXN-" + Math.floor(100000 + Math.random() * 900000);
             
             let conceptText = "";
             let planKeyVal = "";
@@ -5483,8 +5485,10 @@ async function processB2bTransferPayment(event) {
                 conceptText = `Suscripción: Plan ${planStr}`;
                 planKeyVal = typeof pTarget === 'string' ? pTarget : 'pro';
             } else {
-                const zoneStr = (pTarget && pTarget.zone ? pTarget.zone : 'zona14').toUpperCase();
-                conceptText = `Pauta Publicitaria: ${zoneStr}`;
+                const propId = pTarget && pTarget.propertyId ? pTarget.propertyId : 'unknown';
+                const prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
+                const propTitle = prop ? prop.title : 'Propiedad';
+                conceptText = `Pauta: ${propTitle} [ID: ${propId}]`;
                 planKeyVal = 'ad';
             }
             
@@ -5732,55 +5736,33 @@ let selectedAdPropertyId = null;
 let uploadedPautaReceiptBase64 = '';
 
 function openAdPaymentModal(propertyId) {
-    const prop = agentUploadedProperties.find(p => p.id === propertyId);
+    const prop = agentUploadedProperties.find(p => String(p.id) === String(propertyId));
     if (!prop) {
         alert("No se encontró la propiedad seleccionada.");
         return;
     }
-    selectedAdPropertyId = propertyId;
-    uploadedPautaReceiptBase64 = '';
     
-    const titlePreview = document.getElementById('pauta-property-title-preview');
-    if (titlePreview) titlePreview.innerText = prop.title;
+    pendingPaymentType = 'ad';
+    pendingPaymentTarget = { propertyId: propertyId, zone: prop.location || 'zona14' };
     
-    // Resetear formulario nativo
-    document.getElementById('pauta-transfer-form')?.reset();
-    
-    // Configurar listener para el comprobante
-    const receiptInput = document.getElementById('pauta-receipt-file');
-    if (receiptInput) {
-        receiptInput.style.border = '1px dashed var(--cyan)';
-        receiptInput.style.background = 'rgba(0,0,0,0.4)';
-        receiptInput.value = '';
-        
-        receiptInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    uploadedPautaReceiptBase64 = event.target.result;
-                    receiptInput.style.border = '1px solid var(--green)';
-                    receiptInput.style.background = 'rgba(0, 255, 128, 0.1)';
-                    console.log("⚡ [ValorGT AI] Comprobante de pauta cargado en Base64.");
-                };
-                reader.readAsDataURL(file);
-            }
-        };
+    // Desactivar y resetear duración para pauta publicitaria (es de 1 mes fijo)
+    const durationSelect = document.getElementById('payment-duration-select');
+    if (durationSelect) {
+        durationSelect.value = "1";
+        durationSelect.setAttribute('disabled', 'true');
     }
     
-    // Ocultar estados de carga y éxito, mostrar formulario
-    document.getElementById('pauta-payment-loading-view')?.classList.add('hidden');
-    document.getElementById('pauta-payment-success-view')?.classList.add('hidden');
-    document.getElementById('pauta-payment-form-view')?.classList.remove('hidden');
+    resetReceiptUploadUI();
     
-    // Recalcular montos
-    updatePautaPaymentCalculations();
+    // Actualizar interfaz del modal
+    document.getElementById('payment-concept-label').innerText = `Pauta Destacada: ${prop.title} [ID: ${prop.id}]`;
+    updateDynamicB2bPaymentTotals();
     
     // Mostrar modal
-    const modal = document.getElementById('commercial-pauta-modal');
-    if (modal) modal.classList.remove('hidden');
-    
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    const modal = document.getElementById('commercial-payment-modal');
+    if (modal) {
+        modal.classList.add('active');
+    }
 }
 
 /**
@@ -6096,7 +6078,7 @@ async function approvePendingPayment(reqId) {
             
             if (propertyId) {
                 // 1. Marcar como pautada/sponsored en agentUploadedProperties
-                const prop = agentUploadedProperties.find(p => p.id === propertyId);
+                const prop = agentUploadedProperties.find(p => String(p.id) === String(propertyId));
                 if (prop) {
                     prop.sponsored = true;
                     prop.badge = "PATROCINADO";
@@ -6106,13 +6088,26 @@ async function approvePendingPayment(reqId) {
                 // 2. Marcar como pautada/sponsored en PORTFOLIO_DATABASE
                 Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
                     PORTFOLIO_DATABASE[zone].forEach(p => {
-                        if (p.id === propertyId) {
+                        if (String(p.id) === String(propertyId)) {
                             p.sponsored = true;
                             p.badge = "PATROCINADO";
                             console.log(`✔️ [ValorGT AI] Propiedad en base de datos #${propertyId} marcada como sponsored.`);
                         }
                     });
                 });
+                
+                // Persistir en Supabase
+                if (isSupabaseActive && supabaseClient) {
+                    try {
+                        supabaseClient.from('properties').update({ sponsored: true, tag: 'PATROCINADO' }).eq('id', propertyId)
+                        .then(({ error }) => {
+                            if (error) console.error("Error al persistir pauta en Supabase:", error);
+                            else console.log(`✔️ [Supabase] Propiedad #${propertyId} marcada como sponsored en base de datos.`);
+                        });
+                    } catch (dbErr) {
+                        console.error("Fallo sincrónico al marcar pauta en Supabase:", dbErr);
+                    }
+                }
                 
                 // Guardar en localStorage de contingencia local
                 localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
