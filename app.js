@@ -1323,8 +1323,19 @@ function renderCatalogProperties() {
         
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
         
+        const isAdmin = loggedInB2bClient && (
+            loggedInB2bClient.email.toLowerCase().includes('admin') || 
+            loggedInB2bClient.email.toLowerCase().includes('sgalindo')
+        );
+        const deleteButtonHTML = (isAdmin && prop.id) ? `
+            <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
+                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+            </button>
+        ` : '';
+
         const cardHTML = `
             <div class="card glassmorphism featured-card glow-${propZoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${propZoneKey}', ${absoluteIndex})">
+                ${deleteButtonHTML}
                 ${renderCardImageHTML(prop, 'card-image-wrapper', '165px', isSponsored, badgeColorClass)}
                 <div class="card-info">
                     <span class="property-tag">${prop.tag}</span>
@@ -7229,9 +7240,24 @@ function editAgentProperty(propId) {
  * Elimina una propiedad del agente de forma permanente de Supabase y del estado local
  */
 async function deleteAgentProperty(propId) {
-    const prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
+    let prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
+    const isAdmin = loggedInB2bClient && (
+        loggedInB2bClient.email.toLowerCase().includes('admin') || 
+        loggedInB2bClient.email.toLowerCase().includes('sgalindo')
+    );
+    if (!prop && isAdmin) {
+        // Buscar en todas las zonas de PORTFOLIO_DATABASE
+        for (const zone of Object.keys(PORTFOLIO_DATABASE)) {
+            const found = PORTFOLIO_DATABASE[zone].find(p => String(p.id) === String(propId));
+            if (found) {
+                prop = found;
+                break;
+            }
+        }
+    }
     if (!prop) {
         console.warn(`No se encontró la propiedad con ID: ${propId} para eliminar.`);
+        alert("No se encontró la propiedad o no tienes permisos para eliminarla.");
         return;
     }
 
@@ -7274,8 +7300,20 @@ async function deleteAgentProperty(propId) {
         PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => String(p.id) !== String(propId));
     }
 
-    // 4. Guardar en localStorage
+    // 4. Guardar en localStorage y actualizar caché SWR
     localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+    try {
+        const cachedPropsJson = localStorage.getItem('valorgt_remote_properties_cache');
+        if (cachedPropsJson) {
+            let cachedProps = JSON.parse(cachedPropsJson);
+            if (Array.isArray(cachedProps)) {
+                cachedProps = cachedProps.filter(p => String(p.id) !== String(propId));
+                localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(cachedProps));
+            }
+        }
+    } catch (err) {
+        console.warn("Error al actualizar la caché local remota:", err);
+    }
 
     // 5. Rerenderizar B2B Inventory
     renderB2bInventory();
