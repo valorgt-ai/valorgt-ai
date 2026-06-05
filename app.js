@@ -4648,7 +4648,7 @@ async function publishAgentProperty(event) {
             // Supabase
             if (isSupabaseActive) {
                 try {
-                    await supabaseClient.from('properties').update({
+                    const { data, error } = await supabaseClient.from('properties').update({
                         title: title,
                         category: category,
                         type: type,
@@ -4690,7 +4690,15 @@ async function publishAgentProperty(event) {
                             agentLogo: newProperty.agentLogo,
                             agentPlan: newProperty.agentPlan
                         }
-                    }).eq('id', editingPropertyId);
+                    }).eq('id', editingPropertyId).select();
+
+                    if (error) {
+                        console.error("Error al actualizar propiedad en Supabase:", error);
+                        alert("Hubo un error al actualizar la propiedad en la base de datos remota. Los cambios no se guardaron en la nube.");
+                    } else if (!data || data.length === 0) {
+                        console.warn("La actualización no afectó a ninguna fila en Supabase. Posible restricción de políticas RLS.");
+                        alert("⚠️ ERROR DE SEGURIDAD (RLS): No tienes permisos para modificar este listado en la base de datos de Supabase, o la propiedad no existe en la nube.");
+                    }
                 } catch (err) {
                     console.error("Error al actualizar propiedad en Supabase:", err);
                 }
@@ -7161,13 +7169,20 @@ async function deleteAgentProperty(propId) {
     // 1. Eliminar de Supabase si está activo
     if (isSupabaseActive && supabaseClient) {
         try {
-            const { error } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('properties')
                 .delete()
-                .eq('id', propId);
+                .eq('id', propId)
+                .select();
             if (error) {
                 console.error("Error al eliminar propiedad en Supabase:", error);
                 alert("Hubo un error al eliminar la propiedad de la base de datos remota. Intenta de nuevo.");
+                return;
+            }
+            // Si data es nulo o está vacío, significa que RLS bloqueó el delete o el ID no existe
+            if (!data || data.length === 0) {
+                console.warn("La eliminación no afectó a ninguna fila en Supabase. Posible restricción de políticas RLS.");
+                alert("⚠️ ERROR DE SEGURIDAD (RLS): No tienes permisos para eliminar esta propiedad en la base de datos de Supabase, o el ID no existe en la nube.\n\nPor favor, contacta al administrador para habilitar las políticas de eliminación.");
                 return;
             }
         } catch (err) {
@@ -7399,25 +7414,34 @@ async function deleteAdminReferenceProperty(zoneKey, propId) {
         return;
     }
 
-    if (PORTFOLIO_DATABASE[zoneKey]) {
-        PORTFOLIO_DATABASE[zoneKey] = PORTFOLIO_DATABASE[zoneKey].filter(p => String(p.id) !== String(propId));
-    }
-
-    // Si Supabase está activo, eliminar de la base remota
+    // Si Supabase está activo, eliminar de la base remota primero
     if (isSupabaseActive && supabaseClient && propId && !String(propId).startsWith('ref_local_')) {
         try {
-            const { error } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('properties')
                 .delete()
-                .eq('id', propId);
+                .eq('id', propId)
+                .select();
             if (error) {
                 console.error("Error al eliminar propiedad de referencia en Supabase:", error);
-            } else {
-                appendAdminLog("SYSTEM", `database: Punto de referencia #${propId} eliminado de Supabase.`, true);
+                alert("Hubo un error al eliminar la propiedad de referencia en la base de datos remota.");
+                return;
             }
+            if (!data || data.length === 0) {
+                console.warn("La eliminación no afectó a ninguna fila en Supabase. Posible restricción de políticas RLS.");
+                alert("⚠️ ERROR DE SEGURIDAD (RLS): No tienes permisos para eliminar este punto de referencia en la base de datos de Supabase.\n\nPor favor, contacta al administrador para habilitar las políticas de eliminación.");
+                return;
+            }
+            appendAdminLog("SYSTEM", `database: Punto de referencia #${propId} eliminado de Supabase.`, true);
         } catch (err) {
             console.error("Fallo de conexión al eliminar referencia de Supabase:", err);
+            alert("Error de conexión al eliminar el punto de referencia.");
+            return;
         }
+    }
+
+    if (PORTFOLIO_DATABASE[zoneKey]) {
+        PORTFOLIO_DATABASE[zoneKey] = PORTFOLIO_DATABASE[zoneKey].filter(p => String(p.id) !== String(propId));
     }
 
     renderAdminReferenceDatabase();
