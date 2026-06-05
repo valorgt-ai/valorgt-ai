@@ -5805,5 +5805,26 @@ input[type="range"]::-webkit-slider-thumb:hover {
     40%, 80% { transform: translateX(6px); }
 }
 
+/* ==========================================================================
+   ANIMACIONES DE EFECTOS HOLOGRÁFICOS DE CARGA (SKELETON LOADER)
+   ========================================================================== */
+@keyframes pulseGlow {
+    0% {
+        opacity: 0.6;
+        box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        border-color: rgba(0, 240, 255, 0.25);
+    }
+    100% {
+        opacity: 0.6;
+        box-shadow: 0 0 5px rgba(0, 240, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+}
+
 
 

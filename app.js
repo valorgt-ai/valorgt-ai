@@ -142,6 +142,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Cargar caché local de propiedades de Supabase (SWR de alto rendimiento)
+    try {
+        const cachedPropsJson = localStorage.getItem('valorgt_remote_properties_cache');
+        if (cachedPropsJson) {
+            const cachedProps = JSON.parse(cachedPropsJson);
+            if (Array.isArray(cachedProps) && cachedProps.length > 0) {
+                console.log(`🚀 [Cache] Cargando ${cachedProps.length} propiedades remotas desde el almacenamiento local.`);
+                cachedProps.forEach(prop => {
+                    const zoneKey = prop.location;
+                    if (zoneKey) {
+                        if (!PORTFOLIO_DATABASE[zoneKey]) {
+                            PORTFOLIO_DATABASE[zoneKey] = [];
+                        }
+                        const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === prop.id);
+                        if (!exists) {
+                            if (prop.sponsored) {
+                                PORTFOLIO_DATABASE[zoneKey].unshift(prop);
+                            } else {
+                                PORTFOLIO_DATABASE[zoneKey].push(prop);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    } catch (err) {
+        console.warn("Error al cargar la caché local de propiedades:", err);
+    }
+
     // Cargar preferencia de sidebar de localStorage antes de crear iconos
     if (localStorage.getItem('sidebarCollapsed') === 'true') {
         const container = document.querySelector('.app-container');
@@ -608,15 +637,59 @@ function switchView(viewId) {
         const totalLocalProps = Object.values(PORTFOLIO_DATABASE || {}).flat().length;
         
         if (totalLocalProps === 0) {
-            // Si por alguna razón la memoria está vacía, mostramos el loading completo en la cuadrícula
+            // Si por alguna razón la memoria está vacía, mostramos el loading completo en la cuadrícula con Skeleton Cards holográficas
             if (grid) {
                 grid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-                        <div class="processing-spinner-wrap" style="position: relative; width: 60px; height: 60px; margin: 0 auto 15px;">
-                            <div class="neon-spinner" style="filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)); border: 3px solid rgba(0, 240, 255, 0.1); border-top-color: var(--cyan); border-radius: 50%; width: 100%; height: 100%; animation: spin 1s linear infinite;"></div>
+                    <div style="grid-column: 1 / -1; width: 100%;">
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <div class="processing-spinner-wrap" style="position: relative; width: 42px; height: 42px; margin: 0 auto 10px;">
+                                <div class="neon-spinner" style="filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)); border: 3px solid rgba(0, 240, 255, 0.1); border-top-color: var(--cyan); border-radius: 50%; width: 100%; height: 100%; animation: spin 1s linear infinite;"></div>
+                            </div>
+                            <h4 class="font-mono text-cyan" style="font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">SINCRONIZANDO LEDGER INMOBILIARIO...</h4>
+                            <p class="font-mono text-muted" style="font-size: 0.6rem; margin-top: 3px; text-transform: uppercase;">Estableciendo conexión encriptada con nodo Supabase Cloud</p>
                         </div>
-                        <h4 class="font-mono text-cyan" style="font-size: 0.9rem; font-weight: bold; letter-spacing: 1px;">SINCRONIZANDO ACTIVOS CON SUPABASE...</h4>
-                        <p class="font-mono text-muted" style="font-size: 0.65rem; margin-top: 5px; text-transform: uppercase;">Conectando con el ledger de inteligencia inmobiliaria...</p>
+                        
+                        <div class="catalog-loading-skeleton" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%;">
+                            <!-- Card Skeleton 1 -->
+                            <div class="skeleton-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; height: 380px; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: pulseGlow 1.5s infinite ease-in-out;">
+                                <div style="width: 100%; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
+                                <div style="width: 60%; height: 18px; background: rgba(0, 240, 255, 0.1); border-radius: 4px; margin-top: 15px;"></div>
+                                <div style="width: 90%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px;"></div>
+                                <div style="width: 40%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 5px;"></div>
+                                <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                </div>
+                                <div style="width: 100%; height: 35px; background: rgba(0, 240, 255, 0.05); border-radius: 6px; margin-top: 15px;"></div>
+                            </div>
+                            <!-- Card Skeleton 2 -->
+                            <div class="skeleton-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; height: 380px; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: pulseGlow 1.5s infinite ease-in-out; animation-delay: 0.2s;">
+                                <div style="width: 100%; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
+                                <div style="width: 50%; height: 18px; background: rgba(0, 240, 255, 0.1); border-radius: 4px; margin-top: 15px;"></div>
+                                <div style="width: 80%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px;"></div>
+                                <div style="width: 30%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 5px;"></div>
+                                <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                </div>
+                                <div style="width: 100%; height: 35px; background: rgba(0, 240, 255, 0.05); border-radius: 6px; margin-top: 15px;"></div>
+                            </div>
+                            <!-- Card Skeleton 3 -->
+                            <div class="skeleton-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; height: 380px; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: pulseGlow 1.5s infinite ease-in-out; animation-delay: 0.4s;">
+                                <div style="width: 100%; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
+                                <div style="width: 70%; height: 18px; background: rgba(0, 240, 255, 0.1); border-radius: 4px; margin-top: 15px;"></div>
+                                <div style="width: 85%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px;"></div>
+                                <div style="width: 50%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 5px;"></div>
+                                <div style="display: flex; gap: 8px; margin-top: 15px;">
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
+                                </div>
+                                <div style="width: 100%; height: 35px; background: rgba(0, 240, 255, 0.05); border-radius: 6px; margin-top: 15px;"></div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -8663,10 +8736,41 @@ async function executeAdminGoldAirdrop() {
     calculateAdminAirdropPreview();
 }
 
+let isSyncingSupabase = false;
+let currentSyncPromise = null;
+let lastSupabaseSyncTime = 0;
+
 /**
- * Sincroniza las propiedades e inventario desde el servidor Supabase a la aplicación local
+ * Sincroniza las propiedades e inventario desde el servidor Supabase a la aplicación local (Wrapper con throttling y reuso de promesas)
  */
 async function syncSupabaseData() {
+    if (!isSupabaseActive) return;
+
+    if (isSyncingSupabase && currentSyncPromise) {
+        return currentSyncPromise;
+    }
+
+    const elapsed = Date.now() - lastSupabaseSyncTime;
+    if (elapsed < 20000 && Object.values(PORTFOLIO_DATABASE).flat().length > 0) {
+        console.log(`⚡ [SWR] Usando caché de red reciente (sincronizada hace ${Math.round(elapsed / 1000)}s).`);
+        return;
+    }
+
+    isSyncingSupabase = true;
+    currentSyncPromise = (async () => {
+        try {
+            await _syncSupabaseDataInternal();
+            lastSupabaseSyncTime = Date.now();
+        } finally {
+            isSyncingSupabase = false;
+            currentSyncPromise = null;
+        }
+    })();
+
+    return currentSyncPromise;
+}
+
+async function _syncSupabaseDataInternal() {
     if (!isSupabaseActive) return;
 
     try {
@@ -8778,6 +8882,7 @@ async function syncSupabaseData() {
             });
 
             if (remoteProperties.length > 0) {
+                const allRemoteFormatted = [];
                 remoteProperties.forEach(prop => {
                     const zoneKey = prop.location_key;
                     const isRef = prop.metadata && prop.metadata.isReferenceData === true;
@@ -8818,6 +8923,8 @@ async function syncSupabaseData() {
                         lng: parseFloat(prop.longitude)
                     };
 
+                    allRemoteFormatted.push(formattedProp);
+
                     // Evitar duplicación de listados
                     if (!PORTFOLIO_DATABASE[zoneKey]) {
                         PORTFOLIO_DATABASE[zoneKey] = [];
@@ -8843,6 +8950,7 @@ async function syncSupabaseData() {
                 
                 // Guardar en localStorage las propiedades sincronizadas
                 localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
+                localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
             }
 
             // Actualizar la interfaz de forma reactiva según la sección visible
