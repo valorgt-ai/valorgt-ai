@@ -592,6 +592,13 @@ function switchView(viewId) {
         subtitleEl.innerText = "Análisis predictivo de propiedades con redes neuronales";
         // Descargar configuración fresca en segundo plano al regresar al Dashboard
         fetchSystemSettingsFromSupabase();
+        
+        // Rerenderizar propiedades destacadas para reflejar permisos actualizados (ej. botón de borrar si es admin)
+        const locationSelect = document.getElementById('prop-location');
+        const activeZone = locationSelect ? locationSelect.value : 'zona14';
+        if (typeof renderFeaturedProperties === 'function') {
+            renderFeaturedProperties(activeZone);
+        }
     } else if (viewId === 'heatmap') {
         titleEl.innerText = "Radar de Plusvalía e Inversión";
         subtitleEl.innerText = "Mapas de calor interactivos y telemetrías inmobiliarias";
