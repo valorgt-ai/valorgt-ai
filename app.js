@@ -7351,7 +7351,7 @@ async function deleteAdminReferenceProperty(zoneKey, propId) {
 function openAdminReferencePropertyModal() {
     const modal = document.getElementById('admin-reference-property-modal');
     if (modal) {
-        modal.classList.remove('hidden');
+        modal.classList.add('active');
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 }
@@ -7361,7 +7361,7 @@ function openAdminReferencePropertyModal() {
  */
 function closeAdminReferencePropertyModal() {
     const modal = document.getElementById('admin-reference-property-modal');
-    if (modal) modal.classList.add('hidden');
+    if (modal) modal.classList.remove('active');
 }
 
 /**

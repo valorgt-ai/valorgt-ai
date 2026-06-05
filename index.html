@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=6.9">
+    <link rel="stylesheet" href="styles.css?v=7.0">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -3184,9 +3184,9 @@
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                                <div class="input-group" style="flex-direction: row; align-items: center; gap: 6px;">
+                                <div class="input-group" style="display: flex; flex-direction: row; align-items: center; gap: 6px;">
                                     <label class="font-mono" style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin: 0;">ZONA DE CALIBRACIÓN:</label>
-                                    <select id="admin-ref-zone-select" onchange="renderAdminReferenceDatabase()" style="padding: 6px 12px; font-size: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; border-radius: 4px; outline: none; font-family: var(--font-mono);">
+                                    <select id="admin-ref-zone-select" onchange="renderAdminReferenceDatabase()" style="padding: 6px 12px; font-size: 0.75rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(0, 240, 255, 0.3); color: #fff; border-radius: 4px; outline: none; font-family: var(--font-mono); height: 28px; box-sizing: border-box;">
                                         <option value="zona10">Zona 10</option>
                                         <option value="zona14" selected>Zona 14</option>
                                         <option value="zona15">Zona 15</option>
@@ -3205,8 +3205,8 @@
                                         <option value="san_cristobal">San Cristóbal</option>
                                     </select>
                                 </div>
-                                <button class="btn-commercial btn-commercial-cyan" onclick="openAdminReferencePropertyModal()" style="padding: 6px 12px; font-size: 0.7rem; border-radius: 4px; display: flex; align-items: center; gap: 5px; font-weight: bold; background: rgba(0, 240, 255, 0.1);">
-                                    <i data-lucide="plus-circle" class="tiny-icon"></i> AGREGAR REFERENCIA
+                                <button class="btn-commercial btn-commercial-cyan" onclick="openAdminReferencePropertyModal()" style="padding: 0 12px; font-size: 0.7rem; border-radius: 4px; height: 28px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                                    <i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i> AGREGAR REFERENCIA
                                 </button>
                             </div>
                         </div>
@@ -3900,7 +3900,7 @@
         </div>
 
     <!-- MODAL DE CREACIÓN DE PROPIEDADES DE REFERENCIA (IA) -->
-    <div id="admin-reference-property-modal" class="payment-modal-overlay hidden" onclick="if(event.target === this) closeAdminReferencePropertyModal();">
+    <div id="admin-reference-property-modal" class="payment-modal-overlay" onclick="if(event.target === this) closeAdminReferencePropertyModal();">
         <div class="payment-modal-card glassmorphism" style="width: 550px; max-width: 95vw; border: 1px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 30px rgba(0, 240, 255, 0.2); background: rgba(5, 6, 8, 0.98); padding: 22px; border-radius: 12px; margin: auto; text-align: left; display: flex; flex-direction: column; gap: 15px; position: relative;">
             <div class="modal-card-glow" style="background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, transparent 70%);"></div>
             <button class="modal-close-btn" onclick="closeAdminReferencePropertyModal()" style="font-size: 1.8rem; top: 12px; right: 15px; position: absolute; background: none; border: none; color: var(--text-muted); cursor: pointer;">&times;</button>
@@ -3987,9 +3987,9 @@
     </div>
 
         <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=6.9"></script>
-    <script src="charts.js?v=6.9"></script>
-    <script src="map.js?v=6.9"></script>
-    <script src="app.js?v=6.9"></script>
+    <script src="mockData.js?v=7.0"></script>
+    <script src="charts.js?v=7.0"></script>
+    <script src="map.js?v=7.0"></script>
+    <script src="app.js?v=7.0"></script>
 </body>
 </html>
