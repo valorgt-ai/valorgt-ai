@@ -4657,6 +4657,43 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 12px rgba(191, 90, 242, 0.12) !important;
 }
 
+.admin-tab-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.admin-tab-btn.active {
+    background: rgba(0, 240, 255, 0.05) !important;
+    border-color: rgba(0, 240, 255, 0.4) !important;
+    color: var(--cyan) !important;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.12) !important;
+}
+
+.admin-tab-content {
+    animation: fadeInAdminTab 0.35s ease-out;
+}
+
+.admin-tab-content.hidden {
+    display: none !important;
+}
+
+@keyframes fadeInAdminTab {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
 .comm-tab-content {
     animation: fadeInCommercialTab 0.35s ease-out;
 }

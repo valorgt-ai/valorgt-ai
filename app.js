@@ -7226,6 +7226,9 @@ function initAdminView() {
 
     // Renderizar base de datos de referencia (IA)
     renderAdminReferenceDatabase();
+
+    // Mostrar por defecto la pestaña de Ajustes Generales
+    switchAdminTab('general');
 }
 
 /**
@@ -8669,6 +8672,50 @@ function switchCommercialTab(tabId) {
         }
     }
 }
+
+/**
+ * Conmuta entre las pestañas de la Consola de Administración (General y Base de Datos de Calibración)
+ */
+function switchAdminTab(tabId) {
+    // 1. Quitar clase active de los botones de pestañas del admin y restablecer estilos
+    document.querySelectorAll('.admin-tabs-nav .admin-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.background = 'rgba(0,0,0,0.4)';
+        btn.style.borderColor = 'rgba(255,255,255,0.08)';
+        btn.style.color = 'var(--text-muted)';
+        btn.style.boxShadow = 'none';
+    });
+
+    // 2. Activar el botón de la pestaña seleccionada
+    const activeBtn = document.getElementById(`admin-tab-btn-${tabId}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.background = 'rgba(0,240,255,0.05)';
+        activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
+        activeBtn.style.color = 'var(--cyan)';
+        activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+    }
+
+    // 3. Alternar visibilidad de las secciones
+    if (tabId === 'general') {
+        document.getElementById('admin-tab-content-general')?.classList.remove('hidden');
+        document.getElementById('admin-tab-content-general-part2')?.classList.remove('hidden');
+        document.getElementById('admin-tab-content-database')?.classList.add('hidden');
+    } else if (tabId === 'database') {
+        document.getElementById('admin-tab-content-general')?.classList.add('hidden');
+        document.getElementById('admin-tab-content-general-part2')?.classList.add('hidden');
+        document.getElementById('admin-tab-content-database')?.classList.remove('hidden');
+        // Asegurar renderizado fresco de la lista
+        if (typeof renderAdminReferenceDatabase === 'function') {
+            renderAdminReferenceDatabase();
+        }
+    }
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
 
 /**
  * Sincroniza visualmente cuál es la tarjeta de membresía activa en la cuadrícula
