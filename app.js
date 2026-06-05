@@ -1323,10 +1323,10 @@ function renderCatalogProperties() {
         
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
         
-        const isAdmin = loggedInB2bClient && (
+        const isAdmin = (loggedInB2bClient && (
             loggedInB2bClient.email.toLowerCase().includes('admin') || 
             loggedInB2bClient.email.toLowerCase().includes('sgalindo')
-        );
+        )) || (!loggedInB2bClient && isCommercialAuthenticated);
         const deleteButtonHTML = (isAdmin && prop.id) ? `
             <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
                 <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
@@ -7241,10 +7241,10 @@ function editAgentProperty(propId) {
  */
 async function deleteAgentProperty(propId) {
     let prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
-    const isAdmin = loggedInB2bClient && (
+    const isAdmin = (loggedInB2bClient && (
         loggedInB2bClient.email.toLowerCase().includes('admin') || 
         loggedInB2bClient.email.toLowerCase().includes('sgalindo')
-    );
+    )) || (!loggedInB2bClient && isCommercialAuthenticated);
     if (!prop && isAdmin) {
         // Buscar en todas las zonas de PORTFOLIO_DATABASE
         for (const zone of Object.keys(PORTFOLIO_DATABASE)) {
