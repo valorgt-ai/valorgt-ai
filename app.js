@@ -7085,10 +7085,12 @@ async function deleteAgentProperty(propId) {
     // 1. Eliminar de Supabase si está activo
     if (isSupabaseActive && supabaseClient) {
         try {
+            const numericId = parseInt(propId);
+            const idToQuery = isNaN(numericId) ? propId : numericId;
             const { error } = await supabaseClient
                 .from('properties')
                 .delete()
-                .eq('id', propId);
+                .eq('id', idToQuery);
             if (error) {
                 console.error("Error al eliminar propiedad en Supabase:", error);
                 alert("Hubo un error al eliminar la propiedad de la base de datos remota. Intenta de nuevo.");
@@ -7231,6 +7233,10 @@ function initAdminView() {
     switchAdminTab('general');
 }
 
+let editingAdminRefPropertyId = null;
+let editingAdminRefPropertyZone = null;
+let adminRefCustomPhotoBase64 = "";
+
 /**
  * Renderiza la tabla de propiedades de referencia en la pestaña de administración
  */
@@ -7261,7 +7267,17 @@ function renderAdminReferenceDatabase() {
     refProperties.forEach(prop => {
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+        tr.style.cursor = 'pointer';
+        tr.style.transition = 'background-color 0.2s ease';
+        tr.onmouseover = () => { tr.style.backgroundColor = 'rgba(0, 240, 255, 0.04)'; };
+        tr.onmouseout = () => { tr.style.backgroundColor = 'transparent'; };
         
+        // Al hacer clic en la fila se abre el modal para visualizar/editar
+        tr.onclick = (e) => {
+            if (e.target.closest('button')) return; // No abrir si se hace clic en ELIMINAR
+            openEditAdminReferencePropertyModal(zoneKey, prop);
+        };
+
         const priceGTQ = prop.priceUSD * exchangeRate;
         const formattedPrice = activeCurrency === 'GTQ' 
             ? `Q${priceGTQ.toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
@@ -7288,7 +7304,7 @@ function renderAdminReferenceDatabase() {
                 ${formattedPrice}
             </td>
             <td style="padding: 8px; text-align: center; vertical-align: middle;">
-                <button onclick="deleteAdminReferenceProperty('${zoneKey}', '${prop.id}')" class="btn-commercial" style="background: rgba(255, 55, 95, 0.08); border: 1px solid var(--neon-red); color: var(--neon-red); padding: 4px 8px; font-size: 0.6rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                <button onclick="event.stopPropagation(); deleteAdminReferenceProperty('${zoneKey}', '${prop.id}')" class="btn-commercial" style="background: rgba(255, 55, 95, 0.08); border: 1px solid var(--neon-red); color: var(--neon-red); padding: 4px 8px; font-size: 0.6rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
                     <i data-lucide="trash-2" style="width: 10px; height: 10px;"></i> ELIMINAR
                 </button>
             </td>
@@ -7316,10 +7332,12 @@ async function deleteAdminReferenceProperty(zoneKey, propId) {
     // Si Supabase está activo, eliminar de la base remota
     if (isSupabaseActive && supabaseClient && propId && !String(propId).startsWith('ref_local_')) {
         try {
+            const numericId = parseInt(propId);
+            const idToQuery = isNaN(numericId) ? propId : numericId;
             const { error } = await supabaseClient
                 .from('properties')
                 .delete()
-                .eq('id', propId);
+                .eq('id', idToQuery);
             if (error) {
                 console.error("Error al eliminar propiedad de referencia en Supabase:", error);
             } else {
@@ -7346,14 +7364,150 @@ async function deleteAdminReferenceProperty(zoneKey, propId) {
 }
 
 /**
+ * Actualiza la vista previa de imagen en el modal de referencia
+ */
+function updateAdminRefPhotoPreview(url) {
+    const container = document.getElementById('admin-ref-preview-container');
+    const img = document.getElementById('admin-ref-preview-image');
+    const dims = document.getElementById('admin-ref-preview-dimensions');
+    if (container && img) {
+        if (url && url.trim() !== '') {
+            img.src = url;
+            container.style.display = 'block';
+            img.onload = function() {
+                if (dims) dims.innerText = `${img.naturalWidth} x ${img.naturalHeight} px`;
+            };
+        } else {
+            container.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Maneja la subida de foto local del administrador
+ */
+function handleAdminRefPhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        adminRefCustomPhotoBase64 = e.target.result;
+        
+        // Cargar opción personalizada y seleccionarla
+        const select = document.getElementById('admin-ref-photo');
+        let customOpt = document.getElementById('option-custom-ref-photo');
+        if (select) {
+            if (!customOpt) {
+                customOpt = document.createElement('option');
+                customOpt.id = 'option-custom-ref-photo';
+                customOpt.text = '-- Foto Subida Personalizada --';
+                select.appendChild(customOpt);
+            }
+            customOpt.value = adminRefCustomPhotoBase64;
+            select.value = adminRefCustomPhotoBase64;
+            
+            // Actualizar vista previa
+            updateAdminRefPhotoPreview(adminRefCustomPhotoBase64);
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
  * Abre el modal para añadir una propiedad de referencia
  */
 function openAdminReferencePropertyModal() {
+    editingAdminRefPropertyId = null;
+    editingAdminRefPropertyZone = null;
+
+    const form = document.getElementById('admin-ref-property-form');
+    if (form) form.reset();
+
+    // Restablecer encabezado del modal
+    const titleEl = document.querySelector('#admin-reference-property-modal h3');
+    if (titleEl) titleEl.innerText = "Nuevo Punto de Referencia (IA)";
+
+    const submitBtn = document.querySelector('#admin-reference-property-modal button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i data-lucide="save" class="tiny-icon"></i> REGISTRAR PUNTO DE REFERENCIA';
+    }
+
     const modal = document.getElementById('admin-reference-property-modal');
     if (modal) {
         modal.classList.add('active');
+        
+        const select = document.getElementById('admin-ref-photo');
+        if (select) {
+            // Restablecer opción custom si existe
+            const customOpt = document.getElementById('option-custom-ref-photo');
+            if (customOpt) customOpt.value = "custom";
+            
+            // Mostrar primera opción por defecto
+            updateAdminRefPhotoPreview(select.value);
+        }
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
+}
+
+/**
+ * Abre el modal para editar una propiedad de referencia
+ */
+function openEditAdminReferencePropertyModal(zoneKey, prop) {
+    editingAdminRefPropertyId = prop.id;
+    editingAdminRefPropertyZone = zoneKey;
+
+    const modal = document.getElementById('admin-reference-property-modal');
+    if (!modal) return;
+
+    // Cambiar título y botón
+    const titleEl = document.querySelector('#admin-reference-property-modal h3');
+    if (titleEl) titleEl.innerText = "Editar Punto de Referencia (IA)";
+
+    const submitBtn = document.querySelector('#admin-reference-property-modal button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i data-lucide="edit-3" class="tiny-icon"></i> GUARDAR CAMBIOS DE REFERENCIA';
+    }
+
+    // Prellenar campos
+    document.getElementById('admin-ref-title').value = prop.title || '';
+    document.getElementById('admin-ref-category').value = prop.category || 'apartamentos';
+    document.getElementById('admin-ref-type').value = prop.type || 'venta';
+    document.getElementById('admin-ref-price').value = prop.priceUSD || '';
+    document.getElementById('admin-ref-size').value = prop.size || '';
+    document.getElementById('admin-ref-rooms').value = prop.rooms || 0;
+    document.getElementById('admin-ref-bathrooms').value = prop.bathrooms || 0;
+    document.getElementById('admin-ref-parkings').value = prop.parkings || 0;
+
+    const select = document.getElementById('admin-ref-photo');
+    if (select) {
+        let optionExists = false;
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === prop.photo) {
+                optionExists = true;
+                break;
+            }
+        }
+
+        if (!optionExists && prop.photo) {
+            let customOpt = document.getElementById('option-custom-ref-photo');
+            if (!customOpt) {
+                customOpt = document.createElement('option');
+                customOpt.id = 'option-custom-ref-photo';
+                customOpt.text = '-- Foto Subida Personalizada --';
+                select.appendChild(customOpt);
+            }
+            customOpt.value = prop.photo;
+            select.value = prop.photo;
+        } else {
+            select.value = prop.photo || '';
+        }
+    }
+
+    updateAdminRefPhotoPreview(prop.photo);
+
+    modal.classList.add('active');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 /**
@@ -7362,16 +7516,18 @@ function openAdminReferencePropertyModal() {
 function closeAdminReferencePropertyModal() {
     const modal = document.getElementById('admin-reference-property-modal');
     if (modal) modal.classList.remove('active');
+    editingAdminRefPropertyId = null;
+    editingAdminRefPropertyZone = null;
 }
 
 /**
- * Registra una nueva propiedad de referencia
+ * Registra o actualiza una propiedad de referencia
  */
 async function submitAdminReferenceProperty() {
     const zoneSelect = document.getElementById('admin-ref-zone-select');
     if (!zoneSelect) return;
 
-    const zoneKey = zoneSelect.value;
+    const zoneKey = editingAdminRefPropertyZone || zoneSelect.value;
     const title = document.getElementById('admin-ref-title').value.trim();
     const category = document.getElementById('admin-ref-category').value;
     const type = document.getElementById('admin-ref-type').value;
@@ -7387,82 +7543,137 @@ async function submitAdminReferenceProperty() {
         return;
     }
 
-    const localId = "ref_local_" + Date.now();
-    
-    // Obtener coordenadas GPS de la zona
     const zoneData = ZONES_DATABASE[zoneKey];
     const lat = zoneData ? zoneData.center[0] : 14.6349;
     const lng = zoneData ? zoneData.center[1] : -90.5069;
 
-    const newRefProp = {
-        id: localId,
-        title: title,
-        category: category,
-        type: type,
-        tag: `${category.toUpperCase().slice(0, -1)} EN ${type.toUpperCase()}`,
-        priceUSD: priceUSD,
-        size: size,
-        rooms: rooms,
-        bathrooms: bathrooms,
-        parkings: parkings,
-        garden: 0,
-        study: false,
-        familyRoom: false,
-        amenities: ["amenity-security"],
-        photo: photo,
-        photos: [photo],
-        description: 'Punto de referencia de calibración de tasación multivariable.',
-        location: zoneKey,
-        isReferenceData: true,
-        isAgentUpload: false,
-        lat: lat + (Math.random() - 0.5) * 0.003,
-        lng: lng + (Math.random() - 0.5) * 0.003
-    };
+    if (editingAdminRefPropertyId) {
+        // MODO EDICIÓN
+        const propId = editingAdminRefPropertyId;
+        const propList = PORTFOLIO_DATABASE[zoneKey] || [];
+        const propIndex = propList.findIndex(p => String(p.id) === String(propId));
+        if (propIndex !== -1) {
+            const prop = propList[propIndex];
+            prop.title = title;
+            prop.category = category;
+            prop.type = type;
+            prop.tag = `${category.toUpperCase().slice(0, -1)} EN ${type.toUpperCase()}`;
+            prop.priceUSD = priceUSD;
+            prop.size = size;
+            prop.rooms = rooms;
+            prop.bathrooms = bathrooms;
+            prop.parkings = parkings;
+            prop.photo = photo;
+            prop.photos = [photo];
+        }
 
-    if (!PORTFOLIO_DATABASE[zoneKey]) {
-        PORTFOLIO_DATABASE[zoneKey] = [];
-    }
-    PORTFOLIO_DATABASE[zoneKey].push(newRefProp);
-
-    // Si Supabase está activo, persistir
-    if (isSupabaseActive && supabaseClient) {
-        try {
-            const { data, error } = await supabaseClient.from('properties').insert([
-                {
+        // Si Supabase está activo, actualizar
+        if (isSupabaseActive && supabaseClient && !String(propId).startsWith('ref_local_')) {
+            try {
+                const numericId = parseInt(propId);
+                const idToQuery = isNaN(numericId) ? propId : numericId;
+                const { error } = await supabaseClient.from('properties').update({
                     title: title,
                     category: category,
                     type: type,
-                    tag: newRefProp.tag,
+                    tag: `${category.toUpperCase().slice(0, -1)} EN ${type.toUpperCase()}`,
                     price_usd: priceUSD,
                     size_m2: size,
                     rooms: rooms,
                     bathrooms: bathrooms,
                     parkings: parkings,
                     photo_url: photo,
-                    latitude: newRefProp.lat,
-                    longitude: newRefProp.lng,
-                    location_key: zoneKey,
-                    sponsored: false,
                     metadata: {
                         isReferenceData: true,
                         photos: [photo],
-                        description: newRefProp.description
+                        description: 'Punto de referencia de calibración de tasación multivariable.'
                     }
-                }
-            ]).select();
+                }).eq('id', idToQuery);
 
-            if (error) {
-                console.error("Error al subir propiedad de referencia a Supabase:", error);
-            } else if (data && data[0]) {
-                newRefProp.id = data[0].id;
-                appendAdminLog("SYSTEM", `database: Punto de referencia registrado en Supabase con ID #${data[0].id}`, true);
+                if (error) {
+                    console.error("Error al actualizar referencia en Supabase:", error);
+                } else {
+                    appendAdminLog("SYSTEM", `database: Punto de referencia #${propId} actualizado en Supabase.`, true);
+                }
+            } catch (err) {
+                console.error("Fallo de red al actualizar referencia en Supabase:", err);
             }
-        } catch (err) {
-            console.error("Fallo de red al insertar referencia en Supabase:", err);
         }
+        alert("Punto de referencia actualizado con éxito.");
+    } else {
+        // MODO CREACIÓN
+        const localId = "ref_local_" + Date.now();
+        const newRefProp = {
+            id: localId,
+            title: title,
+            category: category,
+            type: type,
+            tag: `${category.toUpperCase().slice(0, -1)} EN ${type.toUpperCase()}`,
+            priceUSD: priceUSD,
+            size: size,
+            rooms: rooms,
+            bathrooms: bathrooms,
+            parkings: parkings,
+            garden: 0,
+            study: false,
+            familyRoom: false,
+            amenities: ["amenity-security"],
+            photo: photo,
+            photos: [photo],
+            description: 'Punto de referencia de calibración de tasación multivariable.',
+            location: zoneKey,
+            isReferenceData: true,
+            isAgentUpload: false,
+            lat: lat + (Math.random() - 0.5) * 0.003,
+            lng: lng + (Math.random() - 0.5) * 0.003
+        };
+
+        if (!PORTFOLIO_DATABASE[zoneKey]) {
+            PORTFOLIO_DATABASE[zoneKey] = [];
+        }
+        PORTFOLIO_DATABASE[zoneKey].push(newRefProp);
+
+        // Si Supabase está activo, persistir
+        if (isSupabaseActive && supabaseClient) {
+            try {
+                const { data, error } = await supabaseClient.from('properties').insert([
+                    {
+                        title: title,
+                        category: category,
+                        type: type,
+                        tag: newRefProp.tag,
+                        price_usd: priceUSD,
+                        size_m2: size,
+                        rooms: rooms,
+                        bathrooms: bathrooms,
+                        parkings: parkings,
+                        photo_url: photo,
+                        latitude: newRefProp.lat,
+                        longitude: newRefProp.lng,
+                        location_key: zoneKey,
+                        sponsored: false,
+                        metadata: {
+                            isReferenceData: true,
+                            photos: [photo],
+                            description: newRefProp.description
+                        }
+                    }
+                ]).select();
+
+                if (error) {
+                    console.error("Error al subir propiedad de referencia a Supabase:", error);
+                } else if (data && data[0]) {
+                    newRefProp.id = data[0].id;
+                    appendAdminLog("SYSTEM", `database: Punto de referencia registrado en Supabase con ID #${data[0].id}`, true);
+                }
+            } catch (err) {
+                console.error("Fallo de red al insertar referencia en Supabase:", err);
+            }
+        }
+        alert("Punto de referencia registrado con éxito.");
     }
 
-    // Limpiar formulario y cerrar
+    // Limpiar y cerrar
     document.getElementById('admin-ref-property-form').reset();
     closeAdminReferencePropertyModal();
     renderAdminReferenceDatabase();
@@ -8535,6 +8746,9 @@ async function syncSupabaseData() {
                         }
                     }
                 });
+                
+                // Guardar en localStorage las propiedades sincronizadas
+                localStorage.setItem('valorgt_local_properties', JSON.stringify(agentUploadedProperties));
             }
 
             // Actualizar la interfaz de forma reactiva según la sección visible

@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=7.0">
+    <link rel="stylesheet" href="styles.css?v=7.1">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -3913,6 +3913,15 @@
                 </div>
             </div>
 
+            <!-- Imagen Grande de Vista Previa -->
+            <div id="admin-ref-preview-container" style="width: 100%; height: 180px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0, 240, 255, 0.25); background: rgba(0, 0, 0, 0.6); display: none; position: relative;">
+                <img id="admin-ref-preview-image" style="width: 100%; height: 100%; object-fit: cover;" src="" alt="Vista previa de propiedad">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 8px 12px; font-family: var(--font-mono); font-size: 0.65rem; color: #fff; display: flex; justify-content: space-between; align-items: center;">
+                    <span id="admin-ref-preview-dimensions">0 x 0 px</span>
+                    <span style="color: var(--cyan); font-weight: bold;">CALIBRACIÓN DE REFERENCIA IA</span>
+                </div>
+            </div>
+
             <form id="admin-ref-property-form" style="display: flex; flex-direction: column; gap: 12px;" onsubmit="event.preventDefault(); submitAdminReferenceProperty();">
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
                     <label for="admin-ref-title" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Título de la Propiedad</label>
@@ -3967,16 +3976,23 @@
                 </div>
 
                 <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                    <label for="admin-ref-photo" style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Imagen de la Propiedad (URL Unsplash)</label>
-                    <select id="admin-ref-photo" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding: 10px; font-size: 0.8rem; outline: none;">
-                        <option value="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85">Casa Moderna (Fachada)</option>
-                        <option value="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=85">Edificio Premium Loft (Vista)</option>
-                        <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85">Casa de Campo (Jardín)</option>
-                        <option value="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85">Apartamento Moderno (Interior)</option>
-                        <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=85">Oficina Corporativa (Tech)</option>
-                        <option value="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85">Bodega de Distribución (Nave)</option>
-                        <option value="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85">Terreno Verde (Campo)</option>
-                    </select>
+                    <label style="font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;">Foto de la Propiedad</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select id="admin-ref-photo" onchange="updateAdminRefPhotoPreview(this.value)" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 6px; padding: 10px; font-size: 0.8rem; outline: none; flex: 1; height: 38px; box-sizing: border-box; font-family: var(--font-mono);">
+                            <option value="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=85">Casa Moderna (Fachada)</option>
+                            <option value="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=85">Edificio Premium Loft (Vista)</option>
+                            <option value="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=85">Casa de Campo (Jardín)</option>
+                            <option value="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85">Apartamento Moderno (Interior)</option>
+                            <option value="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=85">Oficina Corporativa (Tech)</option>
+                            <option value="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=85">Bodega de Distribución (Nave)</option>
+                            <option value="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85">Terreno Verde (Campo)</option>
+                            <option value="custom" id="option-custom-ref-photo">-- Foto Subida Personalizada --</option>
+                        </select>
+                        <input type="file" id="admin-ref-photo-file" accept="image/*" style="display: none;" onchange="handleAdminRefPhotoUpload(event)">
+                        <button type="button" class="btn-commercial btn-commercial-cyan" onclick="document.getElementById('admin-ref-photo-file').click()" style="padding: 0 15px; font-size: 0.75rem; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 5px; height: 38px; box-sizing: border-box; font-family: var(--font-mono); margin: 0; min-width: 90px;">
+                            <i data-lucide="upload" style="width: 14px; height: 14px;"></i> SUBIR
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; padding: 12px; font-weight: bold; margin-top: 5px; font-size: 0.8rem; border-radius: 6px;">
@@ -3987,9 +4003,9 @@
     </div>
 
         <!-- Scripts del Proyecto -->
-    <script src="mockData.js?v=7.0"></script>
-    <script src="charts.js?v=7.0"></script>
-    <script src="map.js?v=7.0"></script>
-    <script src="app.js?v=7.0"></script>
+    <script src="mockData.js?v=7.1"></script>
+    <script src="charts.js?v=7.1"></script>
+    <script src="map.js?v=7.1"></script>
+    <script src="app.js?v=7.1"></script>
 </body>
 </html>
