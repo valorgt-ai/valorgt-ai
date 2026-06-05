@@ -5755,5 +5755,18 @@ input[type="range"]::-webkit-slider-thumb:hover {
     height: auto !important;
 }
 
+/* Errores de Validación en Formularios B2B */
+.input-error {
+    border-color: #ff375f !important;
+    box-shadow: 0 0 10px rgba(255, 55, 95, 0.4) !important;
+    animation: inputShake 0.4s ease-in-out;
+}
+
+@keyframes inputShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
 
 

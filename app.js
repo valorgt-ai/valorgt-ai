@@ -4419,10 +4419,86 @@ async function publishAgentProperty(event) {
         if (el && el.checked) near.push(item.key);
     });
 
-    if (!title || isNaN(priceRaw) || priceRaw <= 0 || isNaN(size) || size <= 0 || isNaN(rooms) || rooms < 0 || isNaN(bathrooms) || bathrooms < 0 || isNaN(parkings) || parkings < 0 || isNaN(lat) || isNaN(lng)) {
-        alert("Por favor completa todos los campos del listado con valores válidos (las habitaciones, baños y parqueos pueden ser 0 si el tipo de propiedad lo amerita).");
+    // Limpiar clases de error previas
+    const inputsToClear = document.querySelectorAll('#publish-property-form input, #publish-property-form select, #publish-property-form textarea');
+    inputsToClear.forEach(input => input.classList.remove('input-error'));
+
+    const titleEl = document.getElementById('pub-title');
+    const locationEl = document.getElementById('pub-location');
+    const priceEl = document.getElementById('pub-price');
+    const sizeEl = document.getElementById('pub-size');
+    const bedsEl = document.getElementById('pub-beds');
+    const bathsEl = document.getElementById('pub-baths');
+    const parksEl = document.getElementById('pub-parks');
+
+    const errors = [];
+
+    if (!title || !title.trim()) {
+        errors.push("Título de la Publicación");
+        if (titleEl) titleEl.classList.add('input-error');
+    }
+    if (!locationKey) {
+        errors.push("Zona de Ubicación");
+        if (locationEl) locationEl.classList.add('input-error');
+    }
+    if (isNaN(priceRaw) || priceRaw <= 0) {
+        errors.push("Precio del Activo (debe ser mayor a 0)");
+        if (priceEl) priceEl.classList.add('input-error');
+    }
+    if (isNaN(size) || size <= 0) {
+        errors.push("Metros Cuadrados (debe ser mayor a 0)");
+        if (sizeEl) sizeEl.classList.add('input-error');
+    }
+    
+    // Para terrenos y bodegas las habitaciones/baños/parqueos son opcionales
+    if (category !== 'Terreno' && category !== 'Bodega') {
+        if (isNaN(rooms) || rooms < 0) {
+            errors.push("Habitaciones (debe ser 0 o mayor)");
+            if (bedsEl) bedsEl.classList.add('input-error');
+        }
+        if (isNaN(bathrooms) || bathrooms < 0) {
+            errors.push("Baños (debe ser 0 o mayor)");
+            if (bathsEl) bathsEl.classList.add('input-error');
+        }
+        if (isNaN(parkings) || parkings < 0) {
+            errors.push("Parqueos (debe ser 0 o mayor)");
+            if (parksEl) parksEl.classList.add('input-error');
+        }
+    }
+    if (isNaN(lat) || isNaN(lng)) {
+        errors.push("Coordenadas GPS (deben ser numéricas)");
+        if (document.getElementById('pub-lat')) document.getElementById('pub-lat').classList.add('input-error');
+        if (document.getElementById('pub-lng')) document.getElementById('pub-lng').classList.add('input-error');
+    }
+
+    if (errors.length > 0) {
+        // Enfocar el primer error y sacudir
+        const firstErrorEl = document.querySelector('.input-error');
+        if (firstErrorEl) firstErrorEl.focus();
+
+        // Agregar listener para remover la clase de error cuando el usuario empiece a escribir o cambiar
+        document.querySelectorAll('.input-error').forEach(el => {
+            const clearError = () => {
+                el.classList.remove('input-error');
+                el.removeEventListener('input', clearError);
+                el.removeEventListener('change', clearError);
+            };
+            el.addEventListener('input', clearError);
+            el.addEventListener('change', clearError);
+        });
+
+        alert(`⚠️ CAMPOS REQUERIDOS O INVÁLIDOS:\nPor favor completa o corrige los siguientes campos:\n\n- ${errors.join('\n- ')}`);
         return;
     }
+
+    // Cambiar botón a estado de carga
+    const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.setAttribute('disabled', 'true');
+        submitBtn.innerHTML = `<span class="neon-spinner-small" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(0, 240, 255, 0.2); border-top:2px solid var(--cyan); border-radius:50%; animation:spin 1s linear infinite; margin-right:8px; vertical-align:middle;"></span> PUBLICANDO LISTADO EN LA RED...`;
+    }
+
+    try {
 
     // Convertir precio a USD como estándar interno de base de datos
     const priceUSD = activeCurrency === 'GTQ' ? (priceRaw / exchangeRate) : priceRaw;
@@ -4715,8 +4791,23 @@ async function publishAgentProperty(event) {
     renderB2bInventory();
     updateFormUnits();
 
-    // Alerta interactiva de éxito
-    alert(`Listado "${title}" publicado exitosamente como ${category}. Se inyectó en el inventario activo de ${locationName} con sus 35+ parámetros de tasación IA y ahora está disponible para contratar pauta publicitaria.`);
+        // Alerta interactiva de éxito
+        alert(`Listado "${title}" publicado exitosamente como ${category}. Se inyectó en el inventario activo de ${locationName} con sus 35+ parámetros de tasación IA y ahora está disponible para contratar pauta publicitaria.`);
+    } catch (e) {
+        console.error("Error al procesar publicación B2B:", e);
+        alert("Ocurrió un error inesperado al publicar la propiedad. Por favor, verifica tu conexión.");
+    } finally {
+        const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.removeAttribute('disabled');
+            if (editingPropertyId) {
+                submitBtn.innerHTML = '<i data-lucide="check-circle"></i> Guardar Correcciones Inmobiliarias';
+            } else {
+                submitBtn.innerHTML = '<i data-lucide="plus-circle"></i> Publicar Listado en Inventario';
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    }
 }
 
 /**
