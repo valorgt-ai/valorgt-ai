@@ -1007,10 +1007,17 @@ function updateB2bFieldVisibility() {
     Object.keys(b2bMainGroups).forEach(id => {
         const el = document.getElementById(id);
         if (el) {
+            const input = el.querySelector('input, select');
             if (b2bMainGroups[id]) {
                 el.classList.remove('hidden-dynamic');
+                if (input) input.setAttribute('required', 'true');
             } else {
                 el.classList.add('hidden-dynamic');
+                if (input) {
+                    input.removeAttribute('required');
+                    // Resetear el valor si está oculto para evitar validaciones del navegador residuales
+                    input.value = '';
+                }
             }
         }
     });
@@ -4495,10 +4502,14 @@ async function publishAgentProperty(event) {
     const type = document.getElementById('pub-type').value;
     const locationKey = document.getElementById('pub-location').value;
     const priceRaw = parseFloat(document.getElementById('pub-price').value);
-    const size = parseFloat(document.getElementById('pub-size').value);
-    const rooms = parseInt(document.getElementById('pub-beds').value);
-    const bathrooms = parseFloat(document.getElementById('pub-baths').value);
-    const parkings = parseInt(document.getElementById('pub-parks').value);
+    let size = parseFloat(document.getElementById('pub-size').value);
+    if (category === 'Terreno') {
+        const landAreaInput = document.getElementById('pub-prop-land-area');
+        size = parseFloat(landAreaInput ? landAreaInput.value : '0') || 0;
+    }
+    const rooms = parseInt(document.getElementById('pub-beds').value) || 0;
+    const bathrooms = parseFloat(document.getElementById('pub-baths').value) || 0;
+    const parkings = parseInt(document.getElementById('pub-parks').value) || 0;
     const description = document.getElementById('pub-description') ? document.getElementById('pub-description').value.trim() : '';
     const agentName = loggedInB2bClient ? loggedInB2bClient.name : 'Asesor Inmobiliario';
     const agentCompany = loggedInB2bClient ? loggedInB2bClient.company : 'ValorGT Premium Partner';
