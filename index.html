@@ -2459,6 +2459,15 @@
                                     <p style="font-size: 0.65rem; margin-top: 5px;">Completa el formulario de la pestaña de Ingreso de Propiedades para publicar tu primer activo inmobiliario.</p>
                                 </div>
 
+                                <!-- Cargador interactivo de inventario B2B -->
+                                <div id="b2b-inventory-loading" class="font-mono text-center hidden" style="padding: 45px 10px; text-align: center; width: 100%;">
+                                    <div class="processing-spinner-wrap" style="position: relative; width: 40px; height: 40px; margin: 0 auto 12px;">
+                                        <div class="neon-spinner" style="filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.4)); border: 2px solid rgba(0, 240, 255, 0.1); border-top-color: var(--cyan); border-radius: 50%; width: 100%; height: 100%; animation: spin 1s linear infinite;"></div>
+                                    </div>
+                                    <h4 style="font-weight: bold; font-size: 0.8rem; color: var(--cyan); letter-spacing: 0.5px;">SINCRONIZANDO INVENTARIO...</h4>
+                                    <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 5px; text-transform: uppercase;">Actualizando feeds del Ledger Inmobiliario...</p>
+                                </div>
+
                                 <!-- Grid dinámico de tarjetas de inventario -->
                                 <div id="b2b-inventory-grid" class="b2b-inventory-grid font-mono hidden" style="width: 100%;">
                                     <!-- Insertadas dinámicamente -->

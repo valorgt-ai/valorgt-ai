@@ -64,6 +64,7 @@ b2bClients.forEach((client, idx) => {
 localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
 
 let agentUploadedProperties = [];
+let isB2bInventoryLoading = false;
 
 // Cargar propiedades locales de contingencia
 const savedLocalProps = localStorage.getItem('valorgt_local_properties');
@@ -599,14 +600,42 @@ function switchView(viewId) {
     } else if (viewId === 'catalog') {
         titleEl.innerText = "Catálogo General de Activos";
         subtitleEl.innerText = "Buscador masivo y catálogo de propiedades en Ciudad de Guatemala";
+        
+        const grid = document.getElementById('catalog-properties-grid');
+        const counter = document.getElementById('catalog-results-counter');
+        
+        // Contar el número total de propiedades cacheadas en memoria
+        const totalLocalProps = Object.values(PORTFOLIO_DATABASE || {}).flat().length;
+        
+        if (totalLocalProps === 0) {
+            // Si por alguna razón la memoria está vacía, mostramos el loading completo en la cuadrícula
+            if (grid) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                        <div class="processing-spinner-wrap" style="position: relative; width: 60px; height: 60px; margin: 0 auto 15px;">
+                            <div class="neon-spinner" style="filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)); border: 3px solid rgba(0, 240, 255, 0.1); border-top-color: var(--cyan); border-radius: 50%; width: 100%; height: 100%; animation: spin 1s linear infinite;"></div>
+                        </div>
+                        <h4 class="font-mono text-cyan" style="font-size: 0.9rem; font-weight: bold; letter-spacing: 1px;">SINCRONIZANDO ACTIVOS CON SUPABASE...</h4>
+                        <p class="font-mono text-muted" style="font-size: 0.65rem; margin-top: 5px; text-transform: uppercase;">Conectando con el ledger de inteligencia inmobiliaria...</p>
+                    </div>
+                `;
+            }
+        } else {
+            // Si ya hay datos cacheados, renderizar de inmediato (¡Carga instantánea!)
+            renderCatalogProperties();
+            if (counter) {
+                counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO CON LA NUBE...</span>`;
+            }
+        }
+
+        // Descargar actualizaciones en segundo plano
         if (isSupabaseActive) {
             syncSupabaseData().then(() => {
                 renderCatalogProperties();
+            }).catch(err => {
+                console.error("Error al sincronizar datos en segundo plano:", err);
+                renderCatalogProperties(); // Recuperar con datos locales si falla
             });
-        } else {
-            setTimeout(() => {
-                renderCatalogProperties();
-            }, 50);
         }
     } else if (viewId === 'admin') {
         titleEl.innerText = "Consola Global Admin & Telemetría";
@@ -3755,9 +3784,44 @@ function initCommercialView() {
     renderB2bWithdrawalsTable();
     syncCommercialPricingGridUI();
 
-    // Sincronizar listados del agente con Supabase en tiempo real
+    // Sincronizar listados del agente con Supabase en tiempo real (stale-while-revalidate)
     if (isSupabaseActive) {
-        syncSupabaseData();
+        if (agentUploadedProperties.length === 0) {
+            isB2bInventoryLoading = true;
+            renderB2bInventory();
+        } else {
+            const titleContainer = document.querySelector('.b2b-inventory-card .card-header');
+            if (titleContainer) {
+                let syncBadge = document.getElementById('b2b-sync-indicator');
+                if (!syncBadge) {
+                    syncBadge = document.createElement('span');
+                    syncBadge.id = 'b2b-sync-indicator';
+                    syncBadge.className = 'font-mono text-cyan';
+                    syncBadge.style.fontSize = '0.65rem';
+                    syncBadge.style.marginLeft = '12px';
+                    syncBadge.style.display = 'inline-flex';
+                    syncBadge.style.alignItems = 'center';
+                    syncBadge.style.gap = '4px';
+                    syncBadge.innerHTML = `<span class="neon-spinner" style="width: 8px; height: 8px; border-width: 1px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO...`;
+                    
+                    const h2 = titleContainer.querySelector('h2');
+                    if (h2) h2.appendChild(syncBadge);
+                }
+            }
+        }
+
+        syncSupabaseData().then(() => {
+            isB2bInventoryLoading = false;
+            const syncBadge = document.getElementById('b2b-sync-indicator');
+            if (syncBadge) syncBadge.remove();
+            renderB2bInventory();
+        }).catch(err => {
+            console.error("Error al sincronizar inventario B2B en segundo plano:", err);
+            isB2bInventoryLoading = false;
+            const syncBadge = document.getElementById('b2b-sync-indicator');
+            if (syncBadge) syncBadge.remove();
+            renderB2bInventory();
+        });
     }
 
     // Auto-sincronización de aprobación en la nube en tiempo real
@@ -6761,7 +6825,19 @@ function logoutCommercialAgent() {
 function renderB2bInventory(filter = 'todos') {
     const emptyEl = document.getElementById('b2b-inventory-empty');
     const gridEl = document.getElementById('b2b-inventory-grid');
+    const loadingEl = document.getElementById('b2b-inventory-loading');
     if (!emptyEl || !gridEl) return;
+
+    if (isB2bInventoryLoading && loadingEl) {
+        loadingEl.classList.remove('hidden');
+        emptyEl.classList.add('hidden');
+        gridEl.classList.add('hidden');
+        return;
+    }
+
+    if (loadingEl) {
+        loadingEl.classList.add('hidden');
+    }
 
     if (agentUploadedProperties.length === 0) {
         emptyEl.classList.remove('hidden');
@@ -7085,12 +7161,10 @@ async function deleteAgentProperty(propId) {
     // 1. Eliminar de Supabase si está activo
     if (isSupabaseActive && supabaseClient) {
         try {
-            const numericId = parseInt(propId);
-            const idToQuery = isNaN(numericId) ? propId : numericId;
             const { error } = await supabaseClient
                 .from('properties')
                 .delete()
-                .eq('id', idToQuery);
+                .eq('id', propId);
             if (error) {
                 console.error("Error al eliminar propiedad en Supabase:", error);
                 alert("Hubo un error al eliminar la propiedad de la base de datos remota. Intenta de nuevo.");
@@ -7332,12 +7406,10 @@ async function deleteAdminReferenceProperty(zoneKey, propId) {
     // Si Supabase está activo, eliminar de la base remota
     if (isSupabaseActive && supabaseClient && propId && !String(propId).startsWith('ref_local_')) {
         try {
-            const numericId = parseInt(propId);
-            const idToQuery = isNaN(numericId) ? propId : numericId;
             const { error } = await supabaseClient
                 .from('properties')
                 .delete()
-                .eq('id', idToQuery);
+                .eq('id', propId);
             if (error) {
                 console.error("Error al eliminar propiedad de referencia en Supabase:", error);
             } else {
@@ -7570,8 +7642,6 @@ async function submitAdminReferenceProperty() {
         // Si Supabase está activo, actualizar
         if (isSupabaseActive && supabaseClient && !String(propId).startsWith('ref_local_')) {
             try {
-                const numericId = parseInt(propId);
-                const idToQuery = isNaN(numericId) ? propId : numericId;
                 const { error } = await supabaseClient.from('properties').update({
                     title: title,
                     category: category,
@@ -7588,7 +7658,7 @@ async function submitAdminReferenceProperty() {
                         photos: [photo],
                         description: 'Punto de referencia de calibración de tasación multivariable.'
                     }
-                }).eq('id', idToQuery);
+                }).eq('id', propId);
 
                 if (error) {
                     console.error("Error al actualizar referencia en Supabase:", error);
