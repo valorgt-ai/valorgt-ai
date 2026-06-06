@@ -4030,28 +4030,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* Dedicated B2C Catalog Properties Grid Layout */
 .catalog-properties-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
     width: 100%;
     box-sizing: border-box;
     margin-top: 10px;
 }
 
-@media (max-width: 1600px) {
-    .catalog-properties-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
 @media (max-width: 1200px) {
     .catalog-properties-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
 }
 
 @media (max-width: 768px) {
     .catalog-properties-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 }
 
