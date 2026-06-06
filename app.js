@@ -9460,6 +9460,12 @@ function loadAdminBannerForSelectedZone() {
             adminBannerCustomPhotoBase64 = banner.photo;
             if (customUrlInput) customUrlInput.style.display = 'none';
             if (fileWrapper) fileWrapper.style.display = 'block';
+            
+            // Retroalimentación visual en la etiqueta del uploader premium
+            const uploadLbl = document.getElementById('admin-banner-upload-lbl');
+            if (uploadLbl) {
+                uploadLbl.innerHTML = '<span style="color: var(--green); font-weight: bold;">¡Imagen personalizada cargada ✔️!</span>';
+            }
         } else {
             // URL personalizada
             presetSelect.value = 'custom_url';
@@ -9514,6 +9520,14 @@ function handleAdminBannerFileUploaded(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         adminBannerCustomPhotoBase64 = e.target.result;
+        
+        // Actualizar el texto del cargador para dar retroalimentación visual del archivo
+        const uploadLbl = document.getElementById('admin-banner-upload-lbl');
+        if (uploadLbl) {
+            const truncatedName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
+            uploadLbl.innerHTML = `¡Imagen cargada ✔️! <span style="color: var(--green); font-size: 0.65rem;">(${truncatedName})</span>`;
+        }
+        
         updateAdminBannerPreview();
     };
     reader.readAsDataURL(file);

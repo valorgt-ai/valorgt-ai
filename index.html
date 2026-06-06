@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=9.1">
+    <link rel="stylesheet" href="styles.css?v=9.2">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -3309,7 +3309,12 @@
                                         <input type="text" id="admin-banner-custom-url" oninput="handleAdminBannerCustomUrlInput()" placeholder="Ej. https://tuservidor.com/imagen.jpg" style="display: none; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none; margin-bottom: 8px;">
                                         
                                         <div id="admin-banner-file-wrapper" style="display: none; width: 100%;">
-                                            <input type="file" id="admin-banner-file-input" accept="image/*" onchange="handleAdminBannerFileUploaded(event)" style="padding: 8px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px; width: 100%; background: rgba(0,0,0,0.2); color: #fff; font-size: 0.75rem; font-family: var(--font-mono); outline: none;">
+                                            <label for="admin-banner-file-input" class="photo-upload-zone" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; border: 1px dashed var(--cyan); border-radius: 6px; background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; min-height: 100px; box-sizing: border-box;">
+                                                <i data-lucide="upload-cloud" style="width: 22px; height: 22px; color: var(--cyan);"></i>
+                                                <span id="admin-banner-upload-lbl" style="font-size: 0.72rem; color: var(--text-secondary); font-weight: bold;">Haz clic para subir imagen de portada</span>
+                                                <span style="font-size: 0.6rem; color: var(--text-muted);">Formatos aceptados: PNG, JPG, WEBP</span>
+                                                <input type="file" id="admin-banner-file-input" accept="image/*" onchange="handleAdminBannerFileUploaded(event)" style="display: none;">
+                                            </label>
                                         </div>
                                     </div>
 
@@ -4106,9 +4111,9 @@
         </div>
     </div>
 
-    <script src="mockData.js?v=9.1"></script>
-    <script src="charts.js?v=9.1"></script>
-    <script src="map.js?v=9.1"></script>
-    <script src="app.js?v=9.1"></script>
+    <script src="mockData.js?v=9.2"></script>
+    <script src="charts.js?v=9.2"></script>
+    <script src="map.js?v=9.2"></script>
+    <script src="app.js?v=9.2"></script>
 </body>
 </html>

@@ -5842,5 +5842,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 }
 
+/* ZONA DE CARGA DE IMÁGENES DE PORTADA ALTERNATIVA */
+.photo-upload-zone:hover {
+    background: rgba(0, 240, 255, 0.08) !important;
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+}
+.photo-upload-zone:active {
+    transform: scale(0.98);
+}
+
 
 
