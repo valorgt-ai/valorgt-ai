@@ -2036,28 +2036,28 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .card-info {
-    padding: 14px 16px;
+    padding: 16px 18px;
 }
 
 .property-tag {
     font-family: var(--font-mono);
-    font-size: 0.55rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     letter-spacing: 1px;
 }
 
 .card-info h4 {
     font-family: var(--font-heading);
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 .property-location {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
-    margin-top: 2px;
+    margin-top: 4px;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -2067,16 +2067,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 14px;
 }
 
 .property-specs span {
     font-family: var(--font-sans);
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     background-color: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.03);
-    padding: 3px 6px;
+    padding: 4px 8px;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -2087,14 +2087,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 14px;
-    padding-top: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
     border-top: 1px dashed rgba(255, 255, 255, 0.06);
 }
 
 .price-val {
     font-family: var(--font-heading);
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: #fff;
 }
@@ -2105,9 +2105,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     outline: none;
     color: var(--cyan);
     font-family: var(--font-mono);
-    font-size: 0.55rem;
+    font-size: 0.65rem;
     font-weight: bold;
-    padding: 3px 6px;
+    padding: 4px 8px;
     border-radius: 4px;
     cursor: pointer;
     transition: var(--transition-smooth);

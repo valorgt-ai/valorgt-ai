@@ -1281,8 +1281,8 @@ function renderFeaturedProperties(zoneKey) {
                         if (tags.length > 0) {
                             advancedTagsHTML = `
                                 <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
-                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.52rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 1px 4px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
-                                    ${tags.length > 3 ? `<span style="font-size: 0.52rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 1px 4px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
+                                    ${tags.length > 3 ? `<span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 2px 6px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
                                 </div>
                             `;
                         }
@@ -1458,8 +1458,8 @@ function renderCatalogProperties() {
                         if (tags.length > 0) {
                             advancedTagsHTML = `
                                 <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
-                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.52rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 1px 4px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
-                                    ${tags.length > 3 ? `<span style="font-size: 0.52rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 1px 4px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
+                                    ${tags.length > 3 ? `<span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 2px 6px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
                                 </div>
                             `;
                         }
