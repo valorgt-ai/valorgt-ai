@@ -1433,7 +1433,7 @@ function renderCatalogProperties() {
         const cardHTML = `
             <div class="card glassmorphism featured-card glow-${propZoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${propZoneKey}', ${absoluteIndex})">
                 ${deleteButtonHTML}
-                ${renderCardImageHTML(prop, 'card-image-wrapper', '225px', isSponsored, badgeColorClass)}
+                ${renderCardImageHTML(prop, 'card-image-wrapper', '260px', isSponsored, badgeColorClass)}
                 <div class="card-info">
                     <span class="property-tag">${prop.tag}</span>
                     <h4>${prop.title}</h4>
