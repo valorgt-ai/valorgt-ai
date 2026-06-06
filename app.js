@@ -9511,26 +9511,94 @@ function handleAdminBannerCustomUrlInput() {
 }
 
 /**
+ * Comprime una imagen en el lado del cliente usando un elemento canvas.
+ * Devuelve una promesa con el base64 de la imagen comprimida.
+ */
+function compressImage(file, maxWidth = 1200, maxHeight = 750, quality = 0.75) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Comprimir como JPEG con la calidad definida
+                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                resolve(dataUrl);
+            };
+            img.onerror = function(err) {
+                reject(err);
+            };
+            img.src = e.target.result;
+        };
+        reader.onerror = function(err) {
+            reject(err);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+/**
  * Procesa la carga de una imagen local en Base64 para el banner
  */
 function handleAdminBannerFileUploaded(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        adminBannerCustomPhotoBase64 = e.target.result;
-        
-        // Actualizar el texto del cargador para dar retroalimentación visual del archivo
-        const uploadLbl = document.getElementById('admin-banner-upload-lbl');
-        if (uploadLbl) {
-            const truncatedName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
-            uploadLbl.innerHTML = `¡Imagen cargada ✔️! <span style="color: var(--green); font-size: 0.65rem;">(${truncatedName})</span>`;
-        }
-        
-        updateAdminBannerPreview();
-    };
-    reader.readAsDataURL(file);
+    // Mostrar estado temporal de procesamiento
+    const uploadLbl = document.getElementById('admin-banner-upload-lbl');
+    if (uploadLbl) {
+        uploadLbl.innerHTML = '<span style="color: var(--cyan); font-weight: bold;">Optimizando imagen... ⏳</span>';
+    }
+
+    // Seleccionar automáticamente el modo de archivo local en el dropdown
+    const presetSelect = document.getElementById('admin-banner-photo-preset');
+    if (presetSelect) {
+        presetSelect.value = 'custom_file';
+        // Ocultar campo de URL y mostrar cargador de archivos
+        const customUrlInput = document.getElementById('admin-banner-custom-url');
+        const fileWrapper = document.getElementById('admin-banner-file-wrapper');
+        if (customUrlInput) customUrlInput.style.display = 'none';
+        if (fileWrapper) fileWrapper.style.display = 'block';
+    }
+
+    compressImage(file, 1200, 750, 0.75)
+        .then(compressedBase64 => {
+            adminBannerCustomPhotoBase64 = compressedBase64;
+            
+            if (uploadLbl) {
+                const truncatedName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
+                uploadLbl.innerHTML = `¡Imagen cargada ✔️! <span style="color: var(--green); font-size: 0.65rem;">(${truncatedName})</span>`;
+            }
+            
+            updateAdminBannerPreview();
+        })
+        .catch(err => {
+            console.error("Error al procesar la imagen:", err);
+            if (uploadLbl) {
+                uploadLbl.innerHTML = '<span style="color: var(--red); font-weight: bold;">⚠️ Error al procesar imagen</span>';
+            }
+        });
 }
 
 /**
@@ -9645,10 +9713,19 @@ function saveAdminBanner() {
         photo: photo
     };
 
-    localStorage.setItem('admin_zone_banners', JSON.stringify(banners));
-    appendAdminLog("SYSTEM", `banner_config: Portada alternativa para ${zoneName} guardada y ${enabled ? 'HABILITADA' : 'DESHABILITADA'}.`, true);
-    
-    alert(`¡Portada Alternativa para ${zoneName} guardada con éxito!`);
+    try {
+        localStorage.setItem('admin_zone_banners', JSON.stringify(banners));
+        appendAdminLog("SYSTEM", `banner_config: Portada alternativa para ${zoneName} guardada y ${enabled ? 'HABILITADA' : 'DESHABILITADA'}.`, true);
+        alert(`¡Portada Alternativa para ${zoneName} guardada con éxito!`);
+    } catch (e) {
+        console.error("Error al guardar admin_zone_banners:", e);
+        if (e.name === 'QuotaExceededError' || e.code === 22) {
+            alert(`⚠️ ERROR DE CAPACIDAD: La imagen que intentas subir es demasiado pesada y excede la capacidad de la memoria local de tu navegador (límite de 5MB).\n\nRecomendación:\n1. Intenta subir otra imagen (nuestro optimizador automático la comprimirá aún más).\n2. Elige la opción "Ingresar URL Personalizada..." ingresando un enlace directo (por ejemplo, de Unsplash o tu servidor).`);
+        } else {
+            alert(`⚠️ Error inesperado al guardar la portada alternativa: ${e.message}`);
+        }
+        return;
+    }
     
     // Si la zona de búsqueda actual en el Dashboard es esta, actualizar deck para ver el cambio inmediato
     const activeDashboardZoneSelect = document.getElementById('prop-location');
