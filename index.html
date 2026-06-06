@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=8.9">
+    <link rel="stylesheet" href="styles.css?v=9.0">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -3071,6 +3071,9 @@
                         <button id="admin-tab-btn-database" class="admin-tab-btn" onclick="switchAdminTab('database')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="database" style="width: 14px; height: 14px; color: var(--cyan);"></i> BASE DE DATOS DE CALIBRACIÓN IA
                         </button>
+                        <button id="admin-tab-btn-banners" class="admin-tab-btn" onclick="switchAdminTab('banners')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="image" style="width: 14px; height: 14px; color: var(--cyan);"></i> PORTADAS ALTERNATIVAS (ZONAS SIN PAUTA)
+                        </button>
                     </div>
 
                     <!-- PESTAÑA A: GENERAL (PARTE 1) -->
@@ -3241,6 +3244,99 @@
                             </table>
                         </div>
                     </div>
+                    </div> <!-- Fin admin-tab-content-database -->
+
+                    <!-- PESTAÑA C: GESTIÓN DE PORTADAS ALTERNATIVAS -->
+                    <div id="admin-tab-content-banners" class="admin-tab-content hidden">
+                        <div class="card glassmorphism col-card border-white" style="margin-bottom: 20px; width: 100%; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border-color: rgba(0, 240, 255, 0.2) !important;">
+                            <div class="card-header border-white" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                <div class="header-icon white" style="box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border-color: var(--cyan);"><i data-lucide="image" class="text-cyan"></i></div>
+                                <h2 style="color: #ffffff !important; font-size: 1.15rem !important; text-shadow: 0 0 8px rgba(0, 240, 255, 0.3); margin: 0;">Gestor de Portadas Alternativas (Zonas sin Pauta)</h2>
+                                <span class="item-count font-mono border-white" style="color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.4) !important; background: rgba(0, 240, 255, 0.1) !important; font-size: 0.7rem !important; padding: 2px 8px !important;">INVENTARIO CORPORATIVO</span>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; text-align: left;" class="dashboard-grid-1-1">
+                                <!-- Formulario de Configuración -->
+                                <div class="commercial-form font-mono" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+                                    <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label for="admin-banner-zone-select" style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">SELECCIONAR ZONA A CONFIGURAR</label>
+                                        <select id="admin-banner-zone-select" onchange="loadAdminBannerForSelectedZone()" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none; cursor: pointer;">
+                                            <!-- Se poblará dinámicamente con las zonas del sistema -->
+                                        </select>
+                                    </div>
+                                    
+                                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px; margin-bottom: 5px;">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="admin-banner-enabled" onchange="updateAdminBannerPreview()">
+                                            <span class="checkmark border-white" style="border-color: rgba(255, 255, 255, 0.3);"></span>
+                                            <span class="label-text" style="font-size: 0.75rem; font-weight: bold; color: var(--cyan);">¿Habilitar Portada Alternativa para esta zona?</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label for="admin-banner-title" style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">TÍTULO COMERCIAL / PROYECTO</label>
+                                        <input type="text" id="admin-banner-title" oninput="updateAdminBannerPreview()" placeholder="Ej. Condominio Los Encinos en Fraijanes" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none;">
+                                    </div>
+
+                                    <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label for="admin-banner-subtitle" style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">DESCRIPCIÓN / MENSAJE PROMOCIONAL</label>
+                                        <textarea id="admin-banner-subtitle" oninput="updateAdminBannerPreview()" placeholder="Ej. Casas de 3 y 4 dormitorios con enganche fraccionado. ¡Visita nuestra casa club hoy mismo!" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none; resize: vertical; min-height: 60px;"></textarea>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                            <label for="admin-banner-cta-text" style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">TEXTO DEL BOTÓN (CTA)</label>
+                                            <input type="text" id="admin-banner-cta-text" oninput="updateAdminBannerPreview()" placeholder="Ej. MÁS INFORMACIÓN" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none;">
+                                        </div>
+                                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                            <label for="admin-banner-link" style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">ENLACE DE ACCIÓN (WHATSAPP/URL)</label>
+                                            <input type="text" id="admin-banner-link" oninput="updateAdminBannerPreview()" placeholder="Ej. https://wa.me/50240416471" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none;">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px;">ORIGEN DE LA IMAGEN DE FONDO</label>
+                                        <select id="admin-banner-photo-preset" onchange="handleAdminBannerPresetChange()" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; font-family: var(--font-mono); outline: none; margin-bottom: 8px; cursor: pointer;">
+                                            <option value="propiedad_demo.png">Predeterminado: Propiedad Demo</option>
+                                            <option value="prop_zona10.png">Zona 10: Edificio Premium</option>
+                                            <option value="prop_zona14.png">Zona 14: Apartamento Lujoso</option>
+                                            <option value="prop_zona16.png">Zona 16: Condominio Moderno</option>
+                                            <option value="prop_antigua.png">Antigua Guatemala: Fachada Colonial</option>
+                                            <option value="custom_url">Ingresar URL Personalizada...</option>
+                                            <option value="custom_file">Subir Imagen desde Computadora...</option>
+                                        </select>
+                                        
+                                        <input type="text" id="admin-banner-custom-url" oninput="handleAdminBannerCustomUrlInput()" placeholder="Ej. https://tuservidor.com/imagen.jpg" style="display: none; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none; margin-bottom: 8px;">
+                                        
+                                        <div id="admin-banner-file-wrapper" style="display: none; width: 100%;">
+                                            <input type="file" id="admin-banner-file-input" accept="image/*" onchange="handleAdminBannerFileUploaded(event)" style="padding: 8px; border: 1px dashed rgba(255,255,255,0.2); border-radius: 6px; width: 100%; background: rgba(0,0,0,0.2); color: #fff; font-size: 0.75rem; font-family: var(--font-mono); outline: none;">
+                                        </div>
+                                    </div>
+
+                                    <button type="button" onclick="saveAdminBanner()" class="btn btn-primary btn-block glowing-effect" style="margin-top: 10px; width: 100%;">
+                                        <i data-lucide="save"></i> GUARDAR CONFIGURACIÓN DE PORTADA
+                                    </button>
+                                </div>
+
+                                <!-- Vista Previa en Vivo -->
+                                <div style="display: flex; flex-direction: column; gap: 15px; border-left: 1px solid rgba(255,255,255,0.05); padding-left: 20px; text-align: left;">
+                                    <span style="font-size: 0.7rem; font-weight: bold; color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.3); letter-spacing: 1.5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="eye" style="width: 12px; height: 12px;"></i>
+                                        VISTA PREVIA EN VIVO (MOCKUP EN PORTADA)
+                                    </span>
+                                    
+                                    <div id="admin-banner-mockup-wrapper" style="width: 100%; display: flex; justify-content: center; align-items: center; min-height: 250px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px; box-sizing: border-box;">
+                                        <!-- El banner interactivo en miniatura se renderizará aquí -->
+                                    </div>
+                                    
+                                    <span style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4;">
+                                        * Este banner se mostrará en el deck de "Propiedades Premium" en la pestaña "Tasa Inteligente" cuando la zona no tenga propiedades patrocinadas activas.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     </div> <!-- Fin admin-tab-content-database -->
 
                     <!-- PESTAÑA A (CONTINUACIÓN): GENERAL (PARTE 2) -->
@@ -4013,9 +4109,9 @@
         </div>
     </div>
 
-    <script src="mockData.js?v=8.9"></script>
-    <script src="charts.js?v=8.9"></script>
-    <script src="map.js?v=8.9"></script>
-    <script src="app.js?v=8.9"></script>
+    <script src="mockData.js?v=9.0"></script>
+    <script src="charts.js?v=9.0"></script>
+    <script src="map.js?v=9.0"></script>
+    <script src="app.js?v=9.0"></script>
 </body>
 </html>

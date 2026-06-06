@@ -1307,16 +1307,51 @@ function renderFeaturedProperties(zoneKey) {
     });
 
     if (renderedCount === 0) {
-        deck.innerHTML = `
-            <div class="ad-placeholder-card font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 2px dashed rgba(52, 199, 89, 0.35); border-radius: 12px; background: linear-gradient(135deg, rgba(8, 10, 15, 0.85), rgba(52, 199, 89, 0.02)); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
-                <i data-lucide="award" style="width: 36px; height: 36px; stroke-width: 1.5; color: var(--neon-emerald); margin-bottom: 12px; filter: drop-shadow(0 0 5px var(--neon-emerald-glow));"></i>
-                <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--neon-emerald); margin-bottom: 6px; letter-spacing: 1px;">ESPACIO DE PORTADA DISPONIBLE</h4>
-                <p style="font-size: 0.65rem; max-width: 500px; line-height: 1.4; color: var(--text-secondary);">Destaca tu propiedad al inicio de la portada de <strong style="color: var(--cyan);">${zoneName}</strong> para captar el 100% de clics e impresiones.</p>
-                <button class="btn-micro-cyber" onclick="switchView('commercial')" style="margin-top: 15px; background: rgba(52, 199, 89, 0.1); border: 1px solid var(--neon-emerald); color: var(--neon-emerald);">
-                    <i data-lucide="zap" class="tiny-icon"></i> CONTRATAR PAUTA PUBLICITARIA
-                </button>
-            </div>
-        `;
+        // Cargar banners alternativos del admin
+        let banners = {};
+        try {
+            banners = JSON.parse(localStorage.getItem('admin_zone_banners') || '{}');
+        } catch (e) {
+            console.error("Error al decodificar admin_zone_banners:", e);
+        }
+
+        const customBanner = banners[zoneKey];
+        if (customBanner && customBanner.enabled) {
+            const bannerTitle = customBanner.title || 'Proyecto Destacado';
+            const bannerSubtitle = customBanner.subtitle || 'Descubre oportunidades exclusivas en esta zona.';
+            const bannerCta = customBanner.ctaText || 'MÁS INFORMACIÓN';
+            const bannerLink = customBanner.link || '#';
+            const bannerPhoto = customBanner.photo || 'propiedad_demo.png';
+            
+            deck.innerHTML = `
+                <div class="premium-corporate-banner glassmorphism" onclick="window.open('${bannerLink}', '_blank')" style="grid-column: 1 / -1; display: flex; flex-direction: column; justify-content: flex-end; padding: 35px 30px; border-radius: 12px; background: linear-gradient(180deg, rgba(8, 10, 15, 0.4) 0%, rgba(8, 10, 15, 0.95) 100%), url('${bannerPhoto}'); background-size: cover; background-position: center; border: 1.5px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 25px rgba(0, 240, 255, 0.18); min-height: 240px; position: relative; overflow: hidden; cursor: pointer; text-align: left; box-sizing: border-box; transition: all 0.3s ease;">
+                    <div style="position: absolute; top: 15px; left: 15px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.65rem; font-weight: bold; font-family: var(--font-mono); padding: 4px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); display: flex; align-items: center; gap: 4px; z-index: 3;">
+                        <i data-lucide="award" style="width: 11px; height: 11px;"></i> PROYECTO DESTACADO
+                    </div>
+                    <div style="z-index: 2; margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; width: 100%;">
+                        <div style="flex: 1; min-width: 280px;">
+                            <h3 class="font-sans" style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 8px 0; text-shadow: 0 0 10px rgba(0,0,0,0.9); line-height: 1.25; letter-spacing: 0.5px;">${bannerTitle}</h3>
+                            <p class="font-sans" style="font-size: 0.82rem; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.45; text-shadow: 0 0 6px rgba(0,0,0,0.9); font-weight: 400;">${bannerSubtitle}</p>
+                        </div>
+                        <button class="btn btn-primary glowing-effect" onclick="event.stopPropagation(); window.open('${bannerLink}', '_blank')" style="flex-shrink: 0; padding: 12px 24px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; background: linear-gradient(135deg, var(--cyan) 0%, rgba(0,102,255,0.8) 100%); border: 1px solid var(--cyan); color: #fff; cursor: pointer; box-shadow: 0 0 15px rgba(0,240,255,0.4); display: flex; align-items: center; gap: 6px; font-family: var(--font-sans); text-transform: uppercase;">
+                            <span>${bannerCta}</span>
+                            <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            deck.innerHTML = `
+                <div class="ad-placeholder-card font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 2px dashed rgba(52, 199, 89, 0.35); border-radius: 12px; background: linear-gradient(135deg, rgba(8, 10, 15, 0.85), rgba(52, 199, 89, 0.02)); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
+                    <i data-lucide="award" style="width: 36px; height: 36px; stroke-width: 1.5; color: var(--neon-emerald); margin-bottom: 12px; filter: drop-shadow(0 0 5px var(--neon-emerald-glow));"></i>
+                    <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--neon-emerald); margin-bottom: 6px; letter-spacing: 1px;">ESPACIO DE PORTADA DISPONIBLE</h4>
+                    <p style="font-size: 0.65rem; max-width: 500px; line-height: 1.4; color: var(--text-secondary);">Destaca tu propiedad al inicio de la portada de <strong style="color: var(--cyan);">${zoneName}</strong> para captar el 100% de clics e impresiones.</p>
+                    <button class="btn-micro-cyber" onclick="switchView('commercial')" style="margin-top: 15px; background: rgba(52, 199, 89, 0.1); border: 1px solid var(--neon-emerald); color: var(--neon-emerald);">
+                        <i data-lucide="zap" class="tiny-icon"></i> CONTRATAR PAUTA PUBLICITARIA
+                    </button>
+                </div>
+            `;
+        }
     }
 
     if (typeof lucide !== 'undefined') {
@@ -9317,18 +9352,294 @@ function switchAdminTab(tabId) {
         document.getElementById('admin-tab-content-general')?.classList.remove('hidden');
         document.getElementById('admin-tab-content-general-part2')?.classList.remove('hidden');
         document.getElementById('admin-tab-content-database')?.classList.add('hidden');
+        document.getElementById('admin-tab-content-banners')?.classList.add('hidden');
     } else if (tabId === 'database') {
         document.getElementById('admin-tab-content-general')?.classList.add('hidden');
         document.getElementById('admin-tab-content-general-part2')?.classList.add('hidden');
         document.getElementById('admin-tab-content-database')?.classList.remove('hidden');
+        document.getElementById('admin-tab-content-banners')?.classList.add('hidden');
         // Asegurar renderizado fresco de la lista
         if (typeof renderAdminReferenceDatabase === 'function') {
             renderAdminReferenceDatabase();
+        }
+    } else if (tabId === 'banners') {
+        document.getElementById('admin-tab-content-general')?.classList.add('hidden');
+        document.getElementById('admin-tab-content-general-part2')?.classList.add('hidden');
+        document.getElementById('admin-tab-content-database')?.classList.add('hidden');
+        document.getElementById('admin-tab-content-banners')?.classList.remove('hidden');
+        // Asegurar inicialización y renderizado fresco del gestor de banners
+        if (typeof renderAdminBannersTab === 'function') {
+            renderAdminBannersTab();
         }
     }
 
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
+    }
+}
+
+/**
+ * Variable global temporal para guardar imágenes subidas localmente para el banner
+ */
+let adminBannerCustomPhotoBase64 = null;
+
+/**
+ * Inicializa y renderiza la pestaña de administración de banners por zona
+ */
+function renderAdminBannersTab() {
+    const zoneSelect = document.getElementById('admin-banner-zone-select');
+    if (!zoneSelect) return;
+
+    // Si ya tiene opciones cargadas, no recargar todo el listado de zonas
+    if (zoneSelect.children.length === 0) {
+        zoneSelect.innerHTML = '';
+        Object.keys(ZONES_DATABASE).forEach(key => {
+            const zone = ZONES_DATABASE[key];
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = zone.name;
+            zoneSelect.appendChild(opt);
+        });
+        
+        // Seleccionar Fraijanes por defecto si existe
+        if (ZONES_DATABASE['fraijanes']) {
+            zoneSelect.value = 'fraijanes';
+        }
+    }
+
+    loadAdminBannerForSelectedZone();
+}
+
+/**
+ * Carga la configuración del banner para la zona actualmente seleccionada en el admin
+ */
+function loadAdminBannerForSelectedZone() {
+    const zoneSelect = document.getElementById('admin-banner-zone-select');
+    if (!zoneSelect) return;
+
+    const zoneKey = zoneSelect.value;
+    
+    // Cargar banners de localStorage
+    let banners = {};
+    try {
+        banners = JSON.parse(localStorage.getItem('admin_zone_banners') || '{}');
+    } catch (e) {
+        console.error("Error al leer admin_zone_banners de localStorage:", e);
+    }
+
+    const banner = banners[zoneKey] || {
+        enabled: false,
+        title: '',
+        subtitle: '',
+        ctaText: 'MÁS INFORMACIÓN',
+        link: '',
+        photo: 'propiedad_demo.png'
+    };
+
+    // Llenar campos del formulario
+    document.getElementById('admin-banner-enabled').checked = banner.enabled;
+    document.getElementById('admin-banner-title').value = banner.title || '';
+    document.getElementById('admin-banner-subtitle').value = banner.subtitle || '';
+    document.getElementById('admin-banner-cta-text').value = banner.ctaText || 'MÁS INFORMACIÓN';
+    document.getElementById('admin-banner-link').value = banner.link || '';
+    
+    // Determinar origen de la foto
+    const presetSelect = document.getElementById('admin-banner-photo-preset');
+    const customUrlInput = document.getElementById('admin-banner-custom-url');
+    const fileWrapper = document.getElementById('admin-banner-file-wrapper');
+    
+    if (presetSelect) {
+        const standardPresets = ['propiedad_demo.png', 'prop_zona10.png', 'prop_zona14.png', 'prop_zona16.png', 'prop_antigua.png'];
+        if (standardPresets.includes(banner.photo)) {
+            presetSelect.value = banner.photo;
+            if (customUrlInput) customUrlInput.style.display = 'none';
+            if (fileWrapper) fileWrapper.style.display = 'none';
+        } else if (banner.photo && banner.photo.startsWith('data:image')) {
+            // Imagen Base64 local
+            presetSelect.value = 'custom_file';
+            adminBannerCustomPhotoBase64 = banner.photo;
+            if (customUrlInput) customUrlInput.style.display = 'none';
+            if (fileWrapper) fileWrapper.style.display = 'block';
+        } else {
+            // URL personalizada
+            presetSelect.value = 'custom_url';
+            if (customUrlInput) {
+                customUrlInput.value = banner.photo || '';
+                customUrlInput.style.display = 'block';
+            }
+            if (fileWrapper) fileWrapper.style.display = 'none';
+        }
+    }
+
+    updateAdminBannerPreview();
+}
+
+/**
+ * Maneja el cambio de selección en el dropdown de orígenes de fotos de banner
+ */
+function handleAdminBannerPresetChange() {
+    const presetSelect = document.getElementById('admin-banner-photo-preset');
+    const customUrlInput = document.getElementById('admin-banner-custom-url');
+    const fileWrapper = document.getElementById('admin-banner-file-wrapper');
+    if (!presetSelect) return;
+
+    if (presetSelect.value === 'custom_url') {
+        if (customUrlInput) customUrlInput.style.display = 'block';
+        if (fileWrapper) fileWrapper.style.display = 'none';
+    } else if (presetSelect.value === 'custom_file') {
+        if (customUrlInput) customUrlInput.style.display = 'none';
+        if (fileWrapper) fileWrapper.style.display = 'block';
+    } else {
+        if (customUrlInput) customUrlInput.style.display = 'none';
+        if (fileWrapper) fileWrapper.style.display = 'none';
+    }
+
+    updateAdminBannerPreview();
+}
+
+/**
+ * Maneja la entrada manual de la URL personalizada de la foto del banner
+ */
+function handleAdminBannerCustomUrlInput() {
+    updateAdminBannerPreview();
+}
+
+/**
+ * Procesa la carga de una imagen local en Base64 para el banner
+ */
+function handleAdminBannerFileUploaded(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        adminBannerCustomPhotoBase64 = e.target.result;
+        updateAdminBannerPreview();
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
+ * Actualiza la previsualización del banner en miniatura en tiempo real dentro del admin
+ */
+function updateAdminBannerPreview() {
+    const mockupWrapper = document.getElementById('admin-banner-mockup-wrapper');
+    if (!mockupWrapper) return;
+
+    const enabled = document.getElementById('admin-banner-enabled').checked;
+    const title = document.getElementById('admin-banner-title').value.trim() || 'Título del Proyecto';
+    const subtitle = document.getElementById('admin-banner-subtitle').value.trim() || 'Descripción comercial del proyecto.';
+    const ctaText = document.getElementById('admin-banner-cta-text').value.trim() || 'MÁS INFORMACIÓN';
+    const link = document.getElementById('admin-banner-link').value.trim() || '#';
+    
+    // Obtener imagen activa
+    const presetSelect = document.getElementById('admin-banner-photo-preset');
+    let photo = 'propiedad_demo.png';
+    
+    if (presetSelect) {
+        if (presetSelect.value === 'custom_url') {
+            photo = document.getElementById('admin-banner-custom-url').value.trim() || 'propiedad_demo.png';
+        } else if (presetSelect.value === 'custom_file') {
+            photo = adminBannerCustomPhotoBase64 || 'propiedad_demo.png';
+        } else {
+            photo = presetSelect.value;
+        }
+    }
+
+    if (!enabled) {
+        mockupWrapper.innerHTML = `
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; font-family: var(--font-mono); display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <i data-lucide="eye-off" style="width: 24px; height: 24px; color: var(--red);"></i>
+                PORTADA ALTERNATIVA DESHABILITADA PARA ESTA ZONA.<br>
+                <span style="font-size: 0.65rem;">(Se mostrará el espacio disponible verde estándar para patrocinadores)</span>
+            </div>
+        `;
+    } else {
+        mockupWrapper.innerHTML = `
+            <div class="premium-corporate-banner glassmorphism" style="width: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; border-radius: 8px; background: linear-gradient(180deg, rgba(8, 10, 15, 0.3) 0%, rgba(8, 10, 15, 0.95) 100%), url('${photo}'); background-size: cover; background-position: center; border: 1px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 15px rgba(0, 240, 255, 0.15); min-height: 180px; position: relative; overflow: hidden; box-sizing: border-box; text-align: left;">
+                <div style="position: absolute; top: 10px; left: 10px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.55rem; font-weight: bold; font-family: var(--font-mono); padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    PROYECTO DESTACADO
+                </div>
+                <div style="z-index: 2; margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; flex-wrap: wrap; width: 100%;">
+                    <div style="flex: 1; min-width: 150px;">
+                        <h4 class="font-sans" style="font-size: 0.95rem; font-weight: 800; color: #fff; margin: 0 0 4px 0; text-shadow: 0 0 5px #000; line-height: 1.2;">${title}</h4>
+                        <p class="font-sans" style="font-size: 0.65rem; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.3; text-shadow: 0 0 3px #000;">${subtitle}</p>
+                    </div>
+                    <button class="btn btn-primary" style="flex-shrink: 0; padding: 5px 12px; font-size: 0.6rem; font-weight: bold; border-radius: 4px; background: linear-gradient(135deg, var(--cyan) 0%, rgba(0,102,255,0.8) 100%); border: 1px solid var(--cyan); color: #fff; cursor: default; display: flex; align-items: center; gap: 4px;">
+                        <span>${ctaText}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Guarda la configuración del banner en localStorage para persistencia
+ */
+function saveAdminBanner() {
+    const zoneSelect = document.getElementById('admin-banner-zone-select');
+    if (!zoneSelect) return;
+
+    const zoneKey = zoneSelect.value;
+    const zoneData = ZONES_DATABASE[zoneKey];
+    const zoneName = zoneData ? zoneData.name.split(' (')[0] : zoneKey;
+    
+    const enabled = document.getElementById('admin-banner-enabled').checked;
+    const title = document.getElementById('admin-banner-title').value.trim();
+    const subtitle = document.getElementById('admin-banner-subtitle').value.trim();
+    const ctaText = document.getElementById('admin-banner-cta-text').value.trim() || 'MÁS INFORMACIÓN';
+    const link = document.getElementById('admin-banner-link').value.trim();
+    
+    // Obtener imagen
+    const presetSelect = document.getElementById('admin-banner-photo-preset');
+    let photo = 'propiedad_demo.png';
+    
+    if (presetSelect) {
+        if (presetSelect.value === 'custom_url') {
+            photo = document.getElementById('admin-banner-custom-url').value.trim();
+        } else if (presetSelect.value === 'custom_file') {
+            photo = adminBannerCustomPhotoBase64;
+        } else {
+            photo = presetSelect.value;
+        }
+    }
+
+    if (enabled && (!title || !photo)) {
+        alert("⚠️ Por favor completa el título y define una imagen de fondo para poder habilitar el banner.");
+        return;
+    }
+
+    // Leer estado actual
+    let banners = {};
+    try {
+        banners = JSON.parse(localStorage.getItem('admin_zone_banners') || '{}');
+    } catch (e) {
+        console.error(e);
+    }
+
+    banners[zoneKey] = {
+        enabled: enabled,
+        title: title,
+        subtitle: subtitle,
+        ctaText: ctaText,
+        link: link,
+        photo: photo
+    };
+
+    localStorage.setItem('admin_zone_banners', JSON.stringify(banners));
+    appendAdminLog("SYSTEM", `banner_config: Portada alternativa para ${zoneName} guardada y ${enabled ? 'HABILITADA' : 'DESHABILITADA'}.`, true);
+    
+    alert(`¡Portada Alternativa para ${zoneName} guardada con éxito!`);
+    
+    // Si la zona de búsqueda actual en el Dashboard es esta, actualizar deck para ver el cambio inmediato
+    const activeDashboardZoneSelect = document.getElementById('prop-location');
+    if (activeDashboardZoneSelect && activeDashboardZoneSelect.value === zoneKey) {
+        renderFeaturedProperties(zoneKey);
     }
 }
 
