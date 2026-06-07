@@ -5800,7 +5800,7 @@ async function processB2bTransferPayment(event) {
             console.error("Error crítico procesando pago de transferencia B2B:", err);
             
             // Fallback de emergencia ante cualquier error de Javascript para asegurar que la UI no se quede colgada
-            alert("⚠️ PROCESADOR TRANSACCIONAL: Se registró un fallo en el Ledger de Supabase, pero tu solicitud ha sido guardada localmente y está en proceso. Por favor, procede con la notificación de WhatsApp.");
+            alert("⚠️ PROCESADOR TRANSACCIONAL: Se registró un fallo en el Ledger de Supabase, pero tu solicitud ha sido guardada localmente y está en proceso. Por favor, procede con la notificación de WhatsApp. (Detalle técnico: " + (err.message || err) + ")");
             
             // Forzar mostrar pantalla de éxito
             const loadingView = document.getElementById('payment-view-loading');
