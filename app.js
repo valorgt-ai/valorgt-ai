@@ -49,7 +49,7 @@ if (savedB2bClient) {
     try {
         loggedInB2bClient = JSON.parse(savedB2bClient);
         isCommercialAuthenticated = true;
-        activeB2bPlan = loggedInB2bClient.plan.toLowerCase();
+        activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
     } catch (e) {
         console.error("Error al restaurar sesión de agente B2B:", e);
     }
@@ -1224,7 +1224,7 @@ function renderFeaturedProperties(zoneKey) {
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
-    const isAdmin = (loggedInB2bClient && (
+    const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
         loggedInB2bClient.email.toLowerCase().includes('admin') || 
         loggedInB2bClient.email.toLowerCase().includes('sgalindo')
     )) || (!loggedInB2bClient && isCommercialAuthenticated);
@@ -1455,7 +1455,7 @@ function renderCatalogProperties() {
         
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
         
-        const isAdmin = (loggedInB2bClient && (
+        const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
             loggedInB2bClient.email.toLowerCase().includes('admin') || 
             loggedInB2bClient.email.toLowerCase().includes('sgalindo')
         )) || (!loggedInB2bClient && isCommercialAuthenticated);
@@ -4133,12 +4133,12 @@ function initCommercialView() {
                         loggedInB2bClient.status = dbStatus;
                         loggedInB2bClient.plan = dbPlan;
                         loggedInB2bClient.usdtBalance = dbBalance;
-                        activeB2bPlan = dbPlan.toLowerCase();
+                        activeB2bPlan = (dbPlan || 'pro').toLowerCase();
                         
                         console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}`);
                         
                         // Si pasó de Pendiente a Activo, lanzar alerta al usuario
-                        if ((oldStatus === 'Pendiente' || oldStatus.toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
+                        if ((oldStatus === 'Pendiente' || (oldStatus || '').toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
                             alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales SaaS.");
                         }
                         
@@ -4147,7 +4147,7 @@ function initCommercialView() {
                         updateSaasMetricsHUD();
                         updateB2bSubscriptionPendingBanner();
                         
-                        const isPending = dbStatus === 'Pendiente' || dbStatus.toLowerCase() === 'pendiente';
+                        const isPending = dbStatus === 'Pendiente' || (dbStatus || '').toLowerCase() === 'pendiente';
                         const goldLock = document.getElementById('commercial-gold-overlay-lock');
                         const promoLock = document.getElementById('commercial-promo-overlay-lock');
                         const btnPromote = document.getElementById('btn-promote-property');
@@ -4188,21 +4188,24 @@ function renderB2bAgentProfile() {
 
     if (!loggedInB2bClient) {
         // Fallback si no hay agente activo (modo demo)
-        loggedInB2bClient = b2bClients.find(c => c.email.toLowerCase() === 'roberto@inversionesrv.com') || b2bClients[0];
+        loggedInB2bClient = b2bClients.find(c => c.email && c.email.toLowerCase() === 'roberto@inversionesrv.com') || b2bClients[0];
     }
 
     const client = loggedInB2bClient;
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
+    const plan = (client.plan || 'pro').toLowerCase();
+    const status = (client.status || 'Activo').toUpperCase();
+
     let planPriceUSD = 0;
-    if (client.plan.toLowerCase() === 'vip') planPriceUSD = 82;
-    else if (client.plan.toLowerCase() === 'premium') planPriceUSD = 43.70;
-    else if (client.plan.toLowerCase() === 'pro') planPriceUSD = 31;
+    if (plan === 'vip') planPriceUSD = 82;
+    else if (plan === 'premium') planPriceUSD = 43.70;
+    else if (plan === 'pro') planPriceUSD = 31;
     else planPriceUSD = 18;
 
     const planPriceConverted = planPriceUSD * conversion;
-    const planClass = client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico' ? 'basico' : client.plan.toLowerCase();
+    const planClass = plan === 'básico' || plan === 'basico' ? 'basico' : plan;
 
     container.innerHTML = `
         <div class="agent-profile-dashboard font-mono" style="display: flex; flex-direction: column; gap: 20px;">
@@ -4227,7 +4230,7 @@ function renderB2bAgentProfile() {
                 </div>
                 <div>
                     <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">PLAN DE MEMBRESÍA:</span>
-                    <span class="plan-col ${planClass}" style="font-size: 0.8rem; padding: 2px 6px; border-radius: 4px;">${client.plan.toUpperCase()}</span>
+                    <span class="plan-col ${planClass}" style="font-size: 0.8rem; padding: 2px 6px; border-radius: 4px;">${(client.plan || 'pro').toUpperCase()}</span>
                 </div>
                 <div>
                     <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">CORREO CORPORATIVO:</span>
@@ -4235,7 +4238,7 @@ function renderB2bAgentProfile() {
                 </div>
                 <div>
                     <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">ESTADO DE CUENTA:</span>
-                    <strong style="font-size: 0.85rem; color: var(--green);">● ${client.status.toUpperCase()}</strong>
+                    <strong style="font-size: 0.85rem; color: var(--green);">● ${(client.status || 'Activo').toUpperCase()}</strong>
                 </div>
             </div>
 
@@ -4275,7 +4278,8 @@ function renderB2bAgentProfile() {
         mobileNameEl.innerText = client.name;
     }
     if (mobileRoleEl) {
-        mobileRoleEl.innerText = (client.plan.toUpperCase() === 'VIP' || client.plan.toUpperCase() === 'PREMIUM') ? "Socio Premium B2B" : (client.plan.toUpperCase() === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
+        const planUpper = (client.plan || 'pro').toUpperCase();
+        mobileRoleEl.innerText = (planUpper === 'VIP' || planUpper === 'PREMIUM') ? "Socio Premium B2B" : (planUpper === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
     }
 
     if (typeof lucide !== 'undefined') {
@@ -4473,7 +4477,7 @@ async function executeB2bUsdtTransfer(event) {
     }
 
     // 2. Validar que no se transfiera a sí mismo
-    if (loggedInB2bClient.email.toLowerCase() === recipientEmail) {
+    if (loggedInB2bClient && loggedInB2bClient.email && loggedInB2bClient.email.toLowerCase() === recipientEmail) {
         alert("⚠️ OPERACIÓN RECHAZADA: No puedes transferirte fondos de oro digital a ti mismo.");
         return;
     }
@@ -5729,7 +5733,7 @@ async function processB2bTransferPayment(event) {
                 loggedInB2bClient.status = 'Pendiente';
                 
                 // Actualizar localmente en el arreglo de clientes
-                const clientIdx = b2bClients.findIndex(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+                const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
                 if (clientIdx !== -1) {
                     b2bClients[clientIdx].status = 'Pendiente';
                 }
@@ -6544,7 +6548,7 @@ async function authenticateCommercialAgent(event) {
     }
 
     // Buscar en la base de datos de clientes registrados localmente (Fallback)
-    const client = b2bClients.find(c => c.email.toLowerCase() === user);
+    const client = b2bClients.find(c => c.email && c.email.toLowerCase() === user);
 
     if ((user === 'agente@valorgt.com' && pass === 'valorgt') || (client && (client.password === pass || pass === 'valorgt'))) {
         // Verificar si la cuenta está suspendida por el administrador
@@ -6559,7 +6563,7 @@ async function authenticateCommercialAgent(event) {
         // Sincronizar plan activo del B2B y guardar sesión
         if (client) {
             loggedInB2bClient = client;
-            activeB2bPlan = client.plan.toLowerCase();
+            activeB2bPlan = (client.plan || 'pro').toLowerCase();
             const partnerLevelEl = document.getElementById('commercial-partner-level');
             if (partnerLevelEl) {
                 const isPremium = (client.plan === 'VIP' || client.plan === 'Premium');
@@ -6568,8 +6572,8 @@ async function authenticateCommercialAgent(event) {
             }
         } else {
             // Demo user (agente@valorgt.com)
-            loggedInB2bClient = b2bClients.find(c => c.email.toLowerCase() === 'roberto@inversionesrv.com') || b2bClients[0];
-            activeB2bPlan = loggedInB2bClient.plan.toLowerCase();
+            loggedInB2bClient = b2bClients.find(c => c.email && c.email.toLowerCase() === 'roberto@inversionesrv.com') || b2bClients[0];
+            activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
             const partnerLevelEl = document.getElementById('commercial-partner-level');
             if (partnerLevelEl) {
                 const isPremium = (loggedInB2bClient.plan === 'VIP' || loggedInB2bClient.plan === 'Premium');
@@ -8111,18 +8115,26 @@ function renderAdminDashboard() {
     b2bClients.forEach((client, idx) => {
         totalSubscribers++;
         
+        const plan = (client.plan || 'Pro').toLowerCase();
+        const status = (client.status || 'Pendiente').toLowerCase();
+        const email = client.email || '';
+        const name = client.name || 'Usuario';
+        const company = client.company || 'Particular';
+        const phone = client.phone || 'N/A';
+        const usdtBalance = typeof client.usdtBalance === 'number' ? client.usdtBalance : parseFloat(client.usdtBalance || 0);
+
         // Calcular cobro total del plan
         let planPriceGTQ = 0;
-        if (client.plan.toLowerCase() === 'vip') planPriceGTQ = 640;
-        else if (client.plan.toLowerCase() === 'premium') planPriceGTQ = 340;
-        else if (client.plan.toLowerCase() === 'pro') planPriceGTQ = 240;
-        else if (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') planPriceGTQ = 140;
+        if (plan === 'vip') planPriceGTQ = 640;
+        else if (plan === 'premium') planPriceGTQ = 340;
+        else if (plan === 'pro') planPriceGTQ = 240;
+        else if (plan === 'básico' || plan === 'basico') planPriceGTQ = 140;
         
         let planPriceUSD = planPriceGTQ / exchangeRate;
         
         // Sumar facturaciones por pauta publicitaria (si las tiene)
         let totalClientAdBillingUSD = 0;
-        if (client.email === 'agente@valorgt.com') {
+        if (email === 'agente@valorgt.com') {
             // El agente demo tiene la facturación del ad actual
             totalClientAdBillingUSD = (saasBillingAmountUSD - 31); // El plan Pro base es $31, lo demás son ads
         }
@@ -8133,10 +8145,10 @@ function renderAdminDashboard() {
         const convertedTotal = (activeCurrency === 'GTQ') 
             ? (planPriceGTQ + (totalClientAdBillingUSD * exchangeRate)) 
             : (planPriceUSD + totalClientAdBillingUSD);
-        const planClass = (client.plan.toLowerCase() === 'básico' || client.plan.toLowerCase() === 'basico') ? 'basico' : client.plan.toLowerCase();
+        const planClass = (plan === 'básico' || plan === 'basico') ? 'basico' : plan;
         
-        const isSuspended = client.status === 'Suspendido';
-        const isPending = client.status === 'Pendiente' || client.status === 'pendiente';
+        const isSuspended = status === 'suspendido';
+        const isPending = status === 'pendiente';
         
         let statusColorClass = 'text-green';
         if (isSuspended) statusColorClass = 'text-red';
@@ -8156,18 +8168,18 @@ function renderAdminDashboard() {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td style="text-align: left; padding: 10px; vertical-align: middle;">
-                <strong class="text-green">${client.name}</strong><br>
-                <span class="sub-title font-mono" style="font-size: 0.6rem; color: var(--text-muted);">${client.company}</span>
+                <strong class="text-green">${name}</strong><br>
+                <span class="sub-title font-mono" style="font-size: 0.6rem; color: var(--text-muted);">${company}</span>
             </td>
-            <td style="text-align: center; padding: 10px; vertical-align: middle;"><span class="plan-col ${planClass}" style="font-size: 0.65rem;">${client.plan.toUpperCase()}</span></td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;"><span class="plan-col ${planClass}" style="font-size: 0.65rem;">${plan.toUpperCase()}</span></td>
             <td style="text-align: left; padding: 10px; vertical-align: middle; font-size: 0.6rem;">
-                ${client.phone}<br>
-                <span class="text-muted" style="text-decoration: underline;">${client.email}</span>
+                ${phone}<br>
+                <span class="text-muted" style="text-decoration: underline;">${email}</span>
             </td>
             <td style="text-align: right; padding: 10px; vertical-align: middle; font-weight: bold; color: var(--gold); font-size: 0.75rem;" class="font-mono">
-                ${client.usdtBalance.toFixed(4)} XAUt
+                ${usdtBalance.toFixed(4)} XAUt
             </td>
-            <td style="text-align: center; padding: 10px; vertical-align: middle;"><strong class="${statusColorClass}" style="font-size: 0.65rem;">${client.status.toUpperCase()}</strong></td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;"><strong class="${statusColorClass}" style="font-size: 0.65rem;">${status.toUpperCase()}</strong></td>
             <td style="text-align: right; padding: 10px; vertical-align: middle;">
                 <div style="display: flex; gap: 8px; align-items: center; justify-content: flex-end;">
                     <span style="font-size: 0.75rem; font-weight: bold; color: var(--green); margin-right: 5px;">${currencySym}${formatNumber(convertedTotal.toFixed(0))}</span>
@@ -8409,7 +8421,7 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
         eligibleClients.forEach(client => {
             const opt = document.createElement('option');
             opt.value = client.email;
-            opt.innerText = `${client.name} (${client.plan.toUpperCase()})`;
+            opt.innerText = `${client.name} (${(client.plan || 'pro').toUpperCase()})`;
             singleUserSelect.appendChild(opt);
         });
         if (prevValue && Array.from(singleUserSelect.options).some(o => o.value === prevValue)) {
@@ -8462,10 +8474,10 @@ function createRecipientBadgeHTML(client, selected = true, pendingAirdrop = 0) {
         <div style="display: flex; align-items: center; gap: 6px;">
             <i data-lucide="user" style="width: 12px; height: 12px; color: #ffd700;"></i>
             <span style="font-weight: bold; font-size: 0.65rem; color: #fff;">${client.name}</span>
-            <span style="font-size: 0.55rem; background: rgba(255, 215, 0, 0.1); padding: 1px 4px; border-radius: 3px; color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.2); font-weight: bold;">${client.plan.toUpperCase()}</span>
+            <span style="font-size: 0.55rem; background: rgba(255, 215, 0, 0.1); padding: 1px 4px; border-radius: 3px; color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.2); font-weight: bold;">${(client.plan || 'pro').toUpperCase()}</span>
         </div>
         <div style="display: flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 0.65rem;">
-            <span style="color: #ffd700; font-weight: bold;">${client.usdtBalance.toFixed(4)} XAUt</span>
+            <span style="color: #ffd700; font-weight: bold;">${(typeof client.usdtBalance === 'number' ? client.usdtBalance : parseFloat(client.usdtBalance || 0)).toFixed(4)} XAUt</span>
             ${airdropText}
         </div>
     `;
@@ -9031,12 +9043,12 @@ async function _syncSupabaseDataInternal() {
                     if (!profileErr && latestProfile) {
                         // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
                         loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
-                        loggedInB2bClient.status = latestProfile.status ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
+                        loggedInB2bClient.status = (typeof latestProfile.status === 'string' && latestProfile.status.length > 0) ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
                         loggedInB2bClient.plan = latestProfile.plan || 'Básico';
-                        activeB2bPlan = loggedInB2bClient.plan.toLowerCase();
+                        activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
                         
                         // Actualizar en el listado local de clientes para mantener consistencia
-                        const clientIdx = b2bClients.findIndex(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+                        const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
                         if (clientIdx !== -1) {
                             b2bClients[clientIdx].status = loggedInB2bClient.status;
                             b2bClients[clientIdx].plan = loggedInB2bClient.plan;
@@ -9054,7 +9066,7 @@ async function _syncSupabaseDataInternal() {
                         const goldLock = document.getElementById('commercial-gold-overlay-lock');
                         const promoLock = document.getElementById('commercial-promo-overlay-lock');
                         const btnPromote = document.getElementById('btn-promote-property');
-                        const isPending = loggedInB2bClient.status.toLowerCase() === 'pendiente';
+                        const isPending = (loggedInB2bClient.status || 'pendiente').toLowerCase() === 'pendiente';
                         
                         if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
                             if (goldLock) goldLock.classList.add('hidden');
@@ -9076,7 +9088,7 @@ async function _syncSupabaseDataInternal() {
                             phone: loggedInB2bClient.phone || 'N/A',
                             email: loggedInB2bClient.email,
                             plan: loggedInB2bClient.plan,
-                            status: loggedInB2bClient.status.toLowerCase(),
+                            status: (loggedInB2bClient.status || 'pendiente').toLowerCase(),
                             usdt_balance: loggedInB2bClient.usdtBalance,
                             role: loggedInB2bClient.role || 'agente'
                         };
@@ -9232,9 +9244,9 @@ async function syncB2bClientsFromSupabase() {
                 company: profile.company,
                 nit: profile.nit || 'C/F',
                 phone: profile.phone || 'N/A',
-                email: profile.email,
+                email: profile.email || '',
                 plan: profile.plan || 'Básico',
-                status: profile.status ? (profile.status.charAt(0).toUpperCase() + profile.status.slice(1)) : 'Activo',
+                status: (typeof profile.status === 'string' && profile.status.length > 0) ? (profile.status.charAt(0).toUpperCase() + profile.status.slice(1)) : 'Activo',
                 password: 'valorgt',
                 usdtBalance: parseFloat(profile.usdt_balance || 0),
                 role: profile.role || 'agente'
@@ -10813,7 +10825,8 @@ function toggleMobileMenu() {
                 const mobileRoleEl = document.getElementById('mobile-agent-role');
                 if (mobileNameEl) mobileNameEl.innerText = loggedInB2bClient.name;
                 if (mobileRoleEl) {
-                    mobileRoleEl.innerText = (loggedInB2bClient.plan.toUpperCase() === 'VIP' || loggedInB2bClient.plan.toUpperCase() === 'PREMIUM') ? "Socio Premium B2B" : (loggedInB2bClient.plan.toUpperCase() === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
+                    const loggedPlanUpper = (loggedInB2bClient.plan || 'pro').toUpperCase();
+                    mobileRoleEl.innerText = (loggedPlanUpper === 'VIP' || loggedPlanUpper === 'PREMIUM') ? "Socio Premium B2B" : (loggedPlanUpper === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
                 }
             }
             
