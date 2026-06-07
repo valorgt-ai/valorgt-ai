@@ -284,6 +284,11 @@ function drawRadarNodes() {
                 <span class="popup-lbl" style="color: var(--text-muted); font-size: 0.8rem;">Actualización:</span>
                 <span class="popup-val" style="color: var(--text-muted); font-size: 0.8rem; text-align: right;">${lastUpdatedText}</span>
             </div>
+            <div style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; text-align: center;">
+                <a href="https://earth.google.com/web/@${zone.lat},${zone.lng},1500a,35y,0h,0t,0r" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="globe" style="width: 12px; height: 12px;"></i> Ver en Google Earth
+                </a>
+            </div>
         `;
 
         beaconMarker.bindPopup(popupContent, {
@@ -388,6 +393,11 @@ function showZoneTelemetry(zoneKey, centerMap = false) {
     // Sincronizar inputs del buscador de coordenadas con la ubicación del nodo
     document.getElementById('gps-input-lat').value = zone.lat.toFixed(4);
     document.getElementById('gps-input-lng').value = zone.lng.toFixed(4);
+
+    const earthBtn = document.getElementById('btn-open-google-earth');
+    if (earthBtn) {
+        earthBtn.href = `https://earth.google.com/web/@${zone.lat},${zone.lng},1500a,35y,0h,0t,0r`;
+    }
 
     // Centrar suavemente si fue explícito
     if (centerMap && leafletMapInstance) {
@@ -618,6 +628,12 @@ function locateCoordinates(event) {
     • Conectividad vial a avenidas principales (a ${(estDistanceToMainAvenue).toFixed(2)} km).
     • Densidad de listados activos y demanda en el retículo (<strong>${nearbyAdsDensity} anuncios</strong>).`;
 
+    // Actualizar enlace de Google Earth para la baliza escaneada
+    const earthBtn = document.getElementById('btn-open-google-earth');
+    if (earthBtn) {
+        earthBtn.href = `https://earth.google.com/web/@${lat},${lng},1500a,35y,0h,0t,0r`;
+    }
+
     // Popup interactivo de la baliza escaneada
     customGpsMarker.bindPopup(`
         <div class="map-popup-header" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 5px;">
@@ -639,6 +655,11 @@ function locateCoordinates(event) {
             
             <span class="popup-lbl" style="color: var(--text-muted); font-weight: bold;">Score ValorGT:</span>
             <span class="popup-val text-purple" style="color: #bf5af2; font-weight: 900; text-align: right;">${finalScore}/100</span>
+        </div>
+        <div style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; text-align: center;">
+            <a href="https://earth.google.com/web/@${lat},${lng},1500a,35y,0h,0t,0r" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                <i data-lucide="globe" style="width: 12px; height: 12px;"></i> Ver en Google Earth
+            </a>
         </div>
     `).openPopup();
 
@@ -899,6 +920,11 @@ function drawAgentProperties() {
                                 <span class="popup-lbl" style="color: var(--text-muted);">Dimensión:</span>
                                 <span class="popup-val" style="color: #fff;">${prop.size} M²</span>
                             </div>
+                        </div>
+                        <div style="margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 4px; text-align: center;">
+                            <a href="https://earth.google.com/web/@${prop.lat},${prop.lng},1500a,35y,0h,0t,0r" target="_blank" style="color: ${badgeStyleColor}; text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                                <i data-lucide="globe" style="width: 12px; height: 12px;"></i> Ver en Google Earth
+                            </a>
                         </div>
                     `;
 

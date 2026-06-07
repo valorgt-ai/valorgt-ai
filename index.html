@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=10.5">
+    <link rel="stylesheet" href="styles.css?v=10.6">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -795,6 +795,12 @@
                                     <div class="zone-trend-hud" style="margin-top: 10px;">
                                         <h4>Análisis del Vector IA:</h4>
                                         <p id="map-zone-ia-opinion" class="hud-opinion">Zona con altísima demanda corporativa y de perfiles ejecutivos. Altas tasas de capitalización en proyectos verticales.</p>
+                                    </div>
+                                    
+                                    <div style="margin-top: 12px; margin-bottom: 6px;">
+                                        <a href="#" id="btn-open-google-earth" target="_blank" class="btn-commercial btn-commercial-cyan" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 12px; font-size: 0.7rem; text-decoration: none; width: 100%; box-sizing: border-box; text-transform: uppercase; border-radius: 4px; font-weight: bold; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.3); color: var(--cyan); transition: all 0.3s;" onmouseover="this.style.background='rgba(0, 240, 255, 0.15)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.05)'">
+                                            <i data-lucide="globe"></i> Abrir en Google Earth
+                                        </a>
                                     </div>
                                     
                                     <div style="text-align: right; margin-top: 8px; font-size: 0.62rem; color: var(--text-muted);" class="font-mono">
@@ -1829,6 +1835,9 @@
                         </button>
                         <button id="comm-tab-btn-propiedades-list" class="comm-tab-btn" onclick="switchCommercialTab('propiedades-list')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="folder-heart" style="width: 14px; height: 14px;"></i> MIS PROPIEDADES PUBLICADAS
+                        </button>
+                        <button id="comm-tab-btn-portfolio-redirect" class="comm-tab-btn" onclick="switchView('portfolio')" style="background: rgba(191,90,242,0.04); border: 1px solid rgba(191,90,242,0.25); color: #bf5af2; padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="pie-chart" style="width: 14px; height: 14px; color: #bf5af2;"></i> PORTAFOLIO IA
                         </button>
                         <button id="comm-tab-btn-suscripcion" class="comm-tab-btn" onclick="switchCommercialTab('suscripcion')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> MI SUSCRIPCIÓN B2B
@@ -4125,9 +4134,9 @@
         </div>
     </div>
 
-    <script src="mockData.js?v=10.5"></script>
-    <script src="charts.js?v=10.5"></script>
-    <script src="map.js?v=10.5"></script>
-    <script src="app.js?v=10.5"></script>
+    <script src="mockData.js?v=10.6"></script>
+    <script src="charts.js?v=10.6"></script>
+    <script src="map.js?v=10.6"></script>
+    <script src="app.js?v=10.6"></script>
 </body>
 </html>

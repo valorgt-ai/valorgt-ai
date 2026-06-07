@@ -3978,6 +3978,31 @@ function initCommercialView() {
     updateB2bSubscriptionPendingBanner();
     syncPendingPaymentRequests();
 
+    // Controlar visibilidad de pestañas del panel comercial según rol y plan
+    const isInvestor = loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
+    const clientPlan = loggedInB2bClient && loggedInB2bClient.plan ? loggedInB2bClient.plan.toLowerCase() : '';
+    
+    const btnPropiedades = document.getElementById('comm-tab-btn-propiedades');
+    const btnPropiedadesList = document.getElementById('comm-tab-btn-propiedades-list');
+    const btnPortfolioRedirect = document.getElementById('comm-tab-btn-portfolio-redirect');
+    
+    if (isInvestor) {
+        if (btnPropiedades) btnPropiedades.style.display = 'none';
+        if (btnPropiedadesList) btnPropiedadesList.style.display = 'none';
+        if (btnPortfolioRedirect) btnPortfolioRedirect.style.display = 'flex';
+    } else {
+        // Agente
+        if (btnPropiedades) btnPropiedades.style.display = 'flex';
+        if (btnPropiedadesList) btnPropiedadesList.style.display = 'flex';
+        
+        // Mostrar "Portafolio IA" para agentes Pro o VIP
+        if (clientPlan === 'pro' || clientPlan === 'vip' || clientPlan === 'vip premium') {
+            if (btnPortfolioRedirect) btnPortfolioRedirect.style.display = 'flex';
+        } else {
+            if (btnPortfolioRedirect) btnPortfolioRedirect.style.display = 'none';
+        }
+    }
+
     // Gestionar Overlays de Bloqueo Criptográficos según Plan y Estado de Pago
     const goldLock = document.getElementById('commercial-gold-overlay-lock');
     const promoLock = document.getElementById('commercial-promo-overlay-lock');
