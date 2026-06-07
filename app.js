@@ -5443,6 +5443,28 @@ let pendingPaymentRequests = [];
 let uploadedReceiptBase64 = '';
 
 /**
+ * Guarda el listado de solicitudes de pago en localStorage de forma segura,
+ * previniendo caídas por exceder el límite de cuota (QuotaExceededError)
+ * debido a imágenes de comprobantes (Base64) muy pesadas.
+ */
+function savePendingPaymentsLocally() {
+    try {
+        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+    } catch (storageErr) {
+        console.warn("⚠️ [ValorGT AI] Límite de localStorage excedido. Guardando metadatos depurados sin imágenes pesadas:", storageErr);
+        try {
+            const cleanRequests = pendingPaymentRequests.map(r => ({
+                ...r,
+                receipt: (r.receipt && r.receipt.length > 200) ? "[IMAGEN_OMITIDA_POR_ESPACIO]" : r.receipt
+            }));
+            localStorage.setItem('b2b_pending_payments', JSON.stringify(cleanRequests));
+        } catch (innerErr) {
+            console.error("❌ Fallo crítico al persistir pagos en el almacenamiento local:", innerErr);
+        }
+    }
+}
+
+/**
  * Maneja la subida del archivo comprobante y lo lee en Base64
  */
 function handleReceiptFileChange(event) {
@@ -5697,7 +5719,7 @@ async function processB2bTransferPayment(event) {
             
             // 1. Guardar localmente
             pendingPaymentRequests.unshift(request);
-            localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+            savePendingPaymentsLocally();
             
             // 2. Intentar guardar en Supabase 'payment_requests'
             if (isSupabaseActive && supabaseClient) {
@@ -6070,7 +6092,7 @@ async function processB2bPautaPayment(event) {
         }
         
         pendingPaymentRequests.push(newRequest);
-        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+        savePendingPaymentsLocally();
         
         // Sincronizar UI de administración
         renderAdminPendingPaymentsTable();
@@ -6142,7 +6164,7 @@ async function syncPendingPaymentRequests() {
                     status: row.status,
                     timestamp: row.timestamp
                 }));
-                localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+                savePendingPaymentsLocally();
             }
         } catch (err) {
             console.error("Error al sincronizar payment_requests desde Supabase:", err);
@@ -6165,7 +6187,7 @@ async function approvePendingPayment(reqId) {
         
         // 1. Eliminar solicitud de local
         pendingPaymentRequests.splice(reqIndex, 1);
-        localStorage.setItem('b2b_pending_payments', JSON.stringify(pendingPaymentRequests));
+        savePendingPaymentsLocally();
         
         // 2. En lugar de borrar la solicitud, la marcamos como aprobada para que el propio cliente pueda auto-activarse (bypass RLS)
         if (isSupabaseActive && supabaseClient) {
