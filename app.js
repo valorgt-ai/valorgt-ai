@@ -5771,13 +5771,6 @@ async function processB2bTransferPayment(event) {
             if (waBtn) {
                 waBtn.href = whatsappUrl;
             }
-
-            // Abrir automáticamente la pestaña de WhatsApp para agilizar el envío
-            try {
-                window.open(whatsappUrl, '_blank');
-            } catch (err) {
-                console.warn("El bloqueador de popups interceptó la apertura automática de WhatsApp:", err);
-            }
             
             // 6. Notificación de logs
             if (typeof appendAdminLog === 'function') {
