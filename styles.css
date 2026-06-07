@@ -4653,6 +4653,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 12px rgba(191, 90, 242, 0.12) !important;
 }
 
+#comm-tab-btn-portfolio.active {
+    background: rgba(191, 90, 242, 0.05) !important;
+    border-color: rgba(191, 90, 242, 0.4) !important;
+    color: #bf5af2 !important;
+    box-shadow: 0 0 12px rgba(191, 90, 242, 0.12) !important;
+}
+
 .admin-tab-btn {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

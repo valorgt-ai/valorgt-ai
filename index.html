@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=10.7">
+    <link rel="stylesheet" href="styles.css?v=10.8">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -1101,365 +1101,7 @@
                 </section>
 
                 <!-- VISTA 5: PORTAFOLIO INMOBILIARIO IA -->
-                <section id="view-portfolio" class="app-view" style="position: relative;">
-                    <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
-                    <div id="portfolio-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
-                        <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
-                        <span>VISTA PREVIA: <span id="portfolio-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
-                    </div>
-
-                    <!-- MÁSCARA BLOQUEADORA DE PORTAFOLIO EXPIRADA -->
-                    <div id="portfolio-trial-blocker" class="hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 6, 8, 0.95); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; border-radius: 12px; padding: 30px; text-align: center;">
-                        <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #bf5af2; background: rgba(191,90,242,0.05); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(191,90,242,0.4); margin-bottom: 20px; animation: pulse-shadow 2.5s infinite;">
-                            <i data-lucide="lock" style="width: 36px; height: 36px; color: #bf5af2;"></i>
-                        </div>
-                        <h3 style="font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 10px; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">🔒 VISTA PREVIA EXPIRADA</h3>
-                        <p style="font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-secondary); max-width: 460px; line-height: 1.5; margin-bottom: 24px; text-align: center;">
-                            Has completado tu minuto de demostración gratuita del **Portafolio IA**. <br><br>
-                            Para seguir simulando la evolución de tu riqueza a 20 años, apalancarte con crédito FHA y recibir asesoría patrimonial sin límites, adquiere una suscripción de **Inversionista** o sube tu plan de **Agente** a Pro/VIP.
-                        </p>
-                        <button onclick="closePortfolioTrialBlockerAndRedirect()" class="btn btn-primary glowing-effect-purple" style="background: rgba(191, 90, 242, 0.1); border: 1px solid #bf5af2; padding: 12px 30px; font-size: 0.82rem; font-weight: bold; color: #bf5af2; border-radius: 8px; cursor: pointer; text-shadow: 0 0 5px rgba(191,90,242,0.3); display: flex; align-items: center; gap: 8px;">
-                            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i> ADQUIRIR MEMBRESÍA PREMIUM
-                        </button>
-                    </div>
-
-                    <!-- CABECERA DE GAMIFICACIÓN -->
-                    <div class="portfolio-header-hud">
-                        <div class="ph-left">
-                            <span class="hud-label-small">TELEMETRÍA PATRIMONIAL</span>
-                            <div class="investor-rank-badge font-mono" id="portfolio-investor-badge">
-                                <i data-lucide="award" class="purple-icon"></i>
-                                <span class="badge-lbl">RANGO:</span>
-                                <span id="portfolio-investor-rank" class="badge-val text-purple">Generador de Flujo</span>
-                            </div>
-                        </div>
-                        <div class="ph-right">
-                            <span class="hud-caption text-purple"><i data-lucide="shield-check" class="tiny-icon inline"></i> SISTEMA DE RIQUEZA ACTIVO V4.12</span>
-                        </div>
-                    </div>
-
-                    <!-- HUD DE KPIS PRINCIPALES -->
-                    <div class="portfolio-kpis-grid">
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl" id="lbl-total-value">VALOR TOTAL</span>
-                                <i data-lucide="home" class="kpi-mini-icon"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-cyan" id="pkpi-total-value">Q0</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl" id="lbl-total-debt">DEUDA TOTAL</span>
-                                <i data-lucide="trending-down" class="kpi-mini-icon text-red"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-red" id="pkpi-total-debt">Q0</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl" id="lbl-total-equity">EQUITY TOTAL</span>
-                                <i data-lucide="shield" class="kpi-mini-icon text-green"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-green" id="pkpi-total-equity">Q0</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl" id="lbl-total-rent">RENTAS TOTALES</span>
-                                <i data-lucide="arrow-up-right" class="kpi-mini-icon text-cyan"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-cyan" id="pkpi-total-rent">Q0/mes</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl" id="lbl-total-payments">CUOTAS TOTALES</span>
-                                <i data-lucide="arrow-down-right" class="kpi-mini-icon text-red"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-red" id="pkpi-total-payments">Q0/mes</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl" id="lbl-net-cashflow">FLUJO NETO</span>
-                                <i data-lucide="dollar-sign" class="kpi-mini-icon text-green"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-green" id="pkpi-net-cashflow">Q0/mes</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl">ROI PROMEDIO</span>
-                                <i data-lucide="percent" class="kpi-mini-icon text-green"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-green" id="pkpi-avg-roi">0%</span>
-                        </div>
-                        <div class="card glassmorphism kpi-card">
-                            <div class="kpi-icon-row">
-                                <span class="kpi-lbl">PLUSVALÍA PROY.</span>
-                                <i data-lucide="trending-up" class="kpi-mini-icon text-cyan"></i>
-                            </div>
-                            <span class="kpi-val font-mono text-cyan" id="pkpi-avg-plusvalia">0%</span>
-                        </div>
-                    </div>
-
-                    <!-- CARD: ASESOR ESTRATÉGICO IA (AHORA ARRIBA Y ANCHO COMPLETO) -->
-                    <div class="card glassmorphism col-card" style="margin-bottom: 24px;">
-                        <div class="card-header border-purple">
-                            <div class="header-icon purple"><i data-lucide="bot"></i></div>
-                            <h2>Asesor Patrimonial IA</h2>
-                        </div>
-                        
-                        <div class="ai-console-wrapper" style="display: flex; flex-direction: column; height: 100%;">
-                            <div class="credit-capacity-box">
-                                <div class="cap-title">Capacidad Adicional de Crédito</div>
-                                <div class="cap-val font-mono text-purple" id="p-ai-credit-capacity">Q0 / mes</div>
-                                <span class="cap-desc">Soportada por tu flujo neto actual ajustada a regulaciones bancarias.</span>
-                            </div>
-
-                            <div class="ai-opinion-feed" id="portfolio-ai-console" style="flex-grow: 1; max-height: 250px; overflow-y: auto; padding-right: 5px;">
-                                <!-- Respuestas de asesoramiento en tiempo real -->
-                            </div>
-
-                            <!-- Caja de Chat con la IA -->
-                            <div class="ai-chat-input-wrapper" style="margin-top: 15px; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; width: 100%;">
-                                <input type="text" id="portfolio-ai-chat-input" placeholder="Pregúntale al Asesor IA... (ej: ¿Cómo optimizar mi flujo?)" style="flex-grow: 1; padding: 10px 14px; font-size: 0.9rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; font-family: 'Inter', sans-serif;" onkeydown="if(event.key === 'Enter') sendPortfolioAiChatMessage()">
-                                <button onclick="sendPortfolioAiChatMessage()" class="btn-micro-cyber" style="background: rgba(191,90,242,0.15); border: 1px solid var(--neon-purple); color: var(--neon-purple); cursor: pointer; padding: 0 16px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--neon-purple);">
-                                    <i data-lucide="send" style="width: 14px; height: 14px;"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- GRID SUPERIOR (2 COLUMNAS ANCHAS) -->
-                    <div class="portfolio-grid-upper">
-                        
-                        <!-- COLUMNA 1: GESTOR DE ACTIVOS -->
-                        <div class="portfolio-column assets-column">
-                            <div class="card glassmorphism col-card gestor-activos-card">
-                                <div class="card-header border-purple">
-                                    <div class="header-icon purple"><i data-lucide="building"></i></div>
-                                    <h2>Gestor de Activos</h2>
-                                    <span class="item-count font-mono" id="portfolio-assets-count">0 ACTIVOS</span>
-                                </div>
-                                
-                                <div class="assets-scroll-area" id="portfolio-assets-list">
-                                    <!-- Propiedades cargadas dinámicamente -->
-                                </div>
-                            </div>
-
-                            <!-- CARD: AGREGAR NUEVO ACTIVO -->
-                            <div class="card glassmorphism col-card form-card">
-                                <div class="card-header border-purple">
-                                    <div class="header-icon purple"><i data-lucide="plus-circle"></i></div>
-                                    <h2>Adquirir Nuevo Activo</h2>
-                                </div>
-                                <form id="portfolio-add-form" onsubmit="addAssetToPortfolio(event)">
-                                    <div class="form-grid">
-                                        <div class="form-group full-width">
-                                            <label for="p-add-title">Nombre del Activo / Dirección</label>
-                                            <input type="text" id="p-add-title" placeholder="Ej. Apartamento Zona 14 Las Américas" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="p-add-location">Ubicación / Sector</label>
-                                            <select id="p-add-location" required>
-                                                <option value="" disabled selected>Selecciona sector...</option>
-                                                <option value="zona10">Zona 10</option>
-                                                <option value="zona14">Zona 14</option>
-                                                <option value="zona15">Zona 15</option>
-                                                <option value="zona16">Zona 16</option>
-                                                <option value="zona4">Zona 4</option>
-                                                <option value="carretera">CAES</option>
-                                                <option value="fraijanes">Fraijanes</option>
-                                                <option value="mixco">Mixco</option>
-                                                <option value="antigua">Antigua Guatemala</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="p-add-type">Tipo de Activo</label>
-                                            <select id="p-add-type" required>
-                                                <option value="apartamento" selected>Apartamento</option>
-                                                <option value="casa">Casa</option>
-                                                <option value="comercial">Local Comercial</option>
-                                                <option value="oficina">Oficina</option>
-                                                <option value="terreno">Terreno</option>
-                                                <option value="bodega">Bodega</option>
-                                                <option value="beachhouse">Casa de Playa</option>
-                                                <option value="airbnb">Airbnb Ready</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="p-add-buyvalue">Valor de Compra</label>
-                                            <div class="input-with-unit">
-                                                <input type="number" id="p-add-buyvalue" min="2000" max="100000000" value="200000" required>
-                                                <span class="unit-badge" id="p-add-buyvalue-unit">$</span>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="p-add-rent">Renta Mensual Estimada</label>
-                                            <div class="input-with-unit">
-                                                <input type="number" id="p-add-rent" min="0" max="1000000" value="1500" required>
-                                                <span class="unit-badge" id="p-add-rent-unit">$</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group full-width" style="border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 5px;">
-                                            <label class="checkbox-container">
-                                                <input type="checkbox" id="p-add-has-mortgage" onchange="toggleMortgageInputs(this.checked)">
-                                                <span class="checkmark border-purple"></span>
-                                                <span class="label-text">¿Adquirido con Financiamiento / Hipoteca?</span>
-                                            </label>
-                                        </div>
-
-                                        <div id="mortgage-fields-container" class="form-grid full-width hidden">
-                                            <div class="form-group">
-                                                <label for="p-add-mortgagedebt">Monto del Crédito</label>
-                                                <div class="input-with-unit">
-                                                    <input type="number" id="p-add-mortgagedebt" min="1000" max="90000000" value="160000">
-                                                    <span class="unit-badge" id="p-add-mortgagedebt-unit">$</span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="p-add-mortgagepayment">Cuota Mensual</label>
-                                                <div class="input-with-unit">
-                                                    <input type="number" id="p-add-mortgagepayment" min="10" max="1000000" value="1100">
-                                                    <span class="unit-badge" id="p-add-mortgagepayment-unit">$</span>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="p-add-mortgagerate">Tasa de Interés (%)</label>
-                                                <input type="number" id="p-add-mortgagerate" min="1" max="30" step="0.05" value="7.25">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="p-add-mortgageterm">Plazo de Hipoteca (Años)</label>
-                                                <input type="number" id="p-add-mortgageterm" min="5" max="35" step="5" value="20">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="p-add-maintenance">Mantenimiento Mensual</label>
-                                            <div class="input-with-unit">
-                                                <input type="number" id="p-add-maintenance" min="0" max="100000" value="120">
-                                                <span class="unit-badge" id="p-add-maintenance-unit">$</span>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="p-add-taxes">Impuestos Mensuales (IUSI)</label>
-                                            <div class="input-with-unit">
-                                                <input type="number" id="p-add-taxes" min="0" max="100000" value="40">
-                                                <span class="unit-badge" id="p-add-taxes-unit">$</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-block glowing-effect-purple" style="margin-top: 15px;">
-                                        <i data-lucide="plus-circle"></i> AGREGAR ACTIVO AL PORTAFOLIO
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <!-- COLUMNA 2: GRÁFICOS Y PROYECCIONES -->
-                        <div class="portfolio-column charts-column">
-                            <!-- CARD: CAMINO A LA LIBERTAD FINANCIERA -->
-                            <div class="card glassmorphism col-card freedom-card">
-                                <div class="card-header border-purple">
-                                    <div class="header-icon purple"><i data-lucide="sparkles"></i></div>
-                                    <h2>Camino a la Libertad Financiera</h2>
-                                </div>
-                                
-                                <div class="freedom-content-wrapper">
-                                    <div class="form-group" style="margin-bottom: 12px;">
-                                        <label for="p-freedom-budget">Presupuesto de Vida Deseado (Mensual)</label>
-                                        <div class="input-with-unit">
-                                            <input type="number" id="p-freedom-budget" min="100" max="2500000" value="4000" oninput="updatePortfolioCalculations()">
-                                            <span class="unit-badge" id="p-freedom-budget-unit">$</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="freedom-progress-wrapper">
-                                        <div class="freedom-percentage-ring">
-                                            <svg class="ring-svg" width="180" height="180">
-                                                <circle class="ring-bg" cx="90" cy="90" r="80"></circle>
-                                                <circle class="ring-fill" cx="90" cy="90" r="80" id="freedom-progress-ring-circle"></circle>
-                                            </svg>
-                                            <div class="ring-center font-mono">
-                                                <span class="pct-num" id="freedom-pct-val">0%</span>
-                                                <span class="pct-lbl">LIBRE</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="freedom-stats font-mono">
-                                        <div class="fstat">
-                                            <span class="fs-lbl">Flujo Pasivo Neto:</span>
-                                            <span class="fs-val text-green" id="freedom-cashflow-val">Q0</span>
-                                        </div>
-                                        <div class="fstat">
-                                            <span class="fs-lbl">Meta Patrimonial:</span>
-                                            <span class="fs-val text-purple" id="freedom-target-equity">Q0</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- CARD: PROYECCIÓN A PLAZO -->
-                            <div class="card glassmorphism col-card">
-                                <div class="card-header border-purple">
-                                    <div class="header-icon purple"><i data-lucide="bar-chart-3"></i></div>
-                                    <h2>Proyección de Riqueza y Amortización</h2>
-                                    <div class="projection-toggles">
-                                        <button class="proj-toggle-btn active" id="p-proj-0" onclick="switchPortfolioProjection(0)">Actual</button>
-                                        <button class="proj-toggle-btn" id="p-proj-1" onclick="switchPortfolioProjection(1)">1A</button>
-                                        <button class="proj-toggle-btn" id="p-proj-5" onclick="switchPortfolioProjection(5)">5A</button>
-                                        <button class="proj-toggle-btn" id="p-proj-10" onclick="switchPortfolioProjection(10)">10A</button>
-                                        <button class="proj-toggle-btn" id="p-proj-20" onclick="switchPortfolioProjection(20)">20A</button>
-                                    </div>
-                                </div>
-                                <div class="chart-container-portfolio">
-                                    <canvas id="portfolioGrowthChart"></canvas>
-                                </div>
-                                <div class="projection-stats font-mono">
-                                    <div class="pstat">
-                                        <span class="ps-lbl">Equity Proyectado:</span>
-                                        <span class="ps-val text-green" id="p-proj-equity-val">Q0</span>
-                                    </div>
-                                    <div class="pstat border-l">
-                                        <span class="ps-lbl">Deuda Restante:</span>
-                                        <span class="ps-val text-red" id="p-proj-debt-val">Q0</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- CARD: DISTRIBUCIÓN -->
-                            <div class="card glassmorphism col-card">
-                                <div class="card-header border-purple">
-                                    <div class="header-icon purple"><i data-lucide="pie-chart"></i></div>
-                                    <h2>Distribución de Activos Inmobiliarios</h2>
-                                </div>
-                                <div class="chart-container-portfolio" style="height: 220px;">
-                                    <canvas id="portfolioDistributionChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- SECCIÓN: MAPA DE CALOR Y BALIZAS DE ACTIVOS -->
-                    <div class="card glassmorphism portfolio-map-card">
-                        <div class="card-header border-purple">
-                            <div class="header-icon purple"><i data-lucide="map"></i></div>
-                            <h2>Mapa de Geolocalización y Nodos del Portafolio</h2>
-                        </div>
-                        <div class="map-layout-portfolio">
-                            <div class="map-wrapper card glassmorphism" style="height: 440px;">
-                                <div id="portfolio-map" style="height: 100%;"></div>
-                            </div>
-                            <div class="map-signals-sidebar">
-                                <h3 class="font-mono text-purple" style="font-size: 0.75rem; margin-bottom: 8px;">SEÑALES DEL VECTOR INMOBILIARIO</h3>
-                                <div class="arbitrage-signals-list" id="portfolio-map-signals">
-                                    <!-- Señales geográficas basadas en los activos agregados -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <section id="view-portfolio" class="app-view" style="position: relative; display: none !important;"></section>
 
                 <!-- VISTA 6: GESTIÓN COMERCIAL & B2B SaaS -->
                 <section id="view-commercial" class="app-view">
@@ -1836,7 +1478,7 @@
                         <button id="comm-tab-btn-propiedades-list" class="comm-tab-btn" onclick="switchCommercialTab('propiedades-list')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="folder-heart" style="width: 14px; height: 14px;"></i> MIS PROPIEDADES PUBLICADAS
                         </button>
-                        <button id="comm-tab-btn-portfolio-redirect" class="comm-tab-btn" onclick="switchView('portfolio')" style="background: rgba(191,90,242,0.04); border: 1px solid rgba(191,90,242,0.25); color: #bf5af2; padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                        <button id="comm-tab-btn-portfolio" class="comm-tab-btn" onclick="switchCommercialTab('portfolio')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="pie-chart" style="width: 14px; height: 14px; color: #bf5af2;"></i> PORTAFOLIO IA
                         </button>
                         <button id="comm-tab-btn-suscripcion" class="comm-tab-btn" onclick="switchCommercialTab('suscripcion')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
@@ -2493,6 +2135,364 @@
                             </div>
                         </div>
                     </div> <!-- Cierre de #comm-tab-content-propiedades-list -->
+
+                    <!-- PESTAÑA NUEVA: PORTAFOLIO IA -->
+                    <div id="comm-tab-content-portfolio" class="comm-tab-content hidden" style="position: relative;">
+                        <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
+                        <div id="portfolio-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
+                            <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
+                            <span>VISTA PREVIA: <span id="portfolio-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">60s</span></span>
+                        </div>
+
+                        <!-- MÁSCARA BLOQUEADORA DE PORTAFOLIO EXPIRADA -->
+                        <div id="portfolio-trial-blocker" class="hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 6, 8, 0.95); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; border-radius: 12px; padding: 30px; text-align: center;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #bf5af2; background: rgba(191,90,242,0.05); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(191,90,242,0.4); margin-bottom: 20px; animation: pulse-shadow 2.5s infinite;">
+                                <i data-lucide="lock" style="width: 36px; height: 36px; color: #bf5af2;"></i>
+                            </div>
+                            <h3 style="font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 10px; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">🔒 VISTA PREVIA EXPIRADA</h3>
+                            <p style="font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-secondary); max-width: 460px; line-height: 1.5; margin-bottom: 24px; text-align: center;">
+                                Has completado tu minuto de demostración gratuita del **Portafolio IA**. <br><br>
+                                Para seguir simulando la evolución de tu riqueza a 20 años, apalancarte con crédito FHA y recibir asesoría patrimonial sin límites, adquiere una suscripción de **Inversionista** o sube tu plan de **Agente** a Pro/VIP.
+                            </p>
+                            <button onclick="closePortfolioTrialBlockerAndRedirect()" class="btn btn-primary glowing-effect-purple" style="background: rgba(191, 90, 242, 0.1); border: 1px solid #bf5af2; padding: 12px 30px; font-size: 0.82rem; font-weight: bold; color: #bf5af2; border-radius: 8px; cursor: pointer; text-shadow: 0 0 5px rgba(191,90,242,0.3); display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i> ADQUIRIR MEMBRESÍA PREMIUM
+                            </button>
+                        </div>
+
+                        <!-- CABECERA DE GAMIFICACIÓN -->
+                        <div class="portfolio-header-hud">
+                            <div class="ph-left">
+                                <span class="hud-label-small">TELEMETRÍA PATRIMONIAL</span>
+                                <div class="investor-rank-badge font-mono" id="portfolio-investor-badge">
+                                    <i data-lucide="award" class="purple-icon"></i>
+                                    <span class="badge-lbl">RANGO:</span>
+                                    <span id="portfolio-investor-rank" class="badge-val text-purple">Generador de Flujo</span>
+                                </div>
+                            </div>
+                            <div class="ph-right">
+                                <span class="hud-caption text-purple"><i data-lucide="shield-check" class="tiny-icon inline"></i> SISTEMA DE RIQUEZA ACTIVO V4.12</span>
+                            </div>
+                        </div>
+
+                        <!-- HUD DE KPIS PRINCIPALES -->
+                        <div class="portfolio-kpis-grid">
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl" id="lbl-total-value">VALOR TOTAL</span>
+                                    <i data-lucide="home" class="kpi-mini-icon"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-cyan" id="pkpi-total-value">Q0</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl" id="lbl-total-debt">DEUDA TOTAL</span>
+                                    <i data-lucide="trending-down" class="kpi-mini-icon text-red"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-red" id="pkpi-total-debt">Q0</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl" id="lbl-total-equity">EQUITY TOTAL</span>
+                                    <i data-lucide="shield" class="kpi-mini-icon text-green"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-green" id="pkpi-total-equity">Q0</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl" id="lbl-total-rent">RENTAS TOTALES</span>
+                                    <i data-lucide="arrow-up-right" class="kpi-mini-icon text-cyan"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-cyan" id="pkpi-total-rent">Q0/mes</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl" id="lbl-total-payments">CUOTAS TOTALES</span>
+                                    <i data-lucide="arrow-down-right" class="kpi-mini-icon text-red"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-red" id="pkpi-total-payments">Q0/mes</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl" id="lbl-net-cashflow">FLUJO NETO</span>
+                                    <i data-lucide="dollar-sign" class="kpi-mini-icon text-green"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-green" id="pkpi-net-cashflow">Q0/mes</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl">ROI PROMEDIO</span>
+                                    <i data-lucide="percent" class="kpi-mini-icon text-green"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-green" id="pkpi-avg-roi">0%</span>
+                            </div>
+                            <div class="card glassmorphism kpi-card">
+                                <div class="kpi-icon-row">
+                                    <span class="kpi-lbl">PLUSVALÍA PROY.</span>
+                                    <i data-lucide="trending-up" class="kpi-mini-icon text-cyan"></i>
+                                </div>
+                                <span class="kpi-val font-mono text-cyan" id="pkpi-avg-plusvalia">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- CARD: ASESOR ESTRATÉGICO IA (AHORA ARRIBA Y ANCHO COMPLETO) -->
+                        <div class="card glassmorphism col-card" style="margin-bottom: 24px;">
+                            <div class="card-header border-purple">
+                                <div class="header-icon purple"><i data-lucide="bot"></i></div>
+                                <h2>Asesor Patrimonial IA</h2>
+                            </div>
+                            
+                            <div class="ai-console-wrapper" style="display: flex; flex-direction: column; height: 100%;">
+                                <div class="credit-capacity-box">
+                                    <div class="cap-title">Capacidad Adicional de Crédito</div>
+                                    <div class="cap-val font-mono text-purple" id="p-ai-credit-capacity">Q0 / mes</div>
+                                    <span class="cap-desc">Soportada por tu flujo neto actual ajustada a regulaciones bancarias.</span>
+                                </div>
+
+                                <div class="ai-opinion-feed" id="portfolio-ai-console" style="flex-grow: 1; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                                    <!-- Respuestas de asesoramiento en tiempo real -->
+                                </div>
+
+                                <!-- Caja de Chat con la IA -->
+                                <div class="ai-chat-input-wrapper" style="margin-top: 15px; display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; width: 100%;">
+                                    <input type="text" id="portfolio-ai-chat-input" placeholder="Pregúntale al Asesor IA... (ej: ¿Cómo optimizar mi flujo?)" style="flex-grow: 1; padding: 10px 14px; font-size: 0.9rem; background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: #fff; border-radius: 6px; font-family: 'Inter', sans-serif;" onkeydown="if(event.key === 'Enter') sendPortfolioAiChatMessage()">
+                                    <button onclick="sendPortfolioAiChatMessage()" class="btn-micro-cyber" style="background: rgba(191,90,242,0.15); border: 1px solid var(--neon-purple); color: var(--neon-purple); cursor: pointer; padding: 0 16px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--neon-purple);">
+                                        <i data-lucide="send" style="width: 14px; height: 14px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GRID SUPERIOR (2 COLUMNAS ANCHAS) -->
+                        <div class="portfolio-grid-upper">
+                            
+                            <!-- COLUMNA 1: GESTOR DE ACTIVOS -->
+                            <div class="portfolio-column assets-column">
+                                <div class="card glassmorphism col-card gestor-activos-card">
+                                    <div class="card-header border-purple">
+                                        <div class="header-icon purple"><i data-lucide="building"></i></div>
+                                        <h2>Gestor de Activos</h2>
+                                        <span class="item-count font-mono" id="portfolio-assets-count">0 ACTIVOS</span>
+                                    </div>
+                                    
+                                    <div class="assets-scroll-area" id="portfolio-assets-list">
+                                        <!-- Propiedades cargadas dinámicamente -->
+                                    </div>
+                                </div>
+
+                                <!-- CARD: AGREGAR NUEVO ACTIVO -->
+                                <div class="card glassmorphism col-card form-card">
+                                    <div class="card-header border-purple">
+                                        <div class="header-icon purple"><i data-lucide="plus-circle"></i></div>
+                                        <h2>Adquirir Nuevo Activo</h2>
+                                    </div>
+                                    <form id="portfolio-add-form" onsubmit="addAssetToPortfolio(event)">
+                                        <div class="form-grid">
+                                            <div class="form-group full-width">
+                                                <label for="p-add-title">Nombre del Activo / Dirección</label>
+                                                <input type="text" id="p-add-title" placeholder="Ej. Apartamento Zona 14 Las Américas" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-location">Ubicación / Sector</label>
+                                                <select id="p-add-location" required>
+                                                    <option value="" disabled selected>Selecciona sector...</option>
+                                                    <option value="zona10">Zona 10</option>
+                                                    <option value="zona14">Zona 14</option>
+                                                    <option value="zona15">Zona 15</option>
+                                                    <option value="zona16">Zona 16</option>
+                                                    <option value="zona4">Zona 4</option>
+                                                    <option value="carretera">CAES</option>
+                                                    <option value="fraijanes">Fraijanes</option>
+                                                    <option value="mixco">Mixco</option>
+                                                    <option value="antigua">Antigua Guatemala</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-type">Tipo de Activo</label>
+                                                <select id="p-add-type" required>
+                                                    <option value="apartamento" selected>Apartamento</option>
+                                                    <option value="casa">Casa</option>
+                                                    <option value="comercial">Local Comercial</option>
+                                                    <option value="oficina">Oficina</option>
+                                                    <option value="terreno">Terreno</option>
+                                                    <option value="bodega">Bodega</option>
+                                                    <option value="beachhouse">Casa de Playa</option>
+                                                    <option value="airbnb">Airbnb Ready</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-buyvalue">Valor de Compra</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="p-add-buyvalue" min="2000" max="100000000" value="200000" required>
+                                                    <span class="unit-badge" id="p-add-buyvalue-unit">$</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-rent">Renta Mensual Estimada</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="p-add-rent" min="0" max="1000000" value="1500" required>
+                                                    <span class="unit-badge" id="p-add-rent-unit">$</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group full-width" style="border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 10px; margin-top: 5px;">
+                                                <label class="checkbox-container">
+                                                    <input type="checkbox" id="p-add-has-mortgage" onchange="toggleMortgageInputs(this.checked)">
+                                                    <span class="checkmark border-purple"></span>
+                                                    <span class="label-text">¿Adquirido con Financiamiento / Hipoteca?</span>
+                                                </label>
+                                            </div>
+
+                                            <div id="mortgage-fields-container" class="form-grid full-width hidden">
+                                                <div class="form-group">
+                                                    <label for="p-add-mortgagedebt">Monto del Crédito</label>
+                                                    <div class="input-with-unit">
+                                                        <input type="number" id="p-add-mortgagedebt" min="1000" max="90000000" value="160000">
+                                                        <span class="unit-badge" id="p-add-mortgagedebt-unit">$</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="p-add-mortgagepayment">Cuota Mensual</label>
+                                                    <div class="input-with-unit">
+                                                        <input type="number" id="p-add-mortgagepayment" min="10" max="1000000" value="1100">
+                                                        <span class="unit-badge" id="p-add-mortgagepayment-unit">$</span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="p-add-mortgagerate">Tasa de Interés (%)</label>
+                                                    <input type="number" id="p-add-mortgagerate" min="1" max="30" step="0.05" value="7.25">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="p-add-mortgageterm">Plazo de Hipoteca (Años)</label>
+                                                    <input type="number" id="p-add-mortgageterm" min="5" max="35" step="5" value="20">
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="p-add-maintenance">Mantenimiento Mensual</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="p-add-maintenance" min="0" max="100000" value="120">
+                                                    <span class="unit-badge" id="p-add-maintenance-unit">$</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="p-add-taxes">Impuestos Mensuales (IUSI)</label>
+                                                <div class="input-with-unit">
+                                                    <input type="number" id="p-add-taxes" min="0" max="100000" value="40">
+                                                    <span class="unit-badge" id="p-add-taxes-unit">$</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-block glowing-effect-purple" style="margin-top: 15px;">
+                                            <i data-lucide="plus-circle"></i> AGREGAR ACTIVO AL PORTAFOLIO
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- COLUMNA 2: GRÁFICOS Y PROYECCIONES -->
+                            <div class="portfolio-column charts-column">
+                                <!-- CARD: CAMINO A LA LIBERTAD FINANCIERA -->
+                                <div class="card glassmorphism col-card freedom-card">
+                                    <div class="card-header border-purple">
+                                        <div class="header-icon purple"><i data-lucide="sparkles"></i></div>
+                                        <h2>Camino a la Libertad Financiera</h2>
+                                    </div>
+                                    
+                                    <div class="freedom-content-wrapper">
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label for="p-freedom-budget">Presupuesto de Vida Deseado (Mensual)</label>
+                                            <div class="input-with-unit">
+                                                <input type="number" id="p-freedom-budget" min="100" max="2500000" value="4000" oninput="updatePortfolioCalculations()">
+                                                <span class="unit-badge" id="p-freedom-budget-unit">$</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="freedom-progress-wrapper">
+                                            <div class="freedom-percentage-ring">
+                                                <svg class="ring-svg" width="180" height="180">
+                                                    <circle class="ring-bg" cx="90" cy="90" r="80"></circle>
+                                                    <circle class="ring-fill" cx="90" cy="90" r="80" id="freedom-progress-ring-circle"></circle>
+                                                </svg>
+                                                <div class="ring-center font-mono">
+                                                    <span class="pct-num" id="freedom-pct-val">0%</span>
+                                                    <span class="pct-lbl">LIBRE</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="freedom-stats font-mono">
+                                            <div class="fstat">
+                                                <span class="fs-lbl">Flujo Pasivo Neto:</span>
+                                                <span class="fs-val text-green" id="freedom-cashflow-val">Q0</span>
+                                            </div>
+                                            <div class="fstat">
+                                                <span class="fs-lbl">Meta Patrimonial:</span>
+                                                <span class="fs-val text-purple" id="freedom-target-equity">Q0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CARD: PROYECCIÓN A PLAZO -->
+                                <div class="card glassmorphism col-card">
+                                    <div class="card-header border-purple">
+                                        <div class="header-icon purple"><i data-lucide="bar-chart-3"></i></div>
+                                        <h2>Proyección de Riqueza y Amortización</h2>
+                                        <div class="projection-toggles">
+                                            <button class="proj-toggle-btn active" id="p-proj-0" onclick="switchPortfolioProjection(0)">Actual</button>
+                                            <button class="proj-toggle-btn" id="p-proj-1" onclick="switchPortfolioProjection(1)">1A</button>
+                                            <button class="proj-toggle-btn" id="p-proj-5" onclick="switchPortfolioProjection(5)">5A</button>
+                                            <button class="proj-toggle-btn" id="p-proj-10" onclick="switchPortfolioProjection(10)">10A</button>
+                                            <button class="proj-toggle-btn" id="p-proj-20" onclick="switchPortfolioProjection(20)">20A</button>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container-portfolio">
+                                        <canvas id="portfolioGrowthChart"></canvas>
+                                    </div>
+                                    <div class="projection-stats font-mono">
+                                        <div class="pstat">
+                                            <span class="ps-lbl">Equity Proyectado:</span>
+                                            <span class="ps-val text-green" id="p-proj-equity-val">Q0</span>
+                                        </div>
+                                        <div class="pstat border-l">
+                                            <span class="ps-lbl">Deuda Restante:</span>
+                                            <span class="ps-val text-red" id="p-proj-debt-val">Q0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CARD: DISTRIBUCIÓN -->
+                                <div class="card glassmorphism col-card">
+                                    <div class="card-header border-purple">
+                                        <div class="header-icon purple"><i data-lucide="pie-chart"></i></div>
+                                        <h2>Distribución de Activos Inmobiliarios</h2>
+                                    </div>
+                                    <div class="chart-container-portfolio" style="height: 220px;">
+                                        <canvas id="portfolioDistributionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN: MAPA DE CALOR Y BALIZAS DE ACTIVOS -->
+                        <div class="card glassmorphism portfolio-map-card">
+                            <div class="card-header border-purple">
+                                <div class="header-icon purple"><i data-lucide="map"></i></div>
+                                <h2>Mapa de Geolocalización y Nodos del Portafolio</h2>
+                            </div>
+                            <div class="map-layout-portfolio">
+                                <div class="map-wrapper card glassmorphism" style="height: 440px;">
+                                    <div id="portfolio-map" style="height: 100%;"></div>
+                                </div>
+                                <div class="map-signals-sidebar">
+                                    <h3 class="font-mono text-purple" style="font-size: 0.75rem; margin-bottom: 8px;">SEÑALES DEL VECTOR INMOBILIARIO</h3>
+                                    <div class="arbitrage-signals-list" id="portfolio-map-signals">
+                                        <!-- Señales geográficas basadas en los activos agregados -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- PESTAÑA 3: MI SUSCRIPCIÓN B2B -->
                     <div id="comm-tab-content-suscripcion" class="comm-tab-content hidden">
@@ -4134,9 +4134,9 @@
         </div>
     </div>
 
-    <script src="mockData.js?v=10.7"></script>
-    <script src="charts.js?v=10.7"></script>
-    <script src="map.js?v=10.7"></script>
-    <script src="app.js?v=10.7"></script>
+    <script src="mockData.js?v=10.8"></script>
+    <script src="charts.js?v=10.8"></script>
+    <script src="map.js?v=10.8"></script>
+    <script src="app.js?v=10.8"></script>
 </body>
 </html>

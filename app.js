@@ -554,6 +554,86 @@ function removePreviewImage(index) {
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
+    if (viewId === 'portfolio') {
+        const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
+        const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
+        const hasAccess = clientPlan === 'vip' || clientPlan === 'pro' || clientPlan === 'premium' || clientRole === 'inversionista';
+        
+        if (isCommercialAuthenticated) {
+            if (!hasAccess) {
+                switchView('commercial');
+                switchCommercialTab('suscripcion');
+                alert("💼 El simulador de Portafolio IA requiere una membresía Pro, VIP o Inversionista Premium. Por favor, selecciona un plan para activarlo.");
+                return;
+            }
+            switchView('commercial');
+            setTimeout(() => {
+                switchCommercialTab('portfolio');
+            }, 50);
+            return;
+        } else {
+            switchView('commercial');
+            setTimeout(() => {
+                const tabsNav = document.querySelector('.commercial-tabs-nav');
+                if (tabsNav) tabsNav.style.display = 'none';
+                
+                document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById('comm-tab-content-portfolio')?.classList.remove('hidden');
+                
+                initPortfolioView();
+                
+                const activeBlocker = document.getElementById('portfolio-trial-blocker');
+                const activeBadge = document.getElementById('portfolio-trial-badge');
+                const activeTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
+                
+                if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
+                    if (activeBlocker) activeBlocker.classList.remove('hidden');
+                    isPortfolioBlocked = true;
+                    alert("⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                    
+                    const loginGate = document.getElementById('commercial-login-gate');
+                    const dashboardArea = document.getElementById('commercial-dashboard-area');
+                    if (loginGate) loginGate.classList.remove('hidden');
+                    if (dashboardArea) dashboardArea.classList.add('hidden');
+                    if (tabsNav) tabsNav.style.display = 'flex';
+                } else {
+                    if (activeBlocker) activeBlocker.classList.add('hidden');
+                    if (activeBadge) {
+                        activeBadge.classList.remove('hidden');
+                        if (activeTimerLbl) activeTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
+                    }
+                    
+                    const loginGate = document.getElementById('commercial-login-gate');
+                    const dashboardArea = document.getElementById('commercial-dashboard-area');
+                    if (loginGate) loginGate.classList.add('hidden');
+                    if (dashboardArea) dashboardArea.classList.remove('hidden');
+                    
+                    portfolioTrialTimer = setInterval(() => {
+                        portfolioTrialTimeLeft--;
+                        const currentTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
+                        if (currentTimerLbl) currentTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
+                        
+                        if (portfolioTrialTimeLeft <= 0) {
+                            clearInterval(portfolioTrialTimer);
+                            portfolioTrialTimer = null;
+                            isPortfolioBlocked = true;
+                            
+                            if (activeBlocker) activeBlocker.classList.remove('hidden');
+                            if (activeBadge) activeBadge.classList.add('hidden');
+                            
+                            alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                            
+                            if (loginGate) loginGate.classList.remove('hidden');
+                            if (dashboardArea) dashboardArea.classList.add('hidden');
+                            if (tabsNav) tabsNav.style.display = 'flex';
+                        }
+                    }, 1000);
+                }
+            }, 50);
+            return;
+        }
+    }
+
     // 1. Pausar y ocultar todos los timers y badges de trial de marketing al cambiar de vista
     if (portfolioTrialTimer) {
         clearInterval(portfolioTrialTimer);
@@ -687,14 +767,11 @@ function switchView(viewId) {
             initInvestorComparisonChart();
         }, 50);
     } else if (viewId === 'portfolio') {
-        titleEl.innerText = "Terminal de Portafolio Patrimonial IA";
-        subtitleEl.innerText = "Simulador avanzado de riqueza, apalancamiento y Libertad Financiera";
+        switchView('commercial');
         setTimeout(() => {
-            initPortfolioView();
+            switchCommercialTab('portfolio');
         }, 50);
     } else if (viewId === 'commercial') {
-        titleEl.innerText = "Área de Ingreso Inmobiliario B2B";
-        subtitleEl.innerText = "Acceso a herramientas avanzadas de tasación, plusvalías y gestión patrimonial";
         setTimeout(() => {
             initCommercialView();
         }, 50);
@@ -955,8 +1032,9 @@ function toggleCurrency() {
         initInvestorComparisonChart();
     }
 
-    // Si estamos en la vista de portafolio, actualizar
-    if (document.getElementById('view-portfolio').classList.contains('active')) {
+    // Si estamos en la pestaña de portafolio, actualizar
+    const portfolioTab = document.getElementById('comm-tab-content-portfolio');
+    if ((portfolioTab && !portfolioTab.classList.contains('hidden')) || (document.getElementById('view-portfolio') && document.getElementById('view-portfolio').classList.contains('active'))) {
         updatePortfolioCalculations();
     }
 
@@ -3950,6 +4028,38 @@ function sendPortfolioAiChatMessage() {
 }
 
 /**
+ * Gestiona los Overlays de Bloqueo Criptográficos según Plan, Rol y Estado de Pago
+ */
+function updateLockOverlaysState() {
+    const isInvestor = loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
+    const isPending = loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente');
+    
+    const goldLock = document.getElementById('commercial-gold-overlay-lock');
+    const promoLock = document.getElementById('commercial-promo-overlay-lock');
+    const btnPromote = document.getElementById('btn-promote-property');
+
+    // La cartera de Tether Gold (Gold Wallet) se desbloquea SÓLO para planes VIP que no sean inversionistas y no estén pendientes.
+    // Para inversionistas (Premium) o agentes Pro/Basico, permanece bloqueada.
+    const unlockGold = activeB2bPlan === 'vip' && !isPending && !isInvestor;
+    // La promoción de propiedades se desbloquea para VIP y Premium que no estén pendientes.
+    const unlockPromo = (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending;
+
+    if (unlockGold) {
+        if (goldLock) goldLock.classList.add('hidden');
+    } else {
+        if (goldLock) goldLock.classList.remove('hidden');
+    }
+
+    if (unlockPromo) {
+        if (promoLock) promoLock.classList.add('hidden');
+        if (btnPromote) btnPromote.disabled = false;
+    } else {
+        if (promoLock) promoLock.classList.remove('hidden');
+        if (btnPromote) btnPromote.disabled = true;
+    }
+}
+
+/**
  * Inicializa la consola de gestión comercial B2B y SaaS
  */
 function initCommercialView() {
@@ -3978,18 +4088,22 @@ function initCommercialView() {
     updateB2bSubscriptionPendingBanner();
     syncPendingPaymentRequests();
 
+    // Restablecer visualización de barra de pestañas en caso de que viniera de preview mode
+    const tabsNav = document.querySelector('.commercial-tabs-nav');
+    if (tabsNav) tabsNav.style.display = 'flex';
+
     // Controlar visibilidad de pestañas del panel comercial según rol y plan
     const isInvestor = loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
     const clientPlan = loggedInB2bClient && loggedInB2bClient.plan ? loggedInB2bClient.plan.toLowerCase() : '';
     
     const btnPropiedades = document.getElementById('comm-tab-btn-propiedades');
     const btnPropiedadesList = document.getElementById('comm-tab-btn-propiedades-list');
-    const btnPortfolioRedirect = document.getElementById('comm-tab-btn-portfolio-redirect');
+    const btnPortfolio = document.getElementById('comm-tab-btn-portfolio') || document.getElementById('comm-tab-btn-portfolio-redirect');
     
     if (isInvestor) {
         if (btnPropiedades) btnPropiedades.style.display = 'none';
         if (btnPropiedadesList) btnPropiedadesList.style.display = 'none';
-        if (btnPortfolioRedirect) btnPortfolioRedirect.style.display = 'flex';
+        if (btnPortfolio) btnPortfolio.style.display = 'flex';
     } else {
         // Agente
         if (btnPropiedades) btnPropiedades.style.display = 'flex';
@@ -3997,34 +4111,28 @@ function initCommercialView() {
         
         // Mostrar "Portafolio IA" para agentes Pro o VIP
         if (clientPlan === 'pro' || clientPlan === 'vip' || clientPlan === 'vip premium') {
-            if (btnPortfolioRedirect) btnPortfolioRedirect.style.display = 'flex';
+            if (btnPortfolio) btnPortfolio.style.display = 'flex';
         } else {
-            if (btnPortfolioRedirect) btnPortfolioRedirect.style.display = 'none';
+            if (btnPortfolio) btnPortfolio.style.display = 'none';
         }
     }
 
     // Gestionar Overlays de Bloqueo Criptográficos según Plan y Estado de Pago
-    const goldLock = document.getElementById('commercial-gold-overlay-lock');
-    const promoLock = document.getElementById('commercial-promo-overlay-lock');
-    const btnPromote = document.getElementById('btn-promote-property');
+    updateLockOverlaysState();
 
     const isPending = loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente');
-
-    if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
-        if (goldLock) goldLock.classList.add('hidden');
-        if (promoLock) promoLock.classList.add('hidden');
-        if (btnPromote) btnPromote.disabled = false;
-    } else {
-        if (goldLock) goldLock.classList.remove('hidden');
-        if (promoLock) promoLock.classList.remove('hidden');
-        if (btnPromote) btnPromote.disabled = true;
-    }
 
     // Sincronizar UI de retiros bancarios, pestañas por defecto y cuadrícula de suscripciones corporativas
     if (isPending) {
         switchCommercialTab('suscripcion');
     } else {
-        switchCommercialTab('home');
+        const activeTabBtn = document.querySelector('.comm-tab-btn.active');
+        if (activeTabBtn) {
+            const activeTabId = activeTabBtn.id.replace('comm-tab-btn-', '');
+            switchCommercialTab(activeTabId);
+        } else {
+            switchCommercialTab('home');
+        }
     }
     renderB2bWithdrawalsTable();
     syncCommercialPricingGridUI();
@@ -4118,19 +4226,14 @@ function initCommercialView() {
                                     activeB2bPlan = req.planKey;
                                 }
 
+                                localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+
                                 alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales SaaS.");
                                 
                                 renderB2bAgentProfile();
                                 updateSaasMetricsHUD();
                                 updateB2bSubscriptionPendingBanner();
-
-                                const goldLock = document.getElementById('commercial-gold-overlay-lock');
-                                const promoLock = document.getElementById('commercial-promo-overlay-lock');
-                                const btnPromote = document.getElementById('btn-promote-property');
-                                
-                                if (goldLock) goldLock.classList.add('hidden');
-                                if (promoLock) promoLock.classList.add('hidden');
-                                if (btnPromote) btnPromote.disabled = false;
+                                updateLockOverlaysState();
 
                                 switchCommercialTab('home');
                             } else {
@@ -4143,7 +4246,7 @@ function initCommercialView() {
         // 2. Consulta de estado directa como fallback o actualización de saldo
         supabaseClient
             .from('profiles')
-            .select('status, plan, usdt_balance')
+            .select('status, plan, usdt_balance, role')
             .eq('id', loggedInB2bClient.id)
             .maybeSingle()
             .then(({ data, error }) => {
@@ -4151,16 +4254,20 @@ function initCommercialView() {
                     const dbStatus = data.status.charAt(0).toUpperCase() + data.status.slice(1);
                     const dbPlan = data.plan;
                     const dbBalance = parseFloat(data.usdt_balance || 0);
+                    const dbRole = data.role || 'agente';
                     
-                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance) {
+                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole) {
                         const oldStatus = loggedInB2bClient.status;
                         
                         loggedInB2bClient.status = dbStatus;
                         loggedInB2bClient.plan = dbPlan;
                         loggedInB2bClient.usdtBalance = dbBalance;
+                        loggedInB2bClient.role = dbRole;
                         activeB2bPlan = (dbPlan || 'pro').toLowerCase();
                         
-                        console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}`);
+                        localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+                        
+                        console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}, Rol -> ${dbRole}`);
                         
                         // Si pasó de Pendiente a Activo, lanzar alerta al usuario
                         if ((oldStatus === 'Pendiente' || (oldStatus || '').toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
@@ -4171,22 +4278,9 @@ function initCommercialView() {
                         renderB2bAgentProfile();
                         updateSaasMetricsHUD();
                         updateB2bSubscriptionPendingBanner();
+                        updateLockOverlaysState();
                         
                         const isPending = dbStatus === 'Pendiente' || (dbStatus || '').toLowerCase() === 'pendiente';
-                        const goldLock = document.getElementById('commercial-gold-overlay-lock');
-                        const promoLock = document.getElementById('commercial-promo-overlay-lock');
-                        const btnPromote = document.getElementById('btn-promote-property');
-                        
-                        if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
-                            if (goldLock) goldLock.classList.add('hidden');
-                            if (promoLock) promoLock.classList.add('hidden');
-                            if (btnPromote) btnPromote.disabled = false;
-                        } else {
-                            if (goldLock) goldLock.classList.remove('hidden');
-                            if (promoLock) promoLock.classList.remove('hidden');
-                            if (btnPromote) btnPromote.disabled = true;
-                        }
-                        
                         if (isPending) {
                             switchCommercialTab('suscripcion');
                         } else {
@@ -6253,20 +6347,8 @@ async function approvePendingPayment(reqId) {
                         partnerLevelEl.innerText = (dbPlan === 'VIP' || dbPlan === 'Premium') ? (client.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (dbPlan === 'Pro' ? (client.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
                     }
                     
-                    const goldLock = document.getElementById('commercial-gold-overlay-lock');
-                    const promoLock = document.getElementById('commercial-promo-overlay-lock');
-                    const btnPromote = document.getElementById('btn-promote-property');
-                    
-                    if (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') {
-                        if (goldLock) goldLock.classList.add('hidden');
-                        if (promoLock) promoLock.classList.add('hidden');
-                        if (btnPromote) btnPromote.disabled = false;
-                    } else {
-                        if (goldLock) goldLock.classList.remove('hidden');
-                        if (promoLock) promoLock.classList.remove('hidden');
-                        if (btnPromote) btnPromote.disabled = true;
-                    }
-                    
+                    updateLockOverlaysState();
+                    localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
                     syncCommercialPricingGridUI();
                     renderB2bAgentProfile();
                 }
@@ -6549,7 +6631,8 @@ async function authenticateCommercialAgent(event) {
                 email: profile.email,
                 plan: profile.plan,
                 status: profile.status.charAt(0).toUpperCase() + profile.status.slice(1),
-                usdtBalance: parseFloat(profile.usdt_balance)
+                usdtBalance: parseFloat(profile.usdt_balance),
+                role: profile.role || 'agente'
             };
             activeB2bPlan = profile.plan.toLowerCase();
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
@@ -9085,6 +9168,7 @@ async function _syncSupabaseDataInternal() {
                         loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
                         loggedInB2bClient.status = (typeof latestProfile.status === 'string' && latestProfile.status.length > 0) ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
                         loggedInB2bClient.plan = latestProfile.plan || 'Básico';
+                        loggedInB2bClient.role = latestProfile.role || 'agente';
                         activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
                         
                         // Actualizar en el listado local de clientes para mantener consistencia
@@ -9093,8 +9177,10 @@ async function _syncSupabaseDataInternal() {
                             b2bClients[clientIdx].status = loggedInB2bClient.status;
                             b2bClients[clientIdx].plan = loggedInB2bClient.plan;
                             b2bClients[clientIdx].usdtBalance = loggedInB2bClient.usdtBalance;
+                            b2bClients[clientIdx].role = loggedInB2bClient.role;
                         }
                         localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+                        localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
                         
                         // Actualizar interfaces
                         updateSaasMetricsHUD();
@@ -9103,20 +9189,7 @@ async function _syncSupabaseDataInternal() {
                         renderB2bAgentProfile();
                         
                         // Gestionar Overlays de Bloqueo dinámicamente si cambió el estado
-                        const goldLock = document.getElementById('commercial-gold-overlay-lock');
-                        const promoLock = document.getElementById('commercial-promo-overlay-lock');
-                        const btnPromote = document.getElementById('btn-promote-property');
-                        const isPending = (loggedInB2bClient.status || 'pendiente').toLowerCase() === 'pendiente';
-                        
-                        if ((activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending) {
-                            if (goldLock) goldLock.classList.add('hidden');
-                            if (promoLock) promoLock.classList.add('hidden');
-                            if (btnPromote) btnPromote.disabled = false;
-                        } else {
-                            if (goldLock) goldLock.classList.remove('hidden');
-                            if (promoLock) promoLock.classList.remove('hidden');
-                            if (btnPromote) btnPromote.disabled = true;
-                        }
+                        updateLockOverlaysState();
                     } else if (profileErr || !latestProfile) {
                         // Auto-healing: Si el usuario existe localmente en sesión pero no tiene fila en Supabase profiles, la insertamos
                         console.log("Auto-recuperación activa: Auto-creando perfil ausente en Supabase profiles.");
@@ -9344,6 +9417,34 @@ function switchCommercialTab(tabId) {
     if (activeContent) {
         activeContent.classList.remove('hidden');
     }
+
+    // Actualizar Títulos de la app dinámicamente según subpestaña comercial
+    const titleEl = document.getElementById('page-title');
+    const subtitleEl = document.getElementById('page-subtitle');
+    if (titleEl && subtitleEl) {
+        if (tabId === 'portfolio') {
+            titleEl.innerText = "Terminal de Portafolio Patrimonial IA";
+            subtitleEl.innerText = "Simulador avanzado de riqueza, apalancamiento y Libertad Financiera";
+        } else if (tabId === 'home') {
+            titleEl.innerText = "Consola de Gestión Comercial B2B";
+            subtitleEl.innerText = "Panel central de operaciones, facturación SaaS y control criptográfico";
+        } else if (tabId === 'oro') {
+            titleEl.innerText = "Cartera de Oro Digital (XAUt)";
+            subtitleEl.innerText = "Liquidación y retiros contables respaldados por Tether Gold";
+        } else if (tabId === 'propiedades') {
+            titleEl.innerText = "Publicar Propiedades en ValorGT";
+            subtitleEl.innerText = "Cargar nuevos inmuebles al motor de búsqueda inteligente";
+        } else if (tabId === 'propiedades-list') {
+            titleEl.innerText = "Mis Propiedades Publicadas";
+            subtitleEl.innerText = "Gestión del inventario y promoción con Inteligencia Artificial";
+        } else if (tabId === 'suscripcion') {
+            titleEl.innerText = "Suscripciones B2B y Licencia SaaS";
+            subtitleEl.innerText = "Estado de tu plan comercial y carga de comprobantes";
+        } else if (tabId === 'disclaimer') {
+            titleEl.innerText = "Descargo de Responsabilidad y Regulación Legal";
+            subtitleEl.innerText = "Términos del servicio y marco legal de la tasación IA";
+        }
+    }
     
     if (activeBtn) {
         activeBtn.classList.add('active');
@@ -9362,6 +9463,11 @@ function switchCommercialTab(tabId) {
             activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
             activeBtn.style.color = 'var(--cyan)';
             activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+        } else if (tabId === 'portfolio') {
+            activeBtn.style.background = 'rgba(191,90,242,0.05)';
+            activeBtn.style.borderColor = 'rgba(191,90,242,0.4)';
+            activeBtn.style.color = '#bf5af2';
+            activeBtn.style.boxShadow = '0 0 12px rgba(191, 90, 242, 0.12)';
         } else if (tabId === 'suscripcion') {
             activeBtn.style.background = 'rgba(191,90,242,0.05)';
             activeBtn.style.borderColor = 'rgba(191,90,242,0.4)';
@@ -9372,6 +9478,15 @@ function switchCommercialTab(tabId) {
             activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
             activeBtn.style.color = 'var(--cyan)';
             activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+        }
+    }
+
+    if (tabId === 'portfolio') {
+        initPortfolioView();
+        if (portfolioMapInstance) {
+            setTimeout(() => {
+                portfolioMapInstance.invalidateSize();
+            }, 100);
         }
     }
 }
