@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=10.4">
+    <link rel="stylesheet" href="styles.css?v=10.5">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -2752,22 +2752,22 @@
 
                 <!-- MODAL DE PAGO POR TRANSFERENCIA BANCARIA B2B -->
                 <div id="commercial-payment-modal" class="payment-modal-overlay">
-                    <div class="payment-modal-card glassmorphism">
+                    <div class="payment-modal-card glassmorphism" style="padding: 16px 20px; max-height: 94vh;">
                         <div class="modal-card-glow"></div>
                         <button class="modal-close-btn" onclick="closePaymentModal()">&times;</button>
                         
-                        <div class="modal-header-payment">
-                            <i data-lucide="shield-check" class="text-cyan" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(0,240,255,0.5));"></i>
-                            <h3 class="font-mono" style="margin-top: 10px;">Pasarela de Pago Segura (B2B SaaS)</h3>
-                            <p class="font-mono text-muted" style="font-size: 0.6rem; margin-top: 4px; text-transform: uppercase;">Acreditación vía Transferencia Bancaria Directa</p>
+                        <div class="modal-header-payment" style="text-align: center; margin-bottom: 8px;">
+                            <i data-lucide="shield-check" class="text-cyan" style="width: 26px; height: 26px; filter: drop-shadow(0 0 5px rgba(0,240,255,0.5));"></i>
+                            <h3 class="font-mono" style="margin-top: 6px; font-size: 0.95rem;">Pasarela de Pago Segura (B2B SaaS)</h3>
+                            <p class="font-mono text-muted" style="font-size: 0.58rem; margin-top: 2px; text-transform: uppercase;">Acreditación vía Transferencia Bancaria Directa</p>
                         </div>
 
                         <!-- VISTA 1: FORMULARIO DE TRANSFERENCIA -->
                         <div id="payment-view-form">
                             <form id="saas-card-form" class="commercial-form font-mono" onsubmit="processB2bTransferPayment(event)">
-                                <div class="input-group">
-                                    <label for="payment-duration-select">Duración del Plan</label>
-                                    <select id="payment-duration-select" onchange="updateDynamicB2bPaymentTotals()" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 6px; font-size: 0.8rem; color: #fff; width: 100%; outline: none; font-family: var(--font-mono); cursor: pointer;">
+                                <div class="input-group" style="margin-top: 8px;">
+                                    <label for="payment-duration-select" style="font-size: 0.7rem; margin-bottom: 4px; display: block;">Duración del Plan</label>
+                                    <select id="payment-duration-select" onchange="updateDynamicB2bPaymentTotals()" style="padding: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 6px; font-size: 0.75rem; color: #fff; width: 100%; outline: none; font-family: var(--font-mono); cursor: pointer;">
                                         <option value="1">1 Mes (Precio Regular)</option>
                                         <option value="3">3 Meses (Ahorro del 3% de Descuento)</option>
                                         <option value="6">6 Meses (Ahorro del 5% de Descuento)</option>
@@ -2776,80 +2776,80 @@
                                 </div>
 
                                 <!-- Datos de la Cuenta Bancaria (Holográfico y Neón) -->
-                                <div class="bank-details-card font-mono" style="margin-top: 15px; padding: 15px; border: 1px dashed var(--cyan); border-radius: 8px; background: rgba(0,240,255,0.03); text-align: left; position: relative; box-shadow: inset 0 0 10px rgba(0,240,255,0.05);">
-                                    <div style="font-size: 0.6rem; color: var(--cyan); letter-spacing: 1px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; display: flex; align-items: center; gap: 4px;">
-                                        <i data-lucide="landmark" style="width: 12px; height: 12px;"></i> Datos de Transferencia Bancaria
+                                <div class="bank-details-card font-mono" style="margin-top: 8px; padding: 10px 12px; border: 1px dashed var(--cyan); border-radius: 8px; background: rgba(0,240,255,0.03); text-align: left; position: relative; box-shadow: inset 0 0 10px rgba(0,240,255,0.05);">
+                                    <div style="font-size: 0.58rem; color: var(--cyan); letter-spacing: 1px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="landmark" style="width: 11px; height: 11px;"></i> Datos de Transferencia Bancaria
                                     </div>
-                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.72rem;">
+                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.68rem;">
                                         <span style="color: var(--text-muted);">Banco:</span>
                                         <strong style="color: #fff;">BI Industrial</strong>
                                     </div>
-                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.72rem;">
+                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.68rem;">
                                         <span style="color: var(--text-muted);">Tipo Cuenta:</span>
                                         <strong style="color: #fff;">Monetarios Quetzales</strong>
                                     </div>
-                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.72rem;">
+                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.68rem;">
                                         <span style="color: var(--text-muted);">Número de Cuenta:</span>
                                         <strong style="color: var(--cyan); text-shadow: 0 0 5px rgba(0,240,255,0.3);">2700030709</strong>
                                     </div>
-                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.72rem;">
+                                    <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.68rem;">
                                         <span style="color: var(--text-muted);">Nombre de Cuenta:</span>
                                         <strong style="color: #fff;">Toomarket</strong>
                                     </div>
                                     
                                     <!-- Contacto Directo WhatsApp -->
-                                    <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; margin-top: 5px; text-align: center;">
-                                        <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20tengo%20una%20duda%20o%20necesito%20soporte%20sobre%20la%20transferencia%20para%20la%20suscripci%C3%B3n..." target="_blank" style="font-size: 0.65rem; color: #25D366; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: bold; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                                            <i data-lucide="message-square" style="width: 11px; height: 11px;"></i> ¿Dudas o necesitas soporte? WhatsApp: +502 4041-6471
+                                    <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; margin-top: 4px; text-align: center;">
+                                        <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20tengo%20una%20duda%20o%20necesito%20soporte%20sobre%20la%20transferencia%20para%20la%20suscripci%C3%B3n..." target="_blank" style="font-size: 0.62rem; color: #25D366; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: bold; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                                            <i data-lucide="message-square" style="width: 10px; height: 10px;"></i> ¿Dudas o necesitas soporte? WhatsApp: +502 4041-6471
                                         </a>
                                     </div>
                                 </div>
 
                                 <!-- Carga del Comprobante -->
-                                <div class="input-group" style="margin-top: 15px;">
-                                    <label style="margin-bottom: 6px; display: block; font-size: 0.7rem; color: #fff;">Cargar Foto del Comprobante de Transferencia</label>
-                                    <div class="receipt-upload-box" id="receipt-upload-wrapper" style="border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 6px; background: rgba(0,0,0,0.3); padding: 18px 15px; text-align: center; cursor: pointer; transition: all 0.3s;" onclick="document.getElementById('payment-receipt-file').click()">
-                                        <i data-lucide="upload-cloud" id="receipt-upload-icon" style="width: 26px; height: 26px; color: var(--text-muted); margin-bottom: 6px; transition: all 0.3s;"></i>
-                                        <p id="receipt-upload-text" style="font-size: 0.65rem; color: var(--text-muted); margin: 0; line-height: 1.4;">Haz clic para seleccionar el comprobante desde tu dispositivo</p>
+                                <div class="input-group" style="margin-top: 8px;">
+                                    <label style="margin-bottom: 4px; display: block; font-size: 0.68rem; color: #fff;">Cargar Foto del Comprobante de Transferencia</label>
+                                    <div class="receipt-upload-box" id="receipt-upload-wrapper" style="border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 6px; background: rgba(0,0,0,0.3); padding: 10px 15px; text-align: center; cursor: pointer; transition: all 0.3s;" onclick="document.getElementById('payment-receipt-file').click()">
+                                        <i data-lucide="upload-cloud" id="receipt-upload-icon" style="width: 22px; height: 22px; color: var(--text-muted); margin-bottom: 4px; transition: all 0.3s;"></i>
+                                        <p id="receipt-upload-text" style="font-size: 0.6rem; color: var(--text-muted); margin: 0; line-height: 1.35;">Haz clic para seleccionar el comprobante desde tu dispositivo</p>
                                         <input type="file" id="payment-receipt-file" accept="image/*" style="display: none;" onchange="handleReceiptFileChange(event)">
                                     </div>
                                 </div>
                                 
-                                <div class="payment-summary font-mono" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px;">
-                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.7rem; color: var(--text-muted);">
+                                <div class="payment-summary font-mono" style="margin-top: 8px; padding: 8px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px;">
+                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.65rem; color: var(--text-muted);">
                                         <span>Concepto:</span>
                                         <span id="payment-concept-label" class="text-purple" style="font-weight: bold;">Suscripción Inmobiliaria Pro</span>
                                     </div>
-                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.7rem; color: var(--text-muted);">
+                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.65rem; color: var(--text-muted);">
                                         <span>Duración seleccionada:</span>
                                         <span id="payment-duration-label" style="color: #fff;">1 Mes</span>
                                     </div>
-                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.7rem; color: var(--text-muted);">
+                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.65rem; color: var(--text-muted);">
                                         <span>Descuento aplicado:</span>
                                         <span id="payment-discount-label" style="color: var(--neon-emerald); font-weight: bold;">0%</span>
                                     </div>
-                                    <div class="summary-line font-bold" style="display: flex; justify-content: space-between; font-size: 0.85rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 8px;">
+                                    <div class="summary-line font-bold" style="display: flex; justify-content: space-between; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px; margin-top: 5px;">
                                         <span>Total a Transferir:</span>
                                         <span id="payment-total-label" class="text-cyan" style="text-shadow: 0 0 8px rgba(0,240,255,0.3);">Q240.00</span>
                                     </div>
-                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.65rem; color: var(--text-muted);">
+                                    <div class="summary-line" style="display: flex; justify-content: space-between; margin-top: 3px; font-size: 0.6rem; color: var(--text-muted);">
                                         <span>Equivalente en dólares:</span>
                                         <span id="payment-total-usd-label">$31.00 USD</span>
                                     </div>
                                 </div>
 
                                 <!-- Aceptación Obligatoria de Términos y Condiciones -->
-                                <div class="input-group font-sans" style="margin-top: 15px; display: flex; align-items: flex-start; gap: 8px; text-align: left;">
-                                    <label class="checkbox-container" style="margin: 0; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; user-select: none; width: 100%;">
-                                        <input type="checkbox" id="payment-accept-disclaimer" required style="margin-top: 3px;">
-                                        <span class="checkmark border-white" style="border-color: rgba(0, 240, 255, 0.4); flex-shrink: 0; margin-top: 2px;"></span>
-                                        <span class="label-text" style="font-size: 0.68rem; color: var(--text-secondary); line-height: 1.45;">
-                                            He leído, comprendido y acepto íntegramente el <a href="#" onclick="closePaymentModal(); switchCommercialTab('disclaimer'); return false;" style="color: var(--cyan); text-decoration: underline; font-weight: bold;">Disclaimer Legal y Metodológico</a> de la plataforma ValorGT®.
+                                <div class="input-group font-sans" style="margin-top: 8px; display: flex; align-items: flex-start; gap: 6px; text-align: left;">
+                                    <label class="checkbox-container" style="margin: 0; display: flex; align-items: flex-start; gap: 6px; cursor: pointer; user-select: none; width: 100%;">
+                                        <input type="checkbox" id="payment-accept-disclaimer" required style="margin-top: 2px;">
+                                        <span class="checkmark border-white" style="border-color: rgba(0, 240, 255, 0.4); flex-shrink: 0; margin-top: 1px;"></span>
+                                        <span class="label-text" style="font-size: 0.58rem; color: var(--text-secondary); line-height: 1.35; display: inline-block; vertical-align: middle;">
+                                            He leído, comprendido y acepto íntegramente el <a href="#" onclick="closePaymentModal(); switchCommercialTab('disclaimer'); return false;" style="color: var(--cyan); text-decoration: underline; font-weight: bold;">Disclaimer Legal y Metodológico</a> de ValorGT®.
                                         </span>
                                     </label>
                                 </div>
 
-                                <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 15px; font-weight: bold;">
+                                <button type="submit" class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 8px; font-weight: bold; padding: 10px; font-size: 0.75rem;">
                                     <i data-lucide="shield-check"></i> ENVIAR COMPROBANTE DE COMPRA
                                 </button>
                             </form>
@@ -4125,9 +4125,9 @@
         </div>
     </div>
 
-    <script src="mockData.js?v=10.4"></script>
-    <script src="charts.js?v=10.4"></script>
-    <script src="map.js?v=10.4"></script>
-    <script src="app.js?v=10.4"></script>
+    <script src="mockData.js?v=10.5"></script>
+    <script src="charts.js?v=10.5"></script>
+    <script src="map.js?v=10.5"></script>
+    <script src="app.js?v=10.5"></script>
 </body>
 </html>
