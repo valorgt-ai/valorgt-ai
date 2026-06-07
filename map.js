@@ -285,8 +285,8 @@ function drawRadarNodes() {
                 <span class="popup-val" style="color: var(--text-muted); font-size: 0.8rem; text-align: right;">${lastUpdatedText}</span>
             </div>
             <div style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; text-align: center;">
-                <a href="https://earth.google.com/web/@${zone.lat},${zone.lng},1500a,35y,0h,0t,0r" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
-                    <i data-lucide="globe" style="width: 12px; height: 12px;"></i> Ver en Google Earth
+                <a href="https://www.google.com/maps/?q=${zone.lat},${zone.lng}&t=k" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                    <i data-lucide="map" style="width: 12px; height: 12px;"></i> Vista Satelital
                 </a>
             </div>
         `;
@@ -394,9 +394,9 @@ function showZoneTelemetry(zoneKey, centerMap = false) {
     document.getElementById('gps-input-lat').value = zone.lat.toFixed(4);
     document.getElementById('gps-input-lng').value = zone.lng.toFixed(4);
 
-    const earthBtn = document.getElementById('btn-open-google-earth');
+    const earthBtn = document.getElementById('btn-open-satellite-view');
     if (earthBtn) {
-        earthBtn.href = `https://earth.google.com/web/@${zone.lat},${zone.lng},1500a,35y,0h,0t,0r`;
+        earthBtn.href = `https://www.google.com/maps/?q=${zone.lat},${zone.lng}&t=k`;
     }
 
     // Centrar suavemente si fue explícito
@@ -629,9 +629,9 @@ function locateCoordinates(event) {
     • Densidad de listados activos y demanda en el retículo (<strong>${nearbyAdsDensity} anuncios</strong>).`;
 
     // Actualizar enlace de Google Earth para la baliza escaneada
-    const earthBtn = document.getElementById('btn-open-google-earth');
+    const earthBtn = document.getElementById('btn-open-satellite-view');
     if (earthBtn) {
-        earthBtn.href = `https://earth.google.com/web/@${lat},${lng},1500a,35y,0h,0t,0r`;
+        earthBtn.href = `https://www.google.com/maps/?q=${lat},${lng}&t=k`;
     }
 
     // Popup interactivo de la baliza escaneada
@@ -657,8 +657,8 @@ function locateCoordinates(event) {
             <span class="popup-val text-purple" style="color: #bf5af2; font-weight: 900; text-align: right;">${finalScore}/100</span>
         </div>
         <div style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; text-align: center;">
-            <a href="https://earth.google.com/web/@${lat},${lng},1500a,35y,0h,0t,0r" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
-                <i data-lucide="globe" style="width: 12px; height: 12px;"></i> Ver en Google Earth
+            <a href="https://www.google.com/maps/?q=${lat},${lng}&t=k" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                <i data-lucide="map" style="width: 12px; height: 12px;"></i> Vista Satelital
             </a>
         </div>
     `).openPopup();
@@ -736,6 +736,11 @@ function drawMalls() {
                 </div>
                 <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
                     * ${mall.details}
+                </div>
+                <div style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; text-align: center;">
+                    <a href="https://www.google.com/maps/?q=${mall.lat},${mall.lng}&t=k" target="_blank" style="color: #bf5af2; text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                        <i data-lucide="map" style="width: 12px; height: 12px;"></i> Vista Satelital
+                    </a>
                 </div>
             </div>
         `;
@@ -831,6 +836,11 @@ function drawLandmarks() {
                 <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
                     * ${landmark.details}
                 </div>
+                <div style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; text-align: center;">
+                    <a href="https://www.google.com/maps/?q=${landmark.lat},${landmark.lng}&t=k" target="_blank" style="color: ${themeColor}; text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                        <i data-lucide="map" style="width: 12px; height: 12px;"></i> Vista Satelital
+                    </a>
+                </div>
             </div>
         `;
 
@@ -922,8 +932,8 @@ function drawAgentProperties() {
                             </div>
                         </div>
                         <div style="margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 4px; text-align: center;">
-                            <a href="https://earth.google.com/web/@${prop.lat},${prop.lng},1500a,35y,0h,0t,0r" target="_blank" style="color: ${badgeStyleColor}; text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
-                                <i data-lucide="globe" style="width: 12px; height: 12px;"></i> Ver en Google Earth
+                            <a href="https://www.google.com/maps/?q=${prop.lat},${prop.lng}&t=k" target="_blank" style="color: ${badgeStyleColor}; text-decoration: none; font-size: 0.72rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;">
+                                <i data-lucide="map" style="width: 12px; height: 12px;"></i> Vista Satelital
                             </a>
                         </div>
                     `;
