@@ -4561,27 +4561,44 @@ function updateSaasMetricsHUD() {
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     let billingGTQ = 0;
+    let billingUSD = 0;
     let impressions = 0;
     let clicks = 0;
+    let planFriendlyName = 'Ninguno';
 
     if (loggedInB2bClient) {
         const email = (loggedInB2bClient.email || '').toLowerCase();
         const isPending = loggedInB2bClient.status && (loggedInB2bClient.status.toLowerCase() === 'pendiente');
+        const isInvestor = (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
 
-        // 1. Determinar facturación SaaS real en Quetzales (moneda dominante) según plan contratado y estado de pago
+        // 1. Determinar facturación SaaS real exacta según plan contratado y estado de pago
         if (!isPending) {
             const plan = (loggedInB2bClient.plan || '').toLowerCase();
             if (plan === 'básico' || plan === 'basico') {
                 billingGTQ = 140;
+                billingUSD = 18;
+                planFriendlyName = 'Agente Individual';
             } else if (plan === 'pro') {
                 billingGTQ = 240;
+                billingUSD = 31;
+                planFriendlyName = 'Inmobiliaria Pro';
             } else if (plan === 'premium') {
                 billingGTQ = 340;
+                billingUSD = 43.70;
+                planFriendlyName = 'Inversionista Premium';
             } else if (plan === 'vip') {
                 billingGTQ = 640;
+                billingUSD = 82;
+                planFriendlyName = 'Inmobiliaria Premium';
+            } else {
+                billingGTQ = 0;
+                billingUSD = 0;
+                planFriendlyName = 'Plan Personalizado';
             }
         } else {
             billingGTQ = 0;
+            billingUSD = 0;
+            planFriendlyName = 'Pendiente de Pago';
         }
 
         // 2. Determinar base de impresiones e históricos de clics (para cuentas demo y nuevos agentes)
@@ -4611,9 +4628,25 @@ function updateSaasMetricsHUD() {
         // Sincronizar clicks con variable de estado por si se incrementa externamente
         saasClientClicks = clicks;
         saasImpressionsCount = impressions;
+
+        // Actualizar subtítulos dinámicos de las tarjetas KPI Premium
+        const billingSubEl = document.getElementById('saas-billing-sub-card');
+        if (billingSubEl) {
+            billingSubEl.innerText = isPending ? `🛑 PENDIENTE` : `💳 PLAN: ${planFriendlyName.toUpperCase()}`;
+        }
+
+        const impressionsSubEl = document.getElementById('saas-impressions-sub-card');
+        if (impressionsSubEl) {
+            impressionsSubEl.innerText = isPending ? `🛑 SERVICIO SUSPENDIDO` : `📈 TRÁFICO HABILITADO`;
+        }
+
+        const listingsSubEl = document.getElementById('saas-listings-sub-card');
+        if (listingsSubEl) {
+            listingsSubEl.innerText = isInvestor ? `💼 ACTIVOS EN CARTERA` : `🏠 INVENTARIO LIVE`;
+        }
     }
 
-    const billingConverted = activeCurrency === 'GTQ' ? billingGTQ : (billingGTQ / exchangeRate);
+    const billingConverted = activeCurrency === 'GTQ' ? billingGTQ : billingUSD;
     const billingFormatted = `${currencySym}${formatNumber(billingConverted.toFixed(2))}`;
 
     const saasBillingEl = document.getElementById('saas-billing-val');
