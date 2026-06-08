@@ -10537,6 +10537,7 @@ async function executeB2bWithdrawal(event) {
         amountXAUt: amount,
         feeGTQ: feeGTQ,
         netGTQ: netGTQ,
+        xautPrice: xautPrice,
         status: 'Pendiente'
     };
     
@@ -10592,6 +10593,7 @@ async function fetchB2bTransactionsHistory() {
             amountXAUt: -Math.abs(w.amountXAUt),
             feeGTQ: w.feeGTQ,
             netGTQ: w.netGTQ,
+            xautPrice: w.xautPrice || (w.amountXAUt ? Math.abs((w.netGTQ / 0.96) / (w.amountXAUt * exchangeRate)) : 2380.00),
             status: w.status
         });
     });
@@ -10620,6 +10622,7 @@ async function fetchB2bTransactionsHistory() {
                             amountXAUt: parseFloat(h.monto_xaut),
                             feeGTQ: 0,
                             netGTQ: valConv,
+                            xautPrice: parseFloat(h.precio_pivote_xaut) || 2380.00,
                             status: 'Aprobado'
                         });
                     }
@@ -10651,6 +10654,7 @@ async function fetchB2bTransactionsHistory() {
                         amountXAUt: -parseFloat(t.amount),
                         feeGTQ: 0,
                         netGTQ: valConv,
+                        xautPrice: price,
                         status: 'Aprobado'
                     });
                 });
@@ -10680,6 +10684,7 @@ async function fetchB2bTransactionsHistory() {
                         amountXAUt: parseFloat(t.amount),
                         feeGTQ: 0,
                         netGTQ: valConv,
+                        xautPrice: price,
                         status: 'Aprobado'
                     });
                 });
@@ -10701,6 +10706,7 @@ async function fetchB2bTransactionsHistory() {
                 amountXAUt: t.amountXAUt,
                 feeGTQ: 0,
                 netGTQ: t.amountGTQ,
+                xautPrice: t.xautPrice || 2380.00,
                 status: 'Aprobado'
             });
         });
@@ -10717,6 +10723,7 @@ async function fetchB2bTransactionsHistory() {
                 amountXAUt: a.amountXAUt,
                 feeGTQ: 0,
                 netGTQ: a.amountGTQ,
+                xautPrice: a.xautPrice || 2380.00,
                 status: 'Aprobado'
             });
         });
@@ -10778,6 +10785,10 @@ async function renderB2bWithdrawalsTable() {
         const typeLabel = w.type === 'withdrawal' ? 'RETIRO' : (w.type === 'airdrop' ? 'INGRESO' : (w.type === 'transfer_sent' ? 'ENVÍO P2P' : 'RECEP P2P'));
         const typeStyle = w.type === 'withdrawal' || w.type === 'transfer_sent' ? 'color: #ff9500;' : 'color: #00d2ff;';
 
+        const priceVal = w.xautPrice || 2380.00;
+        const priceConv = priceVal * (activeCurrency === 'GTQ' ? exchangeRate : 1);
+        const priceText = `${currencySym}${formatNumber(priceConv.toFixed(2))}`;
+
         row.innerHTML = `
             <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
                 <strong>${w.date}</strong><br>
@@ -10790,6 +10801,9 @@ async function renderB2bWithdrawalsTable() {
             </td>
             <td style="padding: 10px 5px; text-align: right; vertical-align: middle; font-weight: bold; font-size: 0.82rem; ${amountStyle}" class="font-mono">
                 ${amountPrefix}${w.amountXAUt.toFixed(4)} XAUt
+            </td>
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: #00d2ff; font-weight: bold; font-size: 0.82rem;" class="font-mono">
+                ${priceText}
             </td>
             <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: var(--red); font-size: 0.82rem;" class="font-mono">
                 ${feeText}
