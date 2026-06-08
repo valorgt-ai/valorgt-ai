@@ -10808,7 +10808,165 @@ function renderB2bPricingGrid() {
     grid.innerHTML = ''; // Limpiar
 
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+    
+    // Determinar perfil de planes a mostrar basado en el rol del usuario logueado
+    const isInvestor = loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
+    const profileType = isInvestor ? 'inversionista' : 'agente';
+
+    let plans = [];
+    if (profileType === 'agente') {
+        plans = [
+            {
+                key: 'basico',
+                badge: 'INDIVIDUAL',
+                badgeColor: 'var(--neon-blue)',
+                badgeBg: 'rgba(10, 132, 255, 0.15)',
+                badgeBorder: 'rgba(10, 132, 255, 0.3)',
+                title: 'Agente Individual',
+                subtitle: 'Ideal para agentes pequeños y tasadores autónomos.',
+                priceUSD: 18,
+                priceGTQ: 140,
+                features: [
+                    { text: '20 Propiedades en Catálogo', active: true },
+                    { text: 'Redes Neuronales Predictivas', active: true },
+                    { text: 'Sello de Verificación Básica', active: true },
+                    { text: 'Acceso a Radar de Calor', active: true },
+                    { text: 'Terminal de Inversión (Demo)', active: false },
+                    { text: 'Portafolio Patrimonial IA (Demo)', active: false },
+                    { text: 'Descuento en Pautas Publicitarias', active: false }
+                ]
+            },
+            {
+                key: 'pro',
+                badge: 'PRO',
+                badgeColor: 'var(--cyan)',
+                badgeBg: 'rgba(0, 240, 255, 0.1)',
+                badgeBorder: 'rgba(0, 240, 255, 0.3)',
+                title: 'Inmobiliaria Pro',
+                subtitle: 'Perfecto para agencias en expansión y brokers activos.',
+                priceUSD: 31,
+                priceGTQ: 240,
+                recommended: true,
+                features: [
+                    { text: '100 Propiedades en Catálogo', active: true },
+                    { text: 'Redes Neuronales Predictivas', active: true },
+                    { text: 'Logo Propio en Inmuebles', active: true },
+                    { text: 'Acceso Completo a Radar de Calor', active: true },
+                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
+                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
+                    { text: '15% Descuento en Pautas Publicitarias', active: true }
+                ]
+            },
+            {
+                key: 'vip',
+                badge: 'PREMIUM',
+                badgeColor: '#bf5af2',
+                badgeBg: 'rgba(191, 90, 242, 0.15)',
+                badgeBorder: 'rgba(191, 90, 242, 0.3)',
+                title: 'Inmobiliaria Premium',
+                subtitle: 'Operativa ilimitada con carteras de oro digital.',
+                priceUSD: 82,
+                priceGTQ: 640,
+                features: [
+                    { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                    { text: 'Redes Neuronales Predictivas', active: true },
+                    { text: 'Logo Propio y Destacados Premium', active: true },
+                    { text: 'Acceso Completo a Radar de Calor', active: true },
+                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
+                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
+                    { text: '30% Descuento en Pautas Publicitarias', active: true },
+                    { text: 'Cartera de ORO Digital Habilitada', active: true, color: '#ffd700' }
+                ]
+            }
+        ];
+    } else {
+        plans = [
+            {
+                key: 'premium',
+                badge: 'INVERSIONISTA PREMIUM',
+                badgeColor: '#ffd700',
+                badgeBg: 'rgba(255, 215, 0, 0.15)',
+                badgeBorder: 'rgba(255, 215, 0, 0.4)',
+                title: 'Inversionista Premium',
+                subtitle: 'Inteligencia inmobiliaria para detectar oportunidades antes del mercado.',
+                priceUSD: 43.70,
+                priceGTQ: 340,
+                recommended: true,
+                features: [
+                    { text: 'Acceso Tasa Inteligente & Radar de Calor', active: true, color: '#00f0ff' },
+                    { text: 'Terminal de Inversión & Portafolio IA', active: true },
+                    { text: 'Telemetría del Sector - Ciudad de Guatemala', active: true },
+                    { text: 'Comparativa de Rendimiento por Zonas (ROI vs Plusvalía)', active: true },
+                    { text: 'Noticias en Vivo del Mercado en Guatemala', active: true },
+                    { text: 'Portafolio Patrimonial & Asesor IA', active: true },
+                    { text: 'Gestor de Activos Inmobiliarios Avanzado', active: true },
+                    { text: 'Proyector de Riqueza y Amortización', active: true },
+                    { text: 'Cartera de Oro Digital & Participación Directa', active: true, color: '#ffd700' },
+                    { text: 'Módulo de Transferencias, Retiros y Depósitos', active: true },
+                    { text: 'Distribuciones de Oro Digital Habilitadas', active: true }
+                ]
+            }
+        ];
+    }
+
+    plans.forEach(plan => {
+        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
+        const priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        
+        const card = document.createElement('div');
+        card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
+        if (plan.recommended) {
+            card.style.position = 'relative';
+        }
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.justifyContent = 'space-between';
+        card.style.padding = '20px';
+        card.style.boxSizing = 'border-box';
+        card.style.height = '100%';
+
+        let featuresHtml = '';
+        plan.features.forEach(f => {
+            const colorStyle = f.color ? `style="color: ${f.color};"` : '';
+            if (f.active) {
+                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> ${f.text}</li>`;
+            } else {
+                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.5;">${f.text}</span></li>`;
+            }
+        });
+
+        let buttonText = 'Cambiar Plan';
+        if (isUserActivePlan) {
+            buttonText = 'Plan Activo';
+        }
+
+        card.innerHTML = `
+            ${plan.recommended ? '<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">RECOMENDADO</div>' : ''}
+            <div>
+                <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
+                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
+                </div>
+                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 22px;">
+                    <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
+                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
+                    <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                </div>
+                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
+                    ${featuresHtml}
+                </ul>
+            </div>
+            <button class="btn-plan-action ${isUserActivePlan ? 'active-btn' : ''}" id="btn-plan-${plan.key}" onclick="openPlanPayment('${plan.key}')" ${isUserActivePlan ? 'style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled' : ''}>${buttonText}</button>
+        `;
+        grid.appendChild(card);
+    });
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
 function switchPublicPlansProfile(profile) {
     activePlansProfile = profile;
     
