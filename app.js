@@ -48,6 +48,21 @@ const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
 if (savedB2bClient) {
     try {
         loggedInB2bClient = JSON.parse(savedB2bClient);
+        // Sanitizar sesión activa del cliente demo
+        if (loggedInB2bClient && loggedInB2bClient.email) {
+            const emailLower = loggedInB2bClient.email.toLowerCase();
+            if (emailLower === 'roberto@inversionesrv.com') {
+                loggedInB2bClient.plan = 'Premium';
+                loggedInB2bClient.role = 'inversionista';
+            } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+                loggedInB2bClient.plan = 'VIP';
+                loggedInB2bClient.role = 'agente';
+            } else if (emailLower === 'sofia@alianzagt.com') {
+                loggedInB2bClient.plan = 'Básico';
+                loggedInB2bClient.role = 'agente';
+            }
+            localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+        }
         isCommercialAuthenticated = true;
         activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
     } catch (e) {
@@ -64,8 +79,21 @@ let b2bClients = JSON.parse(localStorage.getItem('b2b_clients_local')) || [
     { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente', whatsapp: '50239482049', logo: '' }
 ];
 
-// Asegurar IDs para b2bClients si no los tienen
+// Asegurar IDs y sanitizar planes/roles para cuentas demo (para evitar datos obsoletos en localStorage)
 b2bClients.forEach((client, idx) => {
+    if (client.email) {
+        const emailLower = client.email.toLowerCase();
+        if (emailLower === 'roberto@inversionesrv.com') {
+            client.plan = 'Premium';
+            client.role = 'inversionista';
+        } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+            client.plan = 'VIP';
+            client.role = 'agente';
+        } else if (emailLower === 'sofia@alianzagt.com') {
+            client.plan = 'Básico';
+            client.role = 'agente';
+        }
+    }
     if (!client.id) {
         if (client.email === 'ana@estevezinmobiliaria.com') client.id = 'demo-ana-estevez';
         else if (client.email === 'roberto@inversionesrv.com') client.id = 'demo-roberto-valenzuela';
