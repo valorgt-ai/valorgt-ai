@@ -4408,6 +4408,12 @@ function initCommercialView() {
                     else if (req.planKey === 'vip') dbPlan = 'VIP';
                     else if (req.planKey === 'premium') dbPlan = 'Premium';
 
+                    // Forzar plan Premium para inversionistas
+                    const isInvestor = loggedInB2bClient && ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista');
+                    if (isInvestor) {
+                        dbPlan = 'Premium';
+                    }
+
                     const updatePayload = { status: 'activo' };
                     if (isSub) {
                         updatePayload.plan = dbPlan;
@@ -4434,7 +4440,7 @@ function initCommercialView() {
                                 loggedInB2bClient.status = 'Activo';
                                 if (isSub) {
                                     loggedInB2bClient.plan = dbPlan;
-                                    activeB2bPlan = req.planKey;
+                                    activeB2bPlan = dbPlan.toLowerCase();
                                 }
 
                                 localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
@@ -4472,6 +4478,12 @@ function initCommercialView() {
                     const roleLower = dbRole.toLowerCase();
                     if (roleLower === 'inversionista') {
                         dbPlan = 'Premium';
+                        // Auto-correct DB plan for investor if it is wrong (using authenticated client RLS bypass)
+                        if (data.plan !== 'Premium') {
+                            supabaseClient.from('profiles').update({ plan: 'Premium' }).eq('id', loggedInB2bClient.id)
+                            .then(() => console.log("⚡ [Auto-Heal] Updated investor plan to Premium in remote database."))
+                            .catch(err => console.error("⚠️ [Auto-Heal] Failed to update investor plan in remote database:", err));
+                        }
                     } else if (emailLower === 'ana@estevezinmobiliaria.com') {
                         dbPlan = 'VIP';
                         dbRole = 'agente';
@@ -4694,6 +4706,12 @@ function updateSaasMetricsHUD() {
     let planFriendlyName = 'Ninguno';
 
     if (loggedInB2bClient) {
+        // Enforce Premium plan for all inversionistas
+        if ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') {
+            loggedInB2bClient.plan = 'Premium';
+            activeB2bPlan = 'premium';
+        }
+
         const email = (loggedInB2bClient.email || '').toLowerCase();
         const isPending = loggedInB2bClient.status && (loggedInB2bClient.status.toLowerCase() === 'pendiente');
         const isInvestor = (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
@@ -5960,7 +5978,7 @@ function updateB2bSubscriptionPendingBanner() {
                     Tu cuenta ha sido creada en estado Pendiente. Para activar el acceso completo, por favor realiza la transferencia bancaria y sube tu comprobante de depósito.
                 </p>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="openPlanPayment('${activeB2bPlan || 'pro'}')" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--cyan) 0%, #0066ff 100%); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(0,240,255,0.25);">
+                    <button onclick="openPlanPayment('${((loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista') ? 'premium' : (activeB2bPlan || 'pro'))}')" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--cyan) 0%, #0066ff 100%); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(0,240,255,0.25);">
                         <i data-lucide="upload" style="width: 12px; height: 12px;"></i> Subir Comprobante de Pago
                     </button>
                     <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20ayuda%20con%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text-secondary); text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s;">
@@ -6610,16 +6628,20 @@ async function approvePendingPayment(reqId) {
         if (client) {
             client.status = 'Activo';
             if (isSub) {
-                client.plan = dbPlan;
+                if ((client.role || '').toLowerCase() === 'inversionista') {
+                    client.plan = 'Premium';
+                } else {
+                    client.plan = dbPlan;
+                }
                 
                 if (loggedInB2bClient && loggedInB2bClient.id === client.id) {
-                    activeB2bPlan = planKey;
-                    loggedInB2bClient.plan = dbPlan;
+                    activeB2bPlan = client.plan.toLowerCase();
+                    loggedInB2bClient.plan = client.plan;
                     loggedInB2bClient.status = 'Activo';
                     
                     const partnerLevelEl = document.getElementById('commercial-partner-level');
                     if (partnerLevelEl) {
-                        partnerLevelEl.innerText = (dbPlan === 'VIP' || dbPlan === 'Premium') ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (dbPlan === 'Pro' ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+                        partnerLevelEl.innerText = (client.plan === 'VIP' || client.plan === 'Premium') ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (client.plan === 'Pro' ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
                     }
                     
                     updateLockOverlaysState();
@@ -6636,7 +6658,7 @@ async function approvePendingPayment(reqId) {
             try {
                 const updatePayload = { status: 'activo' };
                 if (isSub) {
-                    updatePayload.plan = dbPlan;
+                    updatePayload.plan = (client && (client.role || '').toLowerCase() === 'inversionista') ? 'Premium' : dbPlan;
                 }
                 
                 supabaseClient.from('profiles').update(updatePayload).eq('id', req.clientId)
@@ -6903,6 +6925,13 @@ async function authenticateCommercialAgent(event) {
                 if (roleLower === 'inversionista') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
+                    
+                    // Auto-healing update on login using authenticated user RLS bypass
+                    if (isSupabaseActive && supabaseClient && profileData.plan !== 'Premium') {
+                        supabaseClient.from('profiles').update({ plan: 'Premium' }).eq('id', profile.id)
+                        .then(() => console.log("⚡ [Auto-Heal] Corrected investor plan in database to Premium"))
+                        .catch(err => console.warn("⚠️ [Auto-Heal] Failed to correct investor plan in database:", err));
+                    }
                 } else if (emailLower === 'ana@estevezinmobiliaria.com') {
                     profile.plan = 'VIP';
                     profile.role = 'agente';
@@ -6977,6 +7006,9 @@ async function authenticateCommercialAgent(event) {
         // Sincronizar plan activo del B2B y guardar sesión
         if (client) {
             loggedInB2bClient = client;
+            if ((client.role || '').toLowerCase() === 'inversionista') {
+                client.plan = 'Premium';
+            }
             activeB2bPlan = (client.plan || 'pro').toLowerCase();
             const partnerLevelEl = document.getElementById('commercial-partner-level');
             if (partnerLevelEl) {
@@ -7128,7 +7160,10 @@ async function handleRegistrationFormSubmit(event) {
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     const planSelect = document.getElementById('com-signup-plan');
-    const selectedPlanKey = planSelect ? planSelect.value : 'pro'; // basico | pro | vip
+    let selectedPlanKey = planSelect ? planSelect.value : 'pro'; // basico | pro | vip
+    if (role === 'inversionista') {
+        selectedPlanKey = 'premium';
+    }
     const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : (selectedPlanKey === 'premium' ? 'Premium' : 'Básico'));
 
     const newClient = {
@@ -7358,13 +7393,17 @@ async function completeSignupSubscriptionTransaction() {
     document.getElementById('signup-receipt-amount-val').innerText = `${currencySym}${formatNumber(amountVal.toFixed(2))}`;
 
     // 1. Agregar nuevo cliente a la lista b2bClients
+    const isInvestorRole = (pendingSignupUser.role || '').toLowerCase() === 'inversionista';
+    const clientPlanKey = isInvestorRole ? 'premium' : selectedSignupPlanKey;
+    const clientPlanName = isInvestorRole ? 'Premium' : (clientPlanKey.charAt(0).toUpperCase() + clientPlanKey.slice(1));
+
     const newClient = {
         name: pendingSignupUser.name,
         company: pendingSignupUser.company,
         nit: pendingSignupUser.nit,
         phone: pendingSignupUser.phone,
         email: pendingSignupUser.email,
-        plan: selectedSignupPlanKey.charAt(0).toUpperCase() + selectedSignupPlanKey.slice(1),
+        plan: clientPlanName,
         status: 'Activo',
         password: pendingSignupUser.pass,
         usdtBalance: 0.00, // Inicializado en cero
@@ -7425,7 +7464,7 @@ async function completeSignupSubscriptionTransaction() {
     // 2. Establecer variables globales comerciales y sesión activa
     isCommercialAuthenticated = true;
     loggedInB2bClient = newClient;
-    activeB2bPlan = selectedSignupPlanKey;
+    activeB2bPlan = clientPlanKey;
     saasBillingAmountUSD += selectedSignupPlanPrice;
 
     // Actualizar insignias de socio
