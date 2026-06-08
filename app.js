@@ -317,10 +317,37 @@ function saveLocalPropertiesToStorage() {
         console.warn("⚠️ No se pudo guardar el inventario local en localStorage (límite de cuota excedido por fotos Base64):", storageErr);
     }
 }
-let b2bWithdrawals = [
-    { ref: 'WTH-984021', date: '2026-05-25 09:12', bank: 'Banco Industrial', account: '••••4820', amountXAUt: 0.0450, feeGTQ: 32.20, netGTQ: 772.80, status: 'Aprobado' },
-    { ref: 'WTH-304910', date: '2026-05-28 10:15', bank: 'G&T Continental', account: '••••8953', amountXAUt: 0.0200, feeGTQ: 14.30, netGTQ: 343.30, status: 'Pendiente' }
-];
+let b2bWithdrawals = [];
+
+function loadUserWithdrawals(email) {
+    if (!email) {
+        b2bWithdrawals = [];
+        return;
+    }
+    const emailLower = email.toLowerCase();
+    const storageKey = `valorgt_withdrawals_${emailLower}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+        try {
+            b2bWithdrawals = JSON.parse(stored);
+        } catch (e) {
+            console.error("Error al parsear retiros de localStorage:", e);
+            b2bWithdrawals = [];
+        }
+    } else {
+        // Cargar registros demo por defecto únicamente para las cuentas demo
+        const demoEmails = ['agente@valorgt.com', 'ana@estevezinmobiliaria.com', 'roberto@inversionesrv.com', 'sofia@alianzagt.com'];
+        if (demoEmails.includes(emailLower)) {
+            b2bWithdrawals = [
+                { ref: 'WTH-984021', date: '2026-05-25 09:12', bank: 'Banco Industrial', account: '••••4820', amountXAUt: 0.0450, feeGTQ: 32.20, netGTQ: 772.80, status: 'Aprobado' },
+                { ref: 'WTH-304910', date: '2026-05-28 10:15', bank: 'G&T Continental', account: '••••8953', amountXAUt: 0.0200, feeGTQ: 14.30, netGTQ: 343.30, status: 'Pendiente' }
+            ];
+            localStorage.setItem(storageKey, JSON.stringify(b2bWithdrawals));
+        } else {
+            b2bWithdrawals = [];
+        }
+    }
+}
 let pendingPaymentType = null; // 'subscription' | 'ad'
 let pendingPaymentTarget = null; // 'basico' | 'pro' | 'vip' o un objeto { propertyId, zone }
 let uploadedBase64Image = ''; // Almacenará la foto local subida en Base64
@@ -4266,6 +4293,13 @@ function initCommercialView() {
     
     // Cargar el portafolio del usuario activo (o vacío si es la primera vez)
     loadUserPortfolio();
+    
+    // Cargar historial de retiros bancarios del usuario activo
+    if (loggedInB2bClient) {
+        loadUserWithdrawals(loggedInB2bClient.email);
+    } else {
+        b2bWithdrawals = [];
+    }
     
     const b2bHeader = document.getElementById('commercial-header-hud');
     if (b2bHeader) b2bHeader.style.display = 'flex';
@@ -9747,6 +9781,9 @@ async function syncB2bClientsFromSupabase() {
                 };
             });
             
+            // Persistir localmente para mantener la caché del navegador actualizada
+            localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+            
             // Re-renderizar de inmediato
             renderAdminDashboard();
             renderAdminAirdropComponents();
@@ -10424,7 +10461,8 @@ async function executeB2bWithdrawal(event) {
         try {
             // Invocar el RPC extraer_oro seguro para deducir saldo e insertar historial airdrop como canje
             const { error } = await supabaseClient.rpc('extraer_oro', {
-                p_user_email: loggedInB2bClient.email,
+                p_usuario_ids: [loggedInB2bClient.id],
+                p_monto_usd_por_usuario: amount * xautPrice,
                 p_monto_xaut_por_usuario: amount,
                 p_precio_pivote: xautPrice
             });
@@ -10457,6 +10495,11 @@ async function executeB2bWithdrawal(event) {
     };
     
     b2bWithdrawals.unshift(newWithdrawal);
+    
+    // Guardar historial de retiros local persistente para el usuario
+    if (loggedInB2bClient && loggedInB2bClient.email) {
+        localStorage.setItem(`valorgt_withdrawals_${loggedInB2bClient.email.toLowerCase()}`, JSON.stringify(b2bWithdrawals));
+    }
     
     // Registrar en logs del administrador
     if (typeof appendAdminLog === 'function') {
