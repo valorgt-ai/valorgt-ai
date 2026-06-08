@@ -10786,8 +10786,7 @@ async function renderB2bWithdrawalsTable() {
         const typeStyle = w.type === 'withdrawal' || w.type === 'transfer_sent' ? 'color: #ff9500;' : 'color: #00d2ff;';
 
         const priceVal = w.xautPrice || 2380.00;
-        const priceConv = priceVal * (activeCurrency === 'GTQ' ? exchangeRate : 1);
-        const priceText = `${currencySym}${formatNumber(priceConv.toFixed(2))}`;
+        const priceText = `$${formatNumber(priceVal.toFixed(2))}`;
 
         row.innerHTML = `
             <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
