@@ -1124,40 +1124,40 @@ const MALLS_DATABASE = [
     {
         name: "Oakland Mall",
         zone: "Zona 10",
-        lat: 14.5975,
-        lng: -90.5065,
+        lat: 14.5980,
+        lng: -90.5068,
         plusvaliaImpact: "Ancla de alta gama. Eleva el valor de reventa en +15% para apartamentos y oficinas corporativas en un radio de 1.5 km, traccionando la consolidación de la Zona Viva.",
         details: "Centro comercial insignia de Spectrum con marcas globales exclusivas y áreas gastronómicas premium."
     },
     {
         name: "Ciudad Cayalá",
         zone: "Zona 16",
-        lat: 14.6120,
-        lng: -90.4705,
+        lat: 14.6100,
+        lng: -90.4855,
         plusvaliaImpact: "Mega-desarrollo urbano. Elevó el precio por metro cuadrado residencial en Zona 16 de $900 USD a más de $1,800 USD en menos de una década, siendo el principal motor especulativo de la zona.",
         details: "Ciudad planificada neourbanística con plazas, comercios de lujo, cines y áreas residenciales integradas."
     },
     {
         name: "Pradera Concepción",
         zone: "CAES",
-        lat: 14.5422,
-        lng: -90.4285,
+        lat: 14.5522,
+        lng: -90.4531,
         plusvaliaImpact: "Eje suburbano primario. Consolida la demanda habitacional de CAES y Fraijanes, incrementando el interés comercial y mitigando la necesidad de movilización diaria a la capital.",
         details: "Complejo comercial de gran escala que sirve como hub de conveniencia e infraestructura para el sector oriente."
     },
     {
         name: "Miraflores",
         zone: "Zona 11",
-        lat: 14.6212,
-        lng: -90.5495,
+        lat: 14.6214,
+        lng: -90.5528,
         plusvaliaImpact: "Eje de desarrollo Roosevelt. Catalizador de revalorización en Zona 11 y cercanías de Mixco. Impulsa la transición de industria horizontal antigua a macro-desarrollos verticales densos.",
         details: "Uno de los centros comerciales más visitados del país, conectado con el museo de arqueología Miraflores."
     },
     {
         name: "Naranjo Mall",
         zone: "Mixco",
-        lat: 14.6415,
-        lng: -90.5665,
+        lat: 14.6542,
+        lng: -90.5394,
         plusvaliaImpact: "Ancla de crecimiento norte. Detona el desarrollo inmobiliario de clase media-alta en Condado Naranjo y sectores de Mixco, elevando el valor del m² urbanizable en un +22% en 5 años.",
         details: "Punto de encuentro comercial e infraestructura vial dedicada para el área residencial planificada del Naranjo."
     },
@@ -1176,8 +1176,8 @@ const LANDMARKS_DATABASE = [
         name: "Aeropuerto Internacional La Aurora",
         type: "airport",
         zone: "Zona 13",
-        lat: 14.5828,
-        lng: -90.5280,
+        lat: 14.5829,
+        lng: -90.5275,
         plusvaliaImpact: "Nodo logístico y comercial de Guatemala. Su proximidad genera una demanda constante de rentas vacacionales y corporativas de corta estancia (Airbnb) en zonas 9, 10 y 13. Adicionalmente, el cono de aproximación impone regulaciones estrictas de altura constructiva vertical.",
         details: "Principal terminal aérea de entrada al país, conectando a Guatemala con el tráfico global de pasajeros."
     },
@@ -1185,8 +1185,8 @@ const LANDMARKS_DATABASE = [
         name: "Campus Central USAC",
         type: "university",
         zone: "Zona 12",
-        lat: 14.5885,
-        lng: -90.5515,
+        lat: 14.5880,
+        lng: -90.5540,
         plusvaliaImpact: "Fuerza motriz estudiantil. Genera una densa demanda de alquileres económicos y de coste medio, pensiones y servicios en Zonas 12 y 11. Dinamiza intensamente el comercio en el eje de la Calzada Aguilar Batres.",
         details: "Única universidad estatal pública del país, centro de la vida académica de miles de estudiantes guatemaltecos."
     },
@@ -1194,8 +1194,8 @@ const LANDMARKS_DATABASE = [
         name: "Campus Vista Hermosa (Valle & Landívar)",
         type: "university",
         zone: "Zona 15",
-        lat: 14.5915,
-        lng: -90.4795,
+        lat: 14.6000,
+        lng: -90.4870,
         plusvaliaImpact: "Eje académico premium de Zona 15. Provoca un auge en el desarrollo de micro-apartamentos y colivings estudiantiles verticales en Vista Hermosa III y áreas de Zona 16, atrayendo inversiones de renta residencial.",
         details: "Complejo académico que alberga las sedes de las prestigiosas universidades URL y UVG."
     },
@@ -1203,8 +1203,8 @@ const LANDMARKS_DATABASE = [
         name: "Universidad Francisco Marroquín",
         type: "university",
         zone: "Zona 10",
-        lat: 14.6048,
-        lng: -90.5058,
+        lat: 14.6051,
+        lng: -90.5062,
         plusvaliaImpact: "Distrito intelectual de alto nivel adquisitivo. Incrementa el atractivo residencial premium del sector de Zona 10 y Vista Hermosa I, atrayendo a profesionales, investigadores y estudiantes extranjeros.",
         details: "Prestigioso campus privado reconocido internacionalmente por sus jardines integrados y diseño arquitectónico."
     },
@@ -1212,8 +1212,8 @@ const LANDMARKS_DATABASE = [
         name: "Universidad del Istmo (UNIS)",
         type: "university",
         zone: "CAES",
-        lat: 14.4820,
-        lng: -90.4180,
+        lat: 14.5178,
+        lng: -90.4533,
         plusvaliaImpact: "Ancla académica y ecológica del sector oriente. Su traslado a Fraijanes actuó como un potente imán habitacional, estimulando el desarrollo de condominios residenciales de alto perfil, residencias de estudiantes y plazas comerciales de conveniencia.",
         details: "Prestigioso campus privado ubicado en Fraijanes, diseñado con altos criterios ecológicos y eficiencia energética."
     },
@@ -1221,8 +1221,8 @@ const LANDMARKS_DATABASE = [
         name: "Mega-Templo Casa de Dios",
         type: "temple",
         zone: "Fraijanes / Km 22",
-        lat: 14.4752,
-        lng: -90.4357,
+        lat: 14.5113,
+        lng: -90.4807,
         plusvaliaImpact: "Hito de congregación masiva. Dinamiza intensamente el tráfico de fin de semana y cataliza el desarrollo de residenciales horizontales cerrados premium y plazas de servicio a lo largo de la CAES (Km 18-Km 25).",
         details: "Uno de los templos cristianos más grandes de Latinoamérica, punto de referencia geográfico y de influencia socioeconómica en el sector oriente."
     }
