@@ -3733,7 +3733,12 @@
             
             <div class="modal-body-content" style="padding: 20px; box-sizing: border-box; text-align: left;">
                 <div class="modal-header-info" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 15px;">
-                    <span class="property-tag" id="modal-property-tag" style="font-size: 0.65rem; color: var(--cyan); background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); padding: 2px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;"></span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span class="property-tag" id="modal-property-tag" style="font-size: 0.65rem; color: var(--cyan); background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); padding: 2px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;"></span>
+                        <button id="modal-share-btn" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); color: var(--cyan); padding: 5px 10px; border-radius: 4px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px; font-size: 0.65rem; font-weight: bold;">
+                            <i data-lucide="share-2" style="width: 12px; height: 12px;"></i> COMPARTIR
+                        </button>
+                    </div>
                     <h2 id="modal-property-title" style="font-size: 1.2rem; font-weight: bold; color: #fff; margin: 8px 0 4px 0;"></h2>
                     <div class="modal-property-price" id="modal-property-price" style="font-size: 1.2rem; font-weight: bold; color: var(--neon-emerald); font-family: monospace;"></div>
                 </div>

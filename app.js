@@ -199,13 +199,16 @@ const MATERIAL_ICONS = {
  * Al cargar la página, inicializa los elementos base y los widgets
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Etiquetar propiedades iniciales de mockData.js como datos de referencia
+    // Etiquetar propiedades iniciales de mockData.js como datos de referencia y generar IDs deterministas
     if (typeof PORTFOLIO_DATABASE !== 'undefined') {
         Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
-            PORTFOLIO_DATABASE[zone].forEach(prop => {
+            PORTFOLIO_DATABASE[zone].forEach((prop, idx) => {
                 if (prop.isAgentUpload !== true) {
                     prop.isReferenceData = true;
                     prop.isAgentUpload = false;
+                }
+                if (!prop.id) {
+                    prop.id = `ref-${zone}-${idx}`;
                 }
             });
         });
@@ -275,9 +278,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sincronizar datos de Supabase si está activo
     if (isSupabaseActive) {
-        syncSupabaseData();
+        syncSupabaseData().then(() => {
+            checkDeepLinkParams();
+        }).catch(err => {
+            console.error("Error al sincronizar datos:", err);
+            checkDeepLinkParams();
+        });
     } else {
         filterAgentProperties();
+        checkDeepLinkParams();
     }
 
     // Autocompletado de coordenadas GPS automático B2B al cambiar zona de ubicación
@@ -721,12 +730,21 @@ function switchView(viewId) {
 
     // Quitar clase activa de todos los botones de navegación y agregar a la seleccionada
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.getElementById(`nav-btn-${viewId}`);
+    
+    let highlightId = viewId;
+    if (viewId === 'commercial') {
+        const portfolioContent = document.getElementById('comm-tab-content-portfolio');
+        if (portfolioContent && !portfolioContent.classList.contains('hidden')) {
+            highlightId = 'portfolio';
+        }
+    }
+    
+    const activeBtn = document.getElementById(`nav-btn-${highlightId}`);
     if (activeBtn) activeBtn.classList.add('active');
 
     // Sincronizar reactivamente los botones de navegación móvil
     document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
-    const activeMobileBtn = document.getElementById(`mobile-nav-btn-${viewId}`);
+    const activeMobileBtn = document.getElementById(`mobile-nav-btn-${highlightId}`);
     if (activeMobileBtn) activeMobileBtn.classList.add('active');
 
     // Ocultar todas las vistas y mostrar la seleccionada
@@ -1372,11 +1390,16 @@ function renderFeaturedProperties(zoneKey) {
                         <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
                         <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
                     </div>
-                    <div class="card-price-hud">
+                    <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                         <span class="price-val" id="feat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
-                        <button class="btn-micro-cyber">
-                            <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            <button class="btn-micro-cyber">
+                                <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1584,11 +1607,16 @@ function renderCatalogProperties() {
                         <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
                         <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
                     </div>
-                    <div class="card-price-hud">
+                    <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                         <span class="price-val" id="cat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
-                        <button class="btn-micro-cyber">
-                            <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            <button class="btn-micro-cyber">
+                                <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -9401,6 +9429,22 @@ function switchCommercialTab(tabId) {
     // Ocultar todos los contenidos de pestañas
     document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
     
+    // Sincronizar el highlight del menú lateral principal según la subpestaña comercial
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+    
+    if (tabId === 'portfolio') {
+        const portfolioBtn = document.getElementById('nav-btn-portfolio');
+        if (portfolioBtn) portfolioBtn.classList.add('active');
+        const mobilePortfolioBtn = document.getElementById('mobile-nav-btn-portfolio');
+        if (mobilePortfolioBtn) mobilePortfolioBtn.classList.add('active');
+    } else {
+        const commercialBtn = document.getElementById('nav-btn-commercial');
+        if (commercialBtn) commercialBtn.classList.add('active');
+        const mobileCommercialBtn = document.getElementById('mobile-nav-btn-commercial');
+        if (mobileCommercialBtn) mobileCommercialBtn.classList.add('active');
+    }
+    
     // Remover clase active de todos los botones y restablecer estilos base
     document.querySelectorAll('.comm-tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -10407,6 +10451,14 @@ function openPropertyDetailModal(zoneKey, index) {
         document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Configurar botón compartir en modal
+    const modalShareBtn = document.getElementById('modal-share-btn');
+    if (modalShareBtn) {
+        modalShareBtn.onclick = (e) => {
+            sharePropertyLink(e, prop.id);
+        };
+    }
+
     // Mostrar modal
     modal.classList.remove('hidden');
     
@@ -11272,6 +11324,135 @@ function selectSignupPlanCard(planKey) {
             }
         }
     });
+}
+
+/**
+ * Copia el enlace de la propiedad seleccionada al portapapeles y muestra una notificación
+ */
+function sharePropertyLink(event, propId) {
+    if (event) {
+        event.stopPropagation();
+    }
+    if (!propId) {
+        showCyberToast("ID de propiedad inválido", "x-circle");
+        return;
+    }
+    
+    const shareUrl = window.location.origin + window.location.pathname + '?propId=' + encodeURIComponent(propId);
+    
+    // API Clipboard del navegador con fallback legacy
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl)
+            .then(() => {
+                showCyberToast("¡ENLACE COPIADO AL PORTAPAPELES!", "check-circle");
+            })
+            .catch(err => {
+                console.error("Error al copiar enlace:", err);
+                fallbackCopyText(shareUrl);
+            });
+    } else {
+        fallbackCopyText(shareUrl);
+    }
+}
+
+/**
+ * Fallback para copiar texto en navegadores legacy
+ */
+function fallbackCopyText(text) {
+    try {
+        const tempInput = document.createElement("input");
+        tempInput.value = text;
+        tempInput.style.position = "fixed";
+        tempInput.style.top = "0";
+        tempInput.style.left = "0";
+        tempInput.style.opacity = "0";
+        document.body.appendChild(tempInput);
+        tempInput.focus();
+        tempInput.select();
+        const success = document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        if (success) {
+            showCyberToast("¡ENLACE COPIADO AL PORTAPAPELES!", "check-circle");
+        } else {
+            showCyberToast("Error al copiar el enlace", "x-circle");
+        }
+    } catch (err) {
+        console.error("Error en fallback de copia:", err);
+        showCyberToast("Error al copiar el enlace", "x-circle");
+    }
+}
+
+/**
+ * Muestra una notificación flotante premium estilo glassmorphism cian
+ */
+function showCyberToast(message, iconName = "info") {
+    // Eliminar toast anterior si existe
+    const oldToast = document.getElementById('cyber-toast-notification');
+    if (oldToast) {
+        oldToast.remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.id = 'cyber-toast-notification';
+    toast.className = 'cyber-toast';
+    toast.innerHTML = `
+        <i data-lucide="${iconName}" class="cyber-toast-icon"></i>
+        <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // Activar animación
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 50);
+
+    // Ocultar y eliminar después de 3.5 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 400);
+    }, 3500);
+}
+
+/**
+ * Comprueba si hay un parámetro propId en la URL y despliega automáticamente el modal correspondiente
+ */
+function checkDeepLinkParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propId = urlParams.get('propId');
+    if (!propId) return;
+
+    let foundProperty = null;
+    let foundZone = null;
+
+    if (typeof PORTFOLIO_DATABASE !== 'undefined') {
+        for (const zone in PORTFOLIO_DATABASE) {
+            const index = PORTFOLIO_DATABASE[zone].findIndex(p => p.id === propId);
+            if (index !== -1) {
+                foundProperty = PORTFOLIO_DATABASE[zone][index];
+                foundZone = zone;
+                break;
+            }
+        }
+    }
+
+    if (foundProperty && foundZone) {
+        console.log(`[DeepLink] Propiedad encontrada en la zona: ${foundZone}. Desplegando modal...`);
+        const idx = PORTFOLIO_DATABASE[foundZone].indexOf(foundProperty);
+        if (idx !== -1) {
+            setTimeout(() => {
+                openPropertyDetailModal(foundZone, idx);
+            }, 600);
+        }
+    } else {
+        console.warn(`[DeepLink] No se encontró ninguna propiedad con el ID: ${propId}`);
+    }
 }
 
 

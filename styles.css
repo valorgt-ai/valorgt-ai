@@ -2386,7 +2386,19 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .kpi-card {
-    padding: 18px 24px !important;
+    padding: 12px 18px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 82px;
+}
+
+.kpi-lbl {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .kpi-icon-row {
@@ -2403,9 +2415,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .kpi-val {
-    font-size: 1.45rem;
-    font-weight: bold;
-    margin-top: 8px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 4px;
     display: block;
     letter-spacing: 0.5px;
 }
@@ -5859,5 +5871,84 @@ input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(0.98);
 }
 
+/* Botón de Compartir en Tarjetas */
+.btn-share-prop {
+    background: rgba(0, 240, 255, 0.03);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    color: var(--cyan);
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 6px rgba(0, 240, 255, 0.05);
+}
 
+.btn-share-prop:hover {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: var(--cyan);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+    transform: scale(1.05);
+}
 
+/* Botón de Compartir en Modal Detalle */
+#modal-share-btn {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    color: var(--cyan);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+#modal-share-btn:hover {
+    background: rgba(0, 240, 255, 0.18);
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+}
+
+/* Toast Neon Premium (Cyber Toast) */
+.cyber-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 100000;
+    background: rgba(8, 10, 15, 0.95);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 8px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 240, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+}
+
+.cyber-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.cyber-toast-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--cyan);
+    filter: drop-shadow(0 0 3px rgba(0, 240, 255, 0.5));
+}
