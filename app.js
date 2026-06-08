@@ -325,6 +325,15 @@ function loadUserWithdrawals(email) {
         return;
     }
     const emailLower = email.toLowerCase();
+    
+    // Auto-limpieza de única vez para la cuenta de Maria Bedoya para iniciar de cero
+    if (emailLower === 'laura.m.94@hotmail.com' && !localStorage.getItem('valorgt_maria_reset_v2')) {
+        localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
+        localStorage.removeItem(`valorgt_transfers_${emailLower}`);
+        localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
+        localStorage.setItem('valorgt_maria_reset_v2', 'true');
+    }
+
     const storageKey = `valorgt_withdrawals_${emailLower}`;
     const stored = localStorage.getItem(storageKey);
     if (stored) {
@@ -10762,20 +10771,20 @@ async function renderB2bWithdrawalsTable() {
         row.innerHTML = `
             <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
                 <strong>${w.date}</strong><br>
-                <span class="text-muted" style="font-size: 0.55rem; font-family: monospace;">Ref: ${w.ref}</span>
+                <span class="text-muted" style="font-size: 0.68rem; font-family: monospace;">Ref: ${w.ref}</span>
             </td>
             <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
-                <strong style="${typeStyle}; font-size: 0.6rem;">${typeLabel}</strong><br>
-                <strong style="color: #fff; font-size: 0.68rem;">${w.bank}</strong><br>
-                <span class="text-muted" style="font-size: 0.6rem;">${w.account}</span>
+                <strong style="${typeStyle}; font-size: 0.7rem;">${typeLabel}</strong><br>
+                <strong style="color: #fff; font-size: 0.78rem;">${w.bank}</strong><br>
+                <span class="text-muted" style="font-size: 0.72rem;">${w.account}</span>
             </td>
-            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; font-weight: bold; ${amountStyle}" class="font-mono">
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; font-weight: bold; font-size: 0.82rem; ${amountStyle}" class="font-mono">
                 ${amountPrefix}${w.amountXAUt.toFixed(4)} XAUt
             </td>
-            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: var(--red);" class="font-mono">
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: var(--red); font-size: 0.82rem;" class="font-mono">
                 ${feeText}
             </td>
-            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: #ffd700; font-weight: bold; font-size: 0.75rem;" class="font-mono">
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: #ffd700; font-weight: bold; font-size: 0.82rem;" class="font-mono">
                 ${w.amountXAUt > 0 ? '+' : ''}${currencySym}${formatNumber(w.netGTQ.toFixed(2))}
             </td>
             <td style="padding: 10px 5px; text-align: center; vertical-align: middle;">
@@ -10787,6 +10796,24 @@ async function renderB2bWithdrawalsTable() {
     
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
+    }
+}
+
+function clearLocalGoldHistory() {
+    if (!loggedInB2bClient) return;
+    if (confirm("¿Estás seguro de que deseas limpiar el historial local de movimientos de esta cuenta? Esto borrará el historial de retiros locales de tu navegador.")) {
+        const emailLower = loggedInB2bClient.email.toLowerCase();
+        localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
+        localStorage.removeItem(`valorgt_transfers_${emailLower}`);
+        localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
+        
+        // Cargar y re-renderizar de inmediato
+        loadUserWithdrawals(loggedInB2bClient.email);
+        renderB2bWithdrawalsTable();
+        
+        if (typeof appendAdminLog === 'function') {
+            appendAdminLog("SAAS", `ledger_node: Historial local de movimientos limpiado para ${loggedInB2bClient.name}.`, false);
+        }
     }
 }
 

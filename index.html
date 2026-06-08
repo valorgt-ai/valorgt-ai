@@ -1703,11 +1703,17 @@
                                     <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="history"></i></div>
                                     <h2 style="color: #ffd700 !important;">Historial de Movimientos de la Cartera</h2>
                                 </div>
-                                <span class="badge font-mono" id="b2b-withdrawals-count" style="font-size: 0.6rem; color: #ffd700; background: rgba(255, 215, 0, 0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255, 215, 0, 0.25);">0 Movimientos</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="badge font-mono" id="b2b-withdrawals-count" style="font-size: 0.6rem; color: #ffd700; background: rgba(255, 215, 0, 0.08); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255, 215, 0, 0.25);">0 Movimientos</span>
+                                    <button class="btn btn-outline" onclick="clearLocalGoldHistory()" style="padding: 2px 6px; font-size: 0.55rem; color: var(--red); border-color: rgba(255, 59, 48, 0.4); background: rgba(255, 59, 48, 0.02); cursor: pointer; font-weight: bold; border-radius: 4px; font-family: var(--font-mono); height: 20px; display: flex; align-items: center; gap: 3px;" title="Limpiar caché de retiros locales del navegador">
+                                        <i data-lucide="trash-2" style="width: 10px; height: 10px;"></i>
+                                        LIMPIAR
+                                    </button>
+                                </div>
                             </div>
                             <div class="commercial-section-body font-mono" style="padding: 10px 15px;">
                                 <div style="overflow-x: auto; width: 100%;">
-                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left;">
                                         <thead>
                                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-muted);">
                                                 <th style="padding: 10px 5px;">FECHA Y REF</th>
