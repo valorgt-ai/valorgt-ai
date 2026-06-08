@@ -27,6 +27,24 @@ if (!isSupabaseActive) {
     console.log("🛰️ [ValorGT AI] Supabase inactivo o sin credenciales de API. Ejecutando en Modo local (contingencia local basada en mockData.js).");
 }
 
+// VARIABLES Y CONTROLADORES DEL ASISTENTE HOLOGRÁFICO IA
+let globalAssistantSpeechUtterance = null;
+const PAGE_EXPLANATIONS = {
+    dashboard: "Bienvenido al Valuador Inteligente de ValorGT. Aquí puedes estimar el precio de mercado de cualquier propiedad ingresando su área, sector y acabados. Nuestro modelo de Inteligencia Artificial calculará la plusvalía esperada y el rango de confianza en tiempo real.",
+    heatmap: "Estás en el Radar de Plusvalía e Inversión. Este mapa te permite analizar los precios por metro cuadrado y la rentabilidad en las diferentes zonas. Haz clic en las universidades o centros comerciales para ver cómo impactan el valor de la tierra en su entorno.",
+    mortgage: "Este es el Simulador Hipotecario Predictivo FHA. Ingresa el precio del inmueble y el enganche para calcular tu cuota mensual estimada, la tasa de interés y el ingreso familiar mínimo requerido para precalificar al crédito bancario.",
+    investor: "Bienvenido a la Terminal de Inteligencia Financiera. Aquí puedes analizar el retorno de inversión, plusvalías proyectadas por zona e índices macroeconómicos inmobiliarios clave para tomar las mejores decisiones de colocación.",
+    subscriptions: "Estás en la sección de Planes y Membresías Premium. Aquí puedes explorar y seleccionar el plan SaaS que mejor se adapte a tu perfil, ya sea Broker Independiente, Desarrollador o Inversionista Premium.",
+    admin: "Bienvenido al Panel de Control de Administración de ValorGT. Aquí puedes aprobar nuevos socios B2B, validar comprobantes de pago, configurar parámetros del sistema y auditar la integridad de la base de datos.",
+    'commercial-login': "Esta es la puerta de acceso para agentes e inversionistas. Por favor, inicia sesión con tus credenciales o regístrate para acceder a tu consola comercial, cartera de oro digital y simulador de portafolio IA.",
+    'commercial-home': "Bienvenido a tu consola comercial central. Aquí tienes una vista general del rendimiento de tu negocio SaaS, incluyendo tu facturación activa, propiedades publicadas y estadísticas de visualización de tus anuncios.",
+    'commercial-oro': "Esta es tu Cartera de Oro Digital. Administra tus balances en Tether Gold respaldados físicamente por oro en bóvedas de Suiza. Puedes solicitar depósitos o programar retiros y transferencias seguras.",
+    'commercial-propiedades': "Aquí puedes publicar nuevas propiedades al motor de búsqueda de ValorGT. Completa la ficha de datos, establece el precio, y carga fotografías para mostrarlas a los inversionistas en el catálogo general.",
+    'commercial-propiedades-list': "Este es tu inventario de propiedades publicadas. Desde aquí puedes editar tus anuncios, suspenderlos o promocionarlos como destacados con IA para aumentar su rendimiento y alcance.",
+    'commercial-portfolio': "Bienvenido al Portafolio IA y Simulador de Riqueza. Consolidamos el valor de tus propiedades, deudas y flujo neto. Puedes simular el crecimiento patrimonial a veinte años y recibir recomendaciones del Asesor IA.",
+    'commercial-suscripcion': "Estás en tu panel de suscripción B2B. Revisa el estado de tu licencia, sube comprobantes de pago por transferencia bancaria o realiza el cambio de tu plan comercial."
+};
+
 // VARIABLES DE ESTADO GLOBAL
 let activeCurrency = 'GTQ'; // 'GTQ' | 'USD'
 const exchangeRate = 7.78; // Tipo de cambio estimado GTQ por USD
@@ -705,6 +723,13 @@ function removePreviewImage(index) {
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
+    // Actualizar visibilidad del asistente de voz tras los cambios en el DOM
+    setTimeout(() => {
+        if (typeof updateAssistantVisibility === 'function') {
+            updateAssistantVisibility();
+        }
+    }, 0);
+
     // 1. Pausar y ocultar todos los timers y badges de trial de marketing al cambiar de vista
     if (portfolioTrialTimer) {
         clearInterval(portfolioTrialTimer);
@@ -4492,6 +4517,9 @@ function initCommercialView() {
     }
     
     renderPublicPricingGrid();
+    if (typeof updateAssistantVisibility === 'function') {
+        updateAssistantVisibility();
+    }
 }
 
 /**
@@ -9820,6 +9848,9 @@ function switchCommercialTab(tabId) {
             }, 100);
         }
     }
+    if (typeof updateAssistantVisibility === 'function') {
+        updateAssistantVisibility();
+    }
 }
 
 /**
@@ -11904,4 +11935,152 @@ function checkDeepLinkParams() {
     } else {
         console.warn(`[DeepLink] No se encontró ninguna propiedad con el ID: ${propId}`);
     }
-}
+}
+
+/**
+ * ==========================================================================
+ * SISTEMA DE ASISTENTE HOLOGRÁFICO GLOBAL IA (SpeechSynthesis)
+ * ==========================================================================
+ */
+
+/**
+ * Controla la visibilidad y el estado de detención del asistente de voz
+ */
+function updateAssistantVisibility() {
+    const activeViewEl = document.querySelector('.app-view.active');
+    if (!activeViewEl) return;
+    
+    const viewId = activeViewEl.id.replace('view-', '');
+    
+    // Si es catalog o disclaimer principal, ocultar por completo
+    if (viewId === 'catalog' || viewId === 'disclaimer') {
+        hideAssistantWidget();
+        return;
+    }
+    
+    // Si la vista es commercial, evaluar si está logueado o en disclaimer
+    if (viewId === 'commercial') {
+        const loginGate = document.getElementById('commercial-login-gate');
+        if (loginGate && !loginGate.classList.contains('hidden')) {
+            showAssistantWidget();
+            return;
+        }
+        
+        // Si está autenticado, revisar si la pestaña disclaimer está activa
+        const activeTabEl = document.querySelector('.comm-tab-content:not(.hidden)');
+        if (activeTabEl) {
+            const tabId = activeTabEl.id.replace('comm-tab-content-', '');
+            if (tabId === 'disclaimer') {
+                hideAssistantWidget();
+                return;
+            }
+        }
+    }
+    
+    showAssistantWidget();
+}
+
+/**
+ * Muestra el widget en pantalla
+ */
+function showAssistantWidget() {
+    const widget = document.getElementById('global-ai-assistant');
+    if (widget) {
+        widget.style.display = 'flex';
+    }
+}
+
+/**
+ * Oculta el widget en pantalla y cancela el audio si estaba hablando
+ */
+function hideAssistantWidget() {
+    const widget = document.getElementById('global-ai-assistant');
+    if (widget) {
+        widget.style.display = 'none';
+        widget.classList.remove('speaking');
+    }
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+    }
+}
+
+/**
+ * Alterna la reproducción de voz del Asesor Holográfico IA
+ */
+function toggleGlobalAssistantSpeech() {
+    const widget = document.getElementById('global-ai-assistant');
+    if (!widget) return;
+
+    // Si ya está hablando, detener inmediatamente (Mute/Stop)
+    if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        widget.classList.remove('speaking');
+        return;
+    }
+
+    // Identificar qué sección está activa para leer su explicación
+    const activeViewEl = document.querySelector('.app-view.active');
+    let viewId = activeViewEl ? activeViewEl.id.replace('view-', '') : 'dashboard';
+    
+    let explanationKey = viewId;
+    if (viewId === 'commercial') {
+        const loginGate = document.getElementById('commercial-login-gate');
+        if (loginGate && !loginGate.classList.contains('hidden')) {
+            explanationKey = 'commercial-login';
+        } else {
+            const activeTabEl = document.querySelector('.comm-tab-content:not(.hidden)');
+            if (activeTabEl) {
+                const tabId = activeTabEl.id.replace('comm-tab-content-', '');
+                explanationKey = `commercial-${tabId}`;
+            } else {
+                explanationKey = 'commercial-home';
+            }
+        }
+    }
+
+    // Buscar explicación en el mapa
+    const explanationText = PAGE_EXPLANATIONS[explanationKey];
+    if (!explanationText) return;
+
+    // Crear la instancia de voz de SpeechSynthesis
+    globalAssistantSpeechUtterance = new SpeechSynthesisUtterance(explanationText);
+    globalAssistantSpeechUtterance.lang = 'es-ES';
+    globalAssistantSpeechUtterance.pitch = 1.05;
+    globalAssistantSpeechUtterance.rate = 0.95;
+
+    // Intentar buscar una voz en español compatible nativa
+    if (window.speechSynthesis) {
+        const voices = window.speechSynthesis.getVoices();
+        const spanishVoice = voices.find(v => v.lang.toLowerCase().startsWith('es'));
+        if (spanishVoice) {
+            globalAssistantSpeechUtterance.voice = spanishVoice;
+        }
+    }
+
+    // Eventos de estado de voz
+    globalAssistantSpeechUtterance.onstart = () => {
+        widget.classList.add('speaking');
+    };
+
+    globalAssistantSpeechUtterance.onend = () => {
+        widget.classList.remove('speaking');
+    };
+
+    globalAssistantSpeechUtterance.onerror = (e) => {
+        console.error("Error en SpeechSynthesis:", e);
+        widget.classList.remove('speaking');
+    };
+
+    // Comenzar la lectura
+    window.speechSynthesis.speak(globalAssistantSpeechUtterance);
+}
+
+// Inicializar visibilidad en carga
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        updateAssistantVisibility();
+        if (typeof checkDeepLinkParams === 'function') {
+            checkDeepLinkParams();
+        }
+    }, 800);
+});
