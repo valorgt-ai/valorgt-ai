@@ -4938,6 +4938,9 @@ async function executeB2bUsdtTransfer(event) {
     // SI SUPABASE ESTÁ ACTIVO, HACER LA TRANSFERENCIA PERSISTENTE
     if (isSupabaseActive) {
         try {
+            // Asegurar que el precio de XAUT esté actualizado antes de realizar la transacción
+            await fetchXautPriceForAirdrop();
+
             // A. Buscar destinatario en Supabase
             const { data: recipientProfile, error: searchErr } = await supabaseClient
                 .from('profiles')
@@ -4983,7 +4986,9 @@ async function executeB2bUsdtTransfer(event) {
                     sender_email: loggedInB2bClient.email,
                     receiver_email: recipientEmail,
                     amount: amount,
-                    tx_hash: txHash
+                    tx_hash: txHash,
+                    xaut_price: currentAirdropXautPrice || 2380.00,
+                    exchange_rate: exchangeRate || 7.78
                 }
             ]);
 
@@ -5033,7 +5038,9 @@ async function executeB2bUsdtTransfer(event) {
             type: 'transfer_sent',
             detail: `Transferencia a: ${finalRecipient.email}`,
             amountXAUt: -amount,
-            amountGTQ: equivalentNet
+            amountGTQ: equivalentNet,
+            xautPrice: price,
+            exchangeRate: exchangeRate
         });
         localStorage.setItem(`valorgt_transfers_${loggedInB2bClient.email.toLowerCase()}`, JSON.stringify(senderTxs));
 
@@ -5044,7 +5051,9 @@ async function executeB2bUsdtTransfer(event) {
             type: 'transfer_recv',
             detail: `Transferencia de: ${loggedInB2bClient.email}`,
             amountXAUt: amount,
-            amountGTQ: equivalentNet
+            amountGTQ: equivalentNet,
+            xautPrice: price,
+            exchangeRate: exchangeRate
         });
         localStorage.setItem(`valorgt_transfers_${finalRecipient.email.toLowerCase()}`, JSON.stringify(receiverTxs));
 
@@ -10641,8 +10650,9 @@ async function fetchB2bTransactionsHistory() {
                     const dateStr = t.created_at 
                         ? (new Date(t.created_at).toISOString().slice(0, 10) + " " + new Date(t.created_at).toTimeString().slice(0, 5))
                         : new Date().toISOString().slice(0, 10) + " 12:00";
-                    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-                    const price = currentAirdropXautPrice || 2380;
+                    const price = parseFloat(t.xaut_price) || currentAirdropXautPrice || 2380.00;
+                    const rate = parseFloat(t.exchange_rate) || exchangeRate || 7.78;
+                    const conversion = activeCurrency === 'GTQ' ? rate : 1;
                     const valConv = parseFloat(t.amount) * price * conversion;
                     
                     list.push({
@@ -10671,8 +10681,9 @@ async function fetchB2bTransactionsHistory() {
                     const dateStr = t.created_at 
                         ? (new Date(t.created_at).toISOString().slice(0, 10) + " " + new Date(t.created_at).toTimeString().slice(0, 5))
                         : new Date().toISOString().slice(0, 10) + " 12:00";
-                    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-                    const price = currentAirdropXautPrice || 2380;
+                    const price = parseFloat(t.xaut_price) || currentAirdropXautPrice || 2380.00;
+                    const rate = parseFloat(t.exchange_rate) || exchangeRate || 7.78;
+                    const conversion = activeCurrency === 'GTQ' ? rate : 1;
                     const valConv = parseFloat(t.amount) * price * conversion;
                     
                     list.push({
@@ -10697,6 +10708,11 @@ async function fetchB2bTransactionsHistory() {
         const localTransfersKey = `valorgt_transfers_${emailLower}`;
         const localTransfers = JSON.parse(localStorage.getItem(localTransfersKey)) || [];
         localTransfers.forEach(t => {
+            const price = t.xautPrice || 2380.00;
+            const rate = t.exchangeRate || exchangeRate || 7.78;
+            const conversion = activeCurrency === 'GTQ' ? rate : 1;
+            const valConv = Math.abs(t.amountXAUt) * price * conversion;
+
             list.push({
                 ref: t.ref,
                 date: t.date,
@@ -10705,8 +10721,8 @@ async function fetchB2bTransactionsHistory() {
                 account: t.detail,
                 amountXAUt: t.amountXAUt,
                 feeGTQ: 0,
-                netGTQ: t.amountGTQ,
-                xautPrice: t.xautPrice || 2380.00,
+                netGTQ: valConv,
+                xautPrice: price,
                 status: 'Aprobado'
             });
         });
