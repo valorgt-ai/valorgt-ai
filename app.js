@@ -5010,13 +5010,43 @@ async function executeB2bUsdtTransfer(event) {
         loggedInB2bClient.usdtBalance -= amount;
         finalRecipient.usdtBalance += amount;
 
+        // Guardar registro de la transferencia en el historial local de ambos
+        const refCode = "TX-" + Math.floor(100000 + Math.random() * 900000);
+        const dateStr = new Date().toISOString().slice(0, 10) + " " + new Date().toTimeString().slice(0, 5);
+        const price = currentAirdropXautPrice || 2380;
+        const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+        const equivalentNet = amount * price * conversion;
+
+        const senderTxs = JSON.parse(localStorage.getItem(`valorgt_transfers_${loggedInB2bClient.email.toLowerCase()}`)) || [];
+        senderTxs.unshift({
+            ref: refCode,
+            date: dateStr,
+            type: 'transfer_sent',
+            detail: `Transferencia a: ${finalRecipient.email}`,
+            amountXAUt: -amount,
+            amountGTQ: equivalentNet
+        });
+        localStorage.setItem(`valorgt_transfers_${loggedInB2bClient.email.toLowerCase()}`, JSON.stringify(senderTxs));
+
+        const receiverTxs = JSON.parse(localStorage.getItem(`valorgt_transfers_${finalRecipient.email.toLowerCase()}`)) || [];
+        receiverTxs.unshift({
+            ref: refCode,
+            date: dateStr,
+            type: 'transfer_recv',
+            detail: `Transferencia de: ${loggedInB2bClient.email}`,
+            amountXAUt: amount,
+            amountGTQ: equivalentNet
+        });
+        localStorage.setItem(`valorgt_transfers_${finalRecipient.email.toLowerCase()}`, JSON.stringify(receiverTxs));
+
         if (typeof appendAdminLog === 'function') {
             appendAdminLog("SECURITY", `ledger_node: Transferencia exitosa de ${amount.toFixed(4)} XAUt (Oro Digital) de ${loggedInB2bClient.name} a ${finalRecipient.name} (${finalRecipient.email}) [Memoria Local].`, false);
         }
     }
 
-    // Actualizar HUD
+    // Actualizar HUD y re-renderizar tabla de movimientos de la cartera
     updateSaasMetricsHUD();
+    renderB2bWithdrawalsTable();
 
     // Limpiar formulario
     document.getElementById('b2b-usdt-transfer-form').reset();
@@ -10523,49 +10553,230 @@ async function executeB2bWithdrawal(event) {
 /**
  * Renderiza la tabla de historial de solicitudes de retiro
  */
-function renderB2bWithdrawalsTable() {
+async function fetchB2bTransactionsHistory() {
+    if (!loggedInB2bClient) return [];
+    
+    let list = [];
+    const emailLower = loggedInB2bClient.email.toLowerCase();
+    
+    // 1. Cargar retiros locales desde localStorage
+    const localWithdrawalsKey = `valorgt_withdrawals_${emailLower}`;
+    const localWithdrawals = JSON.parse(localStorage.getItem(localWithdrawalsKey)) || [];
+    
+    localWithdrawals.forEach(w => {
+        list.push({
+            ref: w.ref,
+            date: w.date,
+            type: 'withdrawal',
+            bank: w.bank,
+            account: `Cuenta ${w.account}`,
+            amountXAUt: -Math.abs(w.amountXAUt),
+            feeGTQ: w.feeGTQ,
+            netGTQ: w.netGTQ,
+            status: w.status
+        });
+    });
+
+    if (isSupabaseActive) {
+        try {
+            // 2. Cargar ingresos (airdrops) desde historial_oro de Supabase
+            const { data: remoteHistory, error: histErr } = await supabaseClient
+                .from('historial_oro')
+                .select('*')
+                .eq('usuario_id', loggedInB2bClient.id);
+                
+            if (!histErr && remoteHistory) {
+                remoteHistory.forEach(h => {
+                    const dateStr = new Date(h.fecha).toISOString().slice(0, 10) + " " + new Date(h.fecha).toTimeString().slice(0, 5);
+                    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+                    const valConv = parseFloat(h.monto_usd) * conversion;
+                    
+                    if (h.tipo === 'airdrop_mensual') {
+                        list.push({
+                            ref: h.id.substring(0, 8).toUpperCase(),
+                            date: dateStr,
+                            type: 'airdrop',
+                            bank: 'Administración',
+                            account: 'Ingreso Directo / Airdrop',
+                            amountXAUt: parseFloat(h.monto_xaut),
+                            feeGTQ: 0,
+                            netGTQ: valConv,
+                            status: 'Aprobado'
+                        });
+                    }
+                });
+            }
+
+            // 3. Cargar transferencias P2P
+            // A. Enviadas
+            const { data: sentTxs, error: sentErr } = await supabaseClient
+                .from('transactions')
+                .select('*')
+                .eq('sender_email', emailLower);
+                
+            if (!sentErr && sentTxs) {
+                sentTxs.forEach(t => {
+                    const dateStr = t.created_at 
+                        ? (new Date(t.created_at).toISOString().slice(0, 10) + " " + new Date(t.created_at).toTimeString().slice(0, 5))
+                        : new Date().toISOString().slice(0, 10) + " 12:00";
+                    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+                    const price = currentAirdropXautPrice || 2380;
+                    const valConv = parseFloat(t.amount) * price * conversion;
+                    
+                    list.push({
+                        ref: (t.tx_hash || '0x').substring(0, 10),
+                        date: dateStr,
+                        type: 'transfer_sent',
+                        bank: 'Transferencia',
+                        account: `Enviada a: ${t.receiver_email}`,
+                        amountXAUt: -parseFloat(t.amount),
+                        feeGTQ: 0,
+                        netGTQ: valConv,
+                        status: 'Aprobado'
+                    });
+                });
+            }
+
+            // B. Recibidas
+            const { data: recvTxs, error: recvErr } = await supabaseClient
+                .from('transactions')
+                .select('*')
+                .eq('receiver_email', emailLower);
+                
+            if (!recvErr && recvTxs) {
+                recvTxs.forEach(t => {
+                    const dateStr = t.created_at 
+                        ? (new Date(t.created_at).toISOString().slice(0, 10) + " " + new Date(t.created_at).toTimeString().slice(0, 5))
+                        : new Date().toISOString().slice(0, 10) + " 12:00";
+                    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+                    const price = currentAirdropXautPrice || 2380;
+                    const valConv = parseFloat(t.amount) * price * conversion;
+                    
+                    list.push({
+                        ref: (t.tx_hash || '0x').substring(0, 10),
+                        date: dateStr,
+                        type: 'transfer_recv',
+                        bank: 'Transferencia',
+                        account: `Recibida de: ${t.sender_email}`,
+                        amountXAUt: parseFloat(t.amount),
+                        feeGTQ: 0,
+                        netGTQ: valConv,
+                        status: 'Aprobado'
+                    });
+                });
+            }
+        } catch (err) {
+            console.error("Error al consultar historial transaccional de Supabase:", err);
+        }
+    } else {
+        // Fallback local en memoria
+        const localTransfersKey = `valorgt_transfers_${emailLower}`;
+        const localTransfers = JSON.parse(localStorage.getItem(localTransfersKey)) || [];
+        localTransfers.forEach(t => {
+            list.push({
+                ref: t.ref,
+                date: t.date,
+                type: t.type,
+                bank: 'Transferencia',
+                account: t.detail,
+                amountXAUt: t.amountXAUt,
+                feeGTQ: 0,
+                netGTQ: t.amountGTQ,
+                status: 'Aprobado'
+            });
+        });
+        
+        const localAirdropsKey = `valorgt_airdrops_${emailLower}`;
+        const localAirdrops = JSON.parse(localStorage.getItem(localAirdropsKey)) || [];
+        localAirdrops.forEach(a => {
+            list.push({
+                ref: a.ref,
+                date: a.date,
+                type: 'airdrop',
+                bank: 'Administración',
+                account: 'Ingreso Directo / Airdrop',
+                amountXAUt: a.amountXAUt,
+                feeGTQ: 0,
+                netGTQ: a.amountGTQ,
+                status: 'Aprobado'
+            });
+        });
+    }
+
+    // Ordenar de más reciente a más antiguo
+    list.sort((a, b) => b.date.localeCompare(a.date));
+    return list;
+}
+
+/**
+ * Renderiza la tabla de historial de movimientos de la cartera (retiros, ingresos y transferencias)
+ */
+async function renderB2bWithdrawalsTable() {
     const tableBody = document.getElementById('b2b-withdrawals-table-body');
     const counter = document.getElementById('b2b-withdrawals-count');
     if (!tableBody) return;
     
-    if (b2bWithdrawals.length === 0) {
+    const historyList = await fetchB2bTransactionsHistory();
+    
+    if (historyList.length === 0) {
         tableBody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">
                     <i data-lucide="clock" style="width: 24px; height: 24px; color: var(--text-secondary); margin-bottom: 5px; opacity: 0.5; display: inline-block;"></i><br>
-                    No has realizado ninguna solicitud de retiro de Tether Gold.
+                    No hay movimientos registrados en la cartera de Tether Gold.
                 </td>
             </tr>
         `;
-        if (counter) counter.innerText = "0 Solicitudes";
+        if (counter) counter.innerText = "0 Movimientos";
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
     
-    if (counter) counter.innerText = `${b2bWithdrawals.length} Solicitudes`;
+    if (counter) counter.innerText = `${historyList.length} Movimientos`;
     
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
     tableBody.innerHTML = '';
-    b2bWithdrawals.forEach(w => {
+    
+    historyList.forEach(w => {
         const row = document.createElement('tr');
-        const statusClass = w.status === 'Aprobado' ? 'status-badge-approved' : 'status-badge-pending';
         
+        let statusClass = 'status-badge-pending';
+        if (w.status === 'Aprobado' || w.status === 'Completado') {
+            statusClass = 'status-badge-approved';
+        }
+        
+        let amountStyle = 'color: #fff;';
+        let amountPrefix = '';
+        if (w.amountXAUt > 0) {
+            amountStyle = 'color: #34c759;';
+            amountPrefix = '+';
+        } else if (w.amountXAUt < 0) {
+            amountStyle = 'color: #ff3b30;';
+            amountPrefix = '';
+        }
+        
+        const feeText = w.feeGTQ > 0 ? `-${currencySym}${w.feeGTQ.toFixed(2)}` : '-';
+        const typeLabel = w.type === 'withdrawal' ? 'RETIRO' : (w.type === 'airdrop' ? 'INGRESO' : (w.type === 'transfer_sent' ? 'ENVÍO P2P' : 'RECEP P2P'));
+        const typeStyle = w.type === 'withdrawal' || w.type === 'transfer_sent' ? 'color: #ff9500;' : 'color: #00d2ff;';
+
         row.innerHTML = `
             <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
                 <strong>${w.date}</strong><br>
-                <span class="text-muted" style="font-size: 0.55rem; font-family: monospace;">${w.ref}</span>
+                <span class="text-muted" style="font-size: 0.55rem; font-family: monospace;">Ref: ${w.ref}</span>
             </td>
             <td style="padding: 10px 5px; text-align: left; vertical-align: middle;">
-                <strong>${w.bank}</strong><br>
-                <span class="text-muted" style="font-size: 0.6rem;">Cuenta ${w.account}</span>
+                <strong style="${typeStyle}; font-size: 0.6rem;">${typeLabel}</strong><br>
+                <strong style="color: #fff; font-size: 0.68rem;">${w.bank}</strong><br>
+                <span class="text-muted" style="font-size: 0.6rem;">${w.account}</span>
             </td>
-            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; font-weight: bold;" class="font-mono">
-                ${w.amountXAUt.toFixed(4)} XAUt
+            <td style="padding: 10px 5px; text-align: right; vertical-align: middle; font-weight: bold; ${amountStyle}" class="font-mono">
+                ${amountPrefix}${w.amountXAUt.toFixed(4)} XAUt
             </td>
             <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: var(--red);" class="font-mono">
-                -Q${w.feeGTQ.toFixed(2)}
+                ${feeText}
             </td>
             <td style="padding: 10px 5px; text-align: right; vertical-align: middle; color: #ffd700; font-weight: bold; font-size: 0.75rem;" class="font-mono">
-                Q${formatNumber(w.netGTQ.toFixed(2))}
+                ${w.amountXAUt > 0 ? '+' : ''}${currencySym}${formatNumber(w.netGTQ.toFixed(2))}
             </td>
             <td style="padding: 10px 5px; text-align: center; vertical-align: middle;">
                 <span class="${statusClass}">${w.status}</span>
