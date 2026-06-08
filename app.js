@@ -44,6 +44,120 @@ let adminMonthlyRevenueUSD = 1000.00;
 let isCommercialAuthenticated = false;
 let loggedInB2bClient = null;
 
+// Base de datos de portafolio inicial de demostración (Guardada internamente en USD por defecto)
+const PORTFOLIO_DEMO_ASSETS = [
+    {
+        id: "port-1",
+        title: "Apartamento Lujo Cayalá Z16",
+        type: "apartamento",
+        zoneKey: "zona16",
+        buyValue: 280000,
+        currentValue: 315000,
+        rent: 2200,
+        hasMortgage: true,
+        mortgageDebt: 160000,
+        mortgagePayment: 1100,
+        interestRate: 7.25,
+        termYears: 20,
+        maintenance: 150,
+        taxes: 45,
+        occupancy: 95,
+        plusvalia: 8.4,
+        lat: 14.6111,
+        lng: -90.4725,
+        isRemodeled: false,
+        isAirbnb: false,
+        isRefinanced: false,
+        isRentRaised: false
+    },
+    {
+        id: "port-2",
+        title: "Oficina Plaza República Z10",
+        type: "comercial",
+        zoneKey: "zona10",
+        buyValue: 185000,
+        currentValue: 210000,
+        rent: 1650,
+        hasMortgage: true,
+        mortgageDebt: 95000,
+        mortgagePayment: 780,
+        interestRate: 7.50,
+        termYears: 15,
+        maintenance: 120,
+        taxes: 35,
+        occupancy: 90,
+        plusvalia: 7.2,
+        lat: 14.5986,
+        lng: -90.5085,
+        isRemodeled: false,
+        isAirbnb: false,
+        isRefinanced: false,
+        isRentRaised: false
+    },
+    {
+        id: "port-3",
+        title: "Villa Colonial San Juan",
+        type: "airbnb",
+        zoneKey: "antigua",
+        buyValue: 420000,
+        currentValue: 480000,
+        rent: 3200,
+        hasMortgage: false,
+        mortgageDebt: 0,
+        mortgagePayment: 0,
+        interestRate: 0,
+        termYears: 0,
+        maintenance: 220,
+        taxes: 80,
+        occupancy: 80,
+        plusvalia: 7.6,
+        lat: 14.5573,
+        lng: -90.7332,
+        isRemodeled: false,
+        isAirbnb: true,
+        isRefinanced: false,
+        isRentRaised: false
+    }
+];
+
+let userPortfolio = [...PORTFOLIO_DEMO_ASSETS];
+
+/**
+ * Carga el portafolio correspondiente al usuario actual desde localStorage.
+ * Si es un usuario logueado, carga su portafolio guardado (o vacío si es la primera vez).
+ * Si no está logueado (modo preview/visitante), carga las propiedades demo.
+ */
+function loadUserPortfolio() {
+    if (isCommercialAuthenticated && loggedInB2bClient && loggedInB2bClient.email) {
+        const emailKey = `valorgt_portfolio_${loggedInB2bClient.email.toLowerCase()}`;
+        const savedPortfolio = localStorage.getItem(emailKey);
+        if (savedPortfolio) {
+            try {
+                userPortfolio = JSON.parse(savedPortfolio);
+            } catch (e) {
+                console.error("Error al parsear portafolio guardado:", e);
+                userPortfolio = [];
+            }
+        } else {
+            // Primera vez para este usuario: empezar con portafolio vacío (en cero)
+            userPortfolio = [];
+        }
+    } else {
+        // Visitante / Modo Demo: cargar activos de demostración
+        userPortfolio = [...PORTFOLIO_DEMO_ASSETS];
+    }
+}
+
+/**
+ * Guarda el portafolio actual en localStorage para el usuario logueado.
+ */
+function saveUserPortfolio() {
+    if (isCommercialAuthenticated && loggedInB2bClient && loggedInB2bClient.email) {
+        const emailKey = `valorgt_portfolio_${loggedInB2bClient.email.toLowerCase()}`;
+        localStorage.setItem(emailKey, JSON.stringify(userPortfolio));
+    }
+}
+
 const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
 if (savedB2bClient) {
     try {
@@ -65,6 +179,7 @@ if (savedB2bClient) {
         }
         isCommercialAuthenticated = true;
         activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
+        loadUserPortfolio();
     } catch (e) {
         console.error("Error al restaurar sesión de agente B2B:", e);
     }
@@ -2762,81 +2877,7 @@ function updateClock() {
    LÓGICA DEL PORTAFOLIO INMOBILIARIO IA (SIMULADOR DE RIQUEZA)
    ========================================================================== */
 
-// Base de datos de portafolio inicial (Guardada internamente en USD por defecto)
-let userPortfolio = [
-    {
-        id: "port-1",
-        title: "Apartamento Lujo Cayalá Z16",
-        type: "apartamento",
-        zoneKey: "zona16",
-        buyValue: 280000,
-        currentValue: 315000,
-        rent: 2200,
-        hasMortgage: true,
-        mortgageDebt: 160000,
-        mortgagePayment: 1100,
-        interestRate: 7.25,
-        termYears: 20,
-        maintenance: 150,
-        taxes: 45,
-        occupancy: 95,
-        plusvalia: 8.4,
-        lat: 14.6111,
-        lng: -90.4725,
-        isRemodeled: false,
-        isAirbnb: false,
-        isRefinanced: false,
-        isRentRaised: false
-    },
-    {
-        id: "port-2",
-        title: "Oficina Plaza República Z10",
-        type: "comercial",
-        zoneKey: "zona10",
-        buyValue: 185000,
-        currentValue: 210000,
-        rent: 1650,
-        hasMortgage: true,
-        mortgageDebt: 95000,
-        mortgagePayment: 780,
-        interestRate: 7.50,
-        termYears: 15,
-        maintenance: 120,
-        taxes: 35,
-        occupancy: 90,
-        plusvalia: 7.2,
-        lat: 14.5986,
-        lng: -90.5085,
-        isRemodeled: false,
-        isAirbnb: false,
-        isRefinanced: false,
-        isRentRaised: false
-    },
-    {
-        id: "port-3",
-        title: "Villa Colonial San Juan",
-        type: "airbnb",
-        zoneKey: "antigua",
-        buyValue: 420000,
-        currentValue: 480000,
-        rent: 3200,
-        hasMortgage: false,
-        mortgageDebt: 0,
-        mortgagePayment: 0,
-        interestRate: 0,
-        termYears: 0,
-        maintenance: 220,
-        taxes: 80,
-        occupancy: 80,
-        plusvalia: 7.6,
-        lat: 14.5573,
-        lng: -90.7332,
-        isRemodeled: false,
-        isAirbnb: true,
-        isRefinanced: false,
-        isRentRaised: false
-    }
-];
+
 
 let activePortfolioProjYears = 0; // Plazo de proyección por defecto (Actual)
 let portfolioMapInstance = null;
@@ -3277,6 +3318,7 @@ function toggleAssetProperty(assetId, propertyKey) {
 
     asset[propertyKey] = !asset[propertyKey];
     updatePortfolioCalculations();
+    saveUserPortfolio();
 }
 
 /**
@@ -3289,6 +3331,7 @@ function sellAsset(assetId) {
     if (confirm(`¿Confirmas la venta del activo "${asset.title}"?\nEl capital líquido de tu plusvalía se agregará a tu equity total.`)) {
         userPortfolio = userPortfolio.filter(a => a.id !== assetId);
         updatePortfolioCalculations();
+        saveUserPortfolio();
     }
 }
 
@@ -3377,6 +3420,7 @@ function addAssetToPortfolio(event) {
 
     // Recalcular
     updatePortfolioCalculations();
+    saveUserPortfolio();
 }
 
 /**
@@ -3761,6 +3805,7 @@ function saveActiveValuationToPortfolio() {
     };
 
     userPortfolio.unshift(newAsset);
+    saveUserPortfolio();
 
     alert(`🎉 ¡PROPIEDAD GUARDADA EN TU PORTAFOLIO IA!\nEl activo en ${zoneName} tasado en $${formatNumber(activeValuation.toFixed(0))} USD fue añadido exitosamente. Se ha calculado una renta mensual predictiva de $${formatNumber(rent.toFixed(0))} USD (ROI 6.5% anual).\n\nRedirigiendo a tu simulador de riqueza...`);
 
@@ -4193,6 +4238,9 @@ function initCommercialView() {
         if (loginGate) loginGate.classList.add('hidden');
         if (dashboardArea) dashboardArea.classList.remove('hidden');
     }
+    
+    // Cargar el portafolio del usuario activo (o vacío si es la primera vez)
+    loadUserPortfolio();
     
     const b2bHeader = document.getElementById('commercial-header-hud');
     if (b2bHeader) b2bHeader.style.display = 'flex';
@@ -7448,6 +7496,9 @@ function logoutCommercialAgent() {
     agentUploadedProperties = [];
     localStorage.removeItem('valorgt_active_b2b_client');
     saveLocalPropertiesToStorage();
+    
+    // Resetear portafolio a modo demo/visitante
+    loadUserPortfolio();
     
     // Resetear formulario
     const loginForm = document.getElementById('commercial-login-form');

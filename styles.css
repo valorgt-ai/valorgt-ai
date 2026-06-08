@@ -2385,15 +2385,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-bottom: 24px;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
     .portfolio-kpis-grid {
         grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 576px) {
     .portfolio-kpis-grid {
         grid-template-columns: 1fr !important;
+        gap: 10px;
     }
 }
 
@@ -2430,7 +2432,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .kpi-val {
-    font-size: 1.55rem;
+    font-size: clamp(1.15rem, 1.6vw, 1.55rem);
     font-weight: 800;
     margin-top: 4px;
     display: block;
