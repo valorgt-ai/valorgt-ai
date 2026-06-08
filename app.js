@@ -48,12 +48,12 @@ const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
 if (savedB2bClient) {
     try {
         loggedInB2bClient = JSON.parse(savedB2bClient);
-        // Sanitizar sesión activa del cliente demo
-        if (loggedInB2bClient && loggedInB2bClient.email) {
-            const emailLower = loggedInB2bClient.email.toLowerCase();
-            if (emailLower === 'roberto@inversionesrv.com') {
+        // Sanitizar sesión activa del cliente demo o inversionistas
+        if (loggedInB2bClient) {
+            const emailLower = (loggedInB2bClient.email || '').toLowerCase();
+            const roleLower = (loggedInB2bClient.role || '').toLowerCase();
+            if (roleLower === 'inversionista') {
                 loggedInB2bClient.plan = 'Premium';
-                loggedInB2bClient.role = 'inversionista';
             } else if (emailLower === 'ana@estevezinmobiliaria.com') {
                 loggedInB2bClient.plan = 'VIP';
                 loggedInB2bClient.role = 'agente';
@@ -79,14 +79,13 @@ let b2bClients = JSON.parse(localStorage.getItem('b2b_clients_local')) || [
     { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente', whatsapp: '50239482049', logo: '' }
 ];
 
-// Asegurar IDs y sanitizar planes/roles para cuentas demo (para evitar datos obsoletos en localStorage)
+// Asegurar IDs y sanitizar planes/roles para cuentas demo e inversionistas (para evitar datos obsoletos en localStorage)
 b2bClients.forEach((client, idx) => {
-    if (client.email) {
+    if (client.role && client.role.toLowerCase() === 'inversionista') {
+        client.plan = 'Premium';
+    } else if (client.email) {
         const emailLower = client.email.toLowerCase();
-        if (emailLower === 'roberto@inversionesrv.com') {
-            client.plan = 'Premium';
-            client.role = 'inversionista';
-        } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+        if (emailLower === 'ana@estevezinmobiliaria.com') {
             client.plan = 'VIP';
             client.role = 'agente';
         } else if (emailLower === 'sofia@alianzagt.com') {
@@ -4395,11 +4394,11 @@ function initCommercialView() {
                     const dbBalance = parseFloat(data.usdt_balance || 0);
                     let dbRole = data.role || 'agente';
                     
-                    // Sanitizar cuentas demo en Supabase sync
+                    // Sanitizar cuentas demo e inversionistas en Supabase sync
                     const emailLower = (loggedInB2bClient.email || '').toLowerCase();
-                    if (emailLower === 'roberto@inversionesrv.com') {
+                    const roleLower = dbRole.toLowerCase();
+                    if (roleLower === 'inversionista') {
                         dbPlan = 'Premium';
-                        dbRole = 'inversionista';
                     } else if (emailLower === 'ana@estevezinmobiliaria.com') {
                         dbPlan = 'VIP';
                         dbRole = 'agente';
@@ -6821,10 +6820,11 @@ async function authenticateCommercialAgent(event) {
                 return;
             }
 
-            // Sanitizar perfiles demo al iniciar sesión
-            if (profile && profile.email) {
-                const emailLower = profile.email.toLowerCase();
-                if (emailLower === 'roberto@inversionesrv.com') {
+            // Sanitizar perfiles al iniciar sesión (demo e inversionistas)
+            if (profile) {
+                const roleLower = (profile.role || 'agente').toLowerCase();
+                const emailLower = (profile.email || '').toLowerCase();
+                if (roleLower === 'inversionista') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
                 } else if (emailLower === 'ana@estevezinmobiliaria.com') {
@@ -9401,9 +9401,9 @@ async function _syncSupabaseDataInternal() {
                         let dbPlan = latestProfile.plan || 'Básico';
                         let dbRole = latestProfile.role || 'agente';
                         const emailLower = (loggedInB2bClient.email || '').toLowerCase();
-                        if (emailLower === 'roberto@inversionesrv.com') {
+                        const roleLower = dbRole.toLowerCase();
+                        if (roleLower === 'inversionista') {
                             dbPlan = 'Premium';
-                            dbRole = 'inversionista';
                         } else if (emailLower === 'ana@estevezinmobiliaria.com') {
                             dbPlan = 'VIP';
                             dbRole = 'agente';
@@ -9602,10 +9602,10 @@ async function syncB2bClientsFromSupabase() {
                 let plan = profile.plan || 'Básico';
                 let role = profile.role || 'agente';
                 const emailLower = (profile.email || '').toLowerCase();
+                const roleLower = role.toLowerCase();
                 
-                if (emailLower === 'roberto@inversionesrv.com') {
+                if (roleLower === 'inversionista') {
                     plan = 'Premium';
-                    role = 'inversionista';
                 } else if (emailLower === 'ana@estevezinmobiliaria.com') {
                     plan = 'VIP';
                     role = 'agente';
