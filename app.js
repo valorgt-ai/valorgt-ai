@@ -2698,7 +2698,7 @@ function formatNumber(num) {
 /**
  * Anima un contador numérico en pantalla de forma fluida
  */
-function animateNumber(id, start, end, duration) {
+function animateNumber(id, start, end, duration, prefix = '') {
     const obj = document.getElementById(id);
     if (!obj) return;
     
@@ -2712,7 +2712,7 @@ function animateNumber(id, start, end, duration) {
             clearInterval(timer);
             current = end;
         }
-        obj.innerText = formatNumber(current.toFixed(0));
+        obj.innerText = prefix + formatNumber(current.toFixed(0));
     }, 10);
 }
 
@@ -3039,9 +3039,9 @@ function updatePortfolioCalculations() {
     currentTotalEquityUSD = displayEquityUSD;
 
     // --- ANIMAR E INJECTAR NUMEROS EN KPI DISPLAY ---
-    animateNumber('pkpi-total-value', 0, displayValueUSD * conversion, 600);
-    animateNumber('pkpi-total-debt', 0, displayDebtUSD * conversion, 600);
-    animateNumber('pkpi-total-equity', 0, displayEquityUSD * conversion, 600);
+    animateNumber('pkpi-total-value', 0, displayValueUSD * conversion, 600, currencySym);
+    animateNumber('pkpi-total-debt', 0, displayDebtUSD * conversion, 600, currencySym);
+    animateNumber('pkpi-total-equity', 0, displayEquityUSD * conversion, 600, currencySym);
     
     document.getElementById('pkpi-total-rent').innerText = `${currencySym}${formatNumber((displayRentUSD * conversion).toFixed(0))}/m`;
     document.getElementById('pkpi-total-payments').innerText = `${currencySym}${formatNumber((displayPaymentsUSD * conversion).toFixed(0))}/m`;
@@ -4428,13 +4428,24 @@ function renderB2bAgentProfile() {
     const plan = (client.plan || 'pro').toLowerCase();
     const status = (client.status || 'Activo').toUpperCase();
 
+    let planPriceGTQ = 0;
     let planPriceUSD = 0;
-    if (plan === 'vip') planPriceUSD = 82;
-    else if (plan === 'premium') planPriceUSD = 43.70;
-    else if (plan === 'pro') planPriceUSD = 31;
-    else planPriceUSD = 18;
+    if (plan === 'vip') {
+        planPriceGTQ = 640;
+        planPriceUSD = 82;
+    } else if (plan === 'premium') {
+        planPriceGTQ = 340;
+        planPriceUSD = 43.70;
+    } else if (plan === 'pro') {
+        planPriceGTQ = 240;
+        planPriceUSD = 31;
+    } else {
+        planPriceGTQ = 140;
+        planPriceUSD = 18;
+    }
 
-    const planPriceConverted = planPriceUSD * conversion;
+    const planPriceConverted = activeCurrency === 'GTQ' ? planPriceGTQ : planPriceUSD;
+    const formattedPrice = planPriceConverted % 1 === 0 ? planPriceConverted.toFixed(0) : planPriceConverted.toFixed(2);
     const planClass = plan === 'básico' || plan === 'basico' ? 'basico' : plan;
 
     container.innerHTML = `
@@ -4492,7 +4503,7 @@ function renderB2bAgentProfile() {
             <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Costo de Licencia SaaS:</span>
-                    <strong style="font-size: 0.95rem; color: var(--green);">${currencySym}${formatNumber(planPriceConverted.toFixed(0))} / mes</strong>
+                    <strong style="font-size: 0.95rem; color: var(--green);">${currencySym}${formatNumber(formattedPrice)} / mes</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 3px;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Firma Digital Autorizada:</span>
@@ -7093,11 +7104,19 @@ function selectSignupPlan(planKey, priceUSD) {
     selectedSignupPlanKey = planKey;
     
     let priceGTQ = 240; // Default Pro
-    if (planKey === 'basico') priceGTQ = 140;
-    else if (planKey === 'vip') priceGTQ = 640;
-    else if (planKey === 'premium') priceGTQ = 340;
+    priceUSD = 31;
+    if (planKey === 'basico') {
+        priceGTQ = 140;
+        priceUSD = 18;
+    } else if (planKey === 'vip') {
+        priceGTQ = 640;
+        priceUSD = 82;
+    } else if (planKey === 'premium') {
+        priceGTQ = 340;
+        priceUSD = 43.70;
+    }
     
-    selectedSignupPlanPrice = priceGTQ / exchangeRate;
+    selectedSignupPlanPrice = priceUSD;
 
     // Actualizar clases activas en las tarjetas de plan
     ['basico', 'pro', 'vip', 'premium'].forEach(p => {
@@ -7127,7 +7146,7 @@ function selectSignupPlan(planKey, priceUSD) {
         priceConverted = priceGTQ;
         currencySym = 'Q';
     } else {
-        priceConverted = priceGTQ / exchangeRate;
+        priceConverted = priceUSD;
         currencySym = '$';
     }
 
@@ -8398,12 +8417,20 @@ function renderAdminDashboard() {
 
         // Calcular cobro total del plan
         let planPriceGTQ = 0;
-        if (plan === 'vip') planPriceGTQ = 640;
-        else if (plan === 'premium') planPriceGTQ = 340;
-        else if (plan === 'pro') planPriceGTQ = 240;
-        else if (plan === 'básico' || plan === 'basico') planPriceGTQ = 140;
-        
-        let planPriceUSD = planPriceGTQ / exchangeRate;
+        let planPriceUSD = 0;
+        if (plan === 'vip') {
+            planPriceGTQ = 640;
+            planPriceUSD = 82;
+        } else if (plan === 'premium') {
+            planPriceGTQ = 340;
+            planPriceUSD = 43.70;
+        } else if (plan === 'pro') {
+            planPriceGTQ = 240;
+            planPriceUSD = 31;
+        } else if (plan === 'básico' || plan === 'basico') {
+            planPriceGTQ = 140;
+            planPriceUSD = 18;
+        }
         
         // Sumar facturaciones por pauta publicitaria (si las tiene)
         let totalClientAdBillingUSD = 0;
@@ -8455,7 +8482,7 @@ function renderAdminDashboard() {
             <td style="text-align: center; padding: 10px; vertical-align: middle;"><strong class="${statusColorClass}" style="font-size: 0.65rem;">${status.toUpperCase()}</strong></td>
             <td style="text-align: right; padding: 10px; vertical-align: middle;">
                 <div style="display: flex; gap: 8px; align-items: center; justify-content: flex-end;">
-                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--green); margin-right: 5px;">${currencySym}${formatNumber(convertedTotal.toFixed(0))}</span>
+                    <span style="font-size: 0.75rem; font-weight: bold; color: var(--green); margin-right: 5px;">${currencySym}${formatNumber(convertedTotal % 1 === 0 ? convertedTotal.toFixed(0) : convertedTotal.toFixed(2))}</span>
                     <button class="btn btn-outline font-mono" style="padding: 3px 6px; font-size: 0.55rem; background: transparent; cursor: pointer; border: 1px solid currentColor; ${actionBtnColor}" onclick="toggleAgentStatus(${idx})">
                         ${actionBtnText}
                     </button>
@@ -8471,7 +8498,7 @@ function renderAdminDashboard() {
     counter.innerText = `${totalSubscribers} AGENTE${totalSubscribers === 1 ? '' : 'S'}`;
 
     // Actualizar KPIs de administración
-    animateNumber('admin-total-revenue', 0, totalRevenueUSD * conversion, 600);
+    animateNumber('admin-total-revenue', 0, totalRevenueUSD * conversion, 600, currencySym);
     document.getElementById('admin-total-subscribers').innerText = `${totalSubscribers} Activos`;
     
     // Campañas de pauta activas: contamos cuántos anuncios sponsored hay en PORTFOLIO_DATABASE
@@ -11041,7 +11068,7 @@ function renderB2bPricingGrid() {
                 </div>
                 <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 22px;">
                     <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
-                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
+                    <span class="plan-price-num">${formatNumber(priceNum % 1 === 0 ? priceNum.toFixed(0) : priceNum.toFixed(2))}</span>
                     <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
                 </div>
                 <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
@@ -11106,12 +11133,10 @@ function selectPublicPlanForSignup(planKey) {
     if (!isCommercialAuthenticated) {
         switchLoginTab('signup');
         
-        let priceGTQ = 240; // Default Pro
-        if (planKey === 'basico') priceGTQ = 140;
-        else if (planKey === 'vip') priceGTQ = 640;
-        else if (planKey === 'premium') priceGTQ = 340;
-        
-        let priceUSD = priceGTQ / exchangeRate;
+        let priceUSD = 31; // Default Pro
+        if (planKey === 'basico') priceUSD = 18;
+        else if (planKey === 'vip') priceUSD = 82;
+        else if (planKey === 'premium') priceUSD = 43.70;
         
         // Sincronizar select de rol y gatillar evento de actualización
         const roleSelect = document.getElementById('com-signup-type');
