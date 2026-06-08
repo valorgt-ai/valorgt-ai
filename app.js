@@ -4115,12 +4115,25 @@ function updateLockOverlaysState() {
     const goldLock = document.getElementById('commercial-gold-overlay-lock');
     const promoLock = document.getElementById('commercial-promo-overlay-lock');
     const btnPromote = document.getElementById('btn-promote-property');
+    const goldLockMessage = document.getElementById('gold-lock-message');
 
-    // La cartera de Tether Gold (Gold Wallet) se desbloquea SÓLO para planes VIP que no sean inversionistas y no estén pendientes.
-    // Para inversionistas (Premium) o agentes Pro/Basico, permanece bloqueada.
-    const unlockGold = activeB2bPlan === 'vip' && !isPending && !isInvestor;
+    // La cartera de Tether Gold (Gold Wallet) se desbloquea para:
+    // 1. Agentes con plan VIP (Inmobiliaria Premium)
+    // 2. Inversionistas con plan Premium (Inversionista Premium)
+    const unlockGold = !isPending && (
+        (activeB2bPlan === 'vip' && !isInvestor) || 
+        (activeB2bPlan === 'premium' && isInvestor)
+    );
     // La promoción de propiedades se desbloquea para VIP y Premium que no estén pendientes.
     const unlockPromo = (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending;
+
+    if (goldLockMessage) {
+        if (isInvestor) {
+            goldLockMessage.innerText = "El XAUt Ledger y la consola contable de retiros bancarios de Tether Gold son privilegios exclusivos del plan Inversionista Premium. Realiza un upgrade para desbloquear tu Cartera de Oro.";
+        } else {
+            goldLockMessage.innerText = "El XAUt Ledger y la consola contable de retiros bancarios de Tether Gold son privilegios exclusivos del plan Inmobiliaria Premium. Realiza un upgrade para desbloquear tu Cartera de Oro.";
+        }
+    }
 
     if (unlockGold) {
         if (goldLock) goldLock.classList.add('hidden');
