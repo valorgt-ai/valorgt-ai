@@ -2386,16 +2386,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .kpi-card {
-    padding: 8px 12px !important;
+    padding: 12px !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 58px !important;
+    height: 88px !important;
     box-sizing: border-box;
 }
 
 .kpi-lbl {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     letter-spacing: 0.5px;
@@ -2416,9 +2416,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .kpi-val {
-    font-size: 1.2rem;
+    font-size: 1.45rem;
     font-weight: 700;
-    margin-top: 2px;
+    margin-top: 6px;
     display: block;
     letter-spacing: 0.5px;
 }
