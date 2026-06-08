@@ -8935,15 +8935,22 @@ function toggleAdminSpeculation(checked) {
 
 let currentAirdropXautPrice = 2380.00;
 let isXautPriceFetched = false;
+let lastXautPriceFetchTime = 0;
 
 async function fetchXautPriceForAirdrop() {
-    if (isXautPriceFetched) return currentAirdropXautPrice;
+    const now = Date.now();
+    // Refrescar si no ha sido obtenido aún o si la última descarga fue hace más de 5 minutos (300,000 ms)
+    if (isXautPriceFetched && (now - lastXautPriceFetchTime < 300000)) {
+        return currentAirdropXautPrice;
+    }
     try {
         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether-gold&vs_currencies=usd');
         const data = await response.json();
         if (data['tether-gold'] && data['tether-gold'].usd) {
             currentAirdropXautPrice = data['tether-gold'].usd;
             isXautPriceFetched = true;
+            lastXautPriceFetchTime = now;
+            console.log(`🪙 Precio de Tether Gold (XAUt) actualizado en vivo: $${currentAirdropXautPrice} USD`);
         }
     } catch (err) {
         console.warn("Error fetching Tether Gold price from CoinGecko, using fallback:", err);
@@ -10564,6 +10571,9 @@ async function executeB2bWithdrawal(event) {
  */
 async function fetchB2bTransactionsHistory() {
     if (!loggedInB2bClient) return [];
+    
+    // Asegurar que el precio de XAUT esté actualizado en vivo antes de calcular los equivalentes netos
+    await fetchXautPriceForAirdrop();
     
     let list = [];
     const emailLower = loggedInB2bClient.email.toLowerCase();
