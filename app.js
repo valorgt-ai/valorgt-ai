@@ -12045,15 +12045,43 @@ function toggleGlobalAssistantSpeech() {
     // Crear la instancia de voz de SpeechSynthesis
     globalAssistantSpeechUtterance = new SpeechSynthesisUtterance(explanationText);
     globalAssistantSpeechUtterance.lang = 'es-ES';
-    globalAssistantSpeechUtterance.pitch = 1.05;
-    globalAssistantSpeechUtterance.rate = 0.95;
+    globalAssistantSpeechUtterance.pitch = 1.0; // Tono neutro más natural
+    globalAssistantSpeechUtterance.rate = 0.92;  // Velocidad ligeramente reducida para evitar sonar acelerada/robótica
 
-    // Intentar buscar una voz en español compatible nativa
+    // Intentar buscar una voz en español compatible nativa de mujer
     if (window.speechSynthesis) {
         const voices = window.speechSynthesis.getVoices();
-        const spanishVoice = voices.find(v => v.lang.toLowerCase().startsWith('es'));
-        if (spanishVoice) {
-            globalAssistantSpeechUtterance.voice = spanishVoice;
+        const spanishVoices = voices.filter(v => v.lang.toLowerCase().startsWith('es'));
+        
+        if (spanishVoices.length > 0) {
+            // Nombres conocidos de voces de mujer premium en español
+            const femaleVoiceKeywords = [
+                'sabina', 'helena', 'monica', 'paulina', 'marisol', 'laura', 'yolanda', 'maria', 
+                'elena', 'angelica', 'dalia', 'hilda', 'sandra', 'ana', 'google español'
+            ];
+            
+            let selectedVoice = null;
+            for (const keyword of femaleVoiceKeywords) {
+                selectedVoice = spanishVoices.find(v => v.name.toLowerCase().includes(keyword));
+                if (selectedVoice) break;
+            }
+            
+            // Excluir voces masculinas si no hay match específico
+            if (!selectedVoice) {
+                const maleKeywords = ['david', 'julio', 'pablo', 'mateo', 'male', 'hombre', 'jorge', 'raul'];
+                selectedVoice = spanishVoices.find(v => {
+                    const nameLower = v.name.toLowerCase();
+                    return !maleKeywords.some(mk => nameLower.includes(mk));
+                });
+            }
+            
+            // Fallback a cualquier voz en español
+            if (!selectedVoice) {
+                selectedVoice = spanishVoices[0];
+            }
+            
+            globalAssistantSpeechUtterance.voice = selectedVoice;
+            console.log(`[Voz IA Seleccionada] Name: ${selectedVoice.name}, Lang: ${selectedVoice.lang}`);
         }
     }
 
