@@ -1445,7 +1445,7 @@
                     <!-- MÓDULO INTERNO DEL DASHBOARD COMERCIAL (Se muestra al autenticarse) -->
                     <div id="commercial-dashboard-area" class="hidden">
                         <!-- CABECERA DE TELEMETRÍA COMERCIAL -->
-                        <div class="portfolio-header-hud">
+                        <div class="portfolio-header-hud" id="commercial-header-hud">
                             <div class="ph-left">
                                 <span class="hud-label-small">CONSOLA DE CONTROL COMERCIAL B2B</span>
                                 <div class="investor-rank-badge font-mono" id="commercial-saas-badge" style="border-color: var(--cyan); gap: 6px; padding: 4px 10px; background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);">
@@ -2508,80 +2508,8 @@
                                 <!-- Banner Dinámico de Suscripción Pendiente de Verificación Bancaria -->
                                 <div id="b2b-subscription-pending-banner" style="display: none; margin-bottom: 20px;"></div>
 
-                                <div class="saas-pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
-                                    <!-- Plan 1: Básico -->
-                                    <div class="pricing-card" id="plan-card-basico">
-                                        <div class="plan-header">
-                                            <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
-                                            <h3 class="plan-title">Agente Individual</h3>
-                                            <p class="plan-subtitle" style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0;">Ideal para agentes pequeños.</p>
-                                        </div>
-                                        <div class="plan-price font-mono">
-                                            <span class="plan-currency-sym" id="price-sym-basico">Q</span>
-                                            <span class="plan-price-num" id="price-num-basico" data-usd="18" data-gtq="140">140</span>
-                                            <span class="plan-period">/mes <span class="plan-equiv" id="price-equiv-basico" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $18 USD)</span></span>
-                                        </div>
-                                        <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> 20 Propiedades</li>
-                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Su Logo en Propiedades</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Radar de Calor</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Terminal de Inversion</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Portafolio IA</li>
-                                            <li><i data-lucide="x" class="text-red"></i> Desc. en Pautas</li>
-                                        </ul>
-                                        <button class="btn-plan-action" id="btn-plan-basico" onclick="openPlanPayment('basico')">Cambiar Plan</button>
-                                    </div>
-
-                                    <!-- Plan 2: Pro (Por Defecto) -->
-                                    <div class="pricing-card active-plan" id="plan-card-pro">
-                                        <div class="active-ribbon">RECOMENDADO</div>
-                                        <div class="plan-header">
-                                            <span class="plan-badge">PRO</span>
-                                            <h3 class="plan-title">Inmobiliaria Pro</h3>
-                                            <p class="plan-subtitle" style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0;">Ideal para empresas en expansión.</p>
-                                        </div>
-                                        <div class="plan-price font-mono">
-                                            <span class="plan-currency-sym" id="price-sym-pro">Q</span>
-                                            <span class="plan-price-num" id="price-num-pro" data-usd="31" data-gtq="240">240</span>
-                                            <span class="plan-period">/mes <span class="plan-equiv" id="price-equiv-pro" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $31 USD)</span></span>
-                                        </div>
-                                        <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> 100 Propiedades</li>
-                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
-                                            <li><i data-lucide="check"></i> Radar de Calor</li>
-                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
-                                            <li><i data-lucide="check"></i> Portafolio IA</li>
-                                            <li><i data-lucide="check"></i> 15% Desc. Pautas Pub.</li>
-                                        </ul>
-                                        <button class="btn-plan-action" id="btn-plan-pro" onclick="openPlanPayment('pro')">Plan Activo</button>
-                                    </div>
-
-                                    <!-- Plan 3: VIP -->
-                                    <div class="pricing-card" id="plan-card-vip">
-                                        <div class="plan-header">
-                                            <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
-                                            <h3 class="plan-title">Inmobiliaria Premium</h3>
-                                            <p class="plan-subtitle" style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0;">Ideal para empresas en expansión.</p>
-                                        </div>
-                                        <div class="plan-price font-mono">
-                                            <span class="plan-currency-sym" id="price-sym-vip">Q</span>
-                                            <span class="plan-price-num" id="price-num-vip" data-usd="82" data-gtq="640">640</span>
-                                            <span class="plan-period">/mes <span class="plan-equiv" id="price-equiv-vip" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $82 USD)</span></span>
-                                        </div>
-                                        <ul class="plan-features font-mono">
-                                            <li><i data-lucide="check"></i> Propiedades Ilimitadas</li>
-                                            <li><i data-lucide="check"></i> Redes Neuronales</li>
-                                            <li><i data-lucide="check"></i> Su Logo en Propiedades</li>
-                                            <li><i data-lucide="check"></i> Radar de Calor</li>
-                                            <li><i data-lucide="check"></i> Terminal de Inversion</li>
-                                            <li><i data-lucide="check"></i> Portafolio IA</li>
-                                            <li><i data-lucide="check"></i> 25% Desc. Pautas Pub.</li>
-                                            <li><i data-lucide="check" style="color: #ffd700;"></i> Cartera de ORO Digital</li>
-                                        </ul>
-                                        <button class="btn-plan-action" id="btn-plan-vip" onclick="openPlanPayment('vip')">Cambiar Plan</button>
-                                    </div>
+                                <div class="saas-pricing-grid" id="b2b-pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                                    <!-- Cargado dinámicamente por renderB2bPricingGrid() -->
                                 </div>
                             </div>
                         </div>

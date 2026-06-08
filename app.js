@@ -588,6 +588,8 @@ function switchView(viewId) {
                 
                 document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
                 document.getElementById('comm-tab-content-portfolio')?.classList.remove('hidden');
+                const b2bHeader = document.getElementById('commercial-header-hud');
+                if (b2bHeader) b2bHeader.style.display = 'none';
                 
                 initPortfolioView();
                 
@@ -751,6 +753,10 @@ function switchView(viewId) {
     document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
     const activeView = document.getElementById(`view-${viewId}`);
     if (activeView) activeView.classList.add('active');
+    
+    if (viewId === 'commercial') {
+        initCommercialView();
+    }
 
     // Cambiar Título de la Cabecera Superior
     const titleEl = document.getElementById('page-title');
@@ -3618,7 +3624,7 @@ function saveActiveValuationToPortfolio() {
     }
 
     const hasUnlimitedAccess = isCommercialAuthenticated && loggedInB2bClient && (
-        loggedInB2bClient.role === 'inversionista' || 
+        ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') || 
         (loggedInB2bClient.role === 'agente' && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro'))
     );
 
@@ -4059,7 +4065,7 @@ function sendPortfolioAiChatMessage() {
  * Gestiona los Overlays de Bloqueo Criptográficos según Plan, Rol y Estado de Pago
  */
 function updateLockOverlaysState() {
-    const isInvestor = loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
+    const isInvestor = loggedInB2bClient && ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista');
     const isPending = loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente');
     
     const goldLock = document.getElementById('commercial-gold-overlay-lock');
@@ -4103,6 +4109,9 @@ function initCommercialView() {
         if (loginGate) loginGate.classList.add('hidden');
         if (dashboardArea) dashboardArea.classList.remove('hidden');
     }
+    
+    const b2bHeader = document.getElementById('commercial-header-hud');
+    if (b2bHeader) b2bHeader.style.display = 'flex';
 
     if (!isSupabaseActive) {
         filterAgentProperties();
@@ -4121,7 +4130,7 @@ function initCommercialView() {
     if (tabsNav) tabsNav.style.display = 'flex';
 
     // Controlar visibilidad de pestañas del panel comercial según rol y plan
-    const isInvestor = loggedInB2bClient && loggedInB2bClient.role === 'inversionista';
+    const isInvestor = loggedInB2bClient && ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista');
     const clientPlan = loggedInB2bClient && loggedInB2bClient.plan ? loggedInB2bClient.plan.toLowerCase() : '';
     
     const btnPropiedades = document.getElementById('comm-tab-btn-propiedades');
@@ -4144,6 +4153,23 @@ function initCommercialView() {
             if (btnPortfolio) btnPortfolio.style.display = 'none';
         }
     }
+
+    // Actualizar nivel de socio en la cabecera comercial
+    const partnerLevelEl = document.getElementById('commercial-partner-level');
+    if (partnerLevelEl && loggedInB2bClient) {
+        const client = loggedInB2bClient;
+        const dbPlan = client.plan || 'Pro';
+        const isPremium = (dbPlan === 'VIP' || dbPlan === 'Premium' || dbPlan.toLowerCase() === 'premium' || dbPlan.toLowerCase() === 'vip');
+        const isPro = (dbPlan === 'Pro' || dbPlan.toLowerCase() === 'pro');
+        const isInvestor = (client.role || '').toLowerCase() === 'inversionista';
+        
+        partnerLevelEl.innerText = isPremium ? 
+            (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") : 
+            (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+    }
+
+    // Renderizar grilla de suscripción B2B dinámica
+    renderB2bPricingGrid();
 
     // Gestionar Overlays de Bloqueo Criptográficos según Plan y Estado de Pago
     updateLockOverlaysState();
@@ -5486,7 +5512,8 @@ function completeB2bTransaction() {
         activeB2bPlan = planKey;
 
         // Actualizar HUD
-        let planLabel = "Inmobiliaria Pro";
+        const isInvestor = loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
+        let planLabel = isInvestor ? "Inversionista Premium" : "Inmobiliaria Pro";
         if (planKey === 'basico') {
             planLabel = "Agente Individual";
             amountUSD = 18;
@@ -5496,6 +5523,9 @@ function completeB2bTransaction() {
         } else if (planKey === 'vip') {
             planLabel = "Inmobiliaria Premium";
             amountUSD = 82;
+        } else if (planKey === 'premium') {
+            planLabel = "Inversionista Premium";
+            amountUSD = 43.70;
         }
 
         saasBillingAmountUSD += amountUSD;
@@ -6372,7 +6402,7 @@ async function approvePendingPayment(reqId) {
                     
                     const partnerLevelEl = document.getElementById('commercial-partner-level');
                     if (partnerLevelEl) {
-                        partnerLevelEl.innerText = (dbPlan === 'VIP' || dbPlan === 'Premium') ? (client.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (dbPlan === 'Pro' ? (client.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+                        partnerLevelEl.innerText = (dbPlan === 'VIP' || dbPlan === 'Premium') ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (dbPlan === 'Pro' ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
                     }
                     
                     updateLockOverlaysState();
@@ -6669,7 +6699,7 @@ async function authenticateCommercialAgent(event) {
             if (partnerLevelEl) {
                 const isPremium = (profile.plan === 'VIP' || profile.plan === 'Premium');
                 const isPro = (profile.plan === 'Pro');
-                partnerLevelEl.innerText = isPremium ? (profile.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (profile.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+                partnerLevelEl.innerText = isPremium ? (((profile.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (((profile.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
             }
 
             // Registrar log en tiempo real en la administración
@@ -6719,7 +6749,7 @@ async function authenticateCommercialAgent(event) {
             if (partnerLevelEl) {
                 const isPremium = (client.plan === 'VIP' || client.plan === 'Premium');
                 const isPro = (client.plan === 'Pro');
-                partnerLevelEl.innerText = isPremium ? (client.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (client.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+                partnerLevelEl.innerText = isPremium ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
             }
         } else {
             // Demo user (agente@valorgt.com)
@@ -6729,7 +6759,7 @@ async function authenticateCommercialAgent(event) {
             if (partnerLevelEl) {
                 const isPremium = (loggedInB2bClient.plan === 'VIP' || loggedInB2bClient.plan === 'Premium');
                 const isPro = (loggedInB2bClient.plan === 'Pro');
-                partnerLevelEl.innerText = isPremium ? (loggedInB2bClient.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (loggedInB2bClient.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+                partnerLevelEl.innerText = isPremium ? (((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
             }
         }
         localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
@@ -6952,7 +6982,7 @@ async function handleRegistrationFormSubmit(event) {
     if (partnerLevelEl) {
         const isPremium = selectedPlanName === 'VIP' || selectedPlanName === 'Premium';
         const isPro = selectedPlanName === 'Pro';
-        partnerLevelEl.innerText = isPremium ? (newClient.role === 'inversionista' ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (newClient.role === 'inversionista' ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+        partnerLevelEl.innerText = isPremium ? (((newClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (((newClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
     }
 
     alert(`¡REGISTRO EXITOSO!\n\nTu cuenta comercial ha sido creada en estado Pendiente.\nTe dirigiremos de inmediato a nuestra pasarela de pagos por transferencia bancaria para activar tu suscripción del Plan ${selectedPlanName.toUpperCase()}.`);
@@ -7160,9 +7190,11 @@ async function completeSignupSubscriptionTransaction() {
     // Actualizar insignias de socio
     const partnerLevelEl = document.getElementById('commercial-partner-level');
     if (partnerLevelEl) {
-        let planLabel = "Inmobiliaria Pro";
+        const isInvestor = newClient && (newClient.role || '').toLowerCase() === 'inversionista';
+        let planLabel = isInvestor ? "Inversionista Premium" : "Inmobiliaria Pro";
         if (selectedSignupPlanKey === 'basico') planLabel = "Agente Individual";
         if (selectedSignupPlanKey === 'vip') planLabel = "Inmobiliaria Premium";
+        if (selectedSignupPlanKey === 'premium') planLabel = "Inversionista Premium";
         partnerLevelEl.innerText = planLabel;
     }
 
@@ -10758,6 +10790,865 @@ function renderPublicPricingGrid() {
             ${actionButtonHtml}
         `;
 
+        grid.appendChild(card);
+    });
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Renderiza dinámicamente la grilla de precios en el panel comercial B2B según el rol del usuario
+ */
+function renderB2bPricingGrid() {
+    const grid = document.getElementById('b2b-pricing-grid');
+    if (!grid) return;
+
+    grid.innerHTML = ''; // Limpiar
+
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '
+function switchPublicPlansProfile(profile) {
+    activePlansProfile = profile;
+    
+    const btnAgente = document.getElementById('btn-profile-agente');
+    const btnInversionista = document.getElementById('btn-profile-inversionista');
+    
+    if (btnAgente && btnInversionista) {
+        if (profile === 'agente') {
+            btnAgente.classList.add('active');
+            btnAgente.style.background = 'rgba(0, 240, 255, 0.15)';
+            btnAgente.style.border = '1px solid rgba(0, 240, 255, 0.3)';
+            btnAgente.style.boxShadow = '0 0 10px rgba(0, 240, 255, 0.2)';
+            btnAgente.style.color = '#fff';
+            
+            btnInversionista.classList.remove('active');
+            btnInversionista.style.background = 'transparent';
+            btnInversionista.style.border = 'none';
+            btnInversionista.style.boxShadow = 'none';
+            btnInversionista.style.color = 'var(--text-muted)';
+        } else {
+            btnInversionista.classList.add('active');
+            btnInversionista.style.background = 'rgba(191, 90, 242, 0.2)';
+            btnInversionista.style.border = '1px solid rgba(191, 90, 242, 0.4)';
+            btnInversionista.style.boxShadow = '0 0 10px rgba(191, 90, 242, 0.3)';
+            btnInversionista.style.color = '#fff';
+            
+            btnAgente.classList.remove('active');
+            btnAgente.style.background = 'transparent';
+            btnAgente.style.border = 'none';
+            btnAgente.style.boxShadow = 'none';
+            btnAgente.style.color = 'var(--text-muted)';
+        }
+    }
+    
+    renderPublicPricingGrid();
+}
+
+/**
+ * Permite pre-seleccionar un plan de suscripción en el formulario de registro comercial.
+ * @param {string} planKey - Plan seleccionado ('basico' | 'pro' | 'vip' | 'premium').
+ */
+function selectPublicPlanForSignup(planKey) {
+    // 1. Redirigir a la Consola Comercial
+    switchView('commercial');
+    
+    // 2. Si no está autenticado, alternar a la pestaña de registro y pre-seleccionar el plan
+    if (!isCommercialAuthenticated) {
+        switchLoginTab('signup');
+        
+        let priceGTQ = 240; // Default Pro
+        if (planKey === 'basico') priceGTQ = 140;
+        else if (planKey === 'vip') priceGTQ = 640;
+        else if (planKey === 'premium') priceGTQ = 340;
+        
+        let priceUSD = priceGTQ / exchangeRate;
+        
+        // Sincronizar select de rol y gatillar evento de actualización
+        const roleSelect = document.getElementById('com-signup-type');
+        if (roleSelect) {
+            if (planKey === 'premium') {
+                roleSelect.value = 'inversionista';
+            } else {
+                roleSelect.value = 'agente';
+            }
+            roleSelect.dispatchEvent(new Event('change'));
+        }
+        
+        selectSignupPlan(planKey, priceUSD);
+        
+        // Desplazamiento visual suave
+        setTimeout(() => {
+            const signupForm = document.getElementById('commercial-signup-form');
+            if (signupForm) {
+                signupForm.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 100);
+    }
+}
+
+/**
+ * Controladores dinámicos del reproductor modal de video de planes premium
+ */
+function playPremiumPlansVideoModal() {
+    const modal = document.getElementById('premium-video-modal');
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (modal && iframe) {
+        iframe.src = `${plansVideoUrl}?autoplay=1`;
+        modal.classList.add('active');
+    }
+}
+
+function closePremiumPlansVideoModal() {
+    const modal = document.getElementById('premium-video-modal');
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (modal && iframe) {
+        iframe.src = '';
+        modal.classList.remove('active');
+    }
+}
+
+/**
+ * Control del modal multimedia de Bienvenida (Lightbox)
+ */
+let hasWelcomeModalLaunched = false;
+
+function openWelcomeVideoModal() {
+    if (hasWelcomeModalLaunched) return;
+    const dismissed = localStorage.getItem('valorgt_welcome_video_dismissed');
+    const lastUrl = localStorage.getItem('valorgt_last_welcome_video_url');
+    
+    // Si ya fue descartado y la URL no cambió, no volver a mostrar
+    if (dismissed === 'true' && lastUrl === welcomeVideoUrl) return;
+    if (!welcomeVideoUrl || welcomeVideoUrl.trim() === '') return;
+    
+    const modal = document.getElementById('welcome-video-modal');
+    const iframe = document.getElementById('welcome-youtube-iframe');
+    if (modal && iframe) {
+        // Cargar video con autoplay para una experiencia interactiva fluida
+        iframe.src = `${welcomeVideoUrl}?autoplay=1`;
+        modal.classList.add('active');
+        hasWelcomeModalLaunched = true;
+        
+        // Registrar última URL y marcar como activa para este video
+        localStorage.setItem('valorgt_last_welcome_video_url', welcomeVideoUrl);
+        localStorage.setItem('valorgt_welcome_video_dismissed', 'false');
+        
+        // Inicializar iconos Lucide por si acaso
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+}
+
+function closeWelcomeVideoModal() {
+    const modal = document.getElementById('welcome-video-modal');
+    const iframe = document.getElementById('welcome-youtube-iframe');
+    if (modal && iframe) {
+        iframe.src = '';
+        modal.classList.remove('active');
+        // Persistir que el usuario cerró el video de bienvenida
+        localStorage.setItem('valorgt_welcome_video_dismissed', 'true');
+    }
+}
+
+/**
+ * Permite al administrador calibrar persistentemente la URL del video de bienvenida principal
+ */
+async function saveAdminWelcomeVideoUrl() {
+    const input = document.getElementById('admin-welcome-video-url');
+    if (!input) return;
+
+    const val = input.value.trim();
+    const embedUrl = getYouTubeEmbedUrl(val);
+    welcomeVideoUrl = embedUrl;
+    localStorage.setItem('valorgt_welcome_video_url', embedUrl);
+    input.value = embedUrl;
+
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('system_announcements')
+                .upsert({
+                    id: 'welcome_video_url',
+                    message: embedUrl,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                });
+            if (error) throw error;
+            alert(`✔️ Video de bienvenida principal configurado y sincronizado en la nube.`);
+        } catch (err) {
+            console.error("Error al sincronizar video de bienvenida en Supabase:", err);
+            alert(`✔️ Guardado localmente, pero falló la sincronización con Supabase.`);
+        }
+    } else {
+        alert(`✔️ Video de bienvenida principal guardado localmente.`);
+    }
+    logAdminSecurityActivity(`Calibración del Core: URL de video de bienvenida configurada en ${embedUrl}`);
+}
+
+async function saveAdminPlansVideoUrl() {
+    const input = document.getElementById('admin-plans-video-url');
+    if (!input) return;
+
+    const val = input.value.trim();
+    const embedUrl = getYouTubeEmbedUrl(val);
+    plansVideoUrl = embedUrl;
+    localStorage.setItem('valorgt_plans_video_url', embedUrl);
+    input.value = embedUrl;
+
+    const iframe = document.getElementById('subscription-youtube-iframe');
+    if (iframe) {
+        iframe.src = embedUrl;
+    }
+
+    // Mostrar u ocultar el botón del video explicativo según el valor configurado
+    const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
+    if (plansVideoUrl && plansVideoUrl.trim() !== '') {
+        if (plansBtn) plansBtn.style.display = 'flex';
+    } else {
+        if (plansBtn) plansBtn.style.display = 'none';
+    }
+
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('system_announcements')
+                .upsert({
+                    id: 'plans_video_url',
+                    message: embedUrl,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                });
+            if (error) throw error;
+            alert(`✔️ Video explicativo de planes configurado y sincronizado en la nube.`);
+        } catch (err) {
+            console.error("Error al sincronizar video de planes en Supabase:", err);
+            alert(`✔️ Guardado localmente, pero falló la sincronización con Supabase.`);
+        }
+    } else {
+        alert(`✔️ Video explicativo de planes guardado localmente.`);
+    }
+    logAdminSecurityActivity(`Calibración del Core: URL de video de planes configurada en ${embedUrl}`);
+}
+
+/**
+ * Módulo seguro de actividad del administrador para evitar ReferenceErrors.
+ * @param {string} message - El mensaje de seguridad a registrar.
+ */
+function logAdminSecurityActivity(message) {
+    if (typeof appendAdminLog === 'function') {
+        appendAdminLog("SECURITY", message, false);
+    } else {
+        console.log(`[SECURITY] ${message}`);
+    }
+}
+
+/**
+ * Alterna la visibilidad del cajón de navegación lateral (mobile drawer) en teléfonos
+ */
+function toggleMobileMenu() {
+    const drawer = document.getElementById('mobile-drawer');
+    if (drawer) {
+        const isHidden = drawer.classList.contains('hidden');
+        if (isHidden) {
+            drawer.classList.remove('hidden');
+            
+            // Sincronizar estado activo de las opciones del drawer con la vista actual
+            const activeViewSec = document.querySelector('.app-view.active');
+            const currentView = activeViewSec ? activeViewSec.id.replace('view-', '') : 'dashboard';
+            
+            document.querySelectorAll('.drawer-item').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(currentView)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Sincronizar los perfiles de agente activos
+            if (loggedInB2bClient) {
+                const mobileNameEl = document.getElementById('mobile-agent-name');
+                const mobileRoleEl = document.getElementById('mobile-agent-role');
+                if (mobileNameEl) mobileNameEl.innerText = loggedInB2bClient.name;
+                if (mobileRoleEl) {
+                    const loggedPlanUpper = (loggedInB2bClient.plan || 'pro').toUpperCase();
+                    mobileRoleEl.innerText = (loggedPlanUpper === 'VIP' || loggedPlanUpper === 'PREMIUM') ? "Socio Premium B2B" : (loggedPlanUpper === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
+                }
+            }
+            
+            // Renderizar iconos de Lucide cargados dinámicamente
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        } else {
+            drawer.classList.add('hidden');
+        }
+    }
+}
+
+/**
+ * Controla el cambio de vistas de la aplicación desde el menú deslizante en teléfonos
+ * @param {string} viewId - Identificador de la vista
+ */
+function switchViewMobile(viewId) {
+    toggleMobileMenu(); // cerrar cajón
+    switchView(viewId); // cambiar vista
+}
+
+async function initPromoBannerAndSettings() {
+    syncPromoBannerUI();
+    
+    // Ocultar o mostrar botón de video de planes preliminarmente con caché local
+    const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
+    if (plansVideoUrl && plansVideoUrl.trim() !== '') {
+        if (plansBtn) plansBtn.style.display = 'flex';
+    } else {
+        if (plansBtn) plansBtn.style.display = 'none';
+    }
+
+    if (isSupabaseActive) {
+        await fetchSystemSettingsFromSupabase();
+    } else {
+        // Fallback local: lanzar bienvenida si está configurado en localStorage
+        setTimeout(() => {
+            if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
+                openWelcomeVideoModal();
+            }
+        }, 1500);
+    }
+}
+
+async function fetchSystemSettingsFromSupabase() {
+    if (!isSupabaseActive || !supabaseClient) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('system_announcements')
+            .select('*');
+
+        if (error) throw error;
+
+        let supabaseWelcomeVideoUrl = welcomeVideoUrl;
+
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                if (item.id === 'main_promo') {
+                    promoBannerMessage = item.message;
+                    isPromoBannerActive = item.is_active;
+                    localStorage.setItem('valorgt_promo_message', promoBannerMessage);
+                    localStorage.setItem('valorgt_promo_active', isPromoBannerActive.toString());
+                    syncPromoBannerUI();
+                } else if (item.id === 'welcome_video_url') {
+                    supabaseWelcomeVideoUrl = item.message;
+                    welcomeVideoUrl = item.message;
+                    localStorage.setItem('valorgt_welcome_video_url', welcomeVideoUrl);
+                    const adminInput = document.getElementById('admin-welcome-video-url');
+                    if (adminInput) adminInput.value = welcomeVideoUrl;
+                } else if (item.id === 'plans_video_url') {
+                    plansVideoUrl = item.message;
+                    localStorage.setItem('valorgt_plans_video_url', plansVideoUrl);
+                    const adminInput = document.getElementById('admin-plans-video-url');
+                    if (adminInput) adminInput.value = plansVideoUrl;
+                    
+                    const plansIframe = document.getElementById('plans-youtube-iframe');
+                    if (plansIframe) plansIframe.src = plansVideoUrl;
+                }
+            });
+        }
+
+        // Mostrar u ocultar el botón de planes según la configuración en la nube
+        const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
+        if (plansVideoUrl && plansVideoUrl.trim() !== '') {
+            if (plansBtn) plansBtn.style.display = 'flex';
+        } else {
+            if (plansBtn) plansBtn.style.display = 'none';
+        }
+
+        // Lanzar Lightbox de Bienvenida automáticamente si la URL descargada de la nube no está vacía
+        setTimeout(() => {
+            if (supabaseWelcomeVideoUrl && supabaseWelcomeVideoUrl.trim() !== '') {
+                openWelcomeVideoModal();
+            }
+        }, 1000);
+
+    } catch (err) {
+        console.warn("⚠️ [ValorGT AI] Error al descargar configuraciones globales de Supabase:", err);
+        // Fallback en caso de error
+        setTimeout(() => {
+            if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
+                openWelcomeVideoModal();
+            }
+        }, 1500);
+    }
+}
+
+/**
+ * Sincroniza la interfaz de usuario en base al estado activo
+ */
+function syncPromoBannerUI() {
+    const banner = document.getElementById('admin-promo-banner');
+    const textEl = document.getElementById('promo-banner-text');
+    
+    if (banner && textEl) {
+        textEl.innerText = promoBannerMessage;
+        if (isPromoBannerActive) {
+            banner.classList.remove('hidden');
+        } else {
+            banner.classList.add('hidden');
+        }
+    }
+    
+    // Sincronizar inputs en la Consola del Admin
+    const promoInput = document.getElementById('admin-promo-input');
+    const promoCheckbox = document.getElementById('admin-promo-active');
+    
+    if (promoInput && !promoInput.matches(':focus')) {
+        promoInput.value = promoBannerMessage;
+    }
+    if (promoCheckbox) {
+        promoCheckbox.checked = isPromoBannerActive;
+    }
+    
+    // Crear o recrear íconos Lucide si es necesario
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Guarda los cambios realizados por el administrador de forma persistente
+ */
+async function saveAdminPromoBannerSettings() {
+    const promoInput = document.getElementById('admin-promo-input');
+    const promoCheckbox = document.getElementById('admin-promo-active');
+    
+    if (!promoInput) return;
+    
+    const message = promoInput.value.trim();
+    if (!message) {
+        alert("⚠️ Por favor, ingresa un mensaje válido para el banner.");
+        return;
+    }
+    
+    const isActive = promoCheckbox ? promoCheckbox.checked : false;
+    
+    // Actualizar estado local
+    promoBannerMessage = message;
+    isPromoBannerActive = isActive;
+    
+    localStorage.setItem('valorgt_promo_message', message);
+    localStorage.setItem('valorgt_promo_active', isActive.toString());
+    
+    syncPromoBannerUI();
+    
+    // Persistir en Supabase
+    if (isSupabaseActive) {
+        try {
+            const { error } = await supabaseClient
+                .from('system_announcements')
+                .upsert({
+                    id: 'main_promo',
+                    message: message,
+                    is_active: isActive,
+                    updated_at: new Date().toISOString()
+                });
+                
+            if (error) throw error;
+            
+            alert("✨ Configuración del banner promocional sincronizada en la nube exitosamente.");
+            logAdminSecurityActivity(`Anuncio del Sistema Actualizado: "${message.substring(0, 30)}..." [Activo: ${isActive}]`);
+        } catch (err) {
+            console.error("❌ Error al guardar banner en Supabase:", err);
+            alert("⚠️ Guardado en caché local con éxito, pero falló la sincronización con Supabase.");
+        }
+    } else {
+        alert("✨ Configuración del banner promocional guardada localmente con éxito.");
+        logAdminSecurityActivity(`Anuncio del Sistema Actualizado (Local): "${message.substring(0, 30)}..." [Activo: ${isActive}]`);
+    }
+}
+
+/**
+ * Alterna la visibilidad de los campos de contraseña
+ * @param {string} inputId - ID del input de contraseña
+ */
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const eyeIcon = document.getElementById(`${inputId}-eye`);
+    if (!input) return;
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (eyeIcon) {
+            eyeIcon.setAttribute('data-lucide', 'eye-off');
+        }
+    } else {
+        input.type = 'password';
+        if (eyeIcon) {
+            eyeIcon.setAttribute('data-lucide', 'eye');
+        }
+    }
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Cambia el rol de registro de forma interactiva y adapta los campos dinámicos
+ * @param {string} role - 'agente' | 'inversionista'
+ */
+function setSignupRole(role) {
+    const typeSelect = document.getElementById('com-signup-type');
+    if (typeSelect) {
+        typeSelect.value = role;
+        typeSelect.dispatchEvent(new Event('change'));
+    }
+    
+    const cardAgente = document.getElementById('role-card-agente');
+    const cardInversionista = document.getElementById('role-card-inversionista');
+    const agentFields = document.getElementById('agent-only-fields');
+    const companyInput = document.getElementById('com-signup-company');
+    const nitInput = document.getElementById('com-signup-nit');
+    const agentPlans = document.getElementById('agent-plans-container');
+    const inversionistaPlans = document.getElementById('inversionista-plans-container');
+    
+    if (role === 'agente') {
+        if (cardAgente) cardAgente.classList.add('active');
+        if (cardInversionista) cardInversionista.classList.remove('active');
+        if (agentFields) agentFields.style.display = 'flex';
+        if (companyInput) companyInput.required = true;
+        if (nitInput) nitInput.required = true;
+        
+        if (agentPlans) agentPlans.style.display = 'flex';
+        if (inversionistaPlans) inversionistaPlans.style.display = 'none';
+        selectSignupPlanCard('pro'); // Plan Pro por defecto
+    } else {
+        if (cardAgente) cardAgente.classList.remove('active');
+        if (cardInversionista) cardInversionista.classList.add('active');
+        if (agentFields) agentFields.style.display = 'none';
+        if (companyInput) {
+            companyInput.required = false;
+            companyInput.value = '';
+        }
+        if (nitInput) {
+            nitInput.required = false;
+            nitInput.value = '';
+        }
+        
+        if (agentPlans) agentPlans.style.display = 'none';
+        if (inversionistaPlans) inversionistaPlans.style.display = 'flex';
+        selectSignupPlanCard('premium'); // Plan Inversionista Premium por defecto
+    }
+}
+
+/**
+ * Selecciona una tarjeta de plan de forma interactiva y sincroniza el select oculto
+ * @param {string} planKey - 'basico' | 'pro' | 'vip' | 'premium'
+ */
+function selectSignupPlanCard(planKey) {
+    const planSelect = document.getElementById('com-signup-plan');
+    if (planSelect) {
+        planSelect.value = planKey;
+        planSelect.dispatchEvent(new Event('change'));
+    }
+    
+    // Lista de todas las tarjetas de plan visuales
+    const cards = ['basico', 'pro', 'vip', 'premium'];
+    cards.forEach(key => {
+        const card = document.getElementById(`plan-card-signup-${key}`);
+        if (card) {
+            if (key === planKey) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        }
+    });
+}
+
+/**
+ * Copia el enlace de la propiedad seleccionada al portapapeles y muestra una notificación
+ */
+function sharePropertyLink(event, propId) {
+    if (event) {
+        event.stopPropagation();
+    }
+    if (!propId) {
+        showCyberToast("ID de propiedad inválido", "x-circle");
+        return;
+    }
+    
+    const shareUrl = window.location.origin + window.location.pathname + '?propId=' + encodeURIComponent(propId);
+    
+    // API Clipboard del navegador con fallback legacy
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl)
+            .then(() => {
+                showCyberToast("¡ENLACE COPIADO AL PORTAPAPELES!", "check-circle");
+            })
+            .catch(err => {
+                console.error("Error al copiar enlace:", err);
+                fallbackCopyText(shareUrl);
+            });
+    } else {
+        fallbackCopyText(shareUrl);
+    }
+}
+
+/**
+ * Fallback para copiar texto en navegadores legacy
+ */
+function fallbackCopyText(text) {
+    try {
+        const tempInput = document.createElement("input");
+        tempInput.value = text;
+        tempInput.style.position = "fixed";
+        tempInput.style.top = "0";
+        tempInput.style.left = "0";
+        tempInput.style.opacity = "0";
+        document.body.appendChild(tempInput);
+        tempInput.focus();
+        tempInput.select();
+        const success = document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        if (success) {
+            showCyberToast("¡ENLACE COPIADO AL PORTAPAPELES!", "check-circle");
+        } else {
+            showCyberToast("Error al copiar el enlace", "x-circle");
+        }
+    } catch (err) {
+        console.error("Error en fallback de copia:", err);
+        showCyberToast("Error al copiar el enlace", "x-circle");
+    }
+}
+
+/**
+ * Muestra una notificación flotante premium estilo glassmorphism cian
+ */
+function showCyberToast(message, iconName = "info") {
+    // Eliminar toast anterior si existe
+    const oldToast = document.getElementById('cyber-toast-notification');
+    if (oldToast) {
+        oldToast.remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.id = 'cyber-toast-notification';
+    toast.className = 'cyber-toast';
+    toast.innerHTML = `
+        <i data-lucide="${iconName}" class="cyber-toast-icon"></i>
+        <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // Activar animación
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 50);
+
+    // Ocultar y eliminar después de 3.5 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 400);
+    }, 3500);
+}
+
+/**
+ * Comprueba si hay un parámetro propId en la URL y despliega automáticamente el modal correspondiente
+ */
+function checkDeepLinkParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propId = urlParams.get('propId');
+    if (!propId) return;
+
+    let foundProperty = null;
+    let foundZone = null;
+
+    if (typeof PORTFOLIO_DATABASE !== 'undefined') {
+        for (const zone in PORTFOLIO_DATABASE) {
+            const index = PORTFOLIO_DATABASE[zone].findIndex(p => p.id === propId);
+            if (index !== -1) {
+                foundProperty = PORTFOLIO_DATABASE[zone][index];
+                foundZone = zone;
+                break;
+            }
+        }
+    }
+
+    if (foundProperty && foundZone) {
+        console.log(`[DeepLink] Propiedad encontrada en la zona: ${foundZone}. Desplegando modal...`);
+        const idx = PORTFOLIO_DATABASE[foundZone].indexOf(foundProperty);
+        if (idx !== -1) {
+            setTimeout(() => {
+                openPropertyDetailModal(foundZone, idx);
+            }, 600);
+        }
+    } else {
+        console.warn(`[DeepLink] No se encontró ninguna propiedad con el ID: ${propId}`);
+    }
+}
+
+
+
+;
+    
+    // Determinar perfil de planes a mostrar basado en el rol del usuario logueado
+    const isInvestor = loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
+    const profileType = isInvestor ? 'inversionista' : 'agente';
+
+    let plans = [];
+    if (profileType === 'agente') {
+        plans = [
+            {
+                key: 'basico',
+                badge: 'INDIVIDUAL',
+                badgeColor: 'var(--neon-blue)',
+                badgeBg: 'rgba(10, 132, 255, 0.15)',
+                badgeBorder: 'rgba(10, 132, 255, 0.3)',
+                title: 'Agente Individual',
+                subtitle: 'Ideal para agentes pequeños y tasadores autónomos.',
+                priceUSD: 18,
+                priceGTQ: 140,
+                features: [
+                    { text: '20 Propiedades en Catálogo', active: true },
+                    { text: 'Redes Neuronales Predictivas', active: true },
+                    { text: 'Sello de Verificación Básica', active: true },
+                    { text: 'Acceso a Radar de Calor', active: true },
+                    { text: 'Terminal de Inversión (Demo)', active: false },
+                    { text: 'Portafolio Patrimonial IA (Demo)', active: false },
+                    { text: 'Descuento en Pautas Publicitarias', active: false }
+                ]
+            },
+            {
+                key: 'pro',
+                badge: 'PRO',
+                badgeColor: 'var(--cyan)',
+                badgeBg: 'rgba(0, 240, 255, 0.1)',
+                badgeBorder: 'rgba(0, 240, 255, 0.3)',
+                title: 'Inmobiliaria Pro',
+                subtitle: 'Perfecto para agencias en expansión y brokers activos.',
+                priceUSD: 31,
+                priceGTQ: 240,
+                recommended: true,
+                features: [
+                    { text: '100 Propiedades en Catálogo', active: true },
+                    { text: 'Redes Neuronales Predictivas', active: true },
+                    { text: 'Logo Propio en Inmuebles', active: true },
+                    { text: 'Acceso Completo a Radar de Calor', active: true },
+                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
+                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
+                    { text: '15% Descuento en Pautas Publicitarias', active: true }
+                ]
+            },
+            {
+                key: 'vip',
+                badge: 'PREMIUM',
+                badgeColor: '#bf5af2',
+                badgeBg: 'rgba(191, 90, 242, 0.15)',
+                badgeBorder: 'rgba(191, 90, 242, 0.3)',
+                title: 'Inmobiliaria Premium',
+                subtitle: 'Operativa ilimitada con carteras de oro digital.',
+                priceUSD: 82,
+                priceGTQ: 640,
+                features: [
+                    { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                    { text: 'Redes Neuronales Predictivas', active: true },
+                    { text: 'Logo Propio y Destacados Premium', active: true },
+                    { text: 'Acceso Completo a Radar de Calor', active: true },
+                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
+                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
+                    { text: '30% Descuento en Pautas Publicitarias', active: true },
+                    { text: 'Cartera de ORO Digital Habilitada', active: true, color: '#ffd700' }
+                ]
+            }
+        ];
+    } else {
+        plans = [
+            {
+                key: 'premium',
+                badge: 'INVERSIONISTA PREMIUM',
+                badgeColor: '#ffd700',
+                badgeBg: 'rgba(255, 215, 0, 0.15)',
+                badgeBorder: 'rgba(255, 215, 0, 0.4)',
+                title: 'Inversionista Premium',
+                subtitle: 'Inteligencia inmobiliaria para detectar oportunidades antes del mercado.',
+                priceUSD: 43.70,
+                priceGTQ: 340,
+                recommended: true,
+                features: [
+                    { text: 'Acceso Tasa Inteligente & Radar de Calor', active: true, color: '#00f0ff' },
+                    { text: 'Terminal de Inversión & Portafolio IA', active: true },
+                    { text: 'Telemetría del Sector - Ciudad de Guatemala', active: true },
+                    { text: 'Comparativa de Rendimiento por Zonas (ROI vs Plusvalía)', active: true },
+                    { text: 'Noticias en Vivo del Mercado en Guatemala', active: true },
+                    { text: 'Portafolio Patrimonial & Asesor IA', active: true },
+                    { text: 'Gestor de Activos Inmobiliarios Avanzado', active: true },
+                    { text: 'Proyector de Riqueza y Amortización', active: true },
+                    { text: 'Cartera de Oro Digital & Participación Directa', active: true, color: '#ffd700' },
+                    { text: 'Módulo de Transferencias, Retiros y Depósitos', active: true },
+                    { text: 'Distribuciones de Oro Digital Habilitadas', active: true }
+                ]
+            }
+        ];
+    }
+
+    plans.forEach(plan => {
+        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
+        const priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        
+        const card = document.createElement('div');
+        card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
+        if (plan.recommended) {
+            card.style.position = 'relative';
+        }
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.justifyContent = 'space-between';
+        card.style.padding = '20px';
+        card.style.boxSizing = 'border-box';
+        card.style.height = '100%';
+
+        let featuresHtml = '';
+        plan.features.forEach(f => {
+            const colorStyle = f.color ? `style="color: ${f.color};"` : '';
+            if (f.active) {
+                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> ${f.text}</li>`;
+            } else {
+                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.5;">${f.text}</span></li>`;
+            }
+        });
+
+        let buttonText = 'Cambiar Plan';
+        if (isUserActivePlan) {
+            buttonText = 'Plan Activo';
+        }
+
+        card.innerHTML = `
+            ${plan.recommended ? '<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">RECOMENDADO</div>' : ''}
+            <div>
+                <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
+                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
+                </div>
+                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 22px;">
+                    <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
+                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
+                    <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                </div>
+                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
+                    ${featuresHtml}
+                </ul>
+            </div>
+            <button class="btn-plan-action ${isUserActivePlan ? 'active-btn' : ''}" id="btn-plan-${plan.key}" onclick="openPlanPayment('${plan.key}')" ${isUserActivePlan ? 'style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled' : ''}>${buttonText}</button>
+        `;
         grid.appendChild(card);
     });
 
