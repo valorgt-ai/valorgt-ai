@@ -563,88 +563,6 @@ function removePreviewImage(index) {
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
-    if (viewId === 'portfolio') {
-        const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
-        const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
-        const hasAccess = clientPlan === 'vip' || clientPlan === 'pro' || clientPlan === 'premium' || clientRole === 'inversionista';
-        
-        if (isCommercialAuthenticated) {
-            if (!hasAccess) {
-                switchView('commercial');
-                switchCommercialTab('suscripcion');
-                alert("💼 El simulador de Portafolio IA requiere una membresía Pro, VIP o Inversionista Premium. Por favor, selecciona un plan para activarlo.");
-                return;
-            }
-            switchView('commercial');
-            setTimeout(() => {
-                switchCommercialTab('portfolio');
-            }, 50);
-            return;
-        } else {
-            switchView('commercial');
-            setTimeout(() => {
-                const tabsNav = document.querySelector('.commercial-tabs-nav');
-                if (tabsNav) tabsNav.style.display = 'none';
-                
-                document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
-                document.getElementById('comm-tab-content-portfolio')?.classList.remove('hidden');
-                const b2bHeader = document.getElementById('commercial-header-hud');
-                if (b2bHeader) b2bHeader.style.display = 'none';
-                
-                initPortfolioView();
-                
-                const activeBlocker = document.getElementById('portfolio-trial-blocker');
-                const activeBadge = document.getElementById('portfolio-trial-badge');
-                const activeTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
-                
-                if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
-                    if (activeBlocker) activeBlocker.classList.remove('hidden');
-                    isPortfolioBlocked = true;
-                    alert("⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
-                    
-                    const loginGate = document.getElementById('commercial-login-gate');
-                    const dashboardArea = document.getElementById('commercial-dashboard-area');
-                    if (loginGate) loginGate.classList.remove('hidden');
-                    if (dashboardArea) dashboardArea.classList.add('hidden');
-                    if (tabsNav) tabsNav.style.display = 'flex';
-                } else {
-                    if (activeBlocker) activeBlocker.classList.add('hidden');
-                    if (activeBadge) {
-                        activeBadge.classList.remove('hidden');
-                        if (activeTimerLbl) activeTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
-                    }
-                    
-                    const loginGate = document.getElementById('commercial-login-gate');
-                    const dashboardArea = document.getElementById('commercial-dashboard-area');
-                    if (loginGate) loginGate.classList.add('hidden');
-                    if (dashboardArea) dashboardArea.classList.remove('hidden');
-                    
-                    portfolioTrialTimer = setInterval(() => {
-                        portfolioTrialTimeLeft--;
-                        const currentTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
-                        if (currentTimerLbl) currentTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
-                        
-                        if (portfolioTrialTimeLeft <= 0) {
-                            clearInterval(portfolioTrialTimer);
-                            portfolioTrialTimer = null;
-                            isPortfolioBlocked = true;
-                            
-                            if (activeBlocker) activeBlocker.classList.remove('hidden');
-                            if (activeBadge) activeBadge.classList.add('hidden');
-                            
-                            alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
-                            
-                            if (loginGate) loginGate.classList.remove('hidden');
-                            if (dashboardArea) dashboardArea.classList.add('hidden');
-                            if (tabsNav) tabsNav.style.display = 'flex';
-                        }
-                    }, 1000);
-                }
-            }, 50);
-            return;
-        }
-    }
-
     // 1. Pausar y ocultar todos los timers y badges de trial de marketing al cambiar de vista
     if (portfolioTrialTimer) {
         clearInterval(portfolioTrialTimer);
@@ -654,8 +572,141 @@ function switchView(viewId) {
     document.getElementById('heatmap-trial-badge')?.classList.add('hidden');
     document.getElementById('investor-trial-badge')?.classList.add('hidden');
 
-    // 2. Control del trial de marketing para las vistas Premium (Portafolio, Radar de Calor, Terminal de Inversión)
-    const premiumViews = ['portfolio', 'heatmap', 'investor'];
+    let highlightId = viewId;
+    let targetViewId = viewId;
+
+    if (viewId === 'portfolio') {
+        targetViewId = 'commercial';
+        highlightId = 'portfolio';
+
+        const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
+        const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
+        const hasAccess = clientPlan === 'vip' || clientPlan === 'pro' || clientPlan === 'premium' || clientRole === 'inversionista';
+        
+        if (isCommercialAuthenticated) {
+            if (!hasAccess) {
+                // Redirigir a comercial -> suscripción
+                switchView('commercial');
+                switchCommercialTab('suscripcion');
+                alert("💼 El simulador de Portafolio IA requiere una membresía Pro, VIP o Inversionista Premium. Por favor, selecciona un plan para activarlo.");
+                return;
+            }
+            
+            // Ocultar todas las vistas y mostrar la seleccionada (contenedor commercial)
+            document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+            const activeView = document.getElementById(`view-${targetViewId}`);
+            if (activeView) activeView.classList.add('active');
+
+            initCommercialView();
+            switchCommercialTab('portfolio');
+            
+            // Actualizar highlights del menú
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`nav-btn-${highlightId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+            const activeMobileBtn = document.getElementById(`mobile-nav-btn-${highlightId}`);
+            if (activeMobileBtn) activeMobileBtn.classList.add('active');
+
+            // Actualizar títulos de la cabecera
+            const titleEl = document.getElementById('page-title');
+            const subtitleEl = document.getElementById('page-subtitle');
+            if (titleEl) titleEl.innerText = "Portafolio Patrimonial IA";
+            if (subtitleEl) subtitleEl.innerText = "Simulación y optimización de carteras de inversión inmobiliaria";
+            
+            return;
+        } else {
+            // Visitante en vista previa de portafolio
+            // 1. Mostrar contenedor comercial
+            document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+            const activeView = document.getElementById('view-commercial');
+            if (activeView) activeView.classList.add('active');
+
+            // 2. Configurar la pestaña portafolio en modo preview
+            const tabsNav = document.querySelector('.commercial-tabs-nav');
+            if (tabsNav) tabsNav.style.display = 'none';
+            
+            document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('comm-tab-content-portfolio')?.classList.remove('hidden');
+            const b2bHeader = document.getElementById('commercial-header-hud');
+            if (b2bHeader) b2bHeader.style.display = 'none';
+            
+            initPortfolioView();
+            
+            // 3. Highlight en la barra
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`nav-btn-${highlightId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
+            const activeMobileBtn = document.getElementById(`mobile-nav-btn-${highlightId}`);
+            if (activeMobileBtn) activeMobileBtn.classList.add('active');
+
+            // Actualizar títulos de la cabecera
+            const titleEl = document.getElementById('page-title');
+            const subtitleEl = document.getElementById('page-subtitle');
+            if (titleEl) titleEl.innerText = "Portafolio Patrimonial IA";
+            if (subtitleEl) subtitleEl.innerText = "Simulación y optimización de carteras de inversión inmobiliaria";
+
+            // 4. Manejo del timer/blocker
+            const activeBlocker = document.getElementById('portfolio-trial-blocker');
+            const activeBadge = document.getElementById('portfolio-trial-badge');
+            const activeTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
+            
+            if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
+                if (activeBlocker) activeBlocker.classList.remove('hidden');
+                isPortfolioBlocked = true;
+                alert("⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                
+                const loginGate = document.getElementById('commercial-login-gate');
+                const dashboardArea = document.getElementById('commercial-dashboard-area');
+                if (loginGate) loginGate.classList.remove('hidden');
+                if (dashboardArea) dashboardArea.classList.add('hidden');
+                if (tabsNav) tabsNav.style.display = 'flex';
+            } else {
+                if (activeBlocker) activeBlocker.classList.add('hidden');
+                if (activeBadge) {
+                    activeBadge.classList.remove('hidden');
+                    if (activeTimerLbl) activeTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
+                }
+                
+                const loginGate = document.getElementById('commercial-login-gate');
+                const dashboardArea = document.getElementById('commercial-dashboard-area');
+                if (loginGate) loginGate.classList.add('hidden');
+                if (dashboardArea) dashboardArea.classList.remove('hidden');
+                
+                portfolioTrialTimer = setInterval(() => {
+                    portfolioTrialTimeLeft--;
+                    const currentTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
+                    if (currentTimerLbl) currentTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
+                    
+                    if (portfolioTrialTimeLeft <= 0) {
+                        clearInterval(portfolioTrialTimer);
+                        portfolioTrialTimer = null;
+                        isPortfolioBlocked = true;
+                        
+                        if (activeBlocker) activeBlocker.classList.remove('hidden');
+                        if (activeBadge) {
+                            activeBadge.classList.add('hidden');
+                        }
+                        
+                        alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                        
+                        if (loginGate) loginGate.classList.remove('hidden');
+                        if (dashboardArea) dashboardArea.classList.add('hidden');
+                        if (tabsNav) tabsNav.style.display = 'flex';
+                        // Forzar cambio a comercial para quitar el highlight de portfolio
+                        switchView('commercial');
+                    }
+                }, 1000);
+            }
+            return;
+        }
+    }
+
+    // 2. Control del trial de marketing para las vistas Premium (Radar de Calor, Terminal de Inversión)
+    const premiumViews = ['heatmap', 'investor'];
     if (premiumViews.includes(viewId)) {
         const clientEmail = (loggedInB2bClient && loggedInB2bClient.email) ? loggedInB2bClient.email.toLowerCase() : '';
         const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
@@ -678,7 +729,6 @@ function switchView(viewId) {
 
         // Nombres amigables para alertas
         const viewNames = {
-            'portfolio': 'Portafolio IA',
             'heatmap': 'Radar de Calor',
             'investor': 'Terminal de Inversión'
         };
@@ -733,10 +783,10 @@ function switchView(viewId) {
     // Quitar clase activa de todos los botones de navegación y agregar a la seleccionada
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     
-    let highlightId = viewId;
+    // Si la vista es comercial, solo resaltamos portfolio si realmente se está mostrando la pestaña portfolio
     if (viewId === 'commercial') {
         const portfolioContent = document.getElementById('comm-tab-content-portfolio');
-        if (portfolioContent && !portfolioContent.classList.contains('hidden')) {
+        if (portfolioContent && !portfolioContent.classList.contains('hidden') && isCommercialAuthenticated) {
             highlightId = 'portfolio';
         }
     }
@@ -751,7 +801,7 @@ function switchView(viewId) {
 
     // Ocultar todas las vistas y mostrar la seleccionada
     document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
-    const activeView = document.getElementById(`view-${viewId}`);
+    const activeView = document.getElementById(`view-${targetViewId}`);
     if (activeView) activeView.classList.add('active');
     
     if (viewId === 'commercial') {
@@ -790,15 +840,9 @@ function switchView(viewId) {
         setTimeout(() => {
             initInvestorComparisonChart();
         }, 50);
-    } else if (viewId === 'portfolio') {
-        switchView('commercial');
-        setTimeout(() => {
-            switchCommercialTab('portfolio');
-        }, 50);
     } else if (viewId === 'commercial') {
-        setTimeout(() => {
-            initCommercialView();
-        }, 50);
+        titleEl.innerText = isCommercialAuthenticated ? "Consola Comercial B2B" : "Área de Ingreso y Registro";
+        subtitleEl.innerText = isCommercialAuthenticated ? "Gestión de propiedades, catálogo y suscripción" : "Accede a la suite de herramientas premium de ValorGT";
     } else if (viewId === 'subscriptions') {
         titleEl.innerText = "Membresías y Planes Premium";
         subtitleEl.innerText = "Potencia tu operativa con el motor SaaS de ValorGT AI e inteligencia de mercado";
