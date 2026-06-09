@@ -1317,6 +1317,7 @@ function toggleCurrency() {
     // Actualizar HUD de ingresos acumulados del admin en el cambio de moneda
     updateAdminMonthlyRevenueHUD();
     calculateAdminAirdropPreview();
+    updateSaasMetricsHUD();
 }
 
 /**
@@ -4884,6 +4885,25 @@ function updateSaasMetricsHUD() {
         const usdtCard = document.getElementById('saas-usdt-balance-card');
         if (usdtCard) {
             usdtCard.innerText = `${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt`;
+        }
+        
+        // Actualizar tarjeta de cotización de XAUt en vivo
+        const priceCard = document.getElementById('saas-xaut-price-card');
+        const priceSubCard = document.getElementById('saas-xaut-price-sub-card');
+        if (priceCard) {
+            const xautPrice = currentAirdropXautPrice || 2380.00;
+            priceCard.innerText = `$${formatNumber(xautPrice.toFixed(2))} USD`;
+            
+            if (priceSubCard) {
+                if (activeCurrency === 'GTQ') {
+                    const priceInGTQ = xautPrice * exchangeRate;
+                    priceSubCard.innerText = `Equiv: Q${formatNumber(priceInGTQ.toFixed(2))} GTQ`;
+                    priceSubCard.style.color = '#ffd700'; // Estética gold premium
+                } else {
+                    priceSubCard.innerText = `🟢 COTIZACIÓN EN VIVO`;
+                    priceSubCard.style.color = 'var(--cyan)';
+                }
+            }
         }
     }
     updateAdminMonthlyRevenueHUD();
@@ -9978,6 +9998,11 @@ function switchCommercialTab(tabId) {
                 portfolioMapInstance.invalidateSize();
             }, 100);
         }
+    }
+    if (tabId === 'oro') {
+        fetchXautPriceForAirdrop().then(() => {
+            updateSaasMetricsHUD();
+        });
     }
     if (typeof updateAssistantVisibility === 'function') {
         updateAssistantVisibility();
