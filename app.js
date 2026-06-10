@@ -12665,7 +12665,9 @@ function renderTutorials() {
     filtered.forEach(t => {
         const card = document.createElement('div');
         card.className = 'card glassmorphism tutorial-card';
-        card.setAttribute('onclick', `openTutorialVideo('${t.youtube_url}', '${t.title.replace(/'/g, "\\'")}')`);
+        card.addEventListener('click', () => {
+            openTutorialVideo(t.youtube_url, t.title);
+        });
         
         // Obtener ID de youtube para el thumbnail
         const ytId = getYoutubeVideoId(t.youtube_url) || 'dQw4w9WgXcQ';
