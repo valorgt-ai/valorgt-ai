@@ -12588,18 +12588,28 @@ async function loadTutorials() {
                 .order('created_at', { ascending: false });
                 
             if (!error && data) {
-                activeTutorials = data;
+                // Combinar datos de Supabase con tutoriales por defecto sin duplicar IDs
+                const dbIds = new Set(data.map(item => item.id));
+                const uniqueDefaults = DEFAULT_TUTORIALS.filter(item => !dbIds.has(item.id));
+                activeTutorials = [...data, ...uniqueDefaults];
             } else {
                 console.warn("Supabase: Fallo al cargar tutoriales, usando fallback local:", error);
-                activeTutorials = [...DEFAULT_TUTORIALS];
+                if (activeTutorials.length === 0) {
+                    activeTutorials = [...DEFAULT_TUTORIALS];
+                }
             }
         } catch (err) {
             console.error("Fallo de red al obtener tutoriales, usando fallback:", err);
-            activeTutorials = [...DEFAULT_TUTORIALS];
+            if (activeTutorials.length === 0) {
+                activeTutorials = [...DEFAULT_TUTORIALS];
+            }
         }
     } else {
-        // Modo local
-        activeTutorials = [...DEFAULT_TUTORIALS];
+        // Modo local: solo inicializar con los predeterminados si la lista está vacía,
+        // para no borrar los videos agregados dinámicamente en memoria.
+        if (activeTutorials.length === 0) {
+            activeTutorials = [...DEFAULT_TUTORIALS];
+        }
     }
     
     renderTutorials();
