@@ -12751,7 +12751,10 @@ function openTutorialVideo(url, title) {
     
     if (titleEl) titleEl.innerText = title;
     iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+    
+    // Forzar visibilidad usando estilos inline y removiendo la clase
     modal.classList.remove('hidden');
+    modal.style.display = 'flex';
 }
 
 /**
@@ -12760,7 +12763,10 @@ function openTutorialVideo(url, title) {
 function closeTutorialVideo() {
     const modal = document.getElementById('tutorial-video-modal');
     const iframe = document.getElementById('tutorial-video-iframe');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
     if (iframe) iframe.src = ''; // Detiene el audio
 }
 
