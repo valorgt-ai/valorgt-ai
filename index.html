@@ -1560,153 +1560,171 @@
                                 <button class="btn-commercial btn-commercial-gold" onclick="switchCommercialTab('suscripcion')">VER SUBSCRIPCIONES</button>
                             </div>
                         </div>
+                        <!-- Estilo local para animación del gráfico -->
+                        <style>
+                            @keyframes goldChartPulse {
+                                0% { filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.15)); }
+                                50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.40)); }
+                                100% { filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.15)); }
+                            }
+                            .glowing-chart-canvas {
+                                animation: goldChartPulse 4s infinite ease-in-out;
+                            }
+                        </style>
 
-                        <!-- NUEVA GRILLA DE TARJETAS KPI PREMIUM B2B DE ORO (3 Columnas, del mismo tamaño que Facturación SaaS) -->
-                        <div class="portfolio-kpis-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 15px; gap: 15px; margin-bottom: 20px;">
-                            <!-- KPI 1: Balance de Oro Digital (XAUt) -->
-                            <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.03) !important; border-color: rgba(255, 215, 0, 0.25) !important;">
-                                    <i data-lucide="coins" style="color: #ffd700;"></i>
+                        <!-- GRILLA DE 3 COLUMNAS: ESTRUCTURA VERTICAL DE PORTAFOLIO DE ORO -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 15px; margin-bottom: 20px; align-items: start; width: 100%;">
+                            
+                            <!-- COLUMNA 1: BALANCE Y RETIROS BANCARIOS -->
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                <!-- KPI 1: Balance de Oro Digital (XAUt) -->
+                                <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; width: 100%;">
+                                    <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.03) !important; border-color: rgba(255, 215, 0, 0.25) !important;">
+                                        <i data-lucide="coins" style="color: #ffd700;"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <span class="kpi-label-text" style="color: var(--text-secondary);">Balance de Oro Digital</span>
+                                        <span class="kpi-value-text" id="saas-usdt-balance-card" style="color: #fff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);">1.0000 XAUt</span>
+                                        <span class="kpi-sub-text" style="color: #ffd700;">🪙 RESPALDO FÍSICO 1:1 SUIZA</span>
+                                    </div>
+                                    <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
                                 </div>
-                                <div class="kpi-content">
-                                    <span class="kpi-label-text" style="color: var(--text-secondary);">Balance de Oro Digital</span>
-                                    <span class="kpi-value-text" id="saas-usdt-balance-card" style="color: #fff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);">1.0000 XAUt</span>
-                                    <span class="kpi-sub-text" style="color: #ffd700;">🪙 RESPALDO FÍSICO 1:1 SUIZA</span>
-                                </div>
-                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
-                            </div>
 
-                            <!-- KPI 2: Activo de Respaldo Contable -->
-                            <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.03) !important; border-color: rgba(255, 215, 0, 0.25) !important;">
-                                    <i data-lucide="shield-check" style="color: #ffd700;"></i>
-                                </div>
-                                <div class="kpi-content">
-                                    <span class="kpi-label-text" style="color: var(--text-secondary);">Respaldo en Custodia</span>
-                                    <span class="kpi-value-text" style="font-size: 1.25rem; font-weight: bold; color: #fff; margin-top: 2px; margin-bottom: 2px;">Tether Gold (XAUt)</span>
-                                    <span class="kpi-sub-text" style="color: #ffd700;">🇨🇭 FIDEICOMISO SUIZO LONDRES</span>
-                                </div>
-                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
-                            </div>
-
-                            <!-- KPI 3: Cotización Tether Gold (XAUt) -->
-                            <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.03) !important; border-color: rgba(255, 215, 0, 0.25) !important;">
-                                    <i data-lucide="trending-up" style="color: #ffd700;"></i>
-                                </div>
-                                <div class="kpi-content">
-                                    <span class="kpi-label-text" style="color: var(--text-secondary);">Cotización Tether Gold</span>
-                                    <span class="kpi-value-text" id="saas-xaut-price-card" style="font-size: 1.25rem; font-weight: bold; color: #fff; margin-top: 2px; margin-bottom: 2px;">$2,380.00 USD</span>
-                                    <span class="kpi-sub-text" id="saas-xaut-price-sub-card" style="color: var(--cyan);">🟢 COTIZACIÓN EN VIVO</span>
-                                </div>
-                                <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
-                        </div>
-                        
-                        <!-- Gráfico de Evolución de Cotización de XAUt (12 Meses) -->
-                        <div class="card glassmorphism border-gold" style="width: 100%; margin-bottom: 20px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; padding: 0 !important; overflow: hidden;">
-                            <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i data-lucide="line-chart" style="width: 16px; height: 16px;"></i></div>
-                                    <h2 style="color: #ffd700 !important; margin: 0; font-size: 0.95rem;">Histórico de Cotización de Tether Gold (XAUt)</h2>
-                                </div>
-                                <span style="background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.25); color: #ffd700; font-size: 0.65rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-family: monospace;">ÚLTIMOS 12 MESES</span>
-                            </div>
-                            <div class="commercial-section-body" style="padding: 20px 25px; min-height: 220px; position: relative;">
-                                <canvas id="xaut-history-chart" style="width: 100%; height: 200px; max-height: 200px;"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Fila de 2 Columnas: Transferencias y Retiros (Balance se movió arriba como KPI Premium de igual tamaño) -->
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
-                            <!-- Columna 1: Consola de Transferencias -->
-                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
-                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="send"></i></div>
-                                    <h2 style="color: #ffd700 !important;">Transferencia de Oro Digital (XAUt)</h2>
-                                </div>
-                                <div class="commercial-section-body font-mono">
-                                    <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Transfiere fracciones de tu cartera de oro digital XAUt a otros agentes registrados de forma instantánea usando únicamente su correo electrónico corporativo.</p>
-                                    
-                                    <form id="b2b-usdt-transfer-form" class="commercial-form" onsubmit="executeB2bUsdtTransfer(event)">
-                                        <div class="form-row-2">
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="usdt-recipient-email" style="font-size: 0.75rem;">Email del Destinatario</label>
-                                                <input type="email" id="usdt-recipient-email" placeholder="ej: ana@estevezinmobiliaria.com" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
-                                            </div>
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="usdt-transfer-amount" style="font-size: 0.75rem;">Monto XAUt</label>
-                                                <input type="number" id="usdt-transfer-amount" placeholder="Monto XAUt" min="0.0001" step="0.0001" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; text-align: center;">
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn-commercial btn-commercial-gold" style="width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; transition: all 0.3s; text-shadow: none;">
-                                            <i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i> EJECUTAR TRANSFERENCIA DE ORO DIGITAL
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <!-- Columna 3: Nuevo Panel de Retiros Bancarios -->
-                            <div class="card glassmorphism border-gold" style="flex: 1; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
-                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
-                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="download-cloud"></i></div>
-                                    <h2 style="color: #ffd700 !important;">Retiro Bancario de Oro Digital (XAUt)</h2>
-                                </div>
-                                <div class="commercial-section-body font-mono">
-                                    <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Retira saldo XAUt directamente a tu cuenta bancaria nacional en Quetzales. Se aplica una comisión de red de **4%**.</p>
-                                    
-                                    <form id="b2b-withdrawal-form" class="commercial-form" onsubmit="executeB2bWithdrawal(event)">
-                                        <div class="form-row-2">
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="withdrawal-amount-xaut" style="font-size: 0.75rem;">Monto XAUt a Retirar</label>
-                                                <input type="number" id="withdrawal-amount-xaut" placeholder="Monto XAUt" min="0.0001" step="0.0001" required oninput="updateWithdrawalCalculations()" style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; text-align: center;">
-                                            </div>
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="withdrawal-bank" style="font-size: 0.75rem;">Banco de Destino</label>
-                                                <select id="withdrawal-bank" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
-                                                    <option value="Banco Industrial" selected>Banco Industrial (BI)</option>
-                                                    <option value="G&T Continental">G&T Continental</option>
-                                                    <option value="Banrural">Banrural</option>
-                                                    <option value="BAC Credomatic">BAC Credomatic</option>
-                                                    <option value="Banco Agromercantil">BAM</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-row-2" style="margin-top: 10px;">
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="withdrawal-account" style="font-size: 0.75rem;">Número de Cuenta</label>
-                                                <input type="text" id="withdrawal-account" placeholder="Ej: 001-234567-8" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
-                                            </div>
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                                <label for="withdrawal-account-type" style="font-size: 0.75rem;">Tipo de Cuenta</label>
-                                                <select id="withdrawal-account-type" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px;">
-                                                    <option value="Monetaria" selected>Monetaria</option>
-                                                    <option value="Ahorros">Ahorros</option>
-                                                </select>
-                                            </div>
-                                        </div>
+                                <!-- Panel de Retiros Bancarios -->
+                                <div class="card glassmorphism border-gold" style="width: 100%; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                    <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
+                                        <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="download-cloud"></i></div>
+                                        <h2 style="color: #ffd700 !important;">Retiro Bancario de Oro Digital (XAUt)</h2>
+                                    </div>
+                                    <div class="commercial-section-body font-mono">
+                                        <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Retira saldo XAUt directamente a tu cuenta bancaria nacional en Quetzales. Se aplica una comisión de red de **4%**.</p>
                                         
-                                        <!-- Desglose de conversión reactiva -->
-                                        <div class="withdrawal-summary font-mono" style="margin-top: 12px; padding: 10px; background: rgba(255,215,0,0.03); border: 1px dashed rgba(255,215,0,0.2); border-radius: 6px; font-size: 0.68rem; display: flex; flex-direction: column; gap: 5px;">
-                                            <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
-                                                <span>Equivalente Bruto (GTQ):</span>
-                                                <span id="withdrawal-gross-gtq" style="color: #fff;">Q0.00</span>
+                                        <form id="b2b-withdrawal-form" class="commercial-form" onsubmit="executeB2bWithdrawal(event)">
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <label for="withdrawal-amount-xaut" style="font-size: 0.75rem;">Monto XAUt a Retirar</label>
+                                                    <input type="number" id="withdrawal-amount-xaut" placeholder="Monto XAUt" min="0.0001" step="0.0001" required oninput="updateWithdrawalCalculations()" style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; text-align: center; width: 100%;">
+                                                </div>
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <label for="withdrawal-bank" style="font-size: 0.75rem;">Banco de Destino</label>
+                                                    <select id="withdrawal-bank" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; width: 100%;">
+                                                        <option value="Banco Industrial" selected>Banco Industrial (BI)</option>
+                                                        <option value="G&T Continental">G&T Continental</option>
+                                                        <option value="Banrural">Banrural</option>
+                                                        <option value="BAC Credomatic">BAC Credomatic</option>
+                                                        <option value="Banco Agromercantil">BAM</option>
+                                                    </select>
+                                                </div>
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <label for="withdrawal-account" style="font-size: 0.75rem;">Número de Cuenta</label>
+                                                    <input type="text" id="withdrawal-account" placeholder="Ej: 001-234567-8" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; width: 100%;">
+                                                </div>
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <label for="withdrawal-account-type" style="font-size: 0.75rem;">Tipo de Cuenta</label>
+                                                    <select id="withdrawal-account-type" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; width: 100%;">
+                                                        <option value="Monetaria" selected>Monetaria</option>
+                                                        <option value="Ahorros">Ahorros</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div style="display: flex; justify-content: space-between; color: var(--red);">
-                                                <span>Comisión de Red (4%):</span>
-                                                <span id="withdrawal-fee-gtq">-Q0.00</span>
+                                            
+                                            <!-- Desglose de conversión reactiva -->
+                                            <div class="withdrawal-summary font-mono" style="margin-top: 12px; padding: 10px; background: rgba(255,215,0,0.03); border: 1px dashed rgba(255,215,0,0.2); border-radius: 6px; font-size: 0.68rem; display: flex; flex-direction: column; gap: 5px;">
+                                                <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                                                    <span>Equivalente Bruto (GTQ):</span>
+                                                    <span id="withdrawal-gross-gtq" style="color: #fff;">Q0.00</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between; color: var(--red);">
+                                                    <span>Comisión de Red (4%):</span>
+                                                    <span id="withdrawal-fee-gtq">-Q0.00</span>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,215,0,0.15); padding-top: 5px; color: #ffd700;">
+                                                    <span>Neto a Recibir en Banco:</span>
+                                                    <span id="withdrawal-net-gtq">Q0.00</span>
+                                                </div>
                                             </div>
-                                            <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,215,0,0.15); padding-top: 5px; color: #ffd700;">
-                                                <span>Neto a Recibir en Banco:</span>
-                                                <span id="withdrawal-net-gtq">Q0.00</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <button type="submit" class="btn-commercial btn-commercial-gold" style="width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; transition: all 0.3s; text-shadow: none;">
-                                            <i data-lucide="send" style="width: 14px; height: 14px;"></i> EFECTUAR SOLICITUD DE RETIRO
-                                        </button>
-                                    </form>
+                                            
+                                            <button type="submit" class="btn-commercial btn-commercial-gold" style="width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; transition: all 0.3s; text-shadow: none;">
+                                                <i data-lucide="send" style="width: 14px; height: 14px;"></i> EFECTUAR SOLICITUD DE RETIRO
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- COLUMNA 2: CUSTODIA Y TRANSFERENCIAS P2P -->
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                <!-- KPI 2: Activo de Respaldo Contable -->
+                                <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; width: 100%;">
+                                    <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.03) !important; border-color: rgba(255, 215, 0, 0.25) !important;">
+                                        <i data-lucide="shield-check" style="color: #ffd700;"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <span class="kpi-label-text" style="color: var(--text-secondary);">Respaldo en Custodia</span>
+                                        <span class="kpi-value-text" style="font-size: 1.25rem; font-weight: bold; color: #fff; margin-top: 2px; margin-bottom: 2px;">Tether Gold (XAUt)</span>
+                                        <span class="kpi-sub-text" style="color: #ffd700;">🇨🇭 FIDEICOMISO SUIZO LONDRES</span>
+                                    </div>
+                                    <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
+                                </div>
+
+                                <!-- Consola de Transferencias -->
+                                <div class="card glassmorphism border-gold" style="width: 100%; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                    <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
+                                        <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="send"></i></div>
+                                        <h2 style="color: #ffd700 !important;">Transferencia de Oro Digital (XAUt)</h2>
+                                    </div>
+                                    <div class="commercial-section-body font-mono">
+                                        <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">Transfiere fracciones de tu cartera de oro digital XAUt a otros agentes registrados de forma instantánea usando únicamente su correo electrónico corporativo.</p>
+                                        
+                                        <form id="b2b-usdt-transfer-form" class="commercial-form" onsubmit="executeB2bUsdtTransfer(event)">
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <label for="usdt-recipient-email" style="font-size: 0.75rem;">Email del Destinatario</label>
+                                                    <input type="email" id="usdt-recipient-email" placeholder="ej: ana@estevezinmobiliaria.com" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; width: 100%;">
+                                                </div>
+                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <label for="usdt-transfer-amount" style="font-size: 0.75rem;">Monto XAUt</label>
+                                                    <input type="number" id="usdt-transfer-amount" placeholder="Monto XAUt" min="0.0001" step="0.0001" required style="font-size: 0.9rem; padding: 8px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; text-align: center; width: 100%;">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn-commercial btn-commercial-gold" style="width: 100%; border: none; padding: 10px 16px; font-size: 0.85rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; transition: all 0.3s; text-shadow: none;">
+                                                <i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i> EJECUTAR TRANSFERENCIA DE ORO
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- COLUMNA 3: COTIZACIÓN Y GRÁFICO HISTÓRICO -->
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
+                                <!-- KPI 3: Cotización Tether Gold (XAUt) -->
+                                <div class="kpi-card kpi-card-premium" style="border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; width: 100%;">
+                                    <div class="kpi-icon-wrapper" style="background: rgba(255, 215, 0, 0.03) !important; border-color: rgba(255, 215, 0, 0.25) !important;">
+                                        <i data-lucide="trending-up" style="color: #ffd700;"></i>
+                                    </div>
+                                    <div class="kpi-content">
+                                        <span class="kpi-label-text" style="color: var(--text-secondary);">Cotización Tether Gold</span>
+                                        <span class="kpi-value-text" id="saas-xaut-price-card" style="font-size: 1.25rem; font-weight: bold; color: #fff; margin-top: 2px; margin-bottom: 2px;">$2,380.00 USD</span>
+                                        <span class="kpi-sub-text" id="saas-xaut-price-sub-card" style="color: var(--cyan);">🟢 COTIZACIÓN EN VIVO</span>
+                                    </div>
+                                    <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
+                                </div>
+
+                                <!-- Gráfico de Evolución de Cotización de XAUt (12 Meses) -->
+                                <div class="card glassmorphism border-gold" style="width: 100%; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; padding: 0 !important; overflow: hidden;">
+                                    <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important; display: flex; justify-content: space-between; align-items: center; padding: 12px 15px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><i data-lucide="line-chart" style="width: 14px; height: 14px;"></i></div>
+                                            <h2 style="color: #ffd700 !important; margin: 0; font-size: 0.85rem;">Histórico de Cotización XAUt</h2>
+                                        </div>
+                                        <span style="background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.25); color: #ffd700; font-size: 0.55rem; padding: 2px 5px; border-radius: 4px; font-weight: bold; font-family: monospace;">12 MESES</span>
+                                    </div>
+                                    <div class="commercial-section-body" style="padding: 15px 15px 10px 15px; min-height: 200px; position: relative;">
+                                        <canvas id="xaut-history-chart" class="glowing-chart-canvas" style="width: 100%; height: 180px; max-height: 180px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </div>
 
                         <!-- TABLA DE HISTORIAL DE SOLICITUDES DE RETIRO -->
