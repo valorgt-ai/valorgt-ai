@@ -12580,10 +12580,15 @@ const DEFAULT_TUTORIALS = [
     }
 ];
 
-/**
- * Carga los tutoriales desde Supabase o fallback local
- */
 async function loadTutorials() {
+    // Cargar IDs de videos eliminados para filtrarlos
+    let deletedIds = [];
+    try {
+        const saved = localStorage.getItem('valorgt_deleted_tutorials');
+        if (saved) deletedIds = JSON.parse(saved);
+    } catch(e) {}
+    const deletedSet = new Set(deletedIds);
+
     if (isSupabaseActive && supabaseClient) {
         try {
             const { data, error } = await supabaseClient
@@ -12615,6 +12620,9 @@ async function loadTutorials() {
             activeTutorials = [...DEFAULT_TUTORIALS];
         }
     }
+    
+    // Filtrar los que hayan sido eliminados localmente
+    activeTutorials = activeTutorials.filter(t => !deletedSet.has(t.id));
     
     renderTutorials();
 }
@@ -12838,12 +12846,22 @@ async function publishTutorial(event) {
     renderAdminTutorialsTable();
 }
 
-/**
- * Elimina un tutorial
- */
 async function deleteTutorial(id) {
     if (!confirm("¿Estás seguro de que deseas eliminar este video tutorial permanentemente?")) return;
     
+    // Guardar en la lista de eliminados localmente para evitar que reaparezcan (especialmente los por defecto/mock)
+    let deletedIds = [];
+    try {
+        const saved = localStorage.getItem('valorgt_deleted_tutorials');
+        if (saved) deletedIds = JSON.parse(saved);
+    } catch(e) {}
+    if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        try {
+            localStorage.setItem('valorgt_deleted_tutorials', JSON.stringify(deletedIds));
+        } catch(e) {}
+    }
+
     if (isSupabaseActive && supabaseClient && !id.startsWith('mock-')) {
         try {
             const { error } = await supabaseClient
