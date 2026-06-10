@@ -1145,6 +1145,10 @@ function switchView(viewId) {
     } else if (viewId === 'disclaimer') {
         titleEl.innerText = "Disclaimer Legal y Metodológico";
         subtitleEl.innerText = "Información oficial sobre el uso de datos, algoritmos e inteligencia artificial de ValorGT®";
+    } else if (viewId === 'tutorials') {
+        titleEl.innerText = "Centro de Video Guías y Tutoriales";
+        subtitleEl.innerText = "Aprende a dominar las telemetrías, simuladores e inteligencia artificial de la plataforma";
+        loadTutorials();
     }
 }
 
@@ -10043,30 +10047,28 @@ function switchAdminTab(tabId) {
         activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
     }
 
+    // Ocultar todas las secciones del admin primero
+    document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+
     // 3. Alternar visibilidad de las secciones
     if (tabId === 'general') {
         document.getElementById('admin-tab-content-general')?.classList.remove('hidden');
         document.getElementById('admin-tab-content-general-part2')?.classList.remove('hidden');
-        document.getElementById('admin-tab-content-database')?.classList.add('hidden');
-        document.getElementById('admin-tab-content-banners')?.classList.add('hidden');
     } else if (tabId === 'database') {
-        document.getElementById('admin-tab-content-general')?.classList.add('hidden');
-        document.getElementById('admin-tab-content-general-part2')?.classList.add('hidden');
         document.getElementById('admin-tab-content-database')?.classList.remove('hidden');
-        document.getElementById('admin-tab-content-banners')?.classList.add('hidden');
         // Asegurar renderizado fresco de la lista
         if (typeof renderAdminReferenceDatabase === 'function') {
             renderAdminReferenceDatabase();
         }
     } else if (tabId === 'banners') {
-        document.getElementById('admin-tab-content-general')?.classList.add('hidden');
-        document.getElementById('admin-tab-content-general-part2')?.classList.add('hidden');
-        document.getElementById('admin-tab-content-database')?.classList.add('hidden');
         document.getElementById('admin-tab-content-banners')?.classList.remove('hidden');
         // Asegurar inicialización y renderizado fresco del gestor de banners
         if (typeof renderAdminBannersTab === 'function') {
             renderAdminBannersTab();
         }
+    } else if (tabId === 'tutorials') {
+        document.getElementById('admin-tab-content-tutorials')?.classList.remove('hidden');
+        renderAdminTutorialsTable();
     }
 
     if (typeof lucide !== 'undefined') {
@@ -12535,4 +12537,374 @@ window.addEventListener('DOMContentLoaded', () => {
             checkDeepLinkParams();
         }
     }, 800);
-});
+});
+
+/**
+ * ==========================================================================
+ * SISTEMA INTEGRAL DE VIDEO TUTORIALES E INDUCCIÓN IA
+ * ==========================================================================
+ */
+
+let activeTutorials = [];
+let activeTutorialFilter = 'all';
+
+// Videos de demostración por defecto para el modo offline / fallback local
+const DEFAULT_TUTORIALS = [
+    {
+        id: 'mock-tut-1',
+        title: 'Guía Rápida: Valuador Predictivo IA',
+        description: 'Aprende cómo el algoritmo neurononal procesa el metraje, acabados y zonas georreferenciadas para emitir tasaciones comerciales en segundos.',
+        section_key: 'dashboard',
+        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'mock-tut-2',
+        title: 'Telemetría Avanzada: Radar de Calor',
+        description: 'Tutorial sobre la interpretación de capas de plusvalía y el impacto de los polos de desarrollo en los precios por metro cuadrado.',
+        section_key: 'heatmap',
+        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 'mock-tut-3',
+        title: 'Operaciones B2B: Cartera de Oro Digital',
+        description: 'Cómo depositar, retirar quetzales a cuentas bancarias y efectuar transferencias P2P de Tether Gold entre agentes de forma segura.',
+        section_key: 'commercial-oro',
+        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        created_at: new Date().toISOString()
+    }
+];
+
+/**
+ * Carga los tutoriales desde Supabase o fallback local
+ */
+async function loadTutorials() {
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('video_tutorials')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (!error && data) {
+                activeTutorials = data;
+            } else {
+                console.warn("Supabase: Fallo al cargar tutoriales, usando fallback local:", error);
+                activeTutorials = [...DEFAULT_TUTORIALS];
+            }
+        } catch (err) {
+            console.error("Fallo de red al obtener tutoriales, usando fallback:", err);
+            activeTutorials = [...DEFAULT_TUTORIALS];
+        }
+    } else {
+        // Modo local
+        activeTutorials = [...DEFAULT_TUTORIALS];
+    }
+    
+    renderTutorials();
+}
+
+/**
+ * Renderiza la grilla de tutoriales del centro de guías
+ */
+function renderTutorials() {
+    const grid = document.getElementById('tutorials-grid');
+    const counter = document.getElementById('tutorials-counter-badge');
+    if (!grid) return;
+    
+    // Obtener texto de búsqueda
+    const searchQuery = (document.getElementById('tutorial-search')?.value || '').toLowerCase().trim();
+    
+    // Filtrar videos
+    const filtered = activeTutorials.filter(t => {
+        const matchesCategory = activeTutorialFilter === 'all' || t.section_key === activeTutorialFilter;
+        const matchesSearch = t.title.toLowerCase().includes(searchQuery) || t.description.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+    });
+    
+    if (counter) {
+        counter.innerText = `${filtered.length} Video${filtered.length === 1 ? '' : 's'}`;
+    }
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); font-family: monospace;">
+                <i data-lucide="video-off" style="width: 32px; height: 32px; color: var(--text-secondary); margin-bottom: 8px; opacity: 0.5; display: inline-block;"></i><br>
+                No se encontraron video tutoriales en esta sección.
+            </div>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+    }
+    
+    const friendlySections = {
+        'dashboard': 'Tasación IA',
+        'heatmap': 'Radar Calor',
+        'mortgage': 'Simulador FHA',
+        'investor': 'Inversiones',
+        'commercial-oro': 'Billetera XAUt',
+        'commercial-portfolio': 'Portafolio'
+    };
+    
+    grid.innerHTML = '';
+    filtered.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'card glassmorphism tutorial-card';
+        card.setAttribute('onclick', `openTutorialVideo('${t.youtube_url}', '${t.title.replace(/'/g, "\\'")}')`);
+        
+        // Obtener ID de youtube para el thumbnail
+        const ytId = getYoutubeVideoId(t.youtube_url) || 'dQw4w9WgXcQ';
+        const thumbUrl = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+        const sectionLabel = friendlySections[t.section_key] || 'General';
+        const formattedDate = new Date(t.created_at).toLocaleDateString('es-GT', { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        card.innerHTML = `
+            <div class="tutorial-thumb-container">
+                <span class="tutorial-section-badge">${sectionLabel}</span>
+                <img src="${thumbUrl}" alt="${t.title}" onerror="this.src='dummy_receipt.png'">
+                <div class="tutorial-play-btn">
+                    <i data-lucide="play" style="width: 20px; height: 20px; fill: #fff;"></i>
+                </div>
+            </div>
+            <div class="tutorial-body">
+                <h3>${t.title}</h3>
+                <p>${t.description}</p>
+                <span class="tutorial-date font-mono">📅 PUBLICADO: ${formattedDate}</span>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Filtra los tutoriales en tiempo real según el botón de categoría seleccionado
+ */
+function setTutorialFilter(category) {
+    activeTutorialFilter = category;
+    
+    // Activar estilo en botón
+    document.querySelectorAll('#tutorials-category-filters .tutorial-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const activeBtn = document.getElementById(`t-filt-${category === 'commercial-oro' ? 'oro' : (category === 'commercial-portfolio' ? 'portfolio' : category)}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    renderTutorials();
+}
+
+/**
+ * Función de entrada para filtrar por búsqueda
+ */
+function filterTutorials() {
+    renderTutorials();
+}
+
+/**
+ * Extrae el ID del video de YouTube desde cualquier enlace estándar o corto
+ */
+function getYoutubeVideoId(url) {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
+
+/**
+ * Abre el reproductor flotante holográfico
+ */
+function openTutorialVideo(url, title) {
+    const modal = document.getElementById('tutorial-video-modal');
+    const iframe = document.getElementById('tutorial-video-iframe');
+    const titleEl = document.getElementById('tutorial-modal-title');
+    
+    if (!modal || !iframe) return;
+    
+    const ytId = getYoutubeVideoId(url);
+    if (!ytId) {
+        alert("⚠️ El formato de la URL de YouTube no es válido.");
+        return;
+    }
+    
+    if (titleEl) titleEl.innerText = title;
+    iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+    modal.classList.remove('hidden');
+}
+
+/**
+ * Cierra el modal de video y apaga la reproducción del iframe
+ */
+function closeTutorialVideo() {
+    const modal = document.getElementById('tutorial-video-modal');
+    const iframe = document.getElementById('tutorial-video-iframe');
+    if (modal) modal.classList.add('hidden');
+    if (iframe) iframe.src = ''; // Detiene el audio
+}
+
+/**
+ * Publica un nuevo tutorial desde la consola Admin
+ */
+async function publishTutorial(event) {
+    event.preventDefault();
+    
+    const title = document.getElementById('admin-tut-title').value.trim();
+    const description = document.getElementById('admin-tut-description').value.trim();
+    const section = document.getElementById('admin-tut-section').value;
+    const url = document.getElementById('admin-tut-url').value.trim();
+    
+    if (!title || !description || !url) {
+        alert("⚠️ Por favor completa todos los campos requeridos.");
+        return;
+    }
+    
+    const ytId = getYoutubeVideoId(url);
+    if (!ytId) {
+        alert("⚠️ Por favor ingresa un enlace válido de YouTube (ej. https://www.youtube.com/watch?v=...)");
+        return;
+    }
+    
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('video_tutorials')
+                .insert([{
+                    title: title,
+                    description: description,
+                    section_key: section,
+                    youtube_url: url
+                }])
+                .select();
+                
+            if (error) {
+                console.error("Supabase: Error al publicar tutorial:", error);
+                alert("❌ Fallo en la base de datos de Supabase. Revisa los permisos de políticas RLS.");
+                return;
+            }
+            
+            alert("✅ Video Tutorial publicado exitosamente en la base de datos Supabase.");
+        } catch (err) {
+            console.error("Fallo de red:", err);
+            alert("❌ Error de red al comunicarse con Supabase.");
+            return;
+        }
+    } else {
+        // Fallback local: agregar al array local
+        const newMock = {
+            id: 'mock-tut-' + Math.floor(1000 + Math.random() * 9000),
+            title: title,
+            description: description,
+            section_key: section,
+            youtube_url: url,
+            created_at: new Date().toISOString()
+        };
+        activeTutorials.unshift(newMock);
+        alert("✅ Publicación local exitosa (Modo Offline / Demo)");
+    }
+    
+    // Limpiar formulario
+    document.getElementById('admin-tutorial-form').reset();
+    
+    // Recargar datos y renderizar
+    await loadTutorials();
+    renderAdminTutorialsTable();
+}
+
+/**
+ * Elimina un tutorial
+ */
+async function deleteTutorial(id) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este video tutorial permanentemente?")) return;
+    
+    if (isSupabaseActive && supabaseClient && !id.startsWith('mock-')) {
+        try {
+            const { error } = await supabaseClient
+                .from('video_tutorials')
+                .delete()
+                .eq('id', id);
+                
+            if (error) {
+                console.error("Supabase: Error al eliminar:", error);
+                alert("❌ No se pudo eliminar de la base de datos.");
+                return;
+            }
+            
+            alert("✅ Video tutorial eliminado exitosamente de la base de datos.");
+        } catch (err) {
+            console.error("Error de red:", err);
+        }
+    } else {
+        // Borrar del array en memoria
+        activeTutorials = activeTutorials.filter(t => t.id !== id);
+        alert("✅ Eliminado del inventario local (Modo Offline)");
+    }
+    
+    await loadTutorials();
+    renderAdminTutorialsTable();
+}
+
+/**
+ * Renderiza la lista administrativa de tutoriales
+ */
+function renderAdminTutorialsTable() {
+    const tableBody = document.getElementById('admin-tutorials-table-body');
+    const counterBadge = document.getElementById('admin-tut-count-badge');
+    if (!tableBody) return;
+    
+    if (counterBadge) {
+        counterBadge.innerText = `${activeTutorials.length} Video${activeTutorials.length === 1 ? '' : 's'}`;
+    }
+    
+    if (activeTutorials.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                    No hay video tutoriales publicados en el sistema.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const friendlySections = {
+        'dashboard': 'Tasación IA',
+        'heatmap': 'Radar Calor',
+        'mortgage': 'Simulador FHA',
+        'investor': 'Inversiones',
+        'commercial-oro': 'Billetera XAUt',
+        'commercial-portfolio': 'Portafolio'
+    };
+    
+    tableBody.innerHTML = '';
+    activeTutorials.forEach(t => {
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        
+        const sectionLabel = friendlySections[t.section_key] || 'General';
+        
+        row.innerHTML = `
+            <td style="padding: 10px; color: var(--cyan); font-weight: bold; font-size: 0.68rem; text-transform: uppercase;">
+                ${sectionLabel}
+            </td>
+            <td style="padding: 10px;">
+                <strong>${t.title}</strong><br>
+                <a href="${t.youtube_url}" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 0.62rem; word-break: break-all;">
+                    ${t.youtube_url}
+                </a>
+            </td>
+            <td style="padding: 10px; text-align: center; vertical-align: middle;">
+                <button onclick="deleteTutorial('${t.id}')" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.55rem; color: var(--red); border-color: rgba(255, 59, 48, 0.4); background: rgba(255, 59, 48, 0.02); cursor: pointer; font-weight: bold; border-radius: 4px;">
+                    ELIMINAR
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+

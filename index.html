@@ -71,6 +71,10 @@
                     <i data-lucide="scale"></i>
                     <span>Disclaimer Legal</span>
                 </button>
+                <button id="nav-btn-tutorials" class="nav-item" onclick="switchView('tutorials')">
+                    <i data-lucide="clapperboard"></i>
+                    <span>Centro de Video Guías</span>
+                </button>
                 <button id="nav-btn-admin" class="nav-item" onclick="switchView('admin')" style="display: none;">
                     <i data-lucide="shield-alert"></i>
                     <span>Consola Global Admin</span>
@@ -3063,6 +3067,9 @@
                         <button id="admin-tab-btn-banners" class="admin-tab-btn" onclick="switchAdminTab('banners')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
                             <i data-lucide="image" style="width: 14px; height: 14px; color: var(--cyan);"></i> PORTADAS ALTERNATIVAS (ZONAS SIN PAUTA)
                         </button>
+                        <button id="admin-tab-btn-tutorials" class="admin-tab-btn" onclick="switchAdminTab('tutorials')" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--text-muted); padding: 10px 18px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="video" style="width: 14px; height: 14px; color: var(--cyan);"></i> GESTOR DE VIDEO TUTORIALES
+                        </button>
                     </div>
 
                     <!-- PESTAÑA A: GENERAL (PARTE 1) -->
@@ -3567,6 +3574,111 @@
 
                     </div>
                     </div> <!-- Fin admin-tab-content-general (parte 2) -->
+
+                    <!-- PESTAÑA D: GESTOR DE VIDEO TUTORIALES -->
+                    <div id="admin-tab-content-tutorials" class="admin-tab-content hidden">
+                        <div style="display: grid; grid-template-columns: 1.2fr 2fr; gap: 20px; align-items: start;">
+                            <!-- Formulario de Publicación -->
+                            <div class="card glassmorphism border-gold" style="border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important;">
+                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px;">
+                                    <div class="header-icon gold"><i data-lucide="plus-circle" style="color: #ffd700;"></i></div>
+                                    <h2 style="color: #ffd700 !important; font-size: 1.1rem !important;">Publicar Nuevo Video</h2>
+                                </div>
+                                <div class="commercial-section-body font-mono">
+                                    <form id="admin-tutorial-form" class="commercial-form" onsubmit="publishTutorial(event)">
+                                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="admin-tut-title" style="font-size: 0.72rem; color: var(--text-secondary);">Título del Video</label>
+                                                <input type="text" id="admin-tut-title" placeholder="Ej: Introducción al Radar de Calor" required style="padding: 8px 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 6px;">
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="admin-tut-description" style="font-size: 0.72rem; color: var(--text-secondary);">Descripción Corta</label>
+                                                <textarea id="admin-tut-description" placeholder="Describe brevemente lo que se explica..." required rows="3" style="padding: 8px 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 6px; font-family: inherit; resize: none;"></textarea>
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="admin-tut-section" style="font-size: 0.72rem; color: var(--text-secondary);">Sección / Categoría</label>
+                                                <select id="admin-tut-section" required style="padding: 8px 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 6px;">
+                                                    <option value="dashboard" selected>Valuador Inteligente (Tasa IA)</option>
+                                                    <option value="heatmap">Radar de Calor</option>
+                                                    <option value="mortgage">Simulador Hipotecario FHA</option>
+                                                    <option value="investor">Terminal de Inversión</option>
+                                                    <option value="commercial-oro">Cartera de Oro Digital</option>
+                                                    <option value="commercial-portfolio">Portafolio IA</option>
+                                                </select>
+                                            </div>
+                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
+                                                <label for="admin-tut-url" style="font-size: 0.72rem; color: var(--text-secondary);">Enlace de YouTube</label>
+                                                <input type="url" id="admin-tut-url" placeholder="https://www.youtube.com/watch?v=..." required style="padding: 8px 10px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); color: #fff; border-radius: 6px;">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-block glowing-effect" style="margin-top: 5px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                                <i data-lucide="upload" style="width: 14px; height: 14px;"></i> REGISTRAR Y SUBIR
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Listado de Videos -->
+                            <div class="card glassmorphism border-cyan" style="border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important;">
+                                <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="header-icon cyan"><i data-lucide="list"></i></div>
+                                        <h2 style="color: var(--cyan) !important;">Videos Publicados</h2>
+                                    </div>
+                                    <span class="badge font-mono" id="admin-tut-count-badge" style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.25); color: var(--cyan); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px;">0 Videos</span>
+                                </div>
+                                <div class="commercial-section-body font-mono" style="padding: 10px 0;">
+                                    <div style="overflow-x: auto; width: 100%; max-height: 480px; overflow-y: auto;">
+                                        <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: left;">
+                                            <thead>
+                                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-muted);">
+                                                    <th style="padding: 8px 10px;">SECCIÓN</th>
+                                                    <th style="padding: 8px 10px;">TÍTULO</th>
+                                                    <th style="padding: 8px 10px; text-align: center;">ACCIÓN</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="admin-tutorials-table-body">
+                                                <!-- Llenado dinámico -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VISTA 11: CENTRO DE VIDEO TUTORIALES -->
+                <section id="view-tutorials" class="app-view hidden">
+                    <div class="card glassmorphism border-purple" style="width: 100%; min-height: 520px; padding: 25px; box-sizing: border-box; text-align: left; border-left: 3px solid var(--neon-purple) !important; border-color: rgba(191, 90, 242, 0.25) !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.08) !important;">
+                        <div class="card-header border-purple" style="border-bottom: 1px solid rgba(191, 90, 242, 0.15); padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="header-icon purple" style="color: #bf5af2 !important; border-color: rgba(191, 90, 242, 0.3) !important; background: rgba(191, 90, 242, 0.03); border: 1px solid rgba(191, 90, 242, 0.3); padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i data-lucide="video" style="width: 18px; height: 18px;"></i></div>
+                                <h2 style="color: #bf5af2 !important; margin: 0; font-size: 1.25rem;">Centro de Video Guías – ValorGT®</h2>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="input-with-icon font-mono" style="position: relative;">
+                                    <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; color: var(--text-muted);"></i>
+                                    <input type="text" id="tutorial-search" placeholder="Buscar guías..." oninput="filterTutorials()" style="padding: 6px 10px 6px 28px; background: rgba(0,0,0,0.4); border: 1px solid rgba(191,90,242,0.25); color: #fff; border-radius: 6px; font-size: 0.72rem; width: 180px; outline: none;">
+                                </div>
+                                <span class="item-count font-mono border-purple" id="tutorials-counter-badge" style="color: #bf5af2 !important; border-color: rgba(191, 90, 242, 0.4) !important; background: rgba(191, 90, 242, 0.1) !important; font-size: 0.7rem !important; padding: 2px 8px !important; border: 1px solid; border-radius: 4px;">0 Videos</span>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-filters" id="tutorials-category-filters">
+                            <button class="tutorial-filter-btn active" onclick="setTutorialFilter('all')" id="t-filt-all">Todos</button>
+                            <button class="tutorial-filter-btn" onclick="setTutorialFilter('dashboard')" id="t-filt-dashboard">Valuador Inteligente</button>
+                            <button class="tutorial-filter-btn" onclick="setTutorialFilter('heatmap')" id="t-filt-heatmap">Radar de Calor</button>
+                            <button class="tutorial-filter-btn" onclick="setTutorialFilter('mortgage')" id="t-filt-mortgage">Simulador FHA</button>
+                            <button class="tutorial-filter-btn" onclick="setTutorialFilter('investor')" id="t-filt-investor">Terminal Inversión</button>
+                            <button class="tutorial-filter-btn" onclick="setTutorialFilter('commercial-oro')" id="t-filt-oro">Cartera de Oro</button>
+                            <button class="tutorial-filter-btn" onclick="setTutorialFilter('commercial-portfolio')" id="t-filt-portfolio">Portafolio IA</button>
+                        </div>
+
+                        <div class="tutorials-grid" id="tutorials-grid">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
                 </section>
 
                 <!-- VISTA 10: DISCLAIMER LEGAL Y METODOLÓGICO -->
@@ -3749,6 +3861,18 @@
                     <i data-lucide="sparkles"></i> VALORAR ESTE INMUEBLE CON IA
                 </button>
             </div>
+    </div>
+
+    <!-- MODAL DE REPRODUCCIÓN DE VIDEO TUTORIAL -->
+    <div id="tutorial-video-modal" class="tutorial-modal-overlay hidden" onclick="if(event.target === this) closeTutorialVideo()">
+        <div class="tutorial-modal-content">
+            <div class="tutorial-modal-header">
+                <h3 id="tutorial-modal-title">Cargando Tutorial...</h3>
+                <button class="tutorial-modal-close" onclick="closeTutorialVideo()"><i data-lucide="x" style="width: 18px; height: 18px;"></i></button>
+            </div>
+            <div class="tutorial-video-wrapper">
+                <iframe id="tutorial-video-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
         </div>
     </div>
 
@@ -3790,6 +3914,9 @@
                 </button>
                 <button class="drawer-item" onclick="switchViewMobile('disclaimer')">
                     <i data-lucide="scale"></i> <span>Disclaimer Legal</span>
+                </button>
+                <button class="drawer-item" onclick="switchViewMobile('tutorials')">
+                    <i data-lucide="clapperboard"></i> <span>Video Guías</span>
                 </button>
                 <button id="drawer-btn-admin" class="drawer-item" onclick="switchViewMobile('admin')" style="display: none;">
                     <i data-lucide="shield-alert"></i> <span>Consola Global Admin</span>
