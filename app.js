@@ -1318,6 +1318,14 @@ function toggleCurrency() {
     updateAdminMonthlyRevenueHUD();
     calculateAdminAirdropPreview();
     updateSaasMetricsHUD();
+
+    // Si la pestaña de oro digital está activa, actualizar el gráfico con la nueva divisa
+    const goldTab = document.getElementById('comm-tab-content-oro');
+    if (goldTab && !goldTab.classList.contains('hidden')) {
+        if (typeof renderXautHistoryChart === 'function') {
+            renderXautHistoryChart();
+        }
+    }
 }
 
 /**
@@ -10002,6 +10010,9 @@ function switchCommercialTab(tabId) {
     if (tabId === 'oro') {
         fetchXautPriceForAirdrop().then(() => {
             updateSaasMetricsHUD();
+            if (typeof renderXautHistoryChart === 'function') {
+                renderXautHistoryChart();
+            }
         });
     }
     if (typeof updateAssistantVisibility === 'function') {

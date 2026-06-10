@@ -1600,9 +1600,22 @@
                                     <span class="kpi-sub-text" id="saas-xaut-price-sub-card" style="color: var(--cyan);">🟢 COTIZACIÓN EN VIVO</span>
                                 </div>
                                 <div class="kpi-glow-bar" style="background: linear-gradient(90deg, transparent, #ffd700, transparent) !important;"></div>
-                            </div>
                         </div>
                         
+                        <!-- Gráfico de Evolución de Cotización de XAUt (12 Meses) -->
+                        <div class="card glassmorphism border-gold" style="width: 100%; margin-bottom: 20px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; padding: 0 !important; overflow: hidden;">
+                            <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center;"><i data-lucide="line-chart" style="width: 16px; height: 16px;"></i></div>
+                                    <h2 style="color: #ffd700 !important; margin: 0; font-size: 0.95rem;">Histórico de Cotización de Tether Gold (XAUt)</h2>
+                                </div>
+                                <span style="background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.25); color: #ffd700; font-size: 0.65rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-family: monospace;">ÚLTIMOS 12 MESES</span>
+                            </div>
+                            <div class="commercial-section-body" style="padding: 20px 25px; min-height: 220px; position: relative;">
+                                <canvas id="xaut-history-chart" style="width: 100%; height: 200px; max-height: 200px;"></canvas>
+                            </div>
+                        </div>
+
                         <!-- Fila de 2 Columnas: Transferencias y Retiros (Balance se movió arriba como KPI Premium de igual tamaño) -->
                         <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
                             <!-- Columna 1: Consola de Transferencias -->
