@@ -9796,7 +9796,11 @@ async function _syncSupabaseDataInternal() {
                 
                 // Guardar en localStorage las propiedades sincronizadas
                 saveLocalPropertiesToStorage();
-                localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
+                try {
+                    localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
+                } catch (storageErr) {
+                    console.warn("⚠️ [Cache] No se pudo guardar la caché de propiedades en localStorage (límite de cuota excedido):", storageErr);
+                }
             }
 
             // Actualizar la interfaz de forma reactiva según la sección visible
