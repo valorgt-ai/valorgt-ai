@@ -10883,7 +10883,6 @@ function clearLocalGoldHistory() {
         localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
         
         // Cargar y re-renderizar de inmediato
-        loadUserWithdrawals(loggedInB2bClient.email);
         renderB2bWithdrawalsTable();
         
         if (typeof appendAdminLog === 'function') {
