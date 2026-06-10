@@ -10874,19 +10874,49 @@ async function renderB2bWithdrawalsTable() {
     }
 }
 
-function clearLocalGoldHistory() {
+async function clearLocalGoldHistory() {
     if (!loggedInB2bClient) return;
-    if (confirm("¿Estás seguro de que deseas limpiar el historial local de movimientos de esta cuenta? Esto borrará el historial de retiros locales de tu navegador.")) {
+    if (confirm("¿Estás seguro de que deseas limpiar el historial de movimientos de esta cuenta? Esto borrará el historial local y los registros en la base de datos de pruebas.")) {
         const emailLower = loggedInB2bClient.email.toLowerCase();
+        
+        // 1. Limpiar arrays en memoria y localStorage
+        b2bWithdrawals = [];
         localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
         localStorage.removeItem(`valorgt_transfers_${emailLower}`);
         localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
         
-        // Cargar y re-renderizar de inmediato
-        renderB2bWithdrawalsTable();
+        // 2. Limpiar registros en Supabase si está activo
+        if (isSupabaseActive) {
+            try {
+                // Borrar transferencias de Supabase
+                const { error: txErr } = await supabaseClient
+                    .from('transactions')
+                    .delete()
+                    .or(`sender_email.eq.${emailLower},receiver_email.eq.${emailLower}`);
+                
+                if (txErr) console.warn("Supabase: No se pudieron borrar transacciones (posible restricción de políticas RLS o permisos):", txErr);
+                
+                // Borrar historial de oro (airdrops / canjes)
+                const { error: goldErr } = await supabaseClient
+                    .from('historial_oro')
+                    .delete()
+                    .eq('usuario_id', loggedInB2bClient.id);
+                    
+                if (goldErr) console.warn("Supabase: No se pudo borrar historial_oro:", goldErr);
+                
+            } catch (dbErr) {
+                console.error("Fallo de red al limpiar registros en Supabase:", dbErr);
+            }
+        }
+        
+        // 3. Renderizar y actualizar interfaz de inmediato
+        await renderB2bWithdrawalsTable();
+        if (typeof updateSaasMetricsHUD === 'function') {
+            updateSaasMetricsHUD();
+        }
         
         if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SAAS", `ledger_node: Historial local de movimientos limpiado para ${loggedInB2bClient.name}.`, false);
+            appendAdminLog("SAAS", `ledger_node: Historial de movimientos y base de datos local limpiados para ${loggedInB2bClient.name}.`, false);
         }
     }
 }
