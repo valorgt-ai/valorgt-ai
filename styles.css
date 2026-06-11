@@ -375,6 +375,7 @@ body::before {
     max-height: calc(100vh - 75px) !important;
     min-height: 0 !important;
     box-sizing: border-box !important;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* CARDS GLASSMORPHISM */
@@ -389,6 +390,8 @@ body::before {
     transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
 }
 
 .card::before {
@@ -5247,6 +5250,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
         height: calc(100vh - 145px) !important; /* Acortar la altura del viewport para dejar espacio libre a la barra inferior sin desbordar */
         padding-bottom: 80px !important; /* Espacio de seguridad para scroll */
         overflow-y: auto !important;
+    }
+    
+    .ai-hologram-assistant-widget {
+        bottom: 85px !important; /* Mover arriba para no tapar los botones del tab bar inferior */
     }
 
     /* Ajustes responsivos para la vista del radar de calor */

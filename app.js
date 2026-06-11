@@ -12570,32 +12570,7 @@ let activeTutorials = [];
 let activeTutorialFilter = 'all';
 
 // Videos de demostración por defecto para el modo offline / fallback local
-const DEFAULT_TUTORIALS = [
-    {
-        id: 'mock-tut-1',
-        title: 'Guía Rápida: Valuador Predictivo IA',
-        description: 'Aprende cómo el algoritmo neurononal procesa el metraje, acabados y zonas georreferenciadas para emitir tasaciones comerciales en segundos.',
-        section_key: 'dashboard',
-        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'mock-tut-2',
-        title: 'Telemetría Avanzada: Radar de Calor',
-        description: 'Tutorial sobre la interpretación de capas de plusvalía y el impacto de los polos de desarrollo en los precios por metro cuadrado.',
-        section_key: 'heatmap',
-        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 'mock-tut-3',
-        title: 'Operaciones B2B: Cartera de Oro Digital',
-        description: 'Cómo depositar, retirar quetzales a cuentas bancarias y efectuar transferencias P2P de Tether Gold entre agentes de forma segura.',
-        section_key: 'commercial-oro',
-        youtube_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        created_at: new Date().toISOString()
-    }
-];
+const DEFAULT_TUTORIALS = [];
 
 async function loadTutorials() {
     // Cargar IDs de videos eliminados para filtrarlos
