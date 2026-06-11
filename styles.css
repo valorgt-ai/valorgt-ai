@@ -2859,7 +2859,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
 @media (max-width: 1200px) {
     .portfolio-grid-upper,
     .portfolio-grid-lower {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        align-items: stretch !important;
+    }
+    .portfolio-column {
+        width: 100% !important;
+        align-items: stretch !important;
+    }
+    .portfolio-column .card {
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 }
 
