@@ -344,6 +344,12 @@ function loadUserWithdrawals(email) {
             b2bWithdrawals = [];
         }
     } else {
+        // Si el usuario explícitamente limpió su historial, no re-inicializar el demo
+        if (localStorage.getItem(`valorgt_withdrawals_cleared_${emailLower}`) === 'true') {
+            b2bWithdrawals = [];
+            return;
+        }
+
         // Cargar registros demo por defecto únicamente para las cuentas demo
         const demoEmails = ['agente@valorgt.com', 'ana@estevezinmobiliaria.com', 'roberto@inversionesrv.com', 'sofia@alianzagt.com'];
         if (demoEmails.includes(emailLower)) {
@@ -10596,7 +10602,9 @@ async function executeB2bWithdrawal(event) {
     
     // Guardar historial de retiros local persistente para el usuario
     if (loggedInB2bClient && loggedInB2bClient.email) {
-        localStorage.setItem(`valorgt_withdrawals_${loggedInB2bClient.email.toLowerCase()}`, JSON.stringify(b2bWithdrawals));
+        const emailLower = loggedInB2bClient.email.toLowerCase();
+        localStorage.setItem(`valorgt_withdrawals_${emailLower}`, JSON.stringify(b2bWithdrawals));
+        localStorage.removeItem(`valorgt_withdrawals_cleared_${emailLower}`);
     }
     
     // Registrar en logs del administrador
@@ -10891,6 +10899,7 @@ async function clearLocalGoldHistory() {
             localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
             localStorage.removeItem(`valorgt_transfers_${emailLower}`);
             localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
+            localStorage.setItem(`valorgt_withdrawals_cleared_${emailLower}`, 'true');
             
             // 2. Limpiar registros en Supabase si está activo
             if (isSupabaseActive && supabaseClient) {
@@ -10900,7 +10909,10 @@ async function clearLocalGoldHistory() {
                     .delete()
                     .or(`sender_email.eq.${emailLower},receiver_email.eq.${emailLower}`);
                 
-                if (txErr) console.warn("Supabase: No se pudieron borrar transacciones (posible restricción de políticas RLS o permisos):", txErr);
+                if (txErr) {
+                    console.error("Supabase: Error al borrar transacciones:", txErr);
+                    throw new Error("No se pudieron borrar las transacciones de Supabase: " + txErr.message);
+                }
                 
                 // Borrar historial de oro (airdrops / canjes)
                 const { error: goldErr } = await supabaseClient
@@ -10908,7 +10920,10 @@ async function clearLocalGoldHistory() {
                     .delete()
                     .eq('usuario_id', loggedInB2bClient.id);
                     
-                if (goldErr) console.warn("Supabase: No se pudo borrar historial_oro:", goldErr);
+                if (goldErr) {
+                    console.error("Supabase: Error al borrar historial_oro:", goldErr);
+                    throw new Error("No se pudo borrar el historial de oro de Supabase: " + goldErr.message);
+                }
             }
             
             // 3. Renderizar y actualizar interfaz de inmediato
