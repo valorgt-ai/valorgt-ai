@@ -2400,6 +2400,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
         grid-template-columns: 1fr !important;
         gap: 10px;
     }
+    .portfolio-kpis-grid .kpi-card {
+        height: 82px !important;
+        min-height: 82px !important;
+        max-height: 82px !important;
+        padding: 10px 14px !important;
+    }
 }
 
 .kpi-card {
