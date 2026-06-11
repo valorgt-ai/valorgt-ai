@@ -2859,9 +2859,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 @media (max-width: 1200px) {
     .portfolio-grid-upper,
     .portfolio-grid-lower {
-        grid-template-columns: 1fr !important;
-        align-items: stretch !important;
+        display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
+        gap: 24px !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
         padding-left: 0 !important;
@@ -2869,7 +2870,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
         box-sizing: border-box !important;
     }
     .portfolio-column {
+        display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
+        gap: 24px !important;
         align-items: stretch !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
