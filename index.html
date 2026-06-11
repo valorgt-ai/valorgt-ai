@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     
     <!-- Estilos Personalizados -->
-    <link rel="stylesheet" href="styles.css?v=10.14">
+    <link rel="stylesheet" href="styles.css?v=10.15">
 </head>
 <body class="cyber-theme">
     <div class="app-container">
@@ -2474,10 +2474,12 @@
 
                                 <!-- CARD: PROYECCIÓN A PLAZO -->
                                 <div class="card glassmorphism col-card">
-                                    <div class="card-header border-purple">
-                                        <div class="header-icon purple"><i data-lucide="bar-chart-3"></i></div>
-                                        <h2>Proyección de Riqueza y Amortización</h2>
-                                        <div class="projection-toggles">
+                                    <div class="card-header border-purple" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px;">
+                                        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                                            <div class="header-icon purple"><i data-lucide="bar-chart-3"></i></div>
+                                            <h2 style="font-size: 0.95rem; margin: 0; white-space: nowrap;">Proyección de Riqueza y Amortización</h2>
+                                        </div>
+                                        <div class="projection-toggles" style="display: flex; gap: 5px; width: 100%; justify-content: flex-start; margin-top: 5px;">
                                             <button class="proj-toggle-btn active" id="p-proj-0" onclick="switchPortfolioProjection(0)">Actual</button>
                                             <button class="proj-toggle-btn" id="p-proj-1" onclick="switchPortfolioProjection(1)">1A</button>
                                             <button class="proj-toggle-btn" id="p-proj-5" onclick="switchPortfolioProjection(5)">5A</button>
