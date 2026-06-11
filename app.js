@@ -10883,17 +10883,17 @@ async function renderB2bWithdrawalsTable() {
 async function clearLocalGoldHistory() {
     if (!loggedInB2bClient) return;
     if (confirm("¿Estás seguro de que deseas limpiar el historial de movimientos de esta cuenta? Esto borrará el historial local y los registros en la base de datos de pruebas.")) {
-        const emailLower = loggedInB2bClient.email.toLowerCase();
-        
-        // 1. Limpiar arrays en memoria y localStorage
-        b2bWithdrawals = [];
-        localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
-        localStorage.removeItem(`valorgt_transfers_${emailLower}`);
-        localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
-        
-        // 2. Limpiar registros en Supabase si está activo
-        if (isSupabaseActive) {
-            try {
+        try {
+            const emailLower = loggedInB2bClient.email.toLowerCase();
+            
+            // 1. Limpiar arrays en memoria y localStorage
+            b2bWithdrawals = [];
+            localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
+            localStorage.removeItem(`valorgt_transfers_${emailLower}`);
+            localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
+            
+            // 2. Limpiar registros en Supabase si está activo
+            if (isSupabaseActive && supabaseClient) {
                 // Borrar transferencias de Supabase
                 const { error: txErr } = await supabaseClient
                     .from('transactions')
@@ -10909,20 +10909,22 @@ async function clearLocalGoldHistory() {
                     .eq('usuario_id', loggedInB2bClient.id);
                     
                 if (goldErr) console.warn("Supabase: No se pudo borrar historial_oro:", goldErr);
-                
-            } catch (dbErr) {
-                console.error("Fallo de red al limpiar registros en Supabase:", dbErr);
             }
-        }
-        
-        // 3. Renderizar y actualizar interfaz de inmediato
-        await renderB2bWithdrawalsTable();
-        if (typeof updateSaasMetricsHUD === 'function') {
-            updateSaasMetricsHUD();
-        }
-        
-        if (typeof appendAdminLog === 'function') {
-            appendAdminLog("SAAS", `ledger_node: Historial de movimientos y base de datos local limpiados para ${loggedInB2bClient.name}.`, false);
+            
+            // 3. Renderizar y actualizar interfaz de inmediato
+            await renderB2bWithdrawalsTable();
+            if (typeof updateSaasMetricsHUD === 'function') {
+                updateSaasMetricsHUD();
+            }
+            
+            if (typeof appendAdminLog === 'function') {
+                appendAdminLog("SAAS", `ledger_node: Historial de movimientos y base de datos local limpiados para ${loggedInB2bClient.name}.`, false);
+            }
+            
+            alert("✅ Historial de movimientos limpiado exitosamente.");
+        } catch (err) {
+            console.error("Error al limpiar historial de movimientos:", err);
+            alert("❌ Error al limpiar el historial: " + err.message);
         }
     }
 }
@@ -12666,7 +12668,8 @@ function renderTutorials() {
         'mortgage': 'Simulador FHA',
         'investor': 'Inversiones',
         'commercial-oro': 'Billetera XAUt',
-        'commercial-portfolio': 'Portafolio'
+        'commercial-portfolio': 'Portafolio',
+        'novedades': 'Novedades'
     };
     
     grid.innerHTML = '';
@@ -12918,7 +12921,8 @@ function renderAdminTutorialsTable() {
         'mortgage': 'Simulador FHA',
         'investor': 'Inversiones',
         'commercial-oro': 'Billetera XAUt',
-        'commercial-portfolio': 'Portafolio'
+        'commercial-portfolio': 'Portafolio',
+        'novedades': 'Novedades'
     };
     
     tableBody.innerHTML = '';
