@@ -4375,6 +4375,7 @@ function initCommercialView() {
 
     // Actualizar nivel de socio en la cabecera comercial
     const partnerLevelEl = document.getElementById('commercial-partner-level');
+    const welcomeNameEl = document.getElementById('commercial-welcome-name');
     if (partnerLevelEl && loggedInB2bClient) {
         const client = loggedInB2bClient;
         const dbPlan = client.plan || 'Pro';
@@ -4385,6 +4386,10 @@ function initCommercialView() {
         partnerLevelEl.innerText = isPremium ? 
             (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") : 
             (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+            
+        if (welcomeNameEl) {
+            welcomeNameEl.innerText = client.name || 'Socio';
+        }
     }
 
     // Renderizar grilla de suscripción B2B dinámica
