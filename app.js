@@ -1773,9 +1773,12 @@ function renderCatalogProperties() {
         properties = PORTFOLIO_DATABASE[zoneKey] || [];
     }
 
-    // Filtrar duplicados por ID o Título (incluyendo datos de referencia/demo para poblar el catálogo)
+    // Filtrar duplicados por ID o Título, y excluir datos de referencia (demo/tasación)
     const seen = new Set();
     properties = properties.filter(prop => {
+        if (prop.isReferenceData === true) {
+            return false;
+        }
         const uniqueId = prop.id || prop.title;
         if (seen.has(uniqueId)) {
             return false;
@@ -9985,7 +9988,10 @@ async function _syncSupabaseDataInternal() {
             const activeViewEl = document.querySelector('.app-view.active');
             if (activeViewEl) {
                 const activeId = activeViewEl.id;
-                if (activeId === 'view-catalog') {
+                if (activeId === 'view-home') {
+                    renderHomeCatalog();
+                    calculateHomeMacroKPIs();
+                } else if (activeId === 'view-catalog') {
                     renderCatalogProperties();
                 } else if (activeId === 'view-heatmap') {
                     if (typeof initHeatmap === 'function') initHeatmap();
@@ -13166,9 +13172,11 @@ function calculateHomeMacroKPIs() {
         const zoneData = ZONES_DATABASE[zoneKey];
         const properties = PORTFOLIO_DATABASE[zoneKey] || [];
 
-        // Sumar volumen de propiedades (incluyendo datos de referencia/demo)
+        // Sumar volumen de propiedades no de referencia
         properties.forEach(p => {
-            totalVolumeUSD += parseFloat(p.priceUSD || 0);
+            if (p.isReferenceData !== true) {
+                totalVolumeUSD += parseFloat(p.priceUSD || 0);
+            }
         });
 
         if (zoneData) {
@@ -13386,9 +13394,10 @@ function renderHomeCatalog() {
         properties = PORTFOLIO_DATABASE[zoneSelectVal] || [];
     }
 
-    // Filtrar duplicados (incluyendo datos de referencia/demo para poblar el catálogo)
+    // Filtrar duplicados y datos de referencia
     const seen = new Set();
     properties = properties.filter(prop => {
+        if (prop.isReferenceData === true) return false;
         const uniqueId = prop.id || prop.title;
         if (seen.has(uniqueId)) return false;
         seen.add(uniqueId);
