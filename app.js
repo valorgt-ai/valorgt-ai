@@ -8229,6 +8229,7 @@ let adminRefCustomPhotoBase64 = "";
 function renderAdminReferenceDatabase() {
     const zoneSelect = document.getElementById('admin-ref-zone-select');
     const tableBody = document.getElementById('admin-reference-properties-table-body');
+    const statsDiv = document.getElementById('admin-reference-db-stats');
     if (!zoneSelect || !tableBody) return;
 
     const zoneKey = zoneSelect.value;
@@ -8236,6 +8237,155 @@ function renderAdminReferenceDatabase() {
 
     const properties = PORTFOLIO_DATABASE[zoneKey] || [];
     const refProperties = properties.filter(p => p.isReferenceData === true);
+
+    // Renderizar Estadísticas y Calibración
+    if (statsDiv) {
+        if (refProperties.length === 0) {
+            statsDiv.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 50px; color: var(--text-muted); font-size: 0.7rem;">
+                    <i data-lucide="info" style="width: 14px; height: 14px; color: var(--cyan); margin-right: 5px; opacity: 0.7;"></i>
+                    No hay suficientes puntos de referencia para calcular estadísticas en esta zona.
+                </div>
+            `;
+        } else {
+            // Agrupar por categoría
+            const grouped = {};
+            refProperties.forEach(prop => {
+                let cat = String(prop.category || prop.type || 'apartamento').toLowerCase();
+                // Normalizar
+                if (cat.startsWith('apart') || cat.startsWith('apt')) cat = 'apartamentos';
+                else if (cat.startsWith('cas')) cat = 'casas';
+                else if (cat.startsWith('ofic')) cat = 'oficinas';
+                else if (cat.startsWith('local') || cat.startsWith('comerc')) cat = 'locales';
+                else if (cat.startsWith('terr')) cat = 'terrenos';
+                else if (cat.startsWith('bod')) cat = 'bodegas';
+                else cat = 'casas'; // default/fallback
+
+                if (!grouped[cat]) {
+                    grouped[cat] = { count: 0, totalPrice: 0, totalSize: 0 };
+                }
+                grouped[cat].count++;
+                grouped[cat].totalPrice += parseFloat(prop.priceUSD || 0);
+                grouped[cat].totalSize += parseFloat(prop.size || 0);
+            });
+
+            // Obtener calibración de baseFinishesPriceM2 de las fórmulas
+            const adminPriceEconomy = parseFloat(document.getElementById('admin-price-economy')?.value);
+            const adminPriceStandard = parseFloat(document.getElementById('admin-price-standard')?.value);
+            const adminPriceLuxury = parseFloat(document.getElementById('admin-price-luxury')?.value);
+
+            const baseEcon = !isNaN(adminPriceEconomy) ? adminPriceEconomy : 707; // $707 (~Q5,500)
+            const baseStd = !isNaN(adminPriceStandard) ? adminPriceStandard : 938;  // $938 (~Q7,300)
+            const baseLux = !isNaN(adminPriceLuxury) ? adminPriceLuxury : 1157;   // $1,157 (~Q9,000)
+
+            const zoneData = ZONES_DATABASE[zoneKey] || { basePriceM2: 1100 };
+
+            let statsHtml = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; font-size: 0.65rem;">
+                    <!-- Columna 1: Promedios de Mercado Real (Ingresados) -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; font-size: 0.7rem; display: flex; align-items: center; gap: 5px;">
+                            <i data-lucide="bar-chart-2" style="width: 12px; height: 12px;"></i>
+                            PROMEDIOS REALES DE MERCADO (${refProperties.length} ref.)
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+            `;
+
+            Object.keys(grouped).forEach(cat => {
+                const data = grouped[cat];
+                const avgPrice = data.totalPrice / data.count;
+                const avgSize = data.totalSize / data.count;
+                const avgPriceM2 = data.totalSize > 0 ? data.totalPrice / data.totalSize : 0;
+
+                const formattedPrice = activeCurrency === 'GTQ' 
+                    ? `Q${(avgPrice * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                    : `$${avgPrice.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+                const formattedM2 = activeCurrency === 'GTQ' 
+                    ? `Q${(avgPriceM2 * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}/m²` 
+                    : `$${avgPriceM2.toLocaleString('en-US', { maximumFractionDigits: 0 })}/m²`;
+
+                statsHtml += `
+                    <div style="padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--cyan);">
+                        <span style="text-transform: uppercase; font-weight: bold; color: #fff;">${cat.slice(0, -1)} (${data.count})</span>
+                        <span style="text-align: right;">
+                            <div style="color: var(--cyan); font-weight: bold;">${formattedM2}</div>
+                            <div style="color: var(--text-muted); font-size: 0.55rem;">Prom: ${formattedPrice} | ${avgSize.toFixed(0)}m²</div>
+                        </span>
+                    </div>
+                `;
+            });
+
+            statsHtml += `
+                        </div>
+                    </div>
+
+                    <!-- Columna 2: Fórmulas de Calibración Base IA (Teórica) -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; font-size: 0.7rem; display: flex; align-items: center; gap: 5px;">
+                            <i data-lucide="cpu" style="width: 12px; height: 12px;"></i>
+                            CALIBRACIÓN BASE IA ($m^2$ teóricos por tipo)
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+            `;
+
+            // Listar calibración de las categorías configuradas en la zona
+            const categoriesToCalibrate = ['apartamentos', 'casas', 'oficinas', 'locales', 'terrenos', 'bodegas'];
+            categoriesToCalibrate.forEach(cat => {
+                let catPriceM2 = zoneData.basePriceM2 || 1100;
+                if (zoneData.categories && zoneData.categories[cat]) {
+                    catPriceM2 = zoneData.categories[cat].priceM2;
+                }
+
+                // locationMultiplier
+                const locMult = catPriceM2 / 1100;
+
+                // typeFactor
+                let typeFactor = 1.0;
+                if (cat === 'apartamentos') typeFactor = 1.05;
+                else if (cat === 'casas') typeFactor = 0.82;
+                else if (cat === 'oficinas') typeFactor = 1.20;
+                else if (cat === 'locales') typeFactor = 1.30;
+                else if (cat === 'bodegas') typeFactor = 0.70;
+                else if (cat === 'terrenos') typeFactor = 1.0;
+
+                // Precios por tipo de acabados ajustados
+                const priceEcon = baseEcon * locMult * typeFactor;
+                const priceStd = baseStd * locMult * typeFactor;
+                const priceLux = baseLux * locMult * typeFactor;
+
+                const fEcon = activeCurrency === 'GTQ' 
+                    ? `Q${(priceEcon * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                    : `$${priceEcon.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+                const fStd = activeCurrency === 'GTQ' 
+                    ? `Q${(priceStd * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                    : `$${priceStd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+                const fLux = activeCurrency === 'GTQ' 
+                    ? `Q${(priceLux * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                    : `$${priceLux.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+
+                statsHtml += `
+                    <div style="padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="text-transform: uppercase; font-weight: bold; color: #fff;">${cat.slice(0, -1)}</span>
+                        <span style="text-align: right; display: flex; gap: 8px; font-size: 0.55rem;">
+                            <span style="color: var(--text-muted);">Econ: <strong style="color: #fff;">${fEcon}</strong></span>
+                            <span style="color: var(--text-muted);">Std: <strong style="color: var(--cyan);">${fStd}</strong></span>
+                            <span style="color: var(--text-muted);">Prem: <strong style="color: #fff;">${fLux}</strong></span>
+                        </span>
+                    </div>
+                `;
+            });
+
+            statsHtml += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            statsDiv.innerHTML = statsHtml;
+        }
+    }
 
     if (refProperties.length === 0) {
         tableBody.innerHTML = `
@@ -9727,9 +9877,14 @@ async function _syncSupabaseDataInternal() {
             // Limpiar de agentUploadedProperties las propiedades que ya no están en Supabase
             agentUploadedProperties = agentUploadedProperties.filter(p => !p.id || remoteIds.has(p.id));
 
-            // Limpiar de PORTFOLIO_DATABASE las propiedades que ya no están en Supabase (dejando las de mockData sin ID)
+            // Limpiar de PORTFOLIO_DATABASE las propiedades que ya no están en Supabase (dejando las de mockData con ID 'ref-' o 'ref_local_')
             Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
-                PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => !p.id || remoteIds.has(p.id));
+                PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => 
+                    !p.id || 
+                    String(p.id).startsWith('ref-') || 
+                    String(p.id).startsWith('ref_local_') || 
+                    remoteIds.has(p.id)
+                );
             });
 
             if (remoteProperties.length > 0) {
