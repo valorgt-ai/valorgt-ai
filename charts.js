@@ -247,7 +247,7 @@ function initInvestorComparisonChart() {
     let breathingDir = -1;
 
     comparisonBreathingInterval = setInterval(() => {
-        breathingFactor += breathingDir * 0.04;
+        breathingFactor += breathingDir * 0.012;
         if (breathingFactor <= 0.0) {
             breathingFactor = 0.0;
             breathingDir = 1;
