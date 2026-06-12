@@ -131,8 +131,23 @@
                 <!-- VISTA 0: HOME PRINCIPAL DE INTELIGENCIA INMOBILIARIA -->
                 <section id="view-home" class="app-view active">
                     
-                    <!-- CAROUSEL BANNER / ANUNCIO DINÁMICO (A LA CABECERA Y MÁS ALTO) -->
-                    <div class="home-carousel-container card glassmorphism border-white" style="margin-bottom: 20px; padding: 0; overflow: hidden; position: relative; height: 260px; border-color: rgba(0, 240, 255, 0.15) !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.05) !important;">
+                    <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
+                    <div class="featured-header" style="margin-bottom: 15px;">
+                        <div class="fh-left">
+                            <span class="hud-label-small">PROPIEDADES PREMIUM PARA PAUTAR</span>
+                            <h3 class="section-title-premium">Oportunidades Destacadas</h3>
+                        </div>
+                        <div class="fh-right">
+                            <span class="hud-caption">Haz clic en "AUTOTASAR" para cargar los parámetros en el motor de IA</span>
+                        </div>
+                    </div>
+                    
+                    <div class="featured-properties-deck" id="featured-properties-deck" style="margin-bottom: 25px;">
+                        <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
+                    </div>
+
+                    <!-- CAROUSEL BANNER / ANUNCIO DINÁMICO (A LA CABECERA Y MÁS BAJO) -->
+                    <div class="home-carousel-container card glassmorphism border-white" style="margin-bottom: 20px; padding: 0; overflow: hidden; position: relative; height: 140px; border-color: rgba(0, 240, 255, 0.15) !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.05) !important;">
                         <div id="home-carousel-slides" style="width: 100%; height: 100%; position: relative;">
                             <!-- Slides dinámicos -->
                         </div>
@@ -140,40 +155,40 @@
                         <button class="carousel-control prev" onclick="moveCarousel(-1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
                         <button class="carousel-control next" onclick="moveCarousel(1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10;"><i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i></button>
                         <!-- Indicadores de puntos -->
-                        <div id="home-carousel-dots" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10;"></div>
+                        <div id="home-carousel-dots" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10;"></div>
                     </div>
 
                     <!-- PRIMERA FILA DE KPIS MACRO (ALTURA BAJA) -->
                     <div class="portfolio-kpis-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important; margin-bottom: 12px; gap: 10px !important;">
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">VOLUMEN MERCADO</span>
                                 <i data-lucide="bar-chart-2" class="kpi-mini-icon" style="color: var(--cyan); width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-cyan" id="home-kpi-volume" style="font-size: 1.15rem; line-height: 1.2;">$24.5M</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">PROM. METRO²</span>
                                 <i data-lucide="hash" class="kpi-mini-icon" style="color: var(--neon-purple); width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-purple" id="home-kpi-m2" style="font-size: 1.15rem; line-height: 1.2;">Q9,850/m²</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(0, 255, 102, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(0, 255, 102, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">LÍDER ROI</span>
                                 <i data-lucide="trending-up" class="kpi-mini-icon" style="color: var(--neon-emerald); width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-green" id="home-kpi-roi" style="font-size: 1.05rem; line-height: 1.2; white-space: nowrap;">Zona 4 (9.8%)</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(255, 159, 10, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(255, 159, 10, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">LIQUIDEZ PROMEDIO</span>
                                 <i data-lucide="activity" class="kpi-mini-icon" style="color: #ff9f0a; width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-orange" id="home-kpi-liquidity" style="font-size: 1.15rem; line-height: 1.2;">9.2/10</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">PLUSVALÍA ANUAL</span>
                                 <i data-lucide="arrow-up-right" class="kpi-mini-icon" style="color: var(--cyan); width: 14px; height: 14px;"></i>
@@ -184,35 +199,35 @@
 
                     <!-- SEGUNDA FILA DE KPIS ADICIONALES (ALTURA BAJA) -->
                     <div class="portfolio-kpis-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important; margin-bottom: 20px; gap: 10px !important;">
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">SECTORES EMERGENTES</span>
                                 <i data-lucide="compass" class="kpi-mini-icon" style="color: var(--neon-purple); width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-purple" id="home-kpi-emerging" style="font-size: 0.72rem; line-height: 1.2; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="Z.14, Z.10, CAES, Antigua">Z.14, Z.10, CAES, Antigua</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">TASA ABSORCIÓN</span>
                                 <i data-lucide="gauge" class="kpi-mini-icon" style="color: var(--cyan); width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-cyan" id="home-kpi-absorption" style="font-size: 1.15rem; line-height: 1.2;">82% / mes</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(0, 255, 102, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(0, 255, 102, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">EXPANSION URBANA</span>
                                 <i data-lucide="milestone" class="kpi-mini-icon" style="color: var(--neon-emerald); width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-green" id="home-kpi-expansion" style="font-size: 0.82rem; line-height: 1.2; font-weight: bold;" title="CAES & Fraijanes">CAES & Fraijanes</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(255, 159, 10, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(255, 159, 10, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">TENDENCIA MERCADO</span>
                                 <i data-lucide="zap" class="kpi-mini-icon" style="color: #ff9f0a; width: 14px; height: 14px;"></i>
                             </div>
                             <span class="kpi-val font-mono text-orange" id="home-kpi-trend" style="font-size: 1.05rem; line-height: 1.2; white-space: nowrap;">Acelerando (+4%)</span>
                         </div>
-                        <div class="card glassmorphism kpi-card" style="padding: 10px 15px !important; min-height: 70px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
+                        <div class="card glassmorphism kpi-card" style="padding: 6px 12px !important; height: 54px !important; min-height: 54px !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.04) !important; display: flex; flex-direction: column; justify-content: center; gap: 2px;">
                             <div class="kpi-icon-row" style="margin-bottom: 0;">
                                 <span class="kpi-lbl" style="font-size: 0.62rem;">MARKET SCORE</span>
                                 <i data-lucide="shield-check" class="kpi-mini-icon" style="color: var(--cyan); width: 14px; height: 14px;"></i>
@@ -273,20 +288,6 @@
                 <!-- VISTA 1: DASHBOARD DE VALUACIÓN -->
                 <section id="view-dashboard" class="app-view">
                     
-                    <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
-                    <div class="featured-header">
-                        <div class="fh-left">
-                            <span class="hud-label-small">PORTADA DE PORTAFOLIO</span>
-                            <h3 class="section-title-premium">Propiedades Premium</h3>
-                        </div>
-                        <div class="fh-right">
-                            <span class="hud-caption">Haz clic en "AUTOTASAR" para cargar los parámetros en el motor de IA</span>
-                        </div>
-                    </div>
-                    
-                    <div class="featured-properties-deck" id="featured-properties-deck">
-                        <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
-                    </div>
 
                     <!-- BANNER PROMOCIONAL CONTROLADO POR EL ADMINISTRADOR -->
                     <div id="admin-promo-banner" class="admin-promo-banner hidden">
