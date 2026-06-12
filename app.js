@@ -482,20 +482,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar la rotación de iluminación de KPIs del HOME
     initKpiGlowRotation();
 
-    // Sincronizar datos de Supabase si está activo
+    // Establecer vista inicial en HOME de forma sincrónica
+    switchView('home');
+
+    // Sincronizar datos de Supabase si está activo en segundo plano
     if (isSupabaseActive) {
         syncSupabaseData().then(() => {
             checkDeepLinkParams();
-            switchView('home');
         }).catch(err => {
             console.error("Error al sincronizar datos:", err);
             checkDeepLinkParams();
-            switchView('home');
         });
     } else {
         filterAgentProperties();
         checkDeepLinkParams();
-        switchView('home');
     }
 
     // Autocompletado de coordenadas GPS automático B2B al cambiar zona de ubicación
