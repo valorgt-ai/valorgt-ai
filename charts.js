@@ -139,6 +139,17 @@ function initInvestorComparisonChart() {
         plusvaliaData.push(zone.growth5Y / 5); // Tasa anualizada (5 años / 5)
     });
 
+    const maxRoi = Math.max(...roiData);
+    const maxPlusvalia = Math.max(...plusvaliaData);
+
+    const roiBgColors = roiData.map(val => val === maxRoi ? 'rgba(0, 240, 255, 0.85)' : 'rgba(0, 102, 255, 0.45)');
+    const roiBorderColors = roiData.map(val => val === maxRoi ? '#00f0ff' : 'rgba(0, 102, 255, 0.6)');
+    const roiHoverColors = roiData.map(val => val === maxRoi ? '#00f0ff' : '#0066ff');
+
+    const plusvaliaBgColors = plusvaliaData.map(val => val === maxPlusvalia ? 'rgba(255, 55, 95, 0.85)' : 'rgba(0, 255, 102, 0.45)');
+    const plusvaliaBorderColors = plusvaliaData.map(val => val === maxPlusvalia ? '#ff375f' : 'rgba(0, 255, 102, 0.6)');
+    const plusvaliaHoverColors = plusvaliaData.map(val => val === maxPlusvalia ? '#ff375f' : '#00ff66');
+
     if (comparisonChartInstance) {
         comparisonChartInstance.destroy();
     }
@@ -151,20 +162,20 @@ function initInvestorComparisonChart() {
                 {
                     label: 'Rendimiento de Renta (ROI Anual %)',
                     data: roiData,
-                    backgroundColor: 'rgba(0, 102, 255, 0.65)',
-                    borderColor: '#0066ff',
-                    borderWidth: 1.5,
+                    backgroundColor: roiBgColors,
+                    borderColor: roiBorderColors,
+                    borderWidth: 2,
                     borderRadius: 4,
-                    hoverBackgroundColor: '#0066ff'
+                    hoverBackgroundColor: roiHoverColors
                 },
                 {
                     label: 'Plusvalía Anualizada Proyectada (%)',
                     data: plusvaliaData,
-                    backgroundColor: 'rgba(0, 255, 102, 0.65)',
-                    borderColor: '#00ff66',
-                    borderWidth: 1.5,
+                    backgroundColor: plusvaliaBgColors,
+                    borderColor: plusvaliaBorderColors,
+                    borderWidth: 2,
                     borderRadius: 4,
-                    hoverBackgroundColor: '#00ff66'
+                    hoverBackgroundColor: plusvaliaHoverColors
                 }
             ]
         },
