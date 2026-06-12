@@ -8367,13 +8367,11 @@ function renderAdminReferenceDatabase() {
                     : `$${priceLux.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
                 statsHtml += `
-                    <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; display: grid; grid-template-columns: 100px 1fr 1fr 1fr; align-items: center; gap: 5px;">
                         <span style="text-transform: uppercase; font-weight: bold; color: #fff; font-size: 0.75rem;">${cat.slice(0, -1)}</span>
-                        <span style="text-align: right; display: flex; gap: 8px; font-size: 0.75rem;">
-                            <span style="color: var(--text-muted);">Econ: <strong style="color: #fff; font-weight: 800;">${fEcon}</strong></span>
-                            <span style="color: var(--text-muted);">Std: <strong style="color: var(--cyan); font-weight: 800;">${fStd}</strong></span>
-                            <span style="color: var(--text-muted);">Prem: <strong style="color: #fff; font-weight: 800;">${fLux}</strong></span>
-                        </span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem; text-align: right; white-space: nowrap;">Econ: <strong style="color: #fff; font-weight: 800;">${fEcon}</strong></span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem; text-align: right; white-space: nowrap;">Std: <strong style="color: var(--cyan); font-weight: 800;">${fStd}</strong></span>
+                        <span style="color: var(--text-muted); font-size: 0.75rem; text-align: right; white-space: nowrap;">Prem: <strong style="color: #fff; font-weight: 800;">${fLux}</strong></span>
                     </div>
                 `;
             });
