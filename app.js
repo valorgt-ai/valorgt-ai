@@ -1773,12 +1773,9 @@ function renderCatalogProperties() {
         properties = PORTFOLIO_DATABASE[zoneKey] || [];
     }
 
-    // Filtrar duplicados por ID o Título, y excluir datos de referencia (demo/tasación)
+    // Filtrar duplicados por ID o Título (incluyendo datos de referencia/demo para poblar el catálogo)
     const seen = new Set();
     properties = properties.filter(prop => {
-        if (prop.isReferenceData === true) {
-            return false;
-        }
         const uniqueId = prop.id || prop.title;
         if (seen.has(uniqueId)) {
             return false;
@@ -13169,11 +13166,9 @@ function calculateHomeMacroKPIs() {
         const zoneData = ZONES_DATABASE[zoneKey];
         const properties = PORTFOLIO_DATABASE[zoneKey] || [];
 
-        // Sumar volumen de propiedades no de referencia
+        // Sumar volumen de propiedades (incluyendo datos de referencia/demo)
         properties.forEach(p => {
-            if (p.isReferenceData !== true) {
-                totalVolumeUSD += parseFloat(p.priceUSD || 0);
-            }
+            totalVolumeUSD += parseFloat(p.priceUSD || 0);
         });
 
         if (zoneData) {
@@ -13391,10 +13386,9 @@ function renderHomeCatalog() {
         properties = PORTFOLIO_DATABASE[zoneSelectVal] || [];
     }
 
-    // Filtrar duplicados y datos de referencia
+    // Filtrar duplicados (incluyendo datos de referencia/demo para poblar el catálogo)
     const seen = new Set();
     properties = properties.filter(prop => {
-        if (prop.isReferenceData === true) return false;
         const uniqueId = prop.id || prop.title;
         if (seen.has(uniqueId)) return false;
         seen.add(uniqueId);
