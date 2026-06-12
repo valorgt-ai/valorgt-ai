@@ -6625,4 +6625,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 }
 
+/* EFECTO DE ILUMINACIÓN DE KPIS DEL HOME */
+.kpi-card {
+    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+.kpi-card.highlight-glow {
+    transform: translateY(-3px) scale(1.02);
+    border-color: rgba(0, 240, 255, 0.5) !important;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.25) !important;
+    background: rgba(0, 240, 255, 0.09) !important;
+}
+
 

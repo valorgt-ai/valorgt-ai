@@ -479,6 +479,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar Banner Promocional y Configuraciones Globales
     initPromoBannerAndSettings();
 
+    // Inicializar la rotación de iluminación de KPIs del HOME
+    initKpiGlowRotation();
+
     // Sincronizar datos de Supabase si está activo
     if (isSupabaseActive) {
         syncSupabaseData().then(() => {
@@ -13520,5 +13523,30 @@ function loadCatalogPropToValuator(zoneKey, index) {
         const btnValuate = document.getElementById('btn-evaluate');
         if (btnValuate) btnValuate.click();
     }, 100);
+}
+
+/**
+ * Inicializa la animación de iluminación secuencial de los KPIs del HOME cada 10 segundos
+ */
+function initKpiGlowRotation() {
+    let activeIndex = 0;
+    
+    const rotateGlow = () => {
+        const kpiCards = Array.from(document.querySelectorAll('#view-home .kpi-card'));
+        if (kpiCards.length === 0) return;
+        
+        kpiCards.forEach(card => {
+            card.classList.remove('highlight-glow');
+        });
+        
+        if (kpiCards[activeIndex]) {
+            kpiCards[activeIndex].classList.add('highlight-glow');
+        }
+        activeIndex = (activeIndex + 1) % kpiCards.length;
+    };
+    
+    // Iniciar con retraso de 1s, luego repetir cada 10s
+    setTimeout(rotateGlow, 1000);
+    setInterval(rotateGlow, 10000);
 }
 
