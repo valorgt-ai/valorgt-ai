@@ -35,8 +35,12 @@
             </div>
             
             <nav class="nav-menu">
-                <button id="nav-btn-dashboard" class="nav-item active" onclick="switchView('dashboard')">
-                    <i data-lucide="layout-dashboard"></i>
+                <button id="nav-btn-home" class="nav-item active" onclick="switchView('home')">
+                    <i data-lucide="home"></i>
+                    <span>Inicio (Home)</span>
+                </button>
+                <button id="nav-btn-dashboard" class="nav-item" onclick="switchView('dashboard')">
+                    <i data-lucide="brain"></i>
                     <span>Tasa Inteligente</span>
                 </button>
                 <button id="nav-btn-catalog" class="nav-item" onclick="switchView('catalog')">
@@ -124,8 +128,110 @@
             <!-- VISTAS CONTENEDORAS -->
             <div class="view-viewport">
                 
+                <!-- VISTA 0: HOME PRINCIPAL DE INTELIGENCIA INMOBILIARIA -->
+                <section id="view-home" class="app-view active">
+                    <!-- 5 TARJETAS DE CONFIANZA / KPIS MACRO -->
+                    <div class="portfolio-kpis-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important; margin-bottom: 20px;">
+                        <div class="card glassmorphism kpi-card" style="box-shadow: 0 0 15px rgba(0, 240, 255, 0.05) !important;">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">VOLUMEN MERCADO</span>
+                                <i data-lucide="bar-chart-2" class="kpi-mini-icon" style="color: var(--cyan);"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-cyan" id="home-kpi-volume">$24.5M</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card" style="box-shadow: 0 0 15px rgba(191, 90, 242, 0.05) !important;">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">PROM. METRO²</span>
+                                <i data-lucide="hash" class="kpi-mini-icon" style="color: var(--neon-purple);"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-purple" id="home-kpi-m2">Q9,850/m²</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card" style="box-shadow: 0 0 15px rgba(0, 255, 102, 0.05) !important;">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">LÍDER ROI</span>
+                                <i data-lucide="trending-up" class="kpi-mini-icon" style="color: var(--neon-emerald);"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-green" id="home-kpi-roi">Zona 4 (9.8%)</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card" style="box-shadow: 0 0 15px rgba(255, 159, 10, 0.05) !important;">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">LIQUIDEZ PROMEDIO</span>
+                                <i data-lucide="activity" class="kpi-mini-icon" style="color: #ff9f0a;"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-orange" id="home-kpi-liquidity">9.2/10</span>
+                        </div>
+                        <div class="card glassmorphism kpi-card" style="box-shadow: 0 0 15px rgba(0, 240, 255, 0.05) !important;">
+                            <div class="kpi-icon-row">
+                                <span class="kpi-lbl">PLUSVALÍA ANUAL</span>
+                                <i data-lucide="arrow-up-right" class="kpi-mini-icon" style="color: var(--cyan);"></i>
+                            </div>
+                            <span class="kpi-val font-mono text-cyan" id="home-kpi-growth">+7.4%</span>
+                        </div>
+                    </div>
+
+                    <!-- CAROUSEL BANNER / ANUNCIO DINÁMICO -->
+                    <div class="home-carousel-container card glassmorphism border-white" style="margin-bottom: 25px; padding: 0; overflow: hidden; position: relative; height: 180px; border-color: rgba(0, 240, 255, 0.15) !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.05) !important;">
+                        <div id="home-carousel-slides" style="width: 100%; height: 100%; position: relative;">
+                            <!-- Slides dinámicos -->
+                        </div>
+                        <!-- Controles del carrusel -->
+                        <button class="carousel-control prev" onclick="moveCarousel(-1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
+                        <button class="carousel-control next" onclick="moveCarousel(1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10;"><i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i></button>
+                        <!-- Indicadores de puntos -->
+                        <div id="home-carousel-dots" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10;"></div>
+                    </div>
+
+                    <!-- BUSCADOR DEL CATÁLOGO INTEGRADO -->
+                    <div class="card glassmorphism border-white" style="padding: 15px; margin-bottom: 25px; border-color: rgba(255,255,255,0.08) !important;">
+                        <div class="catalog-filters-row" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                            <div class="filter-group" style="flex: 1; min-width: 200px;">
+                                <span class="filter-label"><i data-lucide="search" class="tiny-icon"></i> BUSCAR PALABRA CLAVE:</span>
+                                <input type="text" id="home-search-input" onkeyup="filterHomeCatalog()" placeholder="Ej. Penthouse, Oficina, Zona 10..." class="cyber-input font-mono" style="font-size: 0.75rem;">
+                            </div>
+                            <div class="filter-group" style="min-width: 150px;">
+                                <span class="filter-label"><i data-lucide="map-pin" class="tiny-icon"></i> SECTOR / ZONA:</span>
+                                <select id="home-filter-zone" onchange="filterHomeCatalog()" class="cyber-select font-mono" style="font-size: 0.75rem;">
+                                    <option value="todos">Todos los sectores</option>
+                                    <option value="zona10">Zona 10</option>
+                                    <option value="zona14">Zona 14</option>
+                                    <option value="zona15">Zona 15</option>
+                                    <option value="zona16">Zona 16</option>
+                                    <option value="zona4">Zona 4</option>
+                                    <option value="carretera">CAES Km 10-17</option>
+                                    <option value="carretera_high">CAES Km 18-25</option>
+                                </select>
+                            </div>
+                            <div class="filter-group" style="min-width: 150px;">
+                                <span class="filter-label"><i data-lucide="tag" class="tiny-icon"></i> OPERACIÓN:</span>
+                                <select id="home-filter-type" onchange="filterHomeCatalog()" class="cyber-select font-mono" style="font-size: 0.75rem;">
+                                    <option value="todos">Todos los tipos</option>
+                                    <option value="venta">Venta</option>
+                                    <option value="renta">Renta</option>
+                                </select>
+                            </div>
+                            <div class="filter-group" style="min-width: 150px;">
+                                <span class="filter-label"><i data-lucide="home" class="tiny-icon"></i> CATEGORÍA:</span>
+                                <select id="home-filter-category" onchange="filterHomeCatalog()" class="cyber-select font-mono" style="font-size: 0.75rem;">
+                                    <option value="todos">Todas las categorías</option>
+                                    <option value="apartamento">Apartamento</option>
+                                    <option value="casa">Casa</option>
+                                    <option value="oficina">Oficina</option>
+                                    <option value="local">Local</option>
+                                    <option value="terreno">Terreno</option>
+                                    <option value="bodega">Bodega</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRILA DE RESULTADOS DEL CATÁLOGO EN HOME -->
+                    <div id="home-catalog-grid" class="catalog-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%;">
+                        <!-- Carga dinámica de propiedades del catálogo -->
+                    </div>
+                </section>
+                
                 <!-- VISTA 1: DASHBOARD DE VALUACIÓN -->
-                <section id="view-dashboard" class="app-view active">
+                <section id="view-dashboard" class="app-view">
                     
                     <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
                     <div class="featured-header">
@@ -3897,8 +4003,11 @@
             </div>
             
             <nav class="drawer-nav font-mono">
+                <button class="drawer-item active" onclick="switchViewMobile('home')">
+                    <i data-lucide="home"></i> <span>Inicio (Home)</span>
+                </button>
                 <button class="drawer-item" onclick="switchViewMobile('dashboard')">
-                    <i data-lucide="layout-dashboard"></i> <span>Tasa Inteligente</span>
+                    <i data-lucide="brain"></i> <span>Tasa Inteligente</span>
                 </button>
                 <button class="drawer-item" onclick="switchViewMobile('heatmap')">
                     <i data-lucide="map-pin"></i> <span>Radar de Calor</span>
@@ -3948,11 +4057,10 @@
         </div>
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN MÓVIL (BOTTOM NAV BAR) -->
     <nav id="mobile-bottom-nav" class="mobile-bottom-nav font-mono">
-        <button id="mobile-nav-btn-dashboard" class="mobile-nav-item active" onclick="switchView('dashboard')">
-            <i data-lucide="layout-dashboard"></i>
-            <span>Tasa IA</span>
+        <button id="mobile-nav-btn-home" class="mobile-nav-item active" onclick="switchView('home')">
+            <i data-lucide="home"></i>
+            <span>Home</span>
         </button>
         <button id="mobile-nav-btn-heatmap" class="mobile-nav-item" onclick="switchView('heatmap')">
             <i data-lucide="map-pin"></i>

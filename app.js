@@ -482,13 +482,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isSupabaseActive) {
         syncSupabaseData().then(() => {
             checkDeepLinkParams();
+            switchView('home');
         }).catch(err => {
             console.error("Error al sincronizar datos:", err);
             checkDeepLinkParams();
+            switchView('home');
         });
     } else {
         filterAgentProperties();
         checkDeepLinkParams();
+        switchView('home');
     }
 
     // Autocompletado de coordenadas GPS automático B2B al cambiar zona de ubicación
@@ -1021,7 +1024,11 @@ function switchView(viewId) {
     const titleEl = document.getElementById('page-title');
     const subtitleEl = document.getElementById('page-subtitle');
 
-    if (viewId === 'dashboard') {
+    if (viewId === 'home') {
+        titleEl.innerText = "Consola de Inteligencia Inmobiliaria";
+        subtitleEl.innerText = "Simulación macroeconómica del mercado y portafolio general";
+        setTimeout(initHomeView, 50);
+    } else if (viewId === 'dashboard') {
         titleEl.innerText = "Valuador Inmobiliario IA";
         subtitleEl.innerText = "Análisis predictivo de propiedades con redes neuronales";
         // Descargar configuración fresca en segundo plano al regresar al Dashboard
@@ -13098,5 +13105,419 @@ function renderAdminTutorialsTable() {
         `;
         tableBody.appendChild(row);
     });
+}
+
+/* ==========================================================================
+   CONSOLA PRINCIPAL HOME - INTELIGENCIA INMOBILIARIA Y CARUSEL
+   ========================================================================== */
+
+let homeCarouselIndex = 0;
+let homeCarouselTimer = null;
+let homeCarouselSlides = [];
+
+/**
+ * Inicializa la vista principal HOME: Calcula KPIs, carga el carrusel y renderiza el catálogo general
+ */
+function initHomeView() {
+    // 1. Calcular KPIs macro del mercado
+    calculateHomeMacroKPIs();
+
+    // 2. Inicializar el carrusel de novedades / portadas alternativas
+    initHomeCarousel();
+
+    // 3. Renderizar el listado inicial del catálogo en el HOME
+    renderHomeCatalog();
+}
+
+/**
+ * Calcula estadísticas de mercado en base a las propiedades en PORTFOLIO_DATABASE
+ */
+function calculateHomeMacroKPIs() {
+    let totalVolumeUSD = 0;
+    let sumPriceM2 = 0;
+    let countPriceM2 = 0;
+    let maxRoiVal = 0;
+    let maxRoiZone = "Zona 10";
+    let sumLiquidity = 0;
+    let countLiquidity = 0;
+    let sumGrowth = 0;
+    let countGrowth = 0;
+
+    // Recorrer zonas y propiedades
+    Object.keys(PORTFOLIO_DATABASE).forEach(zoneKey => {
+        const zoneData = ZONES_DATABASE[zoneKey];
+        const properties = PORTFOLIO_DATABASE[zoneKey] || [];
+
+        // Sumar volumen de propiedades no de referencia
+        properties.forEach(p => {
+            if (p.isReferenceData !== true) {
+                totalVolumeUSD += parseFloat(p.priceUSD || 0);
+            }
+        });
+
+        if (zoneData) {
+            // Promedio Metro cuadrado
+            sumPriceM2 += parseFloat(zoneData.basePriceM2 || 0);
+            countPriceM2++;
+
+            // Mejor ROI
+            const currentRoi = parseFloat(zoneData.roi || 0);
+            if (currentRoi > maxRoiVal) {
+                maxRoiVal = currentRoi;
+                maxRoiZone = zoneData.name.split(' (')[0];
+            }
+
+            // Liquidez
+            const liqMatch = String(zoneData.liquidity || '').match(/([0-9.]+)/);
+            if (liqMatch) {
+                sumLiquidity += parseFloat(liqMatch[1]);
+                countLiquidity++;
+            }
+
+            // Plusvalía
+            sumGrowth += parseFloat(zoneData.growth5Y || 0) / 5;
+            countGrowth++;
+        }
+    });
+
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+
+    // Rellenar elementos
+    const volEl = document.getElementById('home-kpi-volume');
+    if (volEl) {
+        const displayVol = totalVolumeUSD * conversion;
+        if (displayVol >= 1e6) {
+            volEl.innerText = `${currencySym}${(displayVol / 1e6).toFixed(1)}M`;
+        } else {
+            volEl.innerText = `${currencySym}${Math.round(displayVol).toLocaleString()}`;
+        }
+    }
+
+    const m2El = document.getElementById('home-kpi-m2');
+    if (m2El) {
+        const avgM2 = countPriceM2 > 0 ? (sumPriceM2 / countPriceM2) * conversion : 1100 * conversion;
+        m2El.innerText = `${currencySym}${Math.round(avgM2).toLocaleString()}/m²`;
+    }
+
+    const roiEl = document.getElementById('home-kpi-roi');
+    if (roiEl) {
+        roiEl.innerText = `${maxRoiZone} (${maxRoiVal.toFixed(1)}%)`;
+    }
+
+    const liqEl = document.getElementById('home-kpi-liquidity');
+    if (liqEl) {
+        const avgLiq = countLiquidity > 0 ? (sumLiquidity / countLiquidity) : 8.5;
+        liqEl.innerText = `${avgLiq.toFixed(1)}/10`;
+    }
+
+    const growthEl = document.getElementById('home-kpi-growth');
+    if (growthEl) {
+        const avgGr = countGrowth > 0 ? (sumGrowth / countGrowth) : 7.2;
+        growthEl.innerText = `+${avgGr.toFixed(1)}%`;
+    }
+}
+
+/**
+ * Inicializa y configura el carrusel interactivo del HOME
+ */
+function initHomeCarousel() {
+    const slidesContainer = document.getElementById('home-carousel-slides');
+    const dotsContainer = document.getElementById('home-carousel-dots');
+    if (!slidesContainer) return;
+
+    // Slides base predefinidas
+    homeCarouselSlides = [
+        {
+            tag: "Inteligencia Artificial",
+            title: "Tasa tu propiedad en segundos con Redes Neuronales",
+            desc: "Nuestro motor predictivo evalúa metros cuadrados, ubicación, amenidades y acabados para determinar el precio real de mercado instantáneamente.",
+            img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80",
+            action: () => switchView('dashboard')
+        },
+        {
+            tag: "Membresía VIP",
+            title: "Simulador de Libertad Financiera y Portafolio Completo",
+            desc: "Monitorea tu flujo de caja neto, deudas, amortizaciones y plusvalía proyectada a 20 años de forma consolidada.",
+            img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=80",
+            action: () => switchView('subscriptions')
+        },
+        {
+            tag: "Cartera de Oro",
+            title: "Airdrops Semanales de Tether Gold (XAUt) Activos",
+            desc: "Todos los socios Premium e Inversionistas B2B participan en la distribución de dividendos en oro físico digitalizado.",
+            img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80",
+            action: () => switchView('investor')
+        }
+    ];
+
+    // Integrar portadas alternativas de zonas sin pauta si existen y si el admin ha subido alguna
+    if (typeof alternativeCovers !== 'undefined') {
+        Object.keys(alternativeCovers).forEach(zoneKey => {
+            const coverUrl = alternativeCovers[zoneKey];
+            const zoneData = ZONES_DATABASE[zoneKey];
+            if (coverUrl && zoneData) {
+                homeCarouselSlides.push({
+                    tag: `Sector: ${zoneData.name.split(' (')[0]}`,
+                    title: `Conoce las oportunidades en ${zoneData.name.split(' (')[0]}`,
+                    desc: `Tasas de plusvalía atractivas de hasta ${((zoneData.growth5Y || 0)/5).toFixed(1)}% anuales y alta demanda de alquileres.`,
+                    img: coverUrl,
+                    action: () => {
+                        const zoneSelect = document.getElementById('home-filter-zone');
+                        if (zoneSelect) {
+                            zoneSelect.value = zoneKey;
+                            filterHomeCatalog();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    // Renderizar slides en HTML
+    slidesContainer.innerHTML = '';
+    dotsContainer.innerHTML = '';
+
+    homeCarouselSlides.forEach((slide, idx) => {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = `home-carousel-slide ${idx === 0 ? 'active' : ''}`;
+        slideDiv.style.cursor = 'pointer';
+        slideDiv.onclick = slide.action;
+        
+        slideDiv.innerHTML = `
+            <div class="carousel-overlay"></div>
+            <div class="carousel-slide-content">
+                <span class="carousel-slide-tag">${slide.tag}</span>
+                <h2 class="carousel-slide-title">${slide.title}</h2>
+                <p class="carousel-slide-desc">${slide.desc}</p>
+            </div>
+            <img src="${slide.img}" class="carousel-slide-img-side" alt="Banner">
+        `;
+        slidesContainer.appendChild(slideDiv);
+
+        const dot = document.createElement('button');
+        dot.className = `carousel-dot ${idx === 0 ? 'active' : ''}`;
+        dot.onclick = () => setCarouselIndex(idx);
+        dotsContainer.appendChild(dot);
+    });
+
+    homeCarouselIndex = 0;
+
+    // Configurar ciclo automático de rotación (6 segundos)
+    if (homeCarouselTimer) clearInterval(homeCarouselTimer);
+    homeCarouselTimer = setInterval(() => {
+        moveCarousel(1);
+    }, 6000);
+}
+
+/**
+ * Cambia el slide del carrusel por un desplazamiento manual
+ */
+function moveCarousel(direction) {
+    if (homeCarouselSlides.length === 0) return;
+    
+    let nextIndex = homeCarouselIndex + direction;
+    if (nextIndex >= homeCarouselSlides.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = homeCarouselSlides.length - 1;
+
+    setCarouselIndex(nextIndex);
+}
+
+/**
+ * Asigna y activa un slide específico en el carrusel
+ */
+function setCarouselIndex(index) {
+    homeCarouselIndex = index;
+    
+    const slides = document.querySelectorAll('.home-carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
+
+    slides.forEach((slide, idx) => {
+        if (idx === index) {
+            slide.classList.add('active');
+        } else {
+            slide.classList.remove('active');
+        }
+    });
+
+    dots.forEach((dot, idx) => {
+        if (idx === index) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+}
+
+/**
+ * Renderiza el catálogo de propiedades filtrado directamente en la vista HOME
+ */
+function renderHomeCatalog() {
+    const grid = document.getElementById('home-catalog-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    // Obtener todas las propiedades no de referencia
+    let properties = [];
+    const zoneSelectVal = document.getElementById('home-filter-zone')?.value || 'todos';
+    
+    if (zoneSelectVal === 'todos') {
+        Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
+            properties = properties.concat(PORTFOLIO_DATABASE[zk] || []);
+        });
+    } else {
+        properties = PORTFOLIO_DATABASE[zoneSelectVal] || [];
+    }
+
+    // Filtrar duplicados y datos de referencia
+    const seen = new Set();
+    properties = properties.filter(prop => {
+        if (prop.isReferenceData === true) return false;
+        const uniqueId = prop.id || prop.title;
+        if (seen.has(uniqueId)) return false;
+        seen.add(uniqueId);
+        return true;
+    });
+
+    // Filtros
+    const searchVal = document.getElementById('home-search-input')?.value.trim().toLowerCase() || '';
+    const typeVal = document.getElementById('home-filter-type')?.value || 'todos';
+    const categoryVal = document.getElementById('home-filter-category')?.value || 'todos';
+
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+
+    let renderedCount = 0;
+
+    properties.forEach(prop => {
+        const { category, type } = getPropertyCategoryAndType(prop);
+
+        // Filtrar por categoría
+        if (categoryVal !== 'todos' && category.toLowerCase() !== categoryVal) return;
+
+        // Filtrar por tipo
+        if (typeVal !== 'todos' && type.toLowerCase() !== typeVal) return;
+
+        // Filtrar por texto de búsqueda
+        if (searchVal && !prop.title.toLowerCase().includes(searchVal) && !prop.tag.toLowerCase().includes(searchVal)) return;
+
+        renderedCount++;
+
+        const propZoneKey = prop.location || 'zona10';
+        const absoluteIndex = PORTFOLIO_DATABASE[propZoneKey] ? PORTFOLIO_DATABASE[propZoneKey].indexOf(prop) : -1;
+        const propZoneData = ZONES_DATABASE[propZoneKey];
+        const propZoneName = propZoneData ? propZoneData.name.split(' (')[0] : 'Guatemala';
+        const propZoneColor = propZoneData ? propZoneData.color : 'cyan';
+
+        const convertedPrice = prop.priceUSD * conversion;
+        const isSponsored = prop.sponsored === true;
+        const sponsoredClass = isSponsored ? 'sponsored' : '';
+        const badgeColorClass = isSponsored ? 'green' : propZoneColor;
+        const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
+
+        // Botón de eliminar para admin
+        const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
+            loggedInB2bClient.email.toLowerCase().includes('admin') || 
+            loggedInB2bClient.email.toLowerCase().includes('sgalindo')
+        )) || (!loggedInB2bClient && isCommercialAuthenticated);
+        
+        const deleteButtonHTML = (isAdmin && prop.id) ? `
+            <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
+                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+            </button>
+        ` : '';
+
+        // Calcular ROI predictivo estimado para mostrarlo en la tarjeta de venta
+        const propRoi = propZoneData ? propZoneData.roi : 6.5;
+        const roiTagHTML = type.toLowerCase() === 'venta' ? `
+            <span style="font-size: 0.6rem; color: var(--neon-emerald); background: rgba(0, 255, 102, 0.08); border: 1px solid rgba(0, 255, 102, 0.2); padding: 2px 6px; border-radius: 3px; font-weight: bold; letter-spacing: 0.5px;">ROI EST. RENTA: ${propRoi}%</span>
+        ` : '';
+
+        const cardHTML = `
+            <div class="card glassmorphism featured-card glow-${propZoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${propZoneKey}', ${absoluteIndex})">
+                ${deleteButtonHTML}
+                ${renderCardImageHTML(prop, 'card-image-wrapper', '260px', isSponsored, badgeColorClass)}
+                <div class="card-info">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span class="property-tag">${prop.tag}</span>
+                        ${roiTagHTML}
+                    </div>
+                    <h4>${prop.title}</h4>
+                    <div class="property-location">
+                        <i data-lucide="map-pin" class="tiny-icon"></i> ${propZoneName}
+                    </div>
+                    <div class="property-specs">
+                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
+                        <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
+                        <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
+                        <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
+                    </div>
+                    <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span class="price-val" style="font-size: 1.05rem;">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${propZoneKey}', ${absoluteIndex})">
+                                <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        grid.insertAdjacentHTML('beforeend', cardHTML);
+    });
+
+    if (renderedCount === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                <i data-lucide="info" style="width: 32px; height: 32px; color: var(--cyan); margin-bottom: 10px; opacity: 0.5;"></i>
+                <p class="font-mono" style="font-size: 0.8rem; text-transform: uppercase;">No se encontraron activos con los filtros aplicados</p>
+            </div>
+        `;
+    }
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Filtra el catálogo en base a los inputs ingresados en la sección de filtros del HOME
+ */
+function filterHomeCatalog() {
+    renderHomeCatalog();
+}
+
+/**
+ * Carga una propiedad del catálogo al valuador de la pestaña Tasa Inteligente
+ */
+function loadCatalogPropToValuator(zoneKey, index) {
+    const prop = PORTFOLIO_DATABASE[zoneKey][index];
+    if (!prop) return;
+
+    // Configurar los campos del valuador
+    const locationSelect = document.getElementById('prop-location');
+    const sizeInput = document.getElementById('prop-size');
+    const roomsInput = document.getElementById('prop-rooms');
+    const bathroomsInput = document.getElementById('prop-bathrooms');
+    const parkingsInput = document.getElementById('prop-parkings');
+
+    if (locationSelect) locationSelect.value = zoneKey;
+    if (sizeInput) sizeInput.value = prop.size || 100;
+    if (roomsInput) roomsInput.value = prop.rooms || 2;
+    if (bathroomsInput) bathroomsInput.value = prop.bathrooms || 2;
+    if (parkingsInput) parkingsInput.value = prop.parkings || 1;
+
+    // Cambiar a la vista del valuador
+    switchView('dashboard');
+
+    // Desencadenar la tasación automáticamente
+    setTimeout(() => {
+        const btnValuate = document.getElementById('btn-evaluate');
+        if (btnValuate) btnValuate.click();
+    }, 100);
 }
 
