@@ -8369,10 +8369,10 @@ function renderAdminReferenceDatabase() {
                 statsHtml += `
                     <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="text-transform: uppercase; font-weight: bold; color: #fff; font-size: 0.75rem;">${cat.slice(0, -1)}</span>
-                        <span style="text-align: right; display: flex; gap: 8px; font-size: 0.65rem;">
-                            <span style="color: var(--text-muted);">Econ: <strong style="color: #fff;">${fEcon}</strong></span>
-                            <span style="color: var(--text-muted);">Std: <strong style="color: var(--cyan);">${fStd}</strong></span>
-                            <span style="color: var(--text-muted);">Prem: <strong style="color: #fff;">${fLux}</strong></span>
+                        <span style="text-align: right; display: flex; gap: 8px; font-size: 0.75rem;">
+                            <span style="color: var(--text-muted);">Econ: <strong style="color: #fff; font-weight: 800;">${fEcon}</strong></span>
+                            <span style="color: var(--text-muted);">Std: <strong style="color: var(--cyan); font-weight: 800;">${fStd}</strong></span>
+                            <span style="color: var(--text-muted);">Prem: <strong style="color: #fff; font-weight: 800;">${fLux}</strong></span>
                         </span>
                     </div>
                 `;
@@ -8425,13 +8425,13 @@ function renderAdminReferenceDatabase() {
             </td>
             <td style="padding: 8px; text-align: left; vertical-align: middle; color: #fff; font-weight: bold;">
                 ${prop.title}
-                <div style="font-size: 0.55rem; color: var(--text-muted); margin-top: 2px;">ID: ${prop.id || 'Local Mock'}</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">ID: ${prop.id || 'Local Mock'}</div>
             </td>
             <td style="padding: 8px; text-align: center; vertical-align: middle; text-transform: uppercase;">
-                <span class="badge-lbl" style="font-size: 0.6rem; color: var(--cyan);">${prop.category || 'apartamento'}</span>
+                <span class="badge-lbl" style="font-size: 0.7rem; color: var(--cyan);">${prop.category || 'apartamento'}</span>
             </td>
             <td style="padding: 8px; text-align: center; vertical-align: middle; text-transform: uppercase;">
-                <span class="badge-lbl" style="font-size: 0.6rem; color: #fff;">${prop.type || 'venta'}</span>
+                <span class="badge-lbl" style="font-size: 0.7rem; color: #fff;">${prop.type || 'venta'}</span>
             </td>
             <td style="padding: 8px; text-align: right; vertical-align: middle; color: var(--text-secondary);">
                 ${prop.size || 0} m²
@@ -8440,7 +8440,7 @@ function renderAdminReferenceDatabase() {
                 ${formattedPrice}
             </td>
             <td style="padding: 8px; text-align: center; vertical-align: middle;">
-                <button onclick="event.stopPropagation(); deleteAdminReferenceProperty('${zoneKey}', '${prop.id}')" class="btn-commercial" style="background: rgba(255, 55, 95, 0.08); border: 1px solid var(--neon-red); color: var(--neon-red); padding: 4px 8px; font-size: 0.6rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                <button onclick="event.stopPropagation(); deleteAdminReferenceProperty('${zoneKey}', '${prop.id}')" class="btn-commercial" style="background: rgba(255, 55, 95, 0.08); border: 1px solid var(--neon-red); color: var(--neon-red); padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
                     <i data-lucide="trash-2" style="width: 10px; height: 10px;"></i> ELIMINAR
                 </button>
             </td>
