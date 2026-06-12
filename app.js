@@ -8281,11 +8281,11 @@ function renderAdminReferenceDatabase() {
             const zoneData = ZONES_DATABASE[zoneKey] || { basePriceM2: 1100 };
 
             let statsHtml = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; font-size: 0.65rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; font-size: 0.75rem;">
                     <!-- Columna 1: Promedios de Mercado Real (Ingresados) -->
-                    <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; font-size: 0.7rem; display: flex; align-items: center; gap: 5px;">
-                            <i data-lucide="bar-chart-2" style="width: 12px; height: 12px;"></i>
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; font-size: 0.82rem; display: flex; align-items: center; gap: 5px;">
+                            <i data-lucide="bar-chart-2" style="width: 14px; height: 14px;"></i>
                             PROMEDIOS REALES DE MERCADO (${refProperties.length} ref.)
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -8306,11 +8306,11 @@ function renderAdminReferenceDatabase() {
                     : `$${avgPriceM2.toLocaleString('en-US', { maximumFractionDigits: 0 })}/m²`;
 
                 statsHtml += `
-                    <div style="padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--cyan);">
-                        <span style="text-transform: uppercase; font-weight: bold; color: #fff;">${cat.slice(0, -1)} (${data.count})</span>
+                    <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--cyan);">
+                        <span style="text-transform: uppercase; font-weight: bold; color: #fff; font-size: 0.75rem;">${cat.slice(0, -1)} (${data.count})</span>
                         <span style="text-align: right;">
-                            <div style="color: var(--cyan); font-weight: bold;">${formattedM2}</div>
-                            <div style="color: var(--text-muted); font-size: 0.55rem;">Prom: ${formattedPrice} | ${avgSize.toFixed(0)}m²</div>
+                            <div style="color: var(--cyan); font-weight: bold; font-size: 0.8rem;">${formattedM2}</div>
+                            <div style="color: var(--text-muted); font-size: 0.65rem;">Prom: ${formattedPrice} | ${avgSize.toFixed(0)}m²</div>
                         </span>
                     </div>
                 `;
@@ -8322,8 +8322,8 @@ function renderAdminReferenceDatabase() {
 
                     <!-- Columna 2: Fórmulas de Calibración Base IA (Teórica) -->
                     <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
-                        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; font-size: 0.7rem; display: flex; align-items: center; gap: 5px;">
-                            <i data-lucide="cpu" style="width: 12px; height: 12px;"></i>
+                        <div style="color: var(--cyan); font-weight: bold; margin-bottom: 8px; font-size: 0.82rem; display: flex; align-items: center; gap: 5px;">
+                            <i data-lucide="cpu" style="width: 14px; height: 14px;"></i>
                             CALIBRACIÓN BASE IA ($m^2$ teóricos por tipo)
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 6px;">
@@ -8367,9 +8367,9 @@ function renderAdminReferenceDatabase() {
                     : `$${priceLux.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
                 statsHtml += `
-                    <div style="padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="text-transform: uppercase; font-weight: bold; color: #fff;">${cat.slice(0, -1)}</span>
-                        <span style="text-align: right; display: flex; gap: 8px; font-size: 0.55rem;">
+                    <div style="padding: 8px; background: rgba(255,255,255,0.02); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="text-transform: uppercase; font-weight: bold; color: #fff; font-size: 0.75rem;">${cat.slice(0, -1)}</span>
+                        <span style="text-align: right; display: flex; gap: 8px; font-size: 0.65rem;">
                             <span style="color: var(--text-muted);">Econ: <strong style="color: #fff;">${fEcon}</strong></span>
                             <span style="color: var(--text-muted);">Std: <strong style="color: var(--cyan);">${fStd}</strong></span>
                             <span style="color: var(--text-muted);">Prem: <strong style="color: #fff;">${fLux}</strong></span>
