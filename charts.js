@@ -5,6 +5,7 @@
 let historyChartInstance = null;
 let comparisonChartInstance = null;
 let xautHistoryChartInstance = null;
+let comparisonBreathingInterval = null;
 
 // Configuración global de Chart.js para temas oscuros
 Chart.defaults.color = '#9da4b0';
@@ -139,19 +140,35 @@ function initInvestorComparisonChart() {
         plusvaliaData.push(zone.growth5Y / 5); // Tasa anualizada (5 años / 5)
     });
 
-    const maxRoi = Math.max(...roiData);
-    const maxPlusvalia = Math.max(...plusvaliaData);
+    // Encontrar los umbrales para los 3 mejores (Top 3)
+    const sortedRoi = [...roiData].sort((a, b) => b - a);
+    const thresholdRoi = sortedRoi[2] || 0; // Tercer valor más alto para ROI
 
-    const roiBgColors = roiData.map(val => val === maxRoi ? 'rgba(0, 240, 255, 0.85)' : 'rgba(0, 102, 255, 0.45)');
-    const roiBorderColors = roiData.map(val => val === maxRoi ? '#00f0ff' : 'rgba(0, 102, 255, 0.6)');
-    const roiHoverColors = roiData.map(val => val === maxRoi ? '#00f0ff' : '#0066ff');
+    const sortedPlusvalia = [...plusvaliaData].sort((a, b) => b - a);
+    const thresholdPlusvalia = sortedPlusvalia[2] || 0; // Tercer valor más alto para Plusvalía
 
-    const plusvaliaBgColors = plusvaliaData.map(val => val === maxPlusvalia ? 'rgba(255, 55, 95, 0.85)' : 'rgba(0, 255, 102, 0.45)');
-    const plusvaliaBorderColors = plusvaliaData.map(val => val === maxPlusvalia ? '#ff375f' : 'rgba(0, 255, 102, 0.6)');
-    const plusvaliaHoverColors = plusvaliaData.map(val => val === maxPlusvalia ? '#ff375f' : '#00ff66');
+    // Colores iniciales base y destacados
+    const getRoiColor = (val, alpha) => val >= thresholdRoi ? `rgba(0, 240, 255, ${alpha})` : 'rgba(0, 102, 255, 0.4)';
+    const getRoiBorder = (val, alpha) => val >= thresholdRoi ? `rgba(0, 240, 255, ${alpha + 0.15})` : 'rgba(0, 102, 255, 0.5)';
+    
+    const getPlusColor = (val, alpha) => val >= thresholdPlusvalia ? `rgba(255, 55, 95, ${alpha})` : 'rgba(0, 255, 102, 0.4)';
+    const getPlusBorder = (val, alpha) => val >= thresholdPlusvalia ? `rgba(255, 55, 95, ${alpha + 0.15})` : 'rgba(0, 255, 102, 0.5)';
+
+    const roiBgColors = roiData.map(val => getRoiColor(val, 0.8));
+    const roiBorderColors = roiData.map(val => getRoiBorder(val, 0.8));
+    const roiHoverColors = roiData.map(val => val >= thresholdRoi ? '#00f0ff' : '#0066ff');
+
+    const plusvaliaBgColors = plusvaliaData.map(val => getPlusColor(val, 0.8));
+    const plusvaliaBorderColors = plusvaliaData.map(val => getPlusBorder(val, 0.8));
+    const plusvaliaHoverColors = plusvaliaData.map(val => val >= thresholdPlusvalia ? '#ff375f' : '#00ff66');
 
     if (comparisonChartInstance) {
         comparisonChartInstance.destroy();
+    }
+
+    if (comparisonBreathingInterval) {
+        clearInterval(comparisonBreathingInterval);
+        comparisonBreathingInterval = null;
     }
 
     comparisonChartInstance = new Chart(ctx, {
@@ -224,6 +241,37 @@ function initInvestorComparisonChart() {
             }
         }
     });
+
+    // Efecto de respiración suave (encendido/apagado) para los 3 mejores
+    let breathingAlpha = 0.8;
+    let breathingDir = -1;
+
+    comparisonBreathingInterval = setInterval(() => {
+        breathingAlpha += breathingDir * 0.02;
+        if (breathingAlpha <= 0.4) {
+            breathingAlpha = 0.4;
+            breathingDir = 1;
+        } else if (breathingAlpha >= 0.9) {
+            breathingAlpha = 0.9;
+            breathingDir = -1;
+        }
+
+        if (comparisonChartInstance && comparisonChartInstance.data && comparisonChartInstance.data.datasets.length > 0) {
+            const currentRoiBg = roiData.map(val => getRoiColor(val, breathingAlpha));
+            const currentRoiBorder = roiData.map(val => getRoiBorder(val, breathingAlpha));
+            
+            const currentPlusBg = plusvaliaData.map(val => getPlusColor(val, breathingAlpha));
+            const currentPlusBorder = plusvaliaData.map(val => getPlusBorder(val, breathingAlpha));
+
+            comparisonChartInstance.data.datasets[0].backgroundColor = currentRoiBg;
+            comparisonChartInstance.data.datasets[0].borderColor = currentRoiBorder;
+            
+            comparisonChartInstance.data.datasets[1].backgroundColor = currentPlusBg;
+            comparisonChartInstance.data.datasets[1].borderColor = currentPlusBorder;
+
+            comparisonChartInstance.update('none'); // Actualizar canvas suavemente sin animaciones de entrada
+        }
+    }, 50);
 }
 
 /* ==========================================================================
