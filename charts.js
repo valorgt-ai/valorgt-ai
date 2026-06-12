@@ -148,11 +148,11 @@ function initInvestorComparisonChart() {
     const thresholdPlusvalia = sortedPlusvalia[2] || 0; // Tercer valor más alto para Plusvalía
 
     // Colores iniciales base y destacados
-    const getRoiColor = (val, alpha) => val >= thresholdRoi ? `rgba(0, 240, 255, ${alpha})` : 'rgba(0, 102, 255, 0.4)';
-    const getRoiBorder = (val, alpha) => val >= thresholdRoi ? `rgba(0, 240, 255, ${alpha + 0.15})` : 'rgba(0, 102, 255, 0.5)';
+    const getRoiColor = (val, factor) => val >= thresholdRoi ? `rgba(0, ${Math.round(102 + 138 * factor)}, 255, ${0.5 + 0.4 * factor})` : 'rgba(0, 102, 255, 0.45)';
+    const getRoiBorder = (val, factor) => val >= thresholdRoi ? `rgba(0, ${Math.round(102 + 138 * factor)}, 255, 0.95)` : 'rgba(0, 102, 255, 0.65)';
     
-    const getPlusColor = (val, alpha) => val >= thresholdPlusvalia ? `rgba(255, 55, 95, ${alpha})` : 'rgba(0, 255, 102, 0.4)';
-    const getPlusBorder = (val, alpha) => val >= thresholdPlusvalia ? `rgba(255, 55, 95, ${alpha + 0.15})` : 'rgba(0, 255, 102, 0.5)';
+    const getPlusColor = (val, factor) => val >= thresholdPlusvalia ? `rgba(0, ${Math.round(120 + 135 * factor)}, ${Math.round(50 + 52 * factor)}, ${0.5 + 0.4 * factor})` : 'rgba(0, 120, 50, 0.45)';
+    const getPlusBorder = (val, factor) => val >= thresholdPlusvalia ? `rgba(0, ${Math.round(120 + 135 * factor)}, ${Math.round(50 + 52 * factor)}, 0.95)` : 'rgba(0, 120, 50, 0.65)';
 
     const roiBgColors = roiData.map(val => getRoiColor(val, 0.8));
     const roiBorderColors = roiData.map(val => getRoiBorder(val, 0.8));
@@ -160,7 +160,7 @@ function initInvestorComparisonChart() {
 
     const plusvaliaBgColors = plusvaliaData.map(val => getPlusColor(val, 0.8));
     const plusvaliaBorderColors = plusvaliaData.map(val => getPlusBorder(val, 0.8));
-    const plusvaliaHoverColors = plusvaliaData.map(val => val >= thresholdPlusvalia ? '#ff375f' : '#00ff66');
+    const plusvaliaHoverColors = plusvaliaData.map(val => val >= thresholdPlusvalia ? '#00ff66' : '#00b33c');
 
     if (comparisonChartInstance) {
         comparisonChartInstance.destroy();
@@ -243,25 +243,25 @@ function initInvestorComparisonChart() {
     });
 
     // Efecto de respiración suave (encendido/apagado) para los 3 mejores
-    let breathingAlpha = 0.8;
+    let breathingFactor = 0.8;
     let breathingDir = -1;
 
     comparisonBreathingInterval = setInterval(() => {
-        breathingAlpha += breathingDir * 0.02;
-        if (breathingAlpha <= 0.4) {
-            breathingAlpha = 0.4;
+        breathingFactor += breathingDir * 0.04;
+        if (breathingFactor <= 0.0) {
+            breathingFactor = 0.0;
             breathingDir = 1;
-        } else if (breathingAlpha >= 0.9) {
-            breathingAlpha = 0.9;
+        } else if (breathingFactor >= 1.0) {
+            breathingFactor = 1.0;
             breathingDir = -1;
         }
 
         if (comparisonChartInstance && comparisonChartInstance.data && comparisonChartInstance.data.datasets.length > 0) {
-            const currentRoiBg = roiData.map(val => getRoiColor(val, breathingAlpha));
-            const currentRoiBorder = roiData.map(val => getRoiBorder(val, breathingAlpha));
+            const currentRoiBg = roiData.map(val => getRoiColor(val, breathingFactor));
+            const currentRoiBorder = roiData.map(val => getRoiBorder(val, breathingFactor));
             
-            const currentPlusBg = plusvaliaData.map(val => getPlusColor(val, breathingAlpha));
-            const currentPlusBorder = plusvaliaData.map(val => getPlusBorder(val, breathingAlpha));
+            const currentPlusBg = plusvaliaData.map(val => getPlusColor(val, breathingFactor));
+            const currentPlusBorder = plusvaliaData.map(val => getPlusBorder(val, breathingFactor));
 
             comparisonChartInstance.data.datasets[0].backgroundColor = currentRoiBg;
             comparisonChartInstance.data.datasets[0].borderColor = currentRoiBorder;
