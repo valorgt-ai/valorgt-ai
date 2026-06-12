@@ -146,16 +146,14 @@
                         <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
                     </div>
 
-                    <!-- CAROUSEL BANNER / ANUNCIO DINÁMICO (A LA CABECERA Y MÁS BAJO) -->
-                    <div class="home-carousel-container card glassmorphism border-white" style="margin-bottom: 20px; padding: 0; overflow: hidden; position: relative; height: 140px; border-color: rgba(0, 240, 255, 0.15) !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.05) !important;">
-                        <div id="home-carousel-slides" style="width: 100%; height: 100%; position: relative;">
-                            <!-- Slides dinámicos -->
+                    <!-- BANNER PROMOCIONAL CONTROLADO POR EL ADMINISTRADOR -->
+                    <div id="admin-promo-banner" class="admin-promo-banner hidden" style="margin-bottom: 20px;">
+                        <div class="promo-content">
+                            <i data-lucide="megaphone" class="promo-icon"></i>
+                            <div class="promo-marquee-container">
+                                <span id="promo-banner-text" class="promo-marquee-text">Cargando anuncios del sistema...</span>
+                            </div>
                         </div>
-                        <!-- Controles del carrusel -->
-                        <button class="carousel-control prev" onclick="moveCarousel(-1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
-                        <button class="carousel-control next" onclick="moveCarousel(1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10;"><i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i></button>
-                        <!-- Indicadores de puntos -->
-                        <div id="home-carousel-dots" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10;"></div>
                     </div>
 
                     <!-- PRIMERA FILA DE KPIS MACRO (ALTURA BAJA) -->
@@ -288,16 +286,6 @@
                 <!-- VISTA 1: DASHBOARD DE VALUACIÓN -->
                 <section id="view-dashboard" class="app-view">
                     
-
-                    <!-- BANNER PROMOCIONAL CONTROLADO POR EL ADMINISTRADOR -->
-                    <div id="admin-promo-banner" class="admin-promo-banner hidden">
-                        <div class="promo-content">
-                            <i data-lucide="megaphone" class="promo-icon"></i>
-                            <div class="promo-marquee-container">
-                                <span id="promo-banner-text" class="promo-marquee-text">Cargando anuncios del sistema...</span>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="deck-cta-container">
                         <button type="button" class="btn-glowing-cta" onclick="switchView('catalog')">

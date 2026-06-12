@@ -30,12 +30,13 @@ if (!isSupabaseActive) {
 // VARIABLES Y CONTROLADORES DEL ASISTENTE HOLOGRÁFICO IA
 let globalAssistantSpeechUtterance = null;
 const PAGE_EXPLANATIONS = {
+    home: "Bienvenido al portal inmobiliario premium de ValorGT. En esta página de inicio puedes ver las propiedades destacadas patrocinadas del mercado, consultar la telemetría inmobiliaria agregada en tiempo real a través de nuestros indicadores clave, y buscar propiedades en el catálogo con nuestros filtros avanzados.",
     dashboard: "Bienvenido al Valuador Inteligente de ValorGT. Aquí puedes estimar el precio de mercado de cualquier propiedad ingresando su área, sector y acabados. Nuestro modelo de Inteligencia Artificial calculará la plusvalía esperada y el rango de confianza en tiempo real.",
     heatmap: "Estás en el Radar de Plusvalía e Inversión. Este mapa te permite analizar los precios por metro cuadrado y la rentabilidad en las diferentes zonas. Haz clic en las universidades o centros comerciales para ver cómo impactan el valor de la tierra en su entorno.",
     mortgage: "Este es el Simulador Hipotecario Predictivo FHA. Ingresa el precio del inmueble y el enganche para calcular tu cuota mensual estimada, la tasa de interés y el ingreso familiar mínimo requerido para precalificar al crédito bancario.",
     investor: "Bienvenido a la Terminal de Inteligencia Financiera. Aquí puedes analizar el retorno de inversión, plusvalías proyectadas por zona e índices macroeconómicos inmobiliarios clave para tomar las mejores decisiones de colocación.",
     subscriptions: "Estás en la sección de Planes y Membresías Premium. Aquí puedes explorar y seleccionar el plan SaaS que mejor se adapte a tu perfil, ya sea Broker Independiente, Desarrollador o Inversionista Premium.",
-    admin: "Bienvenido al Panel de Control de Administración de ValorGT. Aquí puedes aprobar nuevos socios B2B, validar comprobantes de pago, configurar parámetros del sistema y auditar la integridad de la base de datos.",
+    admin: "Bienvenido al Panel de Control de Administración de ValorGT. Aquí puedes auditar socios B2B, validar comprobantes de pago, configurar parámetros del sistema y verificar la integridad de la base de datos.",
     'commercial-login': "Esta es la puerta de acceso para agentes e inversionistas. Por favor, inicia sesión con tus credenciales o regístrate para acceder a tu consola comercial, cartera de oro digital y simulador de portafolio IA.",
     'commercial-home': "Bienvenido a tu consola comercial central. Aquí tienes una vista general del rendimiento de tu negocio SaaS, incluyendo tu facturación activa, propiedades publicadas y estadísticas de visualización de tus anuncios.",
     'commercial-oro': "Esta es tu Cartera de Oro Digital. Administra tus balances en Tether Gold respaldados físicamente por oro en bóvedas de Suiza. Puedes solicitar depósitos o programar retiros y transferencias seguras.",
