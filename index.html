@@ -142,16 +142,16 @@
                         </div>
                     </div>
                     
-                    <div class="featured-properties-deck" id="featured-properties-deck" style="margin-bottom: 25px;">
+                    <div class="featured-properties-deck" id="home-featured-properties-deck" style="margin-bottom: 25px;">
                         <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
                     </div>
 
                     <!-- BANNER PROMOCIONAL CONTROLADO POR EL ADMINISTRADOR -->
-                    <div id="admin-promo-banner" class="admin-promo-banner hidden" style="margin-bottom: 20px;">
+                    <div id="home-admin-promo-banner" class="admin-promo-banner hidden" style="margin-bottom: 20px;">
                         <div class="promo-content">
                             <i data-lucide="megaphone" class="promo-icon"></i>
                             <div class="promo-marquee-container">
-                                <span id="promo-banner-text" class="promo-marquee-text">Cargando anuncios del sistema...</span>
+                                <span id="home-promo-banner-text" class="promo-marquee-text">Cargando anuncios del sistema...</span>
                             </div>
                         </div>
                     </div>
@@ -286,6 +286,30 @@
                 <!-- VISTA 1: DASHBOARD DE VALUACIÓN -->
                 <section id="view-dashboard" class="app-view">
                     
+                    <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
+                    <div class="featured-header">
+                        <div class="fh-left">
+                            <span class="hud-label-small">PORTADA DE PORTAFOLIO</span>
+                            <h3 class="section-title-premium">Propiedades Premium</h3>
+                        </div>
+                        <div class="fh-right">
+                            <span class="hud-caption">Haz clic en "AUTOTASAR" para cargar los parámetros en el motor de IA</span>
+                        </div>
+                    </div>
+                    
+                    <div class="featured-properties-deck" id="featured-properties-deck">
+                        <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
+                    </div>
+
+                    <!-- BANNER PROMOCIONAL CONTROLADO POR EL ADMINISTRADOR -->
+                    <div id="admin-promo-banner" class="admin-promo-banner hidden">
+                        <div class="promo-content">
+                            <i data-lucide="megaphone" class="promo-icon"></i>
+                            <div class="promo-marquee-container">
+                                <span id="promo-banner-text" class="promo-marquee-text">Cargando anuncios del sistema...</span>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="deck-cta-container">
                         <button type="button" class="btn-glowing-cta" onclick="switchView('catalog')">

@@ -1590,9 +1590,11 @@ function filterB2cType(type) {
  */
 function renderFeaturedProperties(zoneKey) {
     const deck = document.getElementById('featured-properties-deck');
-    if (!deck) return;
+    const homeDeck = document.getElementById('home-featured-properties-deck');
+    if (!deck && !homeDeck) return;
 
-    deck.innerHTML = ''; // Limpiar
+    if (deck) deck.innerHTML = ''; // Limpiar
+    if (homeDeck) homeDeck.innerHTML = ''; // Limpiar
 
     const properties = PORTFOLIO_DATABASE[zoneKey];
     if (!properties) return;
@@ -1687,7 +1689,8 @@ function renderFeaturedProperties(zoneKey) {
                 </div>
             </div>
         `;
-        deck.insertAdjacentHTML('beforeend', cardHTML);
+        if (deck) deck.insertAdjacentHTML('beforeend', cardHTML);
+        if (homeDeck) homeDeck.insertAdjacentHTML('beforeend', cardHTML);
     });
 
     if (renderedCount === 0) {
@@ -1707,7 +1710,7 @@ function renderFeaturedProperties(zoneKey) {
             const bannerLink = customBanner.link || '#';
             const bannerPhoto = customBanner.photo || 'propiedad_demo.png';
             
-            deck.innerHTML = `
+            const bannerHTML = `
                 <div class="premium-corporate-banner glassmorphism" onclick="window.open('${bannerLink}', '_blank')" style="grid-column: 1 / -1; display: flex; flex-direction: column; justify-content: flex-end; padding: 25px 25px; border-radius: 12px; background: url('${bannerPhoto}'); background-size: cover; background-position: center; border: 1.5px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 25px rgba(0, 240, 255, 0.18); min-height: 380px; position: relative; overflow: hidden; cursor: pointer; text-align: left; box-sizing: border-box; transition: all 0.3s ease;">
                     <div style="position: absolute; top: 15px; left: 15px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.65rem; font-weight: bold; font-family: var(--font-mono); padding: 4px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); display: flex; align-items: center; gap: 4px; z-index: 3;">
                         <i data-lucide="award" style="width: 11px; height: 11px;"></i> PROYECTO DESTACADO
@@ -1724,8 +1727,10 @@ function renderFeaturedProperties(zoneKey) {
                     </div>
                 </div>
             `;
+            if (deck) deck.innerHTML = bannerHTML;
+            if (homeDeck) homeDeck.innerHTML = bannerHTML;
         } else {
-            deck.innerHTML = `
+            const placeholderHTML = `
                 <div class="ad-placeholder-card font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 2px dashed rgba(52, 199, 89, 0.35); border-radius: 12px; background: linear-gradient(135deg, rgba(8, 10, 15, 0.85), rgba(52, 199, 89, 0.02)); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
                     <i data-lucide="award" style="width: 36px; height: 36px; stroke-width: 1.5; color: var(--neon-emerald); margin-bottom: 12px; filter: drop-shadow(0 0 5px var(--neon-emerald-glow));"></i>
                     <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--neon-emerald); margin-bottom: 6px; letter-spacing: 1px;">ESPACIO DE PORTADA DISPONIBLE</h4>
@@ -1735,9 +1740,10 @@ function renderFeaturedProperties(zoneKey) {
                     </button>
                 </div>
             `;
+            if (deck) deck.innerHTML = placeholderHTML;
+            if (homeDeck) homeDeck.innerHTML = placeholderHTML;
         }
     }
-
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -12246,6 +12252,8 @@ async function fetchSystemSettingsFromSupabase() {
 function syncPromoBannerUI() {
     const banner = document.getElementById('admin-promo-banner');
     const textEl = document.getElementById('promo-banner-text');
+    const homeBanner = document.getElementById('home-admin-promo-banner');
+    const homeTextEl = document.getElementById('home-promo-banner-text');
     
     if (banner && textEl) {
         textEl.innerText = promoBannerMessage;
@@ -12253,6 +12261,15 @@ function syncPromoBannerUI() {
             banner.classList.remove('hidden');
         } else {
             banner.classList.add('hidden');
+        }
+    }
+
+    if (homeBanner && homeTextEl) {
+        homeTextEl.innerText = promoBannerMessage;
+        if (isPromoBannerActive) {
+            homeBanner.classList.remove('hidden');
+        } else {
+            homeBanner.classList.add('hidden');
         }
     }
     
