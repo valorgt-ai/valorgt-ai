@@ -13246,9 +13246,11 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
         };
 
         if (zoneKey === 'todos' || zoneKey === 'todas') {
-            Object.keys(banners).forEach(bk => {
-                addBannerSlide(bk);
-            });
+            // En la vista general del portal (todos), solo mostramos los slides del slider general si están activos.
+            // Las portadas alternativas de sectores específicos (como Fraijanes) se reservan para cuando el usuario filtre esa zona.
+            addBannerSlide('general_slide_1');
+            addBannerSlide('general_slide_2');
+            addBannerSlide('general_slide_3');
         } else {
             addBannerSlide(zoneKey);
         }
