@@ -1686,18 +1686,19 @@ function renderFeaturedProperties(zoneKey) {
                         }
                         return advancedTagsHTML;
                     })()}
-                    <div class="card-specs">
-                        <span><i data-lucide="square"></i> ${prop.size} m²</span>
-                        <span><i data-lucide="bed"></i> ${prop.rooms}</span>
-                        <span><i data-lucide="bath"></i> ${prop.bathrooms}</span>
+                    <div class="property-specs">
+                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
+                        <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
+                        <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
+                        <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings || 0} Pq</span>
                     </div>
-                    <div class="card-price-row">
-                        <div class="card-price">
-                            ${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}
+                    <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <span class="price-val" id="feat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${zk}', ${absoluteIndex})">
+                                <i data-lucide="zap" class="tiny-icon"></i> AUTOTASAR
+                            </button>
                         </div>
-                        <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${zk}', ${absoluteIndex})">
-                            <i data-lucide="zap" class="tiny-icon"></i> AUTOTASAR
-                        </button>
                     </div>
                 </div>
             </div>
