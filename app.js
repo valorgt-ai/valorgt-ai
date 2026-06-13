@@ -13308,18 +13308,6 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
             <div class="showcase-slide ${activeClass}" id="${viewType}-showcase-slide-${idx}" style="background-image: url('${slide.photo}');">
                 <div class="showcase-overlay"></div>
                 ${badgeHTML}
-                <div class="showcase-details-card">
-                    <span class="hud-label-small" style="color: var(--cyan); font-weight: bold; font-size: 0.55rem; letter-spacing: 1px;">OPORTUNIDAD DESTACADA</span>
-                    <h3>${slide.title}</h3>
-                    <p>${slide.subtitle}</p>
-                    <div class="showcase-actions">
-                        <div class="showcase-price">${slide.priceText}</div>
-                        <button class="btn btn-primary glowing-effect showcase-action-btn" style="padding: 8px 16px; font-size: 0.65rem; font-weight: bold; border-radius: 4px; display: flex; align-items: center; gap: 4px;">
-                            <span>VER DETALLES</span>
-                            <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
-                        </button>
-                    </div>
-                </div>
             </div>
         `;
 
@@ -13339,13 +13327,6 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
     slides.forEach((slide, idx) => {
         const slideEl = document.getElementById(`${viewType}-showcase-slide-${idx}`);
         if (slideEl) {
-            const btn = slideEl.querySelector('.showcase-action-btn');
-            if (btn) {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    slide.action();
-                });
-            }
             slideEl.addEventListener('click', () => {
                 slide.action();
             });
