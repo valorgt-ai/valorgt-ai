@@ -1658,7 +1658,7 @@ function renderFeaturedProperties(zoneKey) {
         const cardHTML = `
             <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${zk}', ${absoluteIndex})">
                 ${deleteButtonHTML}
-                ${renderCardImageHTML(prop, 'card-image-wrapper', '165px', true, 'green')}
+                ${renderCardImageHTML(prop, 'card-image-wrapper', '215px', true, 'green')}
                 <div class="card-info">
                     <span class="property-tag">${prop.tag}</span>
                     <h4>${prop.title}</h4>
