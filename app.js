@@ -13474,6 +13474,9 @@ function initHomeView() {
     // 2. Inicializar el carrusel de novedades / portadas alternativas
     initHomeCarousel();
 
+    // Resetear el Showcase Slider y las 5 propiedades destacadas del HOME a "todos"
+    renderFeaturedProperties('todos');
+
     // 3. Renderizar el listado inicial del catálogo en el HOME
     renderHomeCatalog();
 }
