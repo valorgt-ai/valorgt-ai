@@ -1600,12 +1600,22 @@ function renderFeaturedProperties(zoneKey) {
     if (deck) deck.innerHTML = ''; // Limpiar
     if (homeDeck) homeDeck.innerHTML = ''; // Limpiar
 
-    const properties = PORTFOLIO_DATABASE[zoneKey];
-    if (!properties) return;
+    // Recopilar lista de objetos { prop, zoneKey }
+    let listToRender = [];
+    if (zoneKey === 'todos' || zoneKey === 'todas') {
+        Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
+            const list = PORTFOLIO_DATABASE[zk] || [];
+            list.forEach(p => {
+                listToRender.push({ prop: p, zoneKey: zk });
+            });
+        });
+    } else {
+        const list = PORTFOLIO_DATABASE[zoneKey] || [];
+        list.forEach(p => {
+            listToRender.push({ prop: p, zoneKey: zoneKey });
+        });
+    }
 
-    const zoneData = ZONES_DATABASE[zoneKey];
-    const zoneName = zoneData.name.split(' (')[0];
-    const zoneColor = zoneData.color; // 'red', 'orange', 'yellow', 'green', 'blue'
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
@@ -1616,7 +1626,10 @@ function renderFeaturedProperties(zoneKey) {
 
     let renderedCount = 0;
 
-    properties.forEach((prop) => {
+    listToRender.forEach((item) => {
+        const prop = item.prop;
+        const zk = item.zoneKey;
+
         // En la portada principal, ONLY render sponsored properties
         if (prop.sponsored !== true) {
             return;
@@ -1624,8 +1637,12 @@ function renderFeaturedProperties(zoneKey) {
 
         renderedCount++;
         
+        const zoneData = ZONES_DATABASE[zk] || { name: zk, color: 'blue' };
+        const zoneName = zoneData.name.split(' (')[0];
+        const zoneColor = zoneData.color;
+
         // Buscar el índice original en PORTFOLIO_DATABASE para poder autotasar
-        const absoluteIndex = PORTFOLIO_DATABASE[zoneKey].indexOf(prop);
+        const absoluteIndex = PORTFOLIO_DATABASE[zk].indexOf(prop);
         const convertedPrice = prop.priceUSD * conversion;
         const sponsoredClass = 'sponsored';
         
@@ -1639,7 +1656,7 @@ function renderFeaturedProperties(zoneKey) {
         ` : '';
 
         const cardHTML = `
-            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${zoneKey}', ${absoluteIndex})">
+            <div class="card glassmorphism featured-card glow-${zoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${zk}', ${absoluteIndex})">
                 ${deleteButtonHTML}
                 ${renderCardImageHTML(prop, 'card-image-wrapper', '165px', true, 'green')}
                 <div class="card-info">
@@ -1658,37 +1675,29 @@ function renderFeaturedProperties(zoneKey) {
                         if (prop.amenities && prop.amenities.length > 0) {
                             prop.amenities.forEach(am => {
                                 if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
-                                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
-                                if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
-                                if (am === "amenity-view" || am === "view") tags.push("Vista");
                             });
                         }
                         if (tags.length > 0) {
                             advancedTagsHTML = `
-                                <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
-                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
-                                    ${tags.length > 3 ? `<span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 2px 6px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                <div class="advanced-tags-row" style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
+                                    ${tags.map(tag => `<span class="adv-tag" style="font-size: 0.52rem; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 2px; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); font-family: var(--font-mono);">${tag}</span>`).join('')}
                                 </div>
                             `;
                         }
                         return advancedTagsHTML;
                     })()}
-                    <div class="property-specs">
-                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
-                        <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
-                        <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
-                        <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
+                    <div class="card-specs">
+                        <span><i data-lucide="square"></i> ${prop.size} m²</span>
+                        <span><i data-lucide="bed"></i> ${prop.rooms}</span>
+                        <span><i data-lucide="bath"></i> ${prop.bathrooms}</span>
                     </div>
-                    <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                        <span class="price-val" id="feat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
-                                <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
-                            </button>
-                            <button class="btn-micro-cyber">
-                                <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
-                            </button>
+                    <div class="card-price-row">
+                        <div class="card-price">
+                            ${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}
                         </div>
+                        <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${zk}', ${absoluteIndex})">
+                            <i data-lucide="zap" class="tiny-icon"></i> AUTOTASAR
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1712,6 +1721,7 @@ function renderFeaturedProperties(zoneKey) {
             if (deck) deck.innerHTML = '';
             if (homeDeck) homeDeck.innerHTML = '';
         } else {
+            const zoneName = (zoneKey === 'todos' || zoneKey === 'todas') ? 'el portal' : (ZONES_DATABASE[zoneKey] ? ZONES_DATABASE[zoneKey].name.split(' (')[0] : zoneKey);
             const placeholderHTML = `
                 <div class="ad-placeholder-card font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 2px dashed rgba(52, 199, 89, 0.35); border-radius: 12px; background: linear-gradient(135deg, rgba(8, 10, 15, 0.85), rgba(52, 199, 89, 0.02)); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
                     <i data-lucide="award" style="width: 36px; height: 36px; stroke-width: 1.5; color: var(--neon-emerald); margin-bottom: 12px; filter: drop-shadow(0 0 5px var(--neon-emerald-glow));"></i>
@@ -1730,7 +1740,6 @@ function renderFeaturedProperties(zoneKey) {
         lucide.createIcons();
     }
 }
-
 /**
  * Renderiza dinámicamente las propiedades de la zona seleccionada en la vista de Catálogo B2C
  * aplicando los filtros combinados de Categorías y Esquemas comerciales.
