@@ -1708,31 +1708,9 @@ function renderFeaturedProperties(zoneKey) {
 
         const customBanner = banners[zoneKey];
         if (customBanner && customBanner.enabled) {
-            const bannerTitle = customBanner.title || 'Proyecto Destacado';
-            const bannerSubtitle = customBanner.subtitle || 'Descubre oportunidades exclusivas en esta zona.';
-            const bannerCta = customBanner.ctaText || 'MÁS INFORMACIÓN';
-            const bannerLink = customBanner.link || '#';
-            const bannerPhoto = customBanner.photo || 'propiedad_demo.png';
-            
-            const bannerHTML = `
-                <div class="premium-corporate-banner glassmorphism" onclick="window.open('${bannerLink}', '_blank')" style="grid-column: 1 / -1; display: flex; flex-direction: column; justify-content: flex-end; padding: 25px 25px; border-radius: 12px; background: url('${bannerPhoto}'); background-size: cover; background-position: center; border: 1.5px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 25px rgba(0, 240, 255, 0.18); min-height: 380px; position: relative; overflow: hidden; cursor: pointer; text-align: left; box-sizing: border-box; transition: all 0.3s ease;">
-                    <div style="position: absolute; top: 15px; left: 15px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.65rem; font-weight: bold; font-family: var(--font-mono); padding: 4px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); display: flex; align-items: center; gap: 4px; z-index: 3;">
-                        <i data-lucide="award" style="width: 11px; height: 11px;"></i> PROYECTO DESTACADO
-                    </div>
-                    <div style="z-index: 2; margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; width: 100%; background: transparent; padding: 18px 22px; box-sizing: border-box;">
-                        <div style="flex: 1; min-width: 280px;">
-                            <h3 class="font-sans" style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0 0 8px 0; text-shadow: 0 0 10px rgba(0,0,0,0.9); line-height: 1.25; letter-spacing: 0.5px;">${bannerTitle}</h3>
-                            <p class="font-sans" style="font-size: 0.82rem; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.45; text-shadow: 0 0 6px rgba(0,0,0,0.9); font-weight: 400;">${bannerSubtitle}</p>
-                        </div>
-                        <button class="btn btn-primary glowing-effect" onclick="event.stopPropagation(); window.open('${bannerLink}', '_blank')" style="flex-shrink: 0; padding: 12px 24px; font-size: 0.75rem; font-weight: bold; border-radius: 6px; background: linear-gradient(135deg, var(--cyan) 0%, rgba(0,102,255,0.8) 100%); border: 1px solid var(--cyan); color: #fff; cursor: pointer; box-shadow: 0 0 15px rgba(0,240,255,0.4); display: flex; align-items: center; gap: 6px; font-family: var(--font-sans); text-transform: uppercase;">
-                            <span>${bannerCta}</span>
-                            <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            if (deck) deck.innerHTML = bannerHTML;
-            if (homeDeck) homeDeck.innerHTML = bannerHTML;
+            // Se limpia el deck inferior para no duplicar la imagen, ya que el Showcase Slider superior ya la muestra en gran formato.
+            if (deck) deck.innerHTML = '';
+            if (homeDeck) homeDeck.innerHTML = '';
         } else {
             const placeholderHTML = `
                 <div class="ad-placeholder-card font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 2px dashed rgba(52, 199, 89, 0.35); border-radius: 12px; background: linear-gradient(135deg, rgba(8, 10, 15, 0.85), rgba(52, 199, 89, 0.02)); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
