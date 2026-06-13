@@ -10290,6 +10290,22 @@ function renderAdminBannersTab() {
             opt.innerText = zone.name;
             zoneSelect.appendChild(opt);
         });
+
+        // Opciones especiales para el slider general predeterminado
+        const opt1 = document.createElement('option');
+        opt1.value = 'general_slide_1';
+        opt1.innerText = '⭐ [Slider General] Casa Lujo Slide 1';
+        zoneSelect.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = 'general_slide_2';
+        opt2.innerText = '⭐ [Slider General] Casa Lujo Slide 2';
+        zoneSelect.appendChild(opt2);
+
+        const opt3 = document.createElement('option');
+        opt3.value = 'general_slide_3';
+        opt3.innerText = '⭐ [Slider General] Casa Lujo Slide 3';
+        zoneSelect.appendChild(opt3);
         
         // Seleccionar Fraijanes por defecto si existe
         if (ZONES_DATABASE['fraijanes']) {
@@ -13253,8 +13269,32 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
 
     // 3. Fallbacks predeterminados premium si no hay ninguna de las anteriores
     if (slides.length === 0) {
-        slides = [
-            {
+        let banners = {};
+        try {
+            banners = JSON.parse(localStorage.getItem('admin_zone_banners') || '{}');
+        } catch (e) {
+            console.error("Error al cargar portadas alternativas:", e);
+        }
+
+        const slide1 = banners['general_slide_1'];
+        const slide2 = banners['general_slide_2'];
+        const slide3 = banners['general_slide_3'];
+
+        if (slide1 && slide1.enabled) {
+            slides.push({
+                type: 'fallback',
+                title: slide1.title || 'Tasa tu propiedad en segundos con Redes Neuronales',
+                subtitle: slide1.subtitle || 'Nuestro motor predictivo evalúa el mercado con precisión.',
+                photo: slide1.photo || 'propiedad_demo.png',
+                priceText: slide1.ctaText || "PROBAR MOTOR IA",
+                tag: "AUTOMATIZACIÓN IA",
+                action: () => {
+                    if (slide1.link) window.open(slide1.link, '_blank');
+                    else switchView('dashboard');
+                }
+            });
+        } else {
+            slides.push({
                 type: 'fallback',
                 title: "Tasa tu propiedad en segundos con Redes Neuronales",
                 subtitle: "Nuestro motor predictivo evalúa metros cuadrados, ubicación, amenidades y acabados para determinar el precio real de mercado instantáneamente.",
@@ -13262,8 +13302,24 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
                 priceText: "PROBAR MOTOR IA",
                 tag: "AUTOMATIZACIÓN IA",
                 action: () => switchView('dashboard')
-            },
-            {
+            });
+        }
+
+        if (slide2 && slide2.enabled) {
+            slides.push({
+                type: 'fallback',
+                title: slide2.title || 'Simulador de Libertad Financiera y Portafolio Completo',
+                subtitle: slide2.subtitle || 'Monitorea tu flujo de caja neto, deudas, amortizaciones y plusvalía proyectada a 20 años.',
+                photo: slide2.photo || 'propiedad_demo.png',
+                priceText: slide2.ctaText || "VER SUSCRIPCIONES",
+                tag: "MEMBRESÍA VIP B2B",
+                action: () => {
+                    if (slide2.link) window.open(slide2.link, '_blank');
+                    else switchView('subscriptions');
+                }
+            });
+        } else {
+            slides.push({
                 type: 'fallback',
                 title: "Simulador de Libertad Financiera y Portafolio Completo",
                 subtitle: "Monitorea tu flujo de caja neto, deudas, amortizaciones y plusvalía proyectada a 20 años de forma consolidada.",
@@ -13271,8 +13327,24 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
                 priceText: "VER SUSCRIPCIONES",
                 tag: "MEMBRESÍA VIP B2B",
                 action: () => switchView('subscriptions')
-            },
-            {
+            });
+        }
+
+        if (slide3 && slide3.enabled) {
+            slides.push({
+                type: 'fallback',
+                title: slide3.title || 'Airdrops Semanales de Tether Gold (XAUt) Activos',
+                subtitle: slide3.subtitle || 'Todos los socios Premium e Inversionistas B2B participan en la distribución de dividendos.',
+                photo: slide3.photo || 'propiedad_demo.png',
+                priceText: slide3.ctaText || "CARTERA DIGITAL",
+                tag: "DIVIDENDOS EN ORO",
+                action: () => {
+                    if (slide3.link) window.open(slide3.link, '_blank');
+                    else switchView('investor');
+                }
+            });
+        } else {
+            slides.push({
                 type: 'fallback',
                 title: "Airdrops Semanales de Tether Gold (XAUt) Activos",
                 subtitle: "Todos los socios Premium e Inversionistas B2B participan en la distribución de dividendos en oro físico digitalizado.",
@@ -13280,8 +13352,8 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
                 priceText: "CARTERA DIGITAL",
                 tag: "DIVIDENDOS EN ORO",
                 action: () => switchView('investor')
-            }
-        ];
+            });
+        }
     }
 
     // Guardar slides en el estado global correspondiente
