@@ -13258,7 +13258,7 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
                 type: 'fallback',
                 title: "Tasa tu propiedad en segundos con Redes Neuronales",
                 subtitle: "Nuestro motor predictivo evalúa metros cuadrados, ubicación, amenidades y acabados para determinar el precio real de mercado instantáneamente.",
-                photo: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+                photo: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=85",
                 priceText: "PROBAR MOTOR IA",
                 tag: "AUTOMATIZACIÓN IA",
                 action: () => switchView('dashboard')
@@ -13267,7 +13267,7 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
                 type: 'fallback',
                 title: "Simulador de Libertad Financiera y Portafolio Completo",
                 subtitle: "Monitorea tu flujo de caja neto, deudas, amortizaciones y plusvalía proyectada a 20 años de forma consolidada.",
-                photo: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+                photo: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85",
                 priceText: "VER SUSCRIPCIONES",
                 tag: "MEMBRESÍA VIP B2B",
                 action: () => switchView('subscriptions')
@@ -13276,7 +13276,7 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
                 type: 'fallback',
                 title: "Airdrops Semanales de Tether Gold (XAUt) Activos",
                 subtitle: "Todos los socios Premium e Inversionistas B2B participan en la distribución de dividendos en oro físico digitalizado.",
-                photo: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+                photo: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=85",
                 priceText: "CARTERA DIGITAL",
                 tag: "DIVIDENDOS EN ORO",
                 action: () => switchView('investor')
