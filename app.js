@@ -1630,8 +1630,8 @@ function renderFeaturedProperties(zoneKey) {
         const prop = item.prop;
         const zk = item.zoneKey;
 
-        // En la portada principal, ONLY render sponsored properties
-        if (prop.sponsored !== true) {
+        // En la portada principal, ONLY render sponsored properties of format 'deck' (or default)
+        if (prop.sponsored !== true || (prop.sponsoredFormat && prop.sponsoredFormat !== 'deck')) {
             return;
         }
 
@@ -13194,7 +13194,7 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
         Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
             const list = PORTFOLIO_DATABASE[zk] || [];
             list.forEach(p => {
-                if (p.sponsored === true && p.isReferenceData !== true) {
+                if (p.sponsored === true && (p.sponsoredFormat === 'slider' || !p.sponsoredFormat) && p.isReferenceData !== true) {
                     sponsoredProps.push({ prop: p, zoneKey: zk });
                 }
             });
@@ -13202,7 +13202,7 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
     } else {
         const list = PORTFOLIO_DATABASE[zoneKey] || [];
         list.forEach(p => {
-            if (p.sponsored === true && p.isReferenceData !== true) {
+            if (p.sponsored === true && (p.sponsoredFormat === 'slider' || !p.sponsoredFormat) && p.isReferenceData !== true) {
                 sponsoredProps.push({ prop: p, zoneKey: zoneKey });
             }
         });
@@ -14175,6 +14175,7 @@ function approvePautaCampaign(campaignId) {
     const prop = list.find(p => String(p.id) === String(campaign.propertyId));
     if (prop) {
         prop.sponsored = true;
+        prop.sponsoredFormat = campaign.format;
         localStorage.setItem('valorgt_portfolio_db', JSON.stringify(PORTFOLIO_DATABASE));
     }
 
