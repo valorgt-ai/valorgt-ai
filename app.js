@@ -10145,6 +10145,9 @@ function switchCommercialTab(tabId) {
         } else if (tabId === 'disclaimer') {
             titleEl.innerText = "Descargo de Responsabilidad y Regulación Legal";
             subtitleEl.innerText = "Términos del servicio y marco legal de la tasación IA";
+        } else if (tabId === 'pauta') {
+            titleEl.innerText = "Portal de Pautas Publicitarias B2B";
+            subtitleEl.innerText = "Incrementa la exposición de tus activos con inyecciones destacadas en portada";
         }
     }
     
@@ -10180,6 +10183,11 @@ function switchCommercialTab(tabId) {
             activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
             activeBtn.style.color = 'var(--cyan)';
             activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+        } else if (tabId === 'pauta') {
+            activeBtn.style.background = 'rgba(52,199,89,0.05)';
+            activeBtn.style.borderColor = 'rgba(52,199,89,0.4)';
+            activeBtn.style.color = 'var(--neon-emerald)';
+            activeBtn.style.boxShadow = '0 0 12px rgba(52, 199, 89, 0.12)';
         }
     }
 
@@ -10198,6 +10206,9 @@ function switchCommercialTab(tabId) {
                 renderXautHistoryChart();
             }
         });
+    }
+    if (tabId === 'pauta') {
+        initPautaView();
     }
     if (typeof updateAssistantVisibility === 'function') {
         updateAssistantVisibility();
@@ -10249,6 +10260,9 @@ function switchAdminTab(tabId) {
     } else if (tabId === 'tutorials') {
         document.getElementById('admin-tab-content-tutorials')?.classList.remove('hidden');
         renderAdminTutorialsTable();
+    } else if (tabId === 'pautas') {
+        document.getElementById('admin-tab-content-pautas')?.classList.remove('hidden');
+        renderAdminPautasTable();
     }
 
     if (typeof lucide !== 'undefined') {
@@ -13908,5 +13922,283 @@ function initKpiGlowRotation() {
     // Iniciar con retraso de 1s, luego repetir cada 10s
     setTimeout(rotateGlow, 1000);
     setInterval(rotateGlow, 10000);
+}
+
+/**
+ * PESTAÑA DE PAUTA PUBLICITARIA B2B Y APROBACIÓN DE COMPROBANTES (NUEVO REGISTRO)
+ */
+let selectedPautaReceiptData = null;
+
+function initPautaView() {
+    const propertySelect = document.getElementById('pauta-property-select');
+    const planLbl = document.getElementById('pauta-agent-plan-lbl');
+    const uploadLbl = document.getElementById('pauta-upload-lbl');
+    const receiptInput = document.getElementById('pauta-payment-receipt');
+    
+    if (!propertySelect) return;
+    
+    selectedPautaReceiptData = null;
+    if (receiptInput) receiptInput.value = '';
+    if (uploadLbl) {
+        uploadLbl.innerHTML = `
+            <i data-lucide="upload-cloud" style="width: 20px; height: 20px; color: var(--cyan); margin-bottom: 6px;"></i><br>
+            <span>Subir Comprobante de Pago (JPG, PNG)</span>
+        `;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    const ownerPlan = loggedInB2bClient ? (loggedInB2bClient.plan || 'Básico') : 'Básico';
+    if (planLbl) {
+        planLbl.innerText = ownerPlan.toUpperCase();
+    }
+
+    propertySelect.innerHTML = '<option value="">-- Selecciona una Propiedad --</option>';
+    
+    let agentProps = [];
+    Object.keys(PORTFOLIO_DATABASE).forEach(zoneKey => {
+        const list = PORTFOLIO_DATABASE[zoneKey] || [];
+        list.forEach(p => {
+            if (p.isAgentUpload === true) {
+                agentProps.push({ prop: p, zoneKey: zoneKey });
+            }
+        });
+    });
+
+    if (agentProps.length === 0) {
+        propertySelect.innerHTML = '<option value="">No tienes propiedades ingresadas para pautar.</option>';
+    } else {
+        agentProps.forEach(item => {
+            const p = item.prop;
+            const statusSuffix = p.sponsored === true ? ' (Ya Pautada)' : '';
+            propertySelect.innerHTML += `<option value="${item.zoneKey}|${p.id}">${p.title} - ${ZONES_DATABASE[item.zoneKey]?.name.split(' (')[0] || item.zoneKey}${statusSuffix}</option>`;
+        });
+    }
+
+    calculatePautaPrice();
+}
+
+function calculatePautaPrice() {
+    const formatSelect = document.getElementById('pauta-format-select');
+    const basePriceLbl = document.getElementById('pauta-base-price-lbl');
+    const discountLbl = document.getElementById('pauta-discount-lbl');
+    const finalPriceLbl = document.getElementById('pauta-final-price-lbl');
+    
+    if (!formatSelect) return;
+
+    const format = formatSelect.value;
+    const basePrice = format === 'slider' ? 5000 : 3000;
+    
+    const ownerPlan = loggedInB2bClient ? (loggedInB2bClient.plan || 'Básico').toLowerCase() : 'básico';
+    let discountPercent = 0;
+    if (ownerPlan === 'pro') discountPercent = 0.10;
+    if (ownerPlan === 'vip') discountPercent = 0.25;
+    if (ownerPlan === 'premium' || ownerPlan === 'inversionista') discountPercent = 0.35;
+
+    const discountAmount = basePrice * discountPercent;
+    const finalPrice = basePrice - discountAmount;
+
+    if (basePriceLbl) basePriceLbl.innerText = `Q${formatNumber(basePrice.toFixed(0))}`;
+    if (discountLbl) discountLbl.innerText = `-Q${formatNumber(discountAmount.toFixed(0))} (${(discountPercent * 100).toFixed(0)}%)`;
+    if (finalPriceLbl) finalPriceLbl.innerText = `Q${formatNumber(finalPrice.toFixed(0))}`;
+}
+
+function handlePautaReceiptUploaded(event) {
+    const file = event.target.files[0];
+    const uploadLbl = document.getElementById('pauta-upload-lbl');
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        selectedPautaReceiptData = e.target.result;
+        if (uploadLbl) {
+            uploadLbl.innerHTML = `
+                <i data-lucide="check-circle" style="width: 20px; height: 20px; color: var(--neon-emerald); margin-bottom: 6px;"></i><br>
+                <span style="color: var(--neon-emerald); font-weight: bold;">Comprobante Cargado: ${file.name}</span>
+            `;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function submitPautaCampaign() {
+    const propertySelect = document.getElementById('pauta-property-select');
+    const formatSelect = document.getElementById('pauta-format-select');
+    const finalPriceLbl = document.getElementById('pauta-final-price-lbl');
+    
+    if (!propertySelect || !propertySelect.value) {
+        alert("⚠️ Por favor selecciona una propiedad de tu inventario.");
+        return;
+    }
+    if (!selectedPautaReceiptData) {
+        alert("⚠️ Por favor sube la foto de tu comprobante de pago bancario.");
+        return;
+    }
+
+    const [zoneKey, propId] = propertySelect.value.split('|');
+    const format = formatSelect.value;
+    const priceText = finalPriceLbl.innerText;
+
+    const list = PORTFOLIO_DATABASE[zoneKey] || [];
+    const prop = list.find(p => String(p.id) === String(propId));
+
+    if (!prop) {
+        alert("⚠️ Error al identificar la propiedad seleccionada.");
+        return;
+    }
+
+    let pendingPautas = [];
+    try {
+        pendingPautas = JSON.parse(localStorage.getItem('admin_pending_pautas') || '[]');
+    } catch (e) {
+        console.error(e);
+    }
+
+    pendingPautas.push({
+        id: Math.random().toString(36).substring(2, 9),
+        propertyId: propId,
+        propertyTitle: prop.title,
+        zoneKey: zoneKey,
+        format: format,
+        agentEmail: loggedInB2bClient ? loggedInB2bClient.email : 'invitado@valorgt.com',
+        agentPlan: loggedInB2bClient ? loggedInB2bClient.plan : 'Básico',
+        pricePaid: priceText,
+        receiptPhoto: selectedPautaReceiptData,
+        date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(),
+        status: 'Pendiente'
+    });
+
+    localStorage.setItem('admin_pending_pautas', JSON.stringify(pendingPautas));
+
+    alert(`🎉 ¡Campaña de Pauta enviada exitosamente!\n\nTu solicitud de inyección publicitaria para "${prop.title}" por un monto de ${priceText} está siendo validada por nuestros auditores comerciales. Recibirás una notificación en cuanto sea aprobada.`);
+
+    selectedPautaReceiptData = null;
+    const receiptInput = document.getElementById('pauta-payment-receipt');
+    if (receiptInput) receiptInput.value = '';
+    switchCommercialTab('propiedades-list');
+}
+
+function renderAdminPautasTable() {
+    const listBody = document.getElementById('admin-pautas-list');
+    const counterBadge = document.getElementById('admin-pautas-counter');
+    if (!listBody) return;
+
+    let pendingPautas = [];
+    try {
+        pendingPautas = JSON.parse(localStorage.getItem('admin_pending_pautas') || '[]');
+    } catch (e) {
+        console.error(e);
+    }
+
+    const pendingOnly = pendingPautas.filter(p => p.status === 'Pendiente');
+    if (counterBadge) {
+        counterBadge.innerText = `${pendingOnly.length} Pendientes`;
+    }
+
+    if (pendingPautas.length === 0) {
+        listBody.innerHTML = `
+            <tr>
+                <td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">No hay solicitudes de pautas publicitarias registradas.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    listBody.innerHTML = '';
+    [...pendingPautas].reverse().forEach(campaign => {
+        const statusColor = campaign.status === 'Pendiente' ? 'var(--yellow)' : (campaign.status === 'Aprobada' ? 'var(--neon-emerald)' : 'var(--red)');
+        const formatName = campaign.format === 'slider' ? 'Showcase Slider' : 'Deck Destacados';
+        
+        const actionButtons = campaign.status === 'Pendiente' ? `
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button class="btn-micro-cyber" onclick="approvePautaCampaign('${campaign.id}')" style="background: rgba(52,199,89,0.15); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); padding: 4px 8px; font-size: 0.65rem;">
+                    <i data-lucide="check" style="width: 10px; height: 10px;"></i> APROBAR
+                </button>
+                <button class="btn-micro-cyber" onclick="rejectPautaCampaign('${campaign.id}')" style="background: rgba(255,55,95,0.15); border: 1px solid var(--red); color: var(--red); padding: 4px 8px; font-size: 0.65rem;">
+                    <i data-lucide="x" style="width: 10px; height: 10px;"></i> RECHAZAR
+                </button>
+            </div>
+        ` : `<span style="font-size: 0.65rem; color: var(--text-muted);">Procesado</span>`;
+
+        const receiptLink = campaign.receiptPhoto ? `
+            <div style="text-align: center;">
+                <a href="${campaign.receiptPhoto}" target="_blank" style="color: var(--cyan); text-decoration: underline; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <i data-lucide="eye" style="width: 12px; height: 12px;"></i> Ver Boleta
+                </a>
+            </div>
+        ` : '<div style="text-align: center; color: var(--text-muted);">-</div>';
+
+        const rowHTML = `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 12px; line-height: 1.3;">
+                    <div style="color: #fff; font-weight: bold;">${campaign.date}</div>
+                    <div style="font-size: 0.65rem; color: var(--text-secondary);">${campaign.agentEmail} (${campaign.agentPlan})</div>
+                </td>
+                <td style="padding: 12px; line-height: 1.3;">
+                    <div style="color: #fff; font-weight: bold;">${campaign.propertyTitle}</div>
+                    <div style="font-size: 0.65rem; color: var(--text-secondary);">${ZONES_DATABASE[campaign.zoneKey]?.name.split(' (')[0] || campaign.zoneKey}</div>
+                </td>
+                <td style="padding: 12px; color: #fff; font-weight: bold;">${formatName}</td>
+                <td style="padding: 12px; color: var(--cyan); font-weight: bold;">${campaign.pricePaid}</td>
+                <td style="padding: 12px;">${receiptLink}</td>
+                <td style="padding: 12px; text-align: right;">
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                        <span style="font-size: 0.65rem; font-weight: bold; color: ${statusColor}; background: rgba(255,255,255,0.02); padding: 2px 6px; border-radius: 3px; border: 1px solid ${statusColor};">${campaign.status.toUpperCase()}</span>
+                        ${actionButtons}
+                    </div>
+                </td>
+            </tr>
+        `;
+        listBody.insertAdjacentHTML('beforeend', rowHTML);
+    });
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function approvePautaCampaign(campaignId) {
+    let pendingPautas = [];
+    try {
+        pendingPautas = JSON.parse(localStorage.getItem('admin_pending_pautas') || '[]');
+    } catch (e) {
+        console.error(e);
+    }
+
+    const campaign = pendingPautas.find(c => c.id === campaignId);
+    if (!campaign) return;
+
+    campaign.status = 'Aprobada';
+    localStorage.setItem('admin_pending_pautas', JSON.stringify(pendingPautas));
+
+    const list = PORTFOLIO_DATABASE[campaign.zoneKey] || [];
+    const prop = list.find(p => String(p.id) === String(campaign.propertyId));
+    if (prop) {
+        prop.sponsored = true;
+        localStorage.setItem('valorgt_portfolio_db', JSON.stringify(PORTFOLIO_DATABASE));
+    }
+
+    alert(`✅ Campaña aprobada con éxito. La propiedad "${campaign.propertyTitle}" ahora cuenta con pauta activa.`);
+    
+    renderAdminPautasTable();
+    renderFeaturedProperties('todos');
+}
+
+function rejectPautaCampaign(campaignId) {
+    let pendingPautas = [];
+    try {
+        pendingPautas = JSON.parse(localStorage.getItem('admin_pending_pautas') || '[]');
+    } catch (e) {
+        console.error(e);
+    }
+
+    const campaign = pendingPautas.find(c => c.id === campaignId);
+    if (!campaign) return;
+
+    campaign.status = 'Rechazada';
+    localStorage.setItem('admin_pending_pautas', JSON.stringify(pendingPautas));
+
+    alert(`❌ Campaña rechazada.`);
+    renderAdminPautasTable();
 }
 
