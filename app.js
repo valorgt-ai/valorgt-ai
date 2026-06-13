@@ -1589,6 +1589,10 @@ function filterB2cType(type) {
  * @param {string} zoneKey - Clave de la zona a mostrar en el deck
  */
 function renderFeaturedProperties(zoneKey) {
+    // Inicializar Showcase Sliders para Home y Dashboard
+    initPremiumShowcaseSlider(zoneKey, 'home');
+    initPremiumShowcaseSlider(zoneKey, 'dashboard');
+
     const deck = document.getElementById('featured-properties-deck');
     const homeDeck = document.getElementById('home-featured-properties-deck');
     if (!deck && !homeDeck) return;
@@ -13129,6 +13133,296 @@ function renderAdminTutorialsTable() {
         `;
         tableBody.appendChild(row);
     });
+}
+
+/* ==========================================================================
+   SHOWCASE SLIDER DE GRAN FORMATO INTERACTIVO
+   ========================================================================== */
+let homeShowcaseTimer = null;
+let dashboardShowcaseTimer = null;
+let homeShowcaseSlides = [];
+let dashboardShowcaseSlides = [];
+let homeShowcaseIndex = 0;
+let dashboardShowcaseIndex = 0;
+
+/**
+ * Inicializa y configura el Showcase Slider de gran formato arriba de las propiedades destacadas.
+ * Recopila propiedades pautadas, banners alternativos de administración o slides de fallback.
+ */
+function initPremiumShowcaseSlider(zoneKey, viewType) {
+    const sliderContainer = document.getElementById(`${viewType}-premium-showcase-slider`);
+    if (!sliderContainer) return;
+
+    // Detener timers anteriores para evitar fugas de memoria
+    if (viewType === 'home') {
+        if (homeShowcaseTimer) {
+            clearTimeout(homeShowcaseTimer);
+            homeShowcaseTimer = null;
+        }
+    } else {
+        if (dashboardShowcaseTimer) {
+            clearTimeout(dashboardShowcaseTimer);
+            dashboardShowcaseTimer = null;
+        }
+    }
+
+    let slides = [];
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+
+    // 1. Recopilar propiedades pautadas (destacadas patrocinadas) activas
+    let sponsoredProps = [];
+    if (zoneKey === 'todos' || zoneKey === 'todas') {
+        Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
+            const list = PORTFOLIO_DATABASE[zk] || [];
+            list.forEach(p => {
+                if (p.sponsored === true && p.isReferenceData !== true) {
+                    sponsoredProps.push({ prop: p, zoneKey: zk });
+                }
+            });
+        });
+    } else {
+        const list = PORTFOLIO_DATABASE[zoneKey] || [];
+        list.forEach(p => {
+            if (p.sponsored === true && p.isReferenceData !== true) {
+                sponsoredProps.push({ prop: p, zoneKey: zoneKey });
+            }
+        });
+    }
+
+    // Dar formato a propiedades pautadas como slides
+    sponsoredProps.forEach(item => {
+        const p = item.prop;
+        const zk = item.zoneKey;
+        const { type } = getPropertyCategoryAndType(p);
+        const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
+        const convertedPrice = p.priceUSD * conversion;
+        const absoluteIndex = PORTFOLIO_DATABASE[zk].indexOf(p);
+
+        slides.push({
+            type: 'sponsored',
+            title: p.title,
+            subtitle: `${p.size} m² • ${p.rooms} Hab • ${p.bathrooms} Baños • ${p.parkings} Pq`,
+            photo: p.photo || (p.photos ? p.photos[0] : 'propiedad_demo.png'),
+            priceText: `${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}`,
+            tag: p.tag || 'DESTACADO PREMIUM IA',
+            action: () => {
+                if (viewType === 'home') {
+                    openPropertyDetailModal(zk, absoluteIndex);
+                } else {
+                    loadCatalogPropToValuator(zk, absoluteIndex);
+                }
+            }
+        });
+    });
+
+    // 2. Si no hay pauta, recopilar portadas alternativas configuradas por el admin
+    if (slides.length === 0) {
+        let banners = {};
+        try {
+            banners = JSON.parse(localStorage.getItem('admin_zone_banners') || '{}');
+        } catch (e) {
+            console.error("Error al cargar portadas alternativas:", e);
+        }
+
+        const addBannerSlide = (bk) => {
+            const banner = banners[bk];
+            if (banner && banner.enabled) {
+                slides.push({
+                    type: 'admin',
+                    title: banner.title || 'Proyecto Destacado',
+                    subtitle: banner.subtitle || 'Descubre oportunidades exclusivas en esta zona.',
+                    photo: banner.photo || 'propiedad_demo.png',
+                    priceText: banner.ctaText || 'MÁS INFORMACIÓN',
+                    tag: 'PROYECTO CORPORATIVO',
+                    action: () => {
+                        window.open(banner.link || '#', '_blank');
+                    }
+                });
+            }
+        };
+
+        if (zoneKey === 'todos' || zoneKey === 'todas') {
+            Object.keys(banners).forEach(bk => {
+                addBannerSlide(bk);
+            });
+        } else {
+            addBannerSlide(zoneKey);
+        }
+    }
+
+    // 3. Fallbacks predeterminados premium si no hay ninguna de las anteriores
+    if (slides.length === 0) {
+        slides = [
+            {
+                type: 'fallback',
+                title: "Tasa tu propiedad en segundos con Redes Neuronales",
+                subtitle: "Nuestro motor predictivo evalúa metros cuadrados, ubicación, amenidades y acabados para determinar el precio real de mercado instantáneamente.",
+                photo: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+                priceText: "PROBAR MOTOR IA",
+                tag: "AUTOMATIZACIÓN IA",
+                action: () => switchView('dashboard')
+            },
+            {
+                type: 'fallback',
+                title: "Simulador de Libertad Financiera y Portafolio Completo",
+                subtitle: "Monitorea tu flujo de caja neto, deudas, amortizaciones y plusvalía proyectada a 20 años de forma consolidada.",
+                photo: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+                priceText: "VER SUSCRIPCIONES",
+                tag: "MEMBRESÍA VIP B2B",
+                action: () => switchView('subscriptions')
+            },
+            {
+                type: 'fallback',
+                title: "Airdrops Semanales de Tether Gold (XAUt) Activos",
+                subtitle: "Todos los socios Premium e Inversionistas B2B participan en la distribución de dividendos en oro físico digitalizado.",
+                photo: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+                priceText: "CARTERA DIGITAL",
+                tag: "DIVIDENDOS EN ORO",
+                action: () => switchView('investor')
+            }
+        ];
+    }
+
+    // Guardar slides en el estado global correspondiente
+    if (viewType === 'home') {
+        homeShowcaseSlides = slides;
+        homeShowcaseIndex = 0;
+    } else {
+        dashboardShowcaseSlides = slides;
+        dashboardShowcaseIndex = 0;
+    }
+
+    // Renderizar HTML del slider
+    sliderContainer.classList.remove('hidden');
+    sliderContainer.style.display = 'block';
+
+    let slidesHTML = `<div class="showcase-slides">`;
+    let indicatorsHTML = `<div class="showcase-indicators">`;
+
+    slides.forEach((slide, idx) => {
+        const activeClass = idx === 0 ? 'active' : '';
+        const badgeHTML = `<span class="showcase-badge-top"><i data-lucide="award" style="width: 12px; height: 12px;"></i> ${slide.tag}</span>`;
+
+        slidesHTML += `
+            <div class="showcase-slide ${activeClass}" id="${viewType}-showcase-slide-${idx}" style="background-image: url('${slide.photo}');">
+                <div class="showcase-overlay"></div>
+                ${badgeHTML}
+                <div class="showcase-details-card">
+                    <span class="hud-label-small" style="color: var(--cyan); font-weight: bold; font-size: 0.55rem; letter-spacing: 1px;">OPORTUNIDAD DESTACADA</span>
+                    <h3>${slide.title}</h3>
+                    <p>${slide.subtitle}</p>
+                    <div class="showcase-actions">
+                        <div class="showcase-price">${slide.priceText}</div>
+                        <button class="btn btn-primary glowing-effect showcase-action-btn" style="padding: 8px 16px; font-size: 0.65rem; font-weight: bold; border-radius: 4px; display: flex; align-items: center; gap: 4px;">
+                            <span>VER DETALLES</span>
+                            <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        indicatorsHTML += `
+            <div class="showcase-bar ${activeClass}" id="${viewType}-showcase-bar-${idx}">
+                <div class="showcase-bar-fill" id="${viewType}-showcase-bar-fill-${idx}"></div>
+            </div>
+        `;
+    });
+
+    slidesHTML += `</div>`;
+    indicatorsHTML += `</div>`;
+
+    sliderContainer.innerHTML = slidesHTML + indicatorsHTML;
+
+    // Asignar eventos de clic
+    slides.forEach((slide, idx) => {
+        const slideEl = document.getElementById(`${viewType}-showcase-slide-${idx}`);
+        if (slideEl) {
+            const btn = slideEl.querySelector('.showcase-action-btn');
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    slide.action();
+                });
+            }
+            slideEl.addEventListener('click', () => {
+                slide.action();
+            });
+        }
+
+        const barEl = document.getElementById(`${viewType}-showcase-bar-${idx}`);
+        if (barEl) {
+            barEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setShowcaseActiveSlide(idx, viewType);
+            });
+        }
+    });
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // Iniciar primer slide
+    setShowcaseActiveSlide(0, viewType);
+}
+
+/**
+ * Activa un slide específico y anima la barra de progreso
+ */
+function setShowcaseActiveSlide(index, viewType) {
+    const slides = viewType === 'home' ? homeShowcaseSlides : dashboardShowcaseSlides;
+    if (slides.length === 0) return;
+
+    let currentIndex = index;
+    if (currentIndex >= slides.length) currentIndex = 0;
+    if (currentIndex < 0) currentIndex = slides.length - 1;
+
+    if (viewType === 'home') {
+        homeShowcaseIndex = currentIndex;
+    } else {
+        dashboardShowcaseIndex = currentIndex;
+    }
+
+    // Limpiar clases activas
+    const allSlides = document.querySelectorAll(`[id^="${viewType}-showcase-slide-"]`);
+    const allBars = document.querySelectorAll(`[id^="${viewType}-showcase-bar-"]`);
+    const allFills = document.querySelectorAll(`[id^="${viewType}-showcase-bar-fill-"]`);
+
+    allSlides.forEach(el => el.classList.remove('active'));
+    allBars.forEach(el => el.classList.remove('active'));
+    allFills.forEach(el => {
+        el.style.transition = 'none';
+        el.style.width = '0%';
+    });
+
+    // Activar slide seleccionado
+    const activeSlide = document.getElementById(`${viewType}-showcase-slide-${currentIndex}`);
+    const activeBar = document.getElementById(`${viewType}-showcase-bar-${currentIndex}`);
+    const activeFill = document.getElementById(`${viewType}-showcase-bar-fill-${currentIndex}`);
+
+    if (activeSlide) activeSlide.classList.add('active');
+    if (activeBar) activeBar.classList.add('active');
+
+    if (activeFill) {
+        activeFill.offsetHeight; // Forzar reflow
+        activeFill.style.transition = 'width 3s linear';
+        activeFill.style.width = '100%';
+    }
+
+    // Configurar siguiente ciclo recursivo de 3 segundos
+    if (viewType === 'home') {
+        if (homeShowcaseTimer) clearTimeout(homeShowcaseTimer);
+        homeShowcaseTimer = setTimeout(() => {
+            setShowcaseActiveSlide(currentIndex + 1, 'home');
+        }, 3000);
+    } else {
+        if (dashboardShowcaseTimer) clearTimeout(dashboardShowcaseTimer);
+        dashboardShowcaseTimer = setTimeout(() => {
+            setShowcaseActiveSlide(currentIndex + 1, 'dashboard');
+        }, 3000);
+    }
 }
 
 /* ==========================================================================
