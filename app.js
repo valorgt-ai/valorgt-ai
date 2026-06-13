@@ -1630,6 +1630,10 @@ function renderFeaturedProperties(zoneKey) {
         const prop = item.prop;
         const zk = item.zoneKey;
 
+        if (prop.sponsored === true && prop.sponsoredUntil && Date.now() > prop.sponsoredUntil) {
+            prop.sponsored = false;
+        }
+
         // En la portada principal, ONLY render sponsored properties of format 'deck' (or default)
         if (prop.sponsored !== true || (prop.sponsoredFormat && prop.sponsoredFormat !== 'deck')) {
             return;
@@ -13194,6 +13198,9 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
         Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
             const list = PORTFOLIO_DATABASE[zk] || [];
             list.forEach(p => {
+                if (p.sponsored === true && p.sponsoredUntil && Date.now() > p.sponsoredUntil) {
+                    p.sponsored = false;
+                }
                 if (p.sponsored === true && (p.sponsoredFormat === 'slider' || !p.sponsoredFormat) && p.isReferenceData !== true) {
                     sponsoredProps.push({ prop: p, zoneKey: zk });
                 }
@@ -13202,6 +13209,9 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
     } else {
         const list = PORTFOLIO_DATABASE[zoneKey] || [];
         list.forEach(p => {
+            if (p.sponsored === true && p.sponsoredUntil && Date.now() > p.sponsoredUntil) {
+                p.sponsored = false;
+            }
             if (p.sponsored === true && (p.sponsoredFormat === 'slider' || !p.sponsoredFormat) && p.isReferenceData !== true) {
                 sponsoredProps.push({ prop: p, zoneKey: zoneKey });
             }
@@ -13979,26 +13989,38 @@ function initPautaView() {
 
 function calculatePautaPrice() {
     const formatSelect = document.getElementById('pauta-format-select');
-    const basePriceLbl = document.getElementById('pauta-base-price-lbl');
+    const durationSelect = document.getElementById('pauta-duration-select');
+    const subtotalLbl = document.getElementById('pauta-subtotal-lbl');
     const discountLbl = document.getElementById('pauta-discount-lbl');
+    const durationDiscountLbl = document.getElementById('pauta-duration-discount-lbl');
     const finalPriceLbl = document.getElementById('pauta-final-price-lbl');
     
-    if (!formatSelect) return;
+    if (!formatSelect || !durationSelect) return;
 
     const format = formatSelect.value;
-    const basePrice = format === 'slider' ? 5000 : 3000;
+    const basePriceMonthly = format === 'slider' ? 5000 : 3000;
+    const months = parseInt(durationSelect.value) || 1;
+    const subtotal = basePriceMonthly * months;
     
+    // Descuento por membresía B2B
     const ownerPlan = loggedInB2bClient ? (loggedInB2bClient.plan || 'Básico').toLowerCase() : 'básico';
-    let discountPercent = 0;
-    if (ownerPlan === 'pro') discountPercent = 0.10;
-    if (ownerPlan === 'vip') discountPercent = 0.25;
-    if (ownerPlan === 'premium' || ownerPlan === 'inversionista') discountPercent = 0.35;
+    let membershipDiscountPercent = 0;
+    if (ownerPlan === 'pro') membershipDiscountPercent = 0.10;
+    if (ownerPlan === 'vip') membershipDiscountPercent = 0.25;
+    if (ownerPlan === 'premium' || ownerPlan === 'inversionista') membershipDiscountPercent = 0.35;
+    const membershipDiscountAmount = subtotal * membershipDiscountPercent;
 
-    const discountAmount = basePrice * discountPercent;
-    const finalPrice = basePrice - discountAmount;
+    // Descuento por duración (3 meses: 5%, 6 meses: 10%)
+    let durationDiscountPercent = 0;
+    if (months === 3) durationDiscountPercent = 0.05;
+    if (months === 6) durationDiscountPercent = 0.10;
+    const durationDiscountAmount = (subtotal - membershipDiscountAmount) * durationDiscountPercent;
 
-    if (basePriceLbl) basePriceLbl.innerText = `Q${formatNumber(basePrice.toFixed(0))}`;
-    if (discountLbl) discountLbl.innerText = `-Q${formatNumber(discountAmount.toFixed(0))} (${(discountPercent * 100).toFixed(0)}%)`;
+    const finalPrice = subtotal - membershipDiscountAmount - durationDiscountAmount;
+
+    if (subtotalLbl) subtotalLbl.innerText = `Q${formatNumber(subtotal.toFixed(0))}`;
+    if (discountLbl) discountLbl.innerText = `-Q${formatNumber(membershipDiscountAmount.toFixed(0))} (${(membershipDiscountPercent * 100).toFixed(0)}%)`;
+    if (durationDiscountLbl) durationDiscountLbl.innerText = `-Q${formatNumber(durationDiscountAmount.toFixed(0))} (${(durationDiscountPercent * 100).toFixed(0)}%)`;
     if (finalPriceLbl) finalPriceLbl.innerText = `Q${formatNumber(finalPrice.toFixed(0))}`;
 }
 
@@ -14024,6 +14046,7 @@ function handlePautaReceiptUploaded(event) {
 function submitPautaCampaign() {
     const propertySelect = document.getElementById('pauta-property-select');
     const formatSelect = document.getElementById('pauta-format-select');
+    const durationSelect = document.getElementById('pauta-duration-select');
     const finalPriceLbl = document.getElementById('pauta-final-price-lbl');
     
     if (!propertySelect || !propertySelect.value) {
@@ -14037,6 +14060,7 @@ function submitPautaCampaign() {
 
     const [zoneKey, propId] = propertySelect.value.split('|');
     const format = formatSelect.value;
+    const durationMonths = parseInt(durationSelect?.value || '1');
     const priceText = finalPriceLbl.innerText;
 
     const list = PORTFOLIO_DATABASE[zoneKey] || [];
@@ -14060,6 +14084,7 @@ function submitPautaCampaign() {
         propertyTitle: prop.title,
         zoneKey: zoneKey,
         format: format,
+        duration: durationMonths,
         agentEmail: loggedInB2bClient ? loggedInB2bClient.email : 'invitado@valorgt.com',
         agentPlan: loggedInB2bClient ? loggedInB2bClient.plan : 'Básico',
         pricePaid: priceText,
@@ -14108,6 +14133,7 @@ function renderAdminPautasTable() {
     [...pendingPautas].reverse().forEach(campaign => {
         const statusColor = campaign.status === 'Pendiente' ? 'var(--yellow)' : (campaign.status === 'Aprobada' ? 'var(--neon-emerald)' : 'var(--red)');
         const formatName = campaign.format === 'slider' ? 'Showcase Slider' : 'Deck Destacados';
+        const durationText = `${campaign.duration || 1} ${campaign.duration === 1 ? 'Mes' : 'Meses'}`;
         
         const actionButtons = campaign.status === 'Pendiente' ? `
             <div style="display: flex; gap: 8px; justify-content: flex-end;">
@@ -14128,6 +14154,22 @@ function renderAdminPautasTable() {
             </div>
         ` : '<div style="text-align: center; color: var(--text-muted);">-</div>';
 
+        // Calcular días restantes de pauta si está activa y existe en base de datos
+        let remainingDaysHTML = '';
+        if (campaign.status === 'Aprobada') {
+            const list = PORTFOLIO_DATABASE[campaign.zoneKey] || [];
+            const prop = list.find(p => String(p.id) === String(campaign.propertyId));
+            if (prop && prop.sponsoredUntil) {
+                const diffTime = prop.sponsoredUntil - Date.now();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays > 0) {
+                    remainingDaysHTML = `<div style="font-size: 0.65rem; color: var(--cyan); margin-top: 4px; font-weight: bold;">⏱️ ${diffDays} días restantes</div>`;
+                } else {
+                    remainingDaysHTML = `<div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">⌛ Expirada</div>`;
+                }
+            }
+        }
+
         const rowHTML = `
             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <td style="padding: 12px; line-height: 1.3;">
@@ -14138,12 +14180,16 @@ function renderAdminPautasTable() {
                     <div style="color: #fff; font-weight: bold;">${campaign.propertyTitle}</div>
                     <div style="font-size: 0.65rem; color: var(--text-secondary);">${ZONES_DATABASE[campaign.zoneKey]?.name.split(' (')[0] || campaign.zoneKey}</div>
                 </td>
-                <td style="padding: 12px; color: #fff; font-weight: bold;">${formatName}</td>
+                <td style="padding: 12px; line-height: 1.3;">
+                    <div style="color: #fff; font-weight: bold;">${formatName}</div>
+                    <div style="font-size: 0.65rem; color: var(--text-secondary);">${durationText}</div>
+                </td>
                 <td style="padding: 12px; color: var(--cyan); font-weight: bold;">${campaign.pricePaid}</td>
                 <td style="padding: 12px;">${receiptLink}</td>
                 <td style="padding: 12px; text-align: right;">
-                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
                         <span style="font-size: 0.65rem; font-weight: bold; color: ${statusColor}; background: rgba(255,255,255,0.02); padding: 2px 6px; border-radius: 3px; border: 1px solid ${statusColor};">${campaign.status.toUpperCase()}</span>
+                        ${remainingDaysHTML}
                         ${actionButtons}
                     </div>
                 </td>

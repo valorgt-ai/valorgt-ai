@@ -2928,21 +2928,34 @@
                                                 <option value="deck">Deck de Destacados de Portada (Q3,000 / mes)</option>
                                             </select>
                                         </div>
+
+                                        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+                                            <label for="pauta-duration-select" style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">DURACIÓN DE LA CAMPAÑA</label>
+                                            <select id="pauta-duration-select" onchange="calculatePautaPrice()" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-size: 0.82rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none; cursor: pointer;">
+                                                <option value="1" selected>1 Mes (Precio Base)</option>
+                                                <option value="3">3 Meses (5% Descuento Adicional)</option>
+                                                <option value="6">6 Meses (10% Descuento Adicional)</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(0, 240, 255, 0.1); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
                                         <div style="display: flex; flex-direction: column; gap: 8px;">
                                             <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
-                                                <span style="color: var(--text-secondary);">Precio Base:</span>
-                                                <span id="pauta-base-price-lbl" style="color: #fff; font-weight: bold;">Q5,000</span>
+                                                <span style="color: var(--text-secondary);">Subtotal (Meses):</span>
+                                                <span id="pauta-subtotal-lbl" style="color: #fff; font-weight: bold;">Q5,000</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
-                                                <span style="color: var(--text-secondary);">Tu Membresía B2B:</span>
+                                                <span style="color: var(--text-secondary);">Membresía B2B:</span>
                                                 <span id="pauta-agent-plan-lbl" style="color: var(--cyan); font-weight: bold;">Cargando Plan...</span>
                                             </div>
-                                            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
-                                                <span style="color: var(--text-secondary);">Descuento Aplicado:</span>
+                                            <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+                                                <span style="color: var(--text-secondary);">Desc. Membresía:</span>
                                                 <span id="pauta-discount-lbl" style="color: var(--neon-emerald); font-weight: bold;">-Q0 (0%)</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+                                                <span style="color: var(--text-secondary);">Desc. Duración:</span>
+                                                <span id="pauta-duration-discount-lbl" style="color: var(--neon-emerald); font-weight: bold;">-Q0 (0%)</span>
                                             </div>
                                         </div>
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
