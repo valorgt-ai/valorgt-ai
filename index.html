@@ -1750,7 +1750,6 @@
                             </div>
                         </div>
                         <!-- Estilo local para animación del gráfico -->
-                        <style>
                             @keyframes goldChartPulse {
                                 0% { filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.15)); }
                                 50% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.40)); }
@@ -1758,6 +1757,15 @@
                             }
                             .glowing-chart-canvas {
                                 animation: goldChartPulse 4s infinite ease-in-out;
+                            }
+                            @keyframes pautaPulse {
+                                0% { box-shadow: 0 0 4px rgba(255, 179, 0, 0.4); border-color: rgba(255, 179, 0, 0.4); background: rgba(255, 179, 0, 0.05); }
+                                50% { box-shadow: 0 0 15px rgba(255, 179, 0, 0.85); border-color: rgba(255, 179, 0, 1); background: rgba(255, 179, 0, 0.2); }
+                                100% { box-shadow: 0 0 4px rgba(255, 179, 0, 0.4); border-color: rgba(255, 179, 0, 0.4); background: rgba(255, 179, 0, 0.05); }
+                            }
+                            .pauta-flash-alert {
+                                animation: pautaPulse 1.5s infinite ease-in-out !important;
+                                color: #ffb300 !important;
                             }
                         </style>
 

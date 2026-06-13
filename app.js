@@ -10226,10 +10226,17 @@ function switchAdminTab(tabId) {
     // 1. Quitar clase active de los botones de pestañas del admin y restablecer estilos
     document.querySelectorAll('.admin-tabs-nav .admin-tab-btn').forEach(btn => {
         btn.classList.remove('active');
-        btn.style.background = 'rgba(0,0,0,0.4)';
-        btn.style.borderColor = 'rgba(255,255,255,0.08)';
-        btn.style.color = 'var(--text-muted)';
-        btn.style.boxShadow = 'none';
+        if (!btn.classList.contains('pauta-flash-alert')) {
+            btn.style.background = 'rgba(0,0,0,0.4)';
+            btn.style.borderColor = 'rgba(255,255,255,0.08)';
+            btn.style.color = 'var(--text-muted)';
+            btn.style.boxShadow = 'none';
+        } else {
+            btn.style.background = '';
+            btn.style.borderColor = '';
+            btn.style.color = '';
+            btn.style.boxShadow = '';
+        }
     });
 
     // 2. Activar el botón de la pestaña seleccionada
@@ -10240,6 +10247,11 @@ function switchAdminTab(tabId) {
         activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
         activeBtn.style.color = 'var(--cyan)';
         activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
+        
+        // Si el administrador entra a la pestaña de pautas, podemos recalcular/quitar flash si ya no quedan
+        if (tabId === 'pautas') {
+            updateAdminPautasTabNotification();
+        }
     }
 
     // Ocultar todas las secciones del admin primero
@@ -14094,6 +14106,7 @@ function submitPautaCampaign() {
     });
 
     localStorage.setItem('admin_pending_pautas', JSON.stringify(pendingPautas));
+    updateAdminPautasTabNotification();
 
     alert(`🎉 ¡Campaña de Pauta enviada exitosamente!\n\nTu solicitud de inyección publicitaria para "${prop.title}" por un monto de ${priceText} está siendo validada por nuestros auditores comerciales. Recibirás una notificación en cuanto sea aprobada.`);
 
@@ -14103,10 +14116,39 @@ function submitPautaCampaign() {
     switchCommercialTab('propiedades-list');
 }
 
+function updateAdminPautasTabNotification() {
+    const btn = document.getElementById('admin-tab-btn-pautas');
+    if (!btn) return;
+    
+    let pendingPautas = [];
+    try {
+        pendingPautas = JSON.parse(localStorage.getItem('admin_pending_pautas') || '[]');
+    } catch (e) {
+        console.error(e);
+    }
+    
+    const hasPending = pendingPautas.some(p => p.status === 'Pendiente');
+    if (hasPending) {
+        btn.classList.add('pauta-flash-alert');
+    } else {
+        btn.classList.remove('pauta-flash-alert');
+        // También resetear sus estilos inline para restaurar el estado limpio del admin
+        btn.style.background = 'rgba(0,0,0,0.4)';
+        btn.style.borderColor = 'rgba(255,255,255,0.08)';
+        btn.style.color = 'var(--text-muted)';
+        btn.style.boxShadow = 'none';
+    }
+}
+// Ejecutar verificación inicial después de carga del DOM
+setTimeout(updateAdminPautasTabNotification, 1200);
+
 function renderAdminPautasTable() {
     const listBody = document.getElementById('admin-pautas-list');
     const counterBadge = document.getElementById('admin-pautas-counter');
     if (!listBody) return;
+
+    // Actualizar también la notificación del flash del tab del admin
+    updateAdminPautasTabNotification();
 
     let pendingPautas = [];
     try {
