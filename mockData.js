@@ -1228,4 +1228,47 @@ const LANDMARKS_DATABASE = [
     }
 ];
 
+const HOTELS_DATABASE = [
+    {
+        name: "The Westin Camino Real",
+        zone: "Zona 10 / Zona Viva",
+        lat: 14.5992,
+        lng: -90.5126,
+        plusvaliaImpact: "Hito de hospitalidad premium e icono histórico. Su presencia atrae un flujo constante de turismo de negocios y convenciones internacionales, elevando el valor comercial y la demanda de apartamentos boutique de renta corta.",
+        details: "Lujoso hotel de 5 estrellas con amplias facilidades para conferencias en el corazón del distrito corporativo."
+    },
+    {
+        name: "Real InterContinental Guatemala",
+        zone: "Zona 10 / Zona Viva",
+        lat: 14.5983,
+        lng: -90.5134,
+        plusvaliaImpact: "Eje gastronómico y ejecutivo de alta gama. Su ubicación estratégica en la Zona Viva fomenta el desarrollo de complejos de oficinas corporativas clase A y residencias verticales de lujo en sus alrededores.",
+        details: "Exclusivo hotel de negocios y centro gastronómico internacional preferido por ejecutivos globales."
+    },
+    {
+        name: "Hyatt Centric Guatemala City",
+        zone: "Zona 10 / Zona Viva",
+        lat: 14.6015,
+        lng: -90.5108,
+        plusvaliaImpact: "Lifestyle urbano moderno y comercial. Integrado en el complejo comercial premium Avia, potencia el tráfico peatonal de alto nivel adquisitivo y consolida el valor del metro cuadrado residencial.",
+        details: "Hotel de concepto boutique y moderno con un vibrante rooftop bar con vista a toda la metrópoli."
+    },
+    {
+        name: "Hotel Barceló Guatemala City",
+        zone: "Zona 9 / Av. Reforma",
+        lat: 14.5951,
+        lng: -90.5218,
+        plusvaliaImpact: "Conectividad del eje Reforma. Actúa como ancla hotelera del sector corporativo tradicional de la Zona 9, atrayendo turismo internacional y de negocios.",
+        details: "Reconocido hotel de negocios ubicado en la Avenida La Reforma, un punto neurálgico del tráfico de la ciudad."
+    },
+    {
+        name: "Grand Tikal Futura Hotel",
+        zone: "Zona 11 / Eje Roosevelt",
+        lat: 14.6231,
+        lng: -90.5510,
+        plusvaliaImpact: "Ancla comercial y corporativa del sector occidente. Su presencia impulsa la demanda de oficinas, servicios financieros y desarrollos residenciales de media-alta densidad en las Zonas 11 y 7.",
+        details: "Hotel icónico y centro de convenciones integrado al complejo comercial Tikal Futura en la Calzada Roosevelt."
+    }
+];
+
 

@@ -89,6 +89,9 @@ function initHeatmap() {
     // Dibujar lagos/cuerpos de agua geográficos
     drawLakes();
 
+    // Dibujar hoteles estratégicos
+    drawHotels();
+
     // Dibujar propiedades publicadas por agentes comerciales
     drawAgentProperties();
 
@@ -1038,4 +1041,60 @@ function drawLakes() {
     `, { closeButton: false, offset: L.point(0, -5) });
 
     mapLakes.push(lakeMarker);
+}
+
+let mapHotels = [];
+
+function drawHotels() {
+    if (!leafletMapInstance || typeof HOTELS_DATABASE === 'undefined') return;
+
+    // Limpiar capas previas si las hubiera
+    mapHotels.forEach(marker => leafletMapInstance.removeLayer(marker));
+    mapHotels = [];
+
+    HOTELS_DATABASE.forEach(hotel => {
+        // Marcador de Hotel (Naranja con efecto pulso CSS e Icono de Cama)
+        const hotelIcon = L.divIcon({
+            className: 'radar-beacon-container',
+            html: `
+                <div class="radar-beacon beacon-orange" style="width: 32px; height: 32px;">
+                    <div class="beacon-pulse" style="width: 32px; height: 32px; animation-duration: 2s; background: rgba(255, 159, 10, 0.4);"></div>
+                    <div class="beacon-dot" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background-color: var(--orange); border: 1.5px solid var(--orange); border-radius: 50%; box-shadow: 0 0 12px var(--orange); z-index: 10;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; opacity: 0.95;"><path d="M3 7v13M3 12h18a3 3 0 0 1 3 3v5M3 18h18M21 7v13"></path><path d="M7 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path></svg>
+                    </div>
+                </div>
+            `,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+        });
+
+        const hotelMarker = L.marker([hotel.lat, hotel.lng], { icon: hotelIcon }).addTo(leafletMapInstance);
+        mapHotels.push(hotelMarker);
+
+        // Popup con Estilo Cyber-fintech para el hotel
+        const popupContent = `
+            <div class="map-popup-header orange-header" style="border-bottom: 1px solid rgba(255, 159, 10, 0.4); padding: 8px;">
+                <h4 style="color: var(--orange); display: flex; align-items: center; gap: 4px; margin: 0; font-size: 1.2rem; font-weight: bold;">
+                    🏨 ${hotel.name}
+                </h4>
+                <span class="sub-title font-mono" style="font-size:0.85rem; color: var(--orange);">HOSPITALIDAD & DESARROLLO TURÍSTICO</span>
+            </div>
+            <div class="map-popup-body" style="grid-template-columns: 1fr; font-size: 0.92rem; padding: 8px; font-family: var(--font-mono);">
+                <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 4px;">
+                    <strong style="color: #fff;">Sector:</strong> ${hotel.zone}
+                </div>
+                <div style="font-size: 0.92rem; line-height: 1.4; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 6px; margin-top: 4px;">
+                    ${hotel.plusvaliaImpact}
+                </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
+                    * ${hotel.details}
+                </div>
+            </div>
+        `;
+
+        hotelMarker.bindPopup(popupContent, {
+            closeButton: false,
+            offset: L.point(0, -5)
+        });
+    });
 }
