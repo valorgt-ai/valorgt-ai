@@ -705,17 +705,19 @@ function drawMalls() {
     mapMalls = [];
 
     MALLS_DATABASE.forEach(mall => {
-        // Marcador de Centro Comercial (Púrpura con efecto pulso CSS)
+        // Marcador de Centro Comercial (Púrpura con efecto pulso CSS e Icono de Bolsa de Compras)
         const mallIcon = L.divIcon({
             className: 'radar-beacon-container',
             html: `
-                <div class="radar-beacon beacon-purple">
-                    <div class="beacon-pulse"></div>
-                    <div class="beacon-dot"></div>
+                <div class="radar-beacon beacon-purple" style="width: 26px; height: 26px;">
+                    <div class="beacon-pulse" style="width: 26px; height: 26px;"></div>
+                    <div class="beacon-dot" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; background: rgba(191, 90, 242, 0.85); border: 1.5px solid #bf5af2; border-radius: 50%; box-shadow: 0 0 10px rgba(191, 90, 242, 0.6); z-index: 10;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 10px; height: 10px; opacity: 0.95;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    </div>
                 </div>
             `,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
         });
 
         const mallMarker = L.marker([mall.lat, mall.lng], { icon: mallIcon }).addTo(leafletMapInstance);
@@ -776,21 +778,30 @@ function drawLandmarks() {
                 headerClass: 'pink-header',
                 iconName: 'plane',
                 badgeText: 'INFRAESTRUCTURA Y CONECTIVIDAD',
-                themeColor: '#ff2d55'
+                themeColor: '#ff2d55',
+                bgColor: 'rgba(255, 45, 85, 0.85)',
+                borderColor: '#ff2d55',
+                svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 10px; height: 10px; opacity: 0.95;"><path d="M17.8 19.2L16 11l3.5-3.5c.9-.9.9-2.4 0-3.3s-2.4-.9-3.3 0L12.7 7.7l-8.2-1.8c-.8-.2-1.7.3-1.9 1.1-.2.8.3 1.7 1.1 1.9l8.2 1.8-3.5 3.5-3.8-1c-.4-.1-.9 0-1.2.3L2 15.1l3.2 1.4 1.4 3.2 1.7-1.4c.3-.3.4-.8.3-1.2l-1-3.8 3.5-3.5 1.8 8.2c.2.8 1 1.3 1.9 1.1.8-.2 1.3-1 1.1-1.9z"></path></svg>`
             },
             temple: {
                 beaconClass: 'beacon-cyan',
                 headerClass: 'cyan-header',
                 iconName: 'home',
                 badgeText: 'CENTRO METROPOLITANO / HITOS',
-                themeColor: 'var(--cyan)'
+                themeColor: 'var(--cyan)',
+                bgColor: 'rgba(0, 240, 255, 0.85)',
+                borderColor: 'var(--cyan)',
+                svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 10px; height: 10px; opacity: 0.95;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`
             },
             default: {
                 beaconClass: 'beacon-yellow',
                 headerClass: 'yellow-header',
                 iconName: 'graduation-cap',
                 badgeText: 'DISTRITO ACADÉMICO / ESTUDIANTIL',
-                themeColor: '#ffd60a'
+                themeColor: '#ffd60a',
+                bgColor: 'rgba(255, 214, 10, 0.85)',
+                borderColor: '#ffd60a',
+                svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 10px; height: 10px; opacity: 0.95;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>`
             }
         };
 
@@ -801,17 +812,19 @@ function drawLandmarks() {
         const badgeText = config.badgeText;
         const themeColor = config.themeColor;
 
-        // Marcador de baliza interactiva (HTML personalizado con efecto pulso CSS)
+        // Marcador de baliza interactiva (HTML personalizado con efecto pulso CSS e Icono SVG integrado)
         const landmarkIcon = L.divIcon({
             className: 'radar-beacon-container',
             html: `
-                <div class="radar-beacon ${beaconClass}">
-                    <div class="beacon-pulse"></div>
-                    <div class="beacon-dot"></div>
+                <div class="radar-beacon ${beaconClass}" style="width: 26px; height: 26px;">
+                    <div class="beacon-pulse" style="width: 26px; height: 26px;"></div>
+                    <div class="beacon-dot" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; background: ${config.bgColor}; border: 1.5px solid ${config.borderColor}; border-radius: 50%; box-shadow: 0 0 10px ${config.bgColor}; z-index: 10;">
+                        ${config.svg}
+                    </div>
                 </div>
             `,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
         });
 
         const landmarkMarker = L.marker([landmark.lat, landmark.lng], { icon: landmarkIcon }).addTo(leafletMapInstance);
