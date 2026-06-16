@@ -86,6 +86,9 @@ function initHeatmap() {
     // Dibujar otros puntos de plusvalía (Aeropuerto y Universidades)
     drawLandmarks();
 
+    // Dibujar lagos/cuerpos de agua geográficos
+    drawLakes();
+
     // Dibujar propiedades publicadas por agentes comerciales
     drawAgentProperties();
 
@@ -967,4 +970,90 @@ function drawAgentProperties() {
             });
         });
     }
+}
+
+let mapLakes = [];
+
+function drawLakes() {
+    if (!leafletMapInstance) return;
+
+    // Limpiar capas previas si las hubiera
+    mapLakes.forEach(layer => leafletMapInstance.removeLayer(layer));
+    mapLakes = [];
+
+    // Polígono detallado de Lago de Amatitlán (Estética glow y transparente)
+    const amatitlanCoords = [
+        [14.492, -90.595],
+        [14.502, -90.582],
+        [14.505, -90.558],
+        [14.495, -90.540],
+        [14.475, -90.535],
+        [14.465, -90.552],
+        [14.468, -90.575],
+        [14.482, -90.598]
+    ];
+
+    const lakePolygon = L.polygon(amatitlanCoords, {
+        color: 'var(--blue)',
+        fillColor: 'var(--blue)',
+        fillOpacity: 0.18,
+        weight: 1.5,
+        dashArray: '3, 4',
+        className: 'lake-polygon-glowing'
+    }).addTo(leafletMapInstance);
+
+    // Tooltip informativo
+    lakePolygon.bindPopup(`
+        <div class="map-popup-header blue-header" style="border-bottom: 1px solid rgba(0, 122, 255, 0.35); padding: 8px;">
+            <h4 style="color: var(--blue); display: flex; align-items: center; gap: 4px; margin: 0; font-size: 1.2rem; font-weight: bold;">
+                🌊 Lago de Amatitlán
+            </h4>
+            <span class="sub-title font-mono" style="font-size:0.85rem; color: var(--blue);">Cuerpo de Agua / Ancla Geográfica</span>
+        </div>
+        <div class="map-popup-body" style="grid-template-columns: 1fr; font-size: 0.92rem; padding: 8px; font-family: var(--font-mono);">
+            <div style="font-size: 0.88rem; line-height: 1.4; color: var(--text-secondary);">
+                Cuerpo de agua estratégico en el sur metropolitano. Ejerce una influencia de microclima y valor recreativo para desarrollos suburbanos e industriales.
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
+                * Zona de amortiguamiento ambiental y paisajística
+            </div>
+        </div>
+    `, { closeButton: false });
+
+    mapLakes.push(lakePolygon);
+
+    // Agregar pin/baliza con icono de olas/agua en el centro del lago
+    const lakeBeaconIcon = L.divIcon({
+        className: 'radar-beacon-container',
+        html: `
+            <div class="radar-beacon beacon-blue" style="width: 32px; height: 32px;">
+                <div class="beacon-pulse" style="width: 32px; height: 32px; animation-duration: 2.2s; background: rgba(0, 122, 255, 0.4);"></div>
+                <div class="beacon-dot" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background-color: var(--blue); border: 1.5px solid var(--blue); border-radius: 50%; box-shadow: 0 0 12px var(--blue); z-index: 10;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; opacity: 0.95;"><path d="M12 12c.6 0 1.2-.4 1.4-1c.2-.6.8-1 1.4-1s1.2.4 1.4 1c.2.6.8 1 1.4 1s1.2-.4 1.4-1c.2-.6.8-1 1.4-1"></path><path d="M2 12c.6 0 1.2-.4 1.4-1c.2-.6.8-1 1.4-1s1.2.4 1.4 1c.2.6.8 1 1.4 1s1.2-.4 1.4-1c.2-.6.8-1 1.4-1"></path><path d="M7 17c.6 0 1.2-.4 1.4-1c.2-.6.8-1 1.4-1s1.2.4 1.4 1c.2.6.8 1 1.4 1s1.2-.4 1.4-1c.2-.6.8-1 1.4-1"></path></svg>
+                </div>
+            </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+    });
+
+    const lakeMarker = L.marker([14.484, -90.570], { icon: lakeBeaconIcon }).addTo(leafletMapInstance);
+    lakeMarker.bindPopup(`
+        <div class="map-popup-header blue-header" style="border-bottom: 1px solid rgba(0, 122, 255, 0.35); padding: 8px;">
+            <h4 style="color: var(--blue); display: flex; align-items: center; gap: 4px; margin: 0; font-size: 1.2rem; font-weight: bold;">
+                🌊 Lago de Amatitlán
+            </h4>
+            <span class="sub-title font-mono" style="font-size:0.85rem; color: var(--blue);">Cuerpo de Agua / Ancla Geográfica</span>
+        </div>
+        <div class="map-popup-body" style="grid-template-columns: 1fr; font-size: 0.92rem; padding: 8px; font-family: var(--font-mono);">
+            <div style="font-size: 0.88rem; line-height: 1.4; color: var(--text-secondary);">
+                Cuerpo de agua estratégico en el sur metropolitano. Ejerce una influencia de microclima y valor recreativo para desarrollos suburbanos e industriales.
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-style: italic;">
+                * Zona de amortiguamiento ambiental y paisajística
+            </div>
+        </div>
+    `, { closeButton: false, offset: L.point(0, -5) });
+
+    mapLakes.push(lakeMarker);
 }

@@ -1767,6 +1767,14 @@
                                 animation: pautaPulse 1.5s infinite ease-in-out !important;
                                 color: #ffb300 !important;
                             }
+                            @keyframes lakeGlow {
+                                0% { fill-opacity: 0.15; stroke-opacity: 0.5; }
+                                50% { fill-opacity: 0.28; stroke-opacity: 0.85; }
+                                100% { fill-opacity: 0.15; stroke-opacity: 0.5; }
+                            }
+                            .lake-polygon-glowing {
+                                animation: lakeGlow 3s infinite ease-in-out;
+                            }
                         </style>
 
                         <!-- GRILLA DE 3 COLUMNAS: ESTRUCTURA VERTICAL DE PORTAFOLIO DE ORO -->
