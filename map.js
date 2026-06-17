@@ -900,7 +900,7 @@ function drawAgentProperties() {
                     const circleColor = isRef ? '#00ff80' : '#00f0ff'; // Verde esmeralda para referencia, Cián para agente
                     const pulseColor = isRef ? 'rgba(0, 255, 128, 0.4)' : 'rgba(0, 240, 255, 0.4)';
                     const dotColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
-                    const badgeTitle = isRef ? '📍 CALIBRACIÓN IA' : '⭐ SOCIO B2B SAAS';
+                    const badgeTitle = isRef ? '📍 CALIBRACIÓN IA' : '⭐ SOCIO PREMIUM';
                     const badgeStyleColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
 
                     // 1. Círculo de calor

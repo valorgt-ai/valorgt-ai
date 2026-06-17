@@ -4537,7 +4537,7 @@ function initCommercialView() {
 
                                 localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
 
-                                alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales SaaS.");
+                                alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales.");
                                 
                                 renderB2bAgentProfile();
                                 updateSaasMetricsHUD();
@@ -4599,7 +4599,7 @@ function initCommercialView() {
                         
                         // Si pasó de Pendiente a Activo, lanzar alerta al usuario
                         if ((oldStatus === 'Pendiente' || (oldStatus || '').toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
-                            alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales SaaS.");
+                            alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales.");
                         }
                         
                         // Re-inicializar UI
@@ -7063,7 +7063,7 @@ async function authenticateCommercialAgent(event) {
                 if (typeof appendAdminLog === 'function') {
                     appendAdminLog("SECURITY", `auth_node: Intento de acceso bloqueado para cuenta suspendida de ${profile.name} (${user}).`, true);
                 }
-                alert("⚠️ ACCESO SAAS BLOQUEADO: Su cuenta de agente comercial ha sido suspendida temporalmente por la administración de la plataforma. Por favor, póngase en contacto con soporte técnico.");
+                alert("⚠️ ACCESO BLOQUEADO: Su cuenta de agente comercial ha sido suspendida temporalmente por la administración de la plataforma. Por favor, póngase en contacto con soporte técnico.");
                 await supabaseClient.auth.signOut();
                 return;
             }
@@ -7149,7 +7149,7 @@ async function authenticateCommercialAgent(event) {
             if (typeof appendAdminLog === 'function') {
                 appendAdminLog("SECURITY", `auth_node: Intento de acceso bloqueado para cuenta suspendida de ${client.name} (${user}).`, true);
             }
-            alert("⚠️ ACCESO SAAS BLOQUEADO: Su cuenta de agente comercial ha sido suspendida temporalmente por la administración de la plataforma. Por favor, póngase en contacto con soporte técnico.");
+            alert("⚠️ ACCESO BLOQUEADO: Su cuenta de agente comercial ha sido suspendida temporalmente por la administración de la plataforma. Por favor, póngase en contacto con soporte técnico.");
             return;
         }
 
@@ -7212,7 +7212,7 @@ async function authenticateCommercialAgent(event) {
         if (typeof appendAdminLog === 'function') {
             appendAdminLog("SECURITY", `auth_node: Intento de acceso denegado (credenciales incorrectas) para el usuario: ${user}.`, true);
         }
-        alert("⚠️ ACCESO B2B DENEGADO: Las credenciales ingresadas son incorrectas o no están registradas.");
+        alert("⚠️ ACCESO DENEGADO: Las credenciales ingresadas son incorrectas o no están registradas.");
     }
 }
 
@@ -7368,7 +7368,7 @@ async function handleRegistrationFormSubmit(event) {
                 
                 if (dbErr) {
                     if (scanOverlay) scanOverlay.classList.add('hidden');
-                    alert(`⚠️ ERROR EN BASE DE DATOS B2B: ${dbErr.message}`);
+                    alert(`⚠️ ERROR EN BASE DE DATOS: ${dbErr.message}`);
                     return;
                 }
                 
@@ -7724,7 +7724,7 @@ function logoutCommercialAgent() {
     // Bloquear de nuevo la vista
     initCommercialView();
     
-    alert("Sesión B2B Cerrada con éxito. Consola comercial bloqueada de forma segura.");
+    alert("Sesión Cerrada con éxito. Consola comercial bloqueada de forma segura.");
 }
 
 /**
