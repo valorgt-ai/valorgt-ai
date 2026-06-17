@@ -371,7 +371,7 @@ let uploadedBase64Images = []; // Almacenará múltiples fotos locales subidas e
 let coverImageIndex = 0; // Índice de la imagen de portada principal seleccionada
 let baseAdPriceGTQ = parseFloat(localStorage.getItem('valorgt_base_ad_price') || '5000'); // Tarifa base estándar de pauta comercial calibrada por el admin
 let plansVideoUrl = localStorage.getItem('valorgt_plans_video_url') !== null ? localStorage.getItem('valorgt_plans_video_url') : 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // URL del video de planes premium calibrada por el admin
-let welcomeVideoUrl = localStorage.getItem('valorgt_welcome_video_url') !== null ? localStorage.getItem('valorgt_welcome_video_url') : 'https://www.youtube.com/embed/M55qqyxcFSI'; // URL del video de bienvenida principal calibrada por el admin
+let welcomeVideoUrl = localStorage.getItem('valorgt_welcome_video_url') !== null ? localStorage.getItem('valorgt_welcome_video_url') : ''; // URL del video de bienvenida principal (vía Supabase)
 let promoBannerMessage = localStorage.getItem('valorgt_promo_message') || '✨ ¡Oportunidad Prime! Descuento especial del 15% en pautas comerciales contratadas esta semana. Destaca tu propiedad ahora.';
 let isPromoBannerActive = localStorage.getItem('valorgt_promo_active') !== 'false';
 let editingPropertyId = null;
@@ -12233,7 +12233,8 @@ async function fetchSystemSettingsFromSupabase() {
 
         if (error) throw error;
 
-        let supabaseWelcomeVideoUrl = welcomeVideoUrl;
+        let supabaseWelcomeVideoUrl = "";
+        let foundWelcomeVideo = false;
 
         if (data && data.length > 0) {
             data.forEach(item => {
@@ -12249,6 +12250,7 @@ async function fetchSystemSettingsFromSupabase() {
                     localStorage.setItem('valorgt_welcome_video_url', welcomeVideoUrl);
                     const adminInput = document.getElementById('admin-welcome-video-url');
                     if (adminInput) adminInput.value = welcomeVideoUrl;
+                    foundWelcomeVideo = true;
                 } else if (item.id === 'plans_video_url') {
                     plansVideoUrl = item.message;
                     localStorage.setItem('valorgt_plans_video_url', plansVideoUrl);
@@ -12259,6 +12261,13 @@ async function fetchSystemSettingsFromSupabase() {
                     if (plansIframe) plansIframe.src = plansVideoUrl;
                 }
             });
+        }
+
+        if (!foundWelcomeVideo) {
+            welcomeVideoUrl = "";
+            localStorage.setItem('valorgt_welcome_video_url', "");
+            const adminInput = document.getElementById('admin-welcome-video-url');
+            if (adminInput) adminInput.value = "";
         }
 
         // Mostrar u ocultar el botón de planes según la configuración en la nube
