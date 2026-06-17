@@ -67,10 +67,6 @@
                     <i data-lucide="award"></i>
                     <span>Planes de Suscripción</span>
                 </button>
-                <button id="nav-btn-commercial" class="nav-item" onclick="switchView('commercial')">
-                    <i data-lucide="briefcase"></i>
-                    <span>Área de Ingreso</span>
-                </button>
                 <button id="nav-btn-disclaimer" class="nav-item" onclick="switchView('disclaimer')">
                     <i data-lucide="scale"></i>
                     <span>Disclaimer Legal</span>
@@ -78,6 +74,10 @@
                 <button id="nav-btn-tutorials" class="nav-item" onclick="switchView('tutorials')">
                     <i data-lucide="clapperboard"></i>
                     <span>Centro de Video Guías</span>
+                </button>
+                <button id="nav-btn-commercial" class="nav-item" onclick="switchView('commercial')">
+                    <i data-lucide="briefcase"></i>
+                    <span>Área de Ingreso</span>
                 </button>
                 <button id="nav-btn-admin" class="nav-item" onclick="switchView('admin')" style="display: none;">
                     <i data-lucide="shield-alert"></i>
@@ -299,7 +299,27 @@
                 </section>
                 
                 <!-- VISTA 1: DASHBOARD DE VALUACIÓN -->
-                <section id="view-dashboard" class="app-view">
+                <section id="view-dashboard" class="app-view" style="position: relative;">
+                    <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
+                    <div id="dashboard-trial-badge" class="font-mono hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; background: rgba(8,6,12,0.96); border: 2px solid #bf5af2; border-radius: 30px; padding: 12px 30px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.05rem; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(191,90,242,0.7); text-shadow: 0 0 8px rgba(255,255,255,0.8); letter-spacing: 0.8px; animation: glow-pulse 2s infinite;">
+                        <span class="neon-purple-pulse" style="width: 12px; height: 12px; border-radius: 50%; background: #bf5af2; box-shadow: 0 0 12px #bf5af2; display: inline-block; animation: beacon-pulse-anim 1.5s infinite;"></span>
+                        <span>VISTA PREVIA: <span id="dashboard-trial-timer-lbl" style="color: #bf5af2; font-weight: 900; font-size: 1.15rem;">120s</span></span>
+                    </div>
+
+                    <!-- MÁSCARA BLOQUEADORA DE TASA INTELIGENTE EXPIRADA -->
+                    <div id="dashboard-trial-blocker" class="hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(5, 6, 8, 0.95); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; border-radius: 12px; padding: 30px; text-align: center;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #bf5af2; background: rgba(191,90,242,0.05); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(191,90,242,0.4); margin-bottom: 20px; animation: pulse-shadow 2.5s infinite;">
+                            <i data-lucide="lock" style="width: 36px; height: 36px; color: #bf5af2;"></i>
+                        </div>
+                        <h3 style="font-size: 1.6rem; font-weight: bold; color: #fff; margin-bottom: 10px; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(255,255,255,0.2);">🔒 VISTA PREVIA EXPIRADA</h3>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-secondary); max-width: 460px; line-height: 1.5; margin-bottom: 24px; text-align: center;">
+                            Has completado tus 2 minutos de demostración gratuita de **Tasa Inteligente**. <br><br>
+                            Para seguir tasando propiedades y consultando precios de referencia, adquiere una membresía premium.
+                        </p>
+                        <button onclick="closePortfolioTrialBlockerAndRedirect()" class="btn btn-primary glowing-effect-purple" style="background: rgba(191, 90, 242, 0.1); border: 1px solid #bf5af2; padding: 12px 30px; font-size: 0.82rem; font-weight: bold; color: #bf5af2; border-radius: 8px; cursor: pointer; text-shadow: 0 0 5px rgba(191,90,242,0.3); display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i> ADQUIRIR MEMBRESÍA PREMIUM
+                        </button>
+                    </div>
                     
                     <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
                     <div class="featured-header">

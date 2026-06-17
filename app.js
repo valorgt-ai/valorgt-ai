@@ -378,9 +378,9 @@ let editingPropertyId = null;
 
 
 
-// Variables de Control para la Vista Previa de Marketing del Portafolio IA (1 minuto)
+// Variables de Control para la Vista Previa de Marketing de ValorGT (2 minutos)
 let portfolioTrialTimer = null;
-let portfolioTrialTimeLeft = 60; // 60 segundos
+let portfolioTrialTimeLeft = 120; // 120 segundos (2 minutos)
 let isPortfolioBlocked = false;
 let aiChatHistory = []; // Historial de chat interactivo persistente del Asesor Patrimonial
 
@@ -787,6 +787,7 @@ function switchView(viewId) {
     document.getElementById('portfolio-trial-badge')?.classList.add('hidden');
     document.getElementById('heatmap-trial-badge')?.classList.add('hidden');
     document.getElementById('investor-trial-badge')?.classList.add('hidden');
+    document.getElementById('dashboard-trial-badge')?.classList.add('hidden');
 
     let highlightId = viewId;
     let targetViewId = viewId;
@@ -907,7 +908,7 @@ function switchView(viewId) {
                             activeBadge.classList.add('hidden');
                         }
                         
-                        alert("⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
+                        alert("⏱️ VISTA PREVIA EXPIRADA: Tus 2 minutos de demostración gratuita de Portafolio IA han finalizado. Por favor suscríbete para continuar.");
                         
                         if (loginGate) loginGate.classList.remove('hidden');
                         if (dashboardArea) dashboardArea.classList.add('hidden');
@@ -922,13 +923,13 @@ function switchView(viewId) {
     }
 
     // 2. Control del trial de marketing para las vistas Premium (Radar de Calor, Terminal de Inversión)
-    const premiumViews = ['heatmap', 'investor'];
+    const premiumViews = ['heatmap', 'investor', 'dashboard'];
     if (premiumViews.includes(viewId)) {
         const clientEmail = (loggedInB2bClient && loggedInB2bClient.email) ? loggedInB2bClient.email.toLowerCase() : '';
         const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
         const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
         
-        const hasUnlimitedAccess = isCommercialAuthenticated && (
+        let hasUnlimitedAccess = isCommercialAuthenticated && (
             clientEmail.includes('admin') ||
             clientEmail.includes('sgalindo') ||
             clientPlan === 'vip' ||
@@ -939,6 +940,15 @@ function switchView(viewId) {
             (!loggedInB2bClient && isCommercialAuthenticated) // ROOT Admin bypass
         );
 
+        // Si la vista es dashboard (Tasa Inteligente), todos los planes de suscripción (incluyendo Básico) tienen acceso ilimitado.
+        // Si no tienen ningún plan (o tienen plan vacío), no tienen acceso y entran en modo preview.
+        if (viewId === 'dashboard' && isCommercialAuthenticated) {
+            if (clientPlan === 'basico' || clientPlan === 'pro' || clientPlan === 'vip' || clientPlan === 'premium' || clientRole === 'inversionista' ||
+                (activeB2bPlan && (activeB2bPlan === 'basico' || activeB2bPlan === 'pro' || activeB2bPlan === 'vip' || activeB2bPlan === 'premium'))) {
+                hasUnlimitedAccess = true;
+            }
+        }
+
         const activeBlocker = document.getElementById(`${viewId}-trial-blocker`);
         const activeBadge = document.getElementById(`${viewId}-trial-badge`);
         const activeTimerLbl = document.getElementById(`${viewId}-trial-timer-lbl`);
@@ -946,7 +956,8 @@ function switchView(viewId) {
         // Nombres amigables para alertas
         const viewNames = {
             'heatmap': 'Radar de Calor',
-            'investor': 'Terminal de Inversión'
+            'investor': 'Terminal de Inversión',
+            'dashboard': 'Tasa Inteligente'
         };
 
         if (hasUnlimitedAccess) {
@@ -954,9 +965,10 @@ function switchView(viewId) {
             document.getElementById('portfolio-trial-blocker')?.classList.add('hidden');
             document.getElementById('heatmap-trial-blocker')?.classList.add('hidden');
             document.getElementById('investor-trial-blocker')?.classList.add('hidden');
+            document.getElementById('dashboard-trial-blocker')?.classList.add('hidden');
             isPortfolioBlocked = false;
         } else {
-            // Si no tiene acceso ilimitado, verificar si ya expiró la demo de 1 minuto
+            // Si no tiene acceso ilimitado, verificar si ya expiró la demo de 2 minutos
             if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
                 if (activeBlocker) activeBlocker.classList.remove('hidden');
                 isPortfolioBlocked = true;
@@ -988,7 +1000,7 @@ function switchView(viewId) {
                         const currentBadge = document.getElementById(`${viewId}-trial-badge`);
                         if (currentBadge) currentBadge.classList.add('hidden');
 
-                        alert(`⏱️ VISTA PREVIA EXPIRADA: Tu minuto de demostración gratuita de ${viewNames[viewId]} ha finalizado. Por favor suscríbete para continuar.`);
+                        alert(`⏱️ VISTA PREVIA EXPIRADA: Tus 2 minutos de demostración gratuita de ${viewNames[viewId]} han finalizado. Por favor suscríbete para continuar.`);
                         switchView('commercial');
                     }
                 }, 1000);
@@ -11601,6 +11613,7 @@ function renderPublicPricingGrid() {
                 priceGTQ: 140,
                 features: [
                     { text: '20 Propiedades en Catálogo', active: true },
+                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                     { text: 'Redes Neuronales Predictivas', active: true },
                     { text: 'Sello de Verificación Básica', active: true },
                     { text: 'Acceso a Radar de Calor', active: true },
@@ -11622,6 +11635,7 @@ function renderPublicPricingGrid() {
                 recommended: true,
                 features: [
                     { text: '100 Propiedades en Catálogo', active: true },
+                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                     { text: 'Redes Neuronales Predictivas', active: true },
                     { text: 'Logo Propio en Inmuebles', active: true },
                     { text: 'Acceso Completo a Radar de Calor', active: true },
@@ -11642,6 +11656,7 @@ function renderPublicPricingGrid() {
                 priceGTQ: 640,
                 features: [
                     { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                     { text: 'Redes Neuronales Predictivas', active: true },
                     { text: 'Logo Propio y Destacados Premium', active: true },
                     { text: 'Acceso Completo a Radar de Calor', active: true },
@@ -11778,6 +11793,7 @@ function renderB2bPricingGrid() {
                 priceGTQ: 140,
                 features: [
                     { text: '20 Propiedades en Catálogo', active: true },
+                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                     { text: 'Redes Neuronales Predictivas', active: true },
                     { text: 'Sello de Verificación Básica', active: true },
                     { text: 'Acceso a Radar de Calor', active: true },
@@ -11799,6 +11815,7 @@ function renderB2bPricingGrid() {
                 recommended: true,
                 features: [
                     { text: '100 Propiedades en Catálogo', active: true },
+                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                     { text: 'Redes Neuronales Predictivas', active: true },
                     { text: 'Logo Propio en Inmuebles', active: true },
                     { text: 'Acceso Completo a Radar de Calor', active: true },
@@ -11819,6 +11836,7 @@ function renderB2bPricingGrid() {
                 priceGTQ: 640,
                 features: [
                     { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                     { text: 'Redes Neuronales Predictivas', active: true },
                     { text: 'Logo Propio y Destacados Premium', active: true },
                     { text: 'Acceso Completo a Radar de Calor', active: true },
