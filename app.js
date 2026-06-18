@@ -11384,7 +11384,7 @@ function openPropertyDetailModal(zoneKey, index) {
         const rawId = prop.id || prop.title || Math.random().toString();
         const sliderId = `modal-slider-${rawId.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
         galleryArea.innerHTML = `
-            <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 260px; border-radius: 12px 12px 0 0;">
+            <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 380px; border-radius: 12px 12px 0 0;">
                 <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
                     ${photos.map(p => `<img src="${p}" alt="${prop.title}" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover;">`).join('')}
                 </div>
@@ -11400,7 +11400,7 @@ function openPropertyDetailModal(zoneKey, index) {
         `;
     } else {
         galleryArea.innerHTML = `
-            <div style="width: 100%; height: 260px; overflow: hidden; border-radius: 12px 12px 0 0; position: relative;">
+            <div style="width: 100%; height: 380px; overflow: hidden; border-radius: 12px 12px 0 0; position: relative;">
                 <img src="${prop.photo}" alt="${prop.title}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         `;

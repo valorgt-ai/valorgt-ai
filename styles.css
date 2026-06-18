@@ -2321,6 +2321,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     .featured-properties-deck {
         grid-template-columns: 1fr;
     }
+    .modal-property-description {
+        column-count: 1 !important;
+    }
 }
 
 /* ==========================================================================
