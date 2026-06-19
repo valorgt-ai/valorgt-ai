@@ -771,6 +771,32 @@ select option {
     background: rgba(0, 240, 255, 0.2);
 }
 
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-purple {
+    background: rgba(191, 90, 242, 0.1);
+    color: var(--neon-purple);
+    border: 1px solid var(--neon-purple);
+}
+
+.btn-purple:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 15px rgba(191, 90, 242, 0.35);
+    border-color: var(--neon-purple);
+    background: rgba(191, 90, 242, 0.2);
+}
+
 .btn-block {
     width: 100%;
     margin-top: 16px;
