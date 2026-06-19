@@ -14732,9 +14732,9 @@ async function loadAgentSuggestions() {
         if (emptyState) emptyState.classList.add('hidden');
         suggestionsList.innerHTML = suggestions.map((s, idx) => `
             <div class="suggestion-item" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 8px;">
                     <span style="font-size: 0.65rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono);">${s.property_title}</span>
-                    <button onclick="dismissSuggestion('${s.id || ''}', '${s.property_id}', \`${s.suggestion.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)" title="Marcar como leída" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; padding: 2px;">
+                    <button class="check-flash-alert" onclick="dismissSuggestion('${s.id || ''}', '${s.property_id}', \`${s.suggestion.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)" title="Marcar como leída e ir archivando">
                         <i data-lucide="check" style="width: 14px; height: 14px;"></i>
                     </button>
                 </div>
