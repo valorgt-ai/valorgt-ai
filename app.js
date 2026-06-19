@@ -14731,15 +14731,15 @@ async function loadAgentSuggestions() {
     } else {
         if (emptyState) emptyState.classList.add('hidden');
         suggestionsList.innerHTML = suggestions.map((s, idx) => `
-            <div class="suggestion-item" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left;">
+            <div class="suggestion-item" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 14px; border-radius: 6px; position: relative; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <div style="display: flex; justify-content: space-between; align-items: start; gap: 8px;">
-                    <span style="font-size: 0.65rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono);">${s.property_title}</span>
-                    <button class="check-flash-alert" onclick="dismissSuggestion('${s.id || ''}', '${s.property_id}', \`${s.suggestion.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)" title="Marcar como leída e ir archivando">
-                        <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                    <span style="font-size: 0.78rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono);">${s.property_title}</span>
+                    <button class="check-flash-alert" onclick="dismissSuggestion('${s.id || ''}', '${s.property_id}', \`${s.suggestion.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)" title="Marcar como leída e ir archivando" style="width: 26px; height: 26px;">
+                        <i data-lucide="check" style="width: 15px; height: 15px;"></i>
                     </button>
                 </div>
-                <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">"${s.suggestion}"</p>
-                <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">${new Date(s.created_at).toLocaleString()}</span>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">"${s.suggestion}"</p>
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">${new Date(s.created_at).toLocaleString()}</span>
             </div>
         `).join('');
 
