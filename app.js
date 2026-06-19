@@ -767,11 +767,19 @@ function removePreviewImage(index) {
     }
 }
 
+let isInternalHashReset = false;
+
 /**
  * Controla el cambio de vistas de la aplicación (Single Page Routing)
  * @param {string} viewId - Nombre identificador de la vista ('dashboard', 'heatmap', 'mortgage', 'investor')
  */
 function switchView(viewId) {
+    if (viewId !== 'property-page') {
+        if (window.location.hash.startsWith('#prop=')) {
+            isInternalHashReset = true;
+            window.location.hash = '';
+        }
+    }
     // Actualizar visibilidad del asistente de voz tras los cambios en el DOM
     setTimeout(() => {
         if (typeof updateAssistantVisibility === 'function') {
@@ -14575,6 +14583,10 @@ function showPropertyPage(zoneKey, index) {
 
 // Escuchador de cambios en el Hash para enrutamiento nativo SPA de fichas dedicadas
 window.addEventListener('hashchange', () => {
+    if (isInternalHashReset) {
+        isInternalHashReset = false;
+        return;
+    }
     if (window.location.hash.startsWith('#prop=')) {
         checkDeepLinkParams();
     } else if (window.location.hash === '' || window.location.hash === '#') {
