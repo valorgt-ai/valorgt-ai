@@ -1081,6 +1081,9 @@ function switchView(viewId) {
         setTimeout(() => {
             initSubscriptionsView();
         }, 50);
+    } else if (viewId === 'property-page') {
+        titleEl.innerText = "Ficha de Propiedad Premium";
+        subtitleEl.innerText = "Análisis e información comercial completa del activo seleccionado";
     } else if (viewId === 'catalog') {
         titleEl.innerText = "Catálogo General de Activos";
         subtitleEl.innerText = "Buscador masivo y catálogo de propiedades en Ciudad de Guatemala";
@@ -11434,15 +11437,26 @@ function openPropertyDetailModal(zoneKey, index) {
     const waBtn = document.getElementById('modal-whatsapp-btn');
     waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
 
+    // Configurar botón Ficha Completa integrado
+    const fichaCompletaBtn = document.getElementById('modal-ficha-completa-btn');
+    if (fichaCompletaBtn) {
+        fichaCompletaBtn.onclick = () => {
+            closePropertyDetailModal();
+            showPropertyPage(zoneKey, index);
+        };
+    }
+
     // Configurar botón Autotasar integrado
     const autotasarBtn = document.getElementById('modal-autotasar-btn');
-    autotasarBtn.onclick = () => {
-        closePropertyDetailModal();
-        autofillValuationForm(zoneKey, index);
-        // Desplazar suavemente a la sección de valoración
-        document.getElementById('nav-btn-dashboard').click();
-        document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
-    };
+    if (autotasarBtn) {
+        autotasarBtn.onclick = () => {
+            closePropertyDetailModal();
+            autofillValuationForm(zoneKey, index);
+            // Desplazar suavemente a la sección de valoración
+            document.getElementById('nav-btn-dashboard').click();
+            document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
+        };
+    }
 
     // Configurar botón compartir en modal
     const modalShareBtn = document.getElementById('modal-share-btn');
@@ -12521,7 +12535,10 @@ function sharePropertyLink(event, propId) {
         return;
     }
     
-    const shareUrl = window.location.origin + window.location.pathname + '?propId=' + encodeURIComponent(propId);
+    let shareUrl = window.location.origin + window.location.pathname + '?propId=' + encodeURIComponent(propId);
+    if (propId.includes('_') || (document.getElementById('view-property-page') && document.getElementById('view-property-page').classList.contains('active'))) {
+        shareUrl = window.location.origin + window.location.pathname + '#prop=' + encodeURIComponent(propId);
+    }
     
     // API Clipboard del navegador con fallback legacy
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -12607,6 +12624,23 @@ function showCyberToast(message, iconName = "info") {
  * Comprueba si hay un parámetro propId en la URL y despliega automáticamente el modal correspondiente
  */
 function checkDeepLinkParams() {
+    // 1. Verificar si hay un hash de la propiedad (Ficha Completa)
+    if (window.location.hash.startsWith('#prop=')) {
+        const hashVal = window.location.hash.replace('#prop=', '');
+        const parts = hashVal.split('_');
+        if (parts.length === 2) {
+            const zoneKey = parts[0];
+            const index = parseInt(parts[1], 10);
+            if (PORTFOLIO_DATABASE[zoneKey]?.[index]) {
+                console.log(`[DeepLink] Hash de propiedad encontrado: ${zoneKey} (${index}). Cargando página completa...`);
+                setTimeout(() => {
+                    showPropertyPage(zoneKey, index);
+                }, 600);
+                return;
+            }
+        }
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const propId = urlParams.get('propId');
     if (!propId) return;
@@ -14317,4 +14351,216 @@ function rejectPautaCampaign(campaignId) {
     alert(`❌ Campaña rechazada.`);
     renderAdminPautasTable();
 }
+
+/**
+ * Muestra la página dedicada con toda la información de la propiedad, grilla de fotos premium y simulaciones.
+ */
+function showPropertyPage(zoneKey, index) {
+    const prop = PORTFOLIO_DATABASE[zoneKey]?.[index];
+    if (!prop) return;
+
+    // Configurar metadatos del encabezado
+    document.getElementById('page-property-tag').innerText = prop.tag;
+    document.getElementById('page-property-title').innerText = prop.title;
+
+    // Precios dinámicos
+    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
+    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+    const convertedPrice = prop.priceUSD * conversion;
+    const { type } = getPropertyCategoryAndType(prop);
+    const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
+    document.getElementById('page-property-price').innerText = `${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}`;
+
+    // Descripción general
+    const desc = prop.description || (prop.metadata && prop.metadata.description) || 'Propiedad exclusiva seleccionada y tasada por el nodo inteligente de ValorGT AI.';
+    document.getElementById('page-property-description').innerText = desc;
+
+    // Especificaciones técnicas
+    document.getElementById('page-spec-size').innerText = prop.size;
+    document.getElementById('page-spec-rooms').innerText = prop.rooms;
+    document.getElementById('page-spec-baths').innerText = prop.bathrooms;
+    document.getElementById('page-spec-parks').innerText = prop.parkings;
+
+    // Características y amenidades
+    const tagsArea = document.getElementById('page-advanced-tags');
+    if (tagsArea) {
+        tagsArea.innerHTML = '';
+        const tags = [];
+        if (prop.hasMasterSuite) tags.push("Suite Principal");
+        if (prop.hasVisitorBath) tags.push("Baño de Visitas");
+        if (prop.study) tags.push("Estudio");
+        if (prop.familyRoom) tags.push("Sala Familiar");
+        
+        if (prop.amenities && prop.amenities.length > 0) {
+            prop.amenities.forEach(am => {
+                if (am === "amenity-pool" || am === "pool") tags.push("Piscina / Jacuzzi");
+                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio Equipado");
+                if (am === "amenity-security" || am === "security") tags.push("Seguridad 24/7");
+                if (am === "amenity-smart" || am === "smart") tags.push("Domótica Inteligente");
+                if (am === "amenity-view" || am === "view") tags.push("Vista Panorámica");
+            });
+        }
+
+        if (tags.length > 0) {
+            tags.forEach(t => {
+                const span = document.createElement('span');
+                span.style.cssText = "font-size: 0.7rem; background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 5px 12px; border-radius: 4px; font-weight: 500;";
+                span.innerText = t;
+                tagsArea.appendChild(span);
+            });
+        } else {
+            tagsArea.innerHTML = '<span style="font-size: 0.7rem; color: var(--text-muted);">Sin características adicionales configuradas.</span>';
+        }
+    }
+
+    // Grilla premium de imágenes (Zillow-style)
+    const galleryArea = document.getElementById('page-gallery-grid');
+    if (galleryArea) {
+        const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0) 
+            ? prop.metadata.photos 
+            : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo || prop.photoUrl || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80']);
+
+        galleryArea.innerHTML = '';
+        
+        // Crear el layout de grilla premium
+        const mainItem = document.createElement('div');
+        mainItem.className = 'gallery-item main-item';
+        mainItem.innerHTML = `<img src="${photos[0]}" alt="${prop.title}">`;
+        galleryArea.appendChild(mainItem);
+
+        // Rellenar con fotos secundarias (máximo 4)
+        for (let i = 1; i < Math.min(photos.length, 5); i++) {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `<img src="${photos[i]}" alt="${prop.title}">`;
+            galleryArea.appendChild(item);
+        }
+
+        // Rellenar si faltan imágenes secundarias
+        if (photos.length === 1) {
+            for (let i = 1; i <= 4; i++) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `<img src="${photos[0]}" alt="${prop.title}" style="opacity: 0.65; filter: blur(0.5px);">`;
+                galleryArea.appendChild(item);
+            }
+        } else if (photos.length < 5) {
+            let missing = 5 - photos.length;
+            for (let i = 0; i < missing; i++) {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `<img src="${photos[i % photos.length]}" alt="${prop.title}" style="opacity: 0.85;">`;
+                galleryArea.appendChild(item);
+            }
+        }
+    }
+
+    // Configurar Asesor Encargado
+    const agentName = prop.agentName || (prop.metadata && prop.metadata.agentName) || 'Asesor Inmobiliario';
+    const agentCompany = prop.agentCompany || (prop.metadata && prop.metadata.agentCompany) || 'ValorGT Premium Partner';
+    const agentLogo = prop.agentLogo || (prop.metadata && prop.metadata.agentLogo) || '';
+    const agentPhone = prop.agentPhone || (prop.metadata && prop.metadata.agentPhone) || '50250129482';
+    const ownerPlan = prop.agentPlan || (prop.metadata && prop.metadata.agentPlan) || 'Básico';
+
+    document.getElementById('page-agent-name').innerText = agentName;
+    document.getElementById('page-agent-company').innerText = agentCompany;
+
+    const logoContainer = document.getElementById('page-agent-logo-container');
+    if (logoContainer) {
+        const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
+        if (isPremiumPartner && agentLogo) {
+            logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
+        } else {
+            logoContainer.innerHTML = `<i data-lucide="user" style="width: 20px; height: 20px; color: var(--cyan);"></i>`;
+        }
+    }
+
+    // Enlace de WhatsApp
+    const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
+    const waText = encodeURIComponent(`¡Hola! Estoy interesado en la propiedad "${prop.title}" (${prop.tag}) que vi en su ficha de ValorGT AI. ¿Me podrías brindar más información?`);
+    const waBtn = document.getElementById('page-whatsapp-btn');
+    if (waBtn) {
+        waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
+    }
+
+    // Configurar Autotasar IA en la página dedicada
+    const autotasarBtn = document.getElementById('page-autotasar-btn');
+    if (autotasarBtn) {
+        autotasarBtn.onclick = () => {
+            autofillValuationForm(zoneKey, index);
+            document.getElementById('nav-btn-dashboard').click();
+            document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
+        };
+    }
+
+    // --- PRECALCULAR EL SIMULADOR HIPOTECARIO ---
+    const downPayment = convertedPrice * 0.20;
+    const loanAmount = convertedPrice - downPayment;
+    
+    // Tasa por defecto: 7.26% (Tasa FHA de Banco Industrial)
+    const annualRate = 7.26;
+    const termYears = 20;
+    
+    const monthlyRate = (annualRate / 100) / 12;
+    const numberOfPayments = termYears * 12;
+    let monthlyPayment = 0;
+    
+    if (monthlyRate > 0) {
+        monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    } else {
+        monthlyPayment = loanAmount / numberOfPayments;
+    }
+
+    const pSimPropVal = document.getElementById('psim-prop-val');
+    if (pSimPropVal) pSimPropVal.innerText = `${currencySym}${formatNumber(convertedPrice.toFixed(0))}`;
+    
+    const pSimDownVal = document.getElementById('psim-down-val');
+    if (pSimDownVal) pSimDownVal.innerText = `${currencySym}${formatNumber(downPayment.toFixed(0))} (20%)`;
+    
+    const pSimMonthlyPayment = document.getElementById('psim-monthly-payment');
+    if (pSimMonthlyPayment) pSimMonthlyPayment.innerText = `${currencySym}${formatNumber(monthlyPayment.toFixed(2))}${priceLabel}`;
+
+    // Ajustar en Simulador Completo
+    const fullSimBtn = document.getElementById('page-full-simulator-btn');
+    if (fullSimBtn) {
+        fullSimBtn.onclick = () => {
+            document.getElementById('mval-prop-slider').value = prop.priceUSD * (activeCurrency === 'GTQ' ? exchangeRate : 1);
+            document.getElementById('mval-down-slider').value = 20;
+            document.getElementById('mval-term-slider').value = 20;
+            document.getElementById('mval-rate-slider').value = 7.26;
+            
+            updateMortgageValues();
+            
+            document.getElementById('nav-btn-mortgage').click();
+            document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
+        };
+    }
+
+    // Configurar Compartir Enlace
+    const pageShareBtn = document.getElementById('page-share-btn');
+    if (pageShareBtn) {
+        pageShareBtn.onclick = (e) => {
+            sharePropertyLink(e, `${zoneKey}_${index}`);
+        };
+    }
+
+    // Actualizar hash de la URL sin recargar
+    window.location.hash = `prop=${zoneKey}_${index}`;
+
+    // Switch view a la página de propiedad
+    switchView('property-page');
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+// Escuchador de cambios en el Hash para enrutamiento nativo SPA de fichas dedicadas
+window.addEventListener('hashchange', () => {
+    if (window.location.hash.startsWith('#prop=')) {
+        checkDeepLinkParams();
+    } else if (window.location.hash === '' || window.location.hash === '#') {
+        switchView('home');
+    }
+});
 

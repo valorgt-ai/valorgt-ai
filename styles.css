@@ -2326,6 +2326,67 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 }
 
+/* Estilos de Ficha de Propiedad Premium (Zillow-style Grid y Layout) */
+.property-gallery-grid-premium {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 410px;
+    width: 100%;
+}
+
+.property-gallery-grid-premium .gallery-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.property-gallery-grid-premium .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.property-gallery-grid-premium .gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.property-gallery-grid-premium .main-item {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+}
+
+@media (max-width: 1024px) {
+    .property-page-columns-layout {
+        grid-template-columns: 1fr !important;
+    }
+    .property-sidebar-col {
+        position: static !important;
+    }
+    .property-gallery-grid-premium {
+        grid-template-columns: 1fr;
+        grid-template-rows: 320px;
+        height: auto;
+    }
+    .property-gallery-grid-premium .gallery-item:not(.main-item) {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    #view-property-page #page-property-description {
+        column-count: 1 !important;
+    }
+    #view-property-page .page-specs-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
 /* ==========================================================================
    VISTA 5: PORTAFOLIO INMOBILIARIO IA (ESTILOS COMPLETOS)
    ========================================================================== */

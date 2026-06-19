@@ -1173,6 +1173,143 @@
                     </div>
                 </section>
 
+                <!-- VISTA 3.5: DETALLE COMPLETO DE PROPIEDAD DEDICADA -->
+                <section id="view-property-page" class="app-view">
+                    <!-- BOTÓN VOLVER Y TÍTULO DE CONTROL -->
+                    <div style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px;">
+                        <button class="btn btn-secondary font-mono" onclick="switchView('home')" style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; padding: 10px 20px;">
+                            <i data-lucide="arrow-left"></i> VOLVER AL CATÁLOGO
+                        </button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="hud-label-small" id="page-property-tag" style="font-size: 0.65rem; color: var(--cyan); background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); padding: 4px 12px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;"></span>
+                            <button id="page-share-btn" title="Compartir Enlace" class="btn btn-secondary" style="font-size: 0.65rem; padding: 6px 12px; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="share-2" style="width: 12px; height: 12px;"></i> COMPARTIR
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PREMIUM GALLERY GRID (ZILLOW STYLE) -->
+                    <div class="property-gallery-grid-premium" id="page-gallery-grid" style="margin-bottom: 30px;">
+                        <!-- Poblado dinámicamente -->
+                    </div>
+
+                    <!-- CONTENT LAYOUT: DOS COLUMNAS -->
+                    <div class="property-page-columns-layout" style="display: grid; grid-template-columns: 1fr 400px; gap: 30px; align-items: start;">
+                        
+                        <!-- COLUMNA PRINCIPAL (IZQUIERDA) -->
+                        <div class="property-main-details-col" style="display: flex; flex-direction: column; gap: 24px;">
+                            <!-- TÍTULO Y PRECIO -->
+                            <div class="card glassmorphism" style="padding: 24px;">
+                                <h1 id="page-property-title" style="font-size: 1.8rem; font-weight: bold; color: #fff; margin: 0 0 10px 0; font-family: var(--font-sans);"></h1>
+                                <div id="page-property-price" style="font-size: 1.8rem; font-weight: bold; color: var(--neon-emerald); font-family: var(--font-mono);"></div>
+                            </div>
+
+                            <!-- DESCRIPCIÓN EN DOS COLUMNAS -->
+                            <div class="card glassmorphism" style="padding: 24px;">
+                                <h4 style="font-size: 0.8rem; color: var(--cyan); margin: 0 0 12px 0; letter-spacing: 1px; font-family: var(--font-mono);">DESCRIPCIÓN GENERAL</h4>
+                                <p id="page-property-description" style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.8; text-align: justify; margin: 0; column-count: 2; column-gap: 30px;"></p>
+                            </div>
+
+                            <!-- ESPECIFICACIONES TÉCNICAS -->
+                            <div class="card glassmorphism" style="padding: 24px;">
+                                <h4 style="font-size: 0.8rem; color: var(--cyan); margin: 0 0 16px 0; letter-spacing: 1px; font-family: var(--font-mono);">ESPECIFICACIONES TÉCNICAS</h4>
+                                <div class="page-specs-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; font-size: 0.8rem; color: var(--text-secondary);">
+                                    <div class="spec-tile" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <i data-lucide="maximize-2" style="width: 20px; height: 20px; color: var(--cyan);"></i>
+                                        <span style="font-size: 0.65rem; color: var(--text-muted);">Área Construida</span>
+                                        <strong id="page-spec-size" style="color: #fff; font-size: 1.05rem;"></strong>
+                                    </div>
+                                    <div class="spec-tile" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <i data-lucide="bed" style="width: 20px; height: 20px; color: var(--cyan);"></i>
+                                        <span style="font-size: 0.65rem; color: var(--text-muted);">Habitaciones</span>
+                                        <strong id="page-spec-rooms" style="color: #fff; font-size: 1.05rem;"></strong>
+                                    </div>
+                                    <div class="spec-tile" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <i data-lucide="bath" style="width: 20px; height: 20px; color: var(--cyan);"></i>
+                                        <span style="font-size: 0.65rem; color: var(--text-muted);">Baños Completos</span>
+                                        <strong id="page-spec-baths" style="color: #fff; font-size: 1.05rem;"></strong>
+                                    </div>
+                                    <div class="spec-tile" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                        <i data-lucide="car" style="width: 20px; height: 20px; color: var(--cyan);"></i>
+                                        <span style="font-size: 0.65rem; color: var(--text-muted);">Parqueos</span>
+                                        <strong id="page-spec-parks" style="color: #fff; font-size: 1.05rem;"></strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARACTERÍSTICAS Y AMENIDADES -->
+                            <div class="card glassmorphism" style="padding: 24px;">
+                                <h4 style="font-size: 0.8rem; color: var(--cyan); margin: 0 0 12px 0; letter-spacing: 1px; font-family: var(--font-mono);">CARACTERÍSTICAS & AMENIDADES</h4>
+                                <div id="page-advanced-tags" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <!-- Dinámico -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLUMNA LATERAL (DERECHA) - STICKY PANEL -->
+                        <div class="property-sidebar-col" style="display: flex; flex-direction: column; gap: 24px; position: sticky; top: 100px;">
+                            <!-- ACCIÓN DE AUTOTASACIÓN IA -->
+                            <div class="card glassmorphism" style="padding: 24px; text-align: center;">
+                                <h3 style="font-size: 0.9rem; color: #fff; margin: 0 0 10px 0; font-family: var(--font-sans); font-weight: bold;">Valuador Inteligente Integrado</h3>
+                                <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">Analiza esta propiedad al instante con nuestro motor predictivo de plusvalía y rendimiento.</p>
+                                <button class="btn btn-primary btn-block glowing-effect" id="page-autotasar-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i data-lucide="sparkles"></i> VALORAR CON IA
+                                </button>
+                            </div>
+
+                            <!-- WIDGET SIMULADOR HIPOTECARIO PRECALCULADO -->
+                            <div class="card glassmorphism" style="padding: 24px;">
+                                <h3 style="font-size: 0.9rem; color: #fff; margin: 0 0 12px 0; font-family: var(--font-sans); font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                                    <i data-lucide="percent" class="text-cyan" style="width: 16px; height: 16px;"></i> Simulador Hipotecario Rápido
+                                </h3>
+                                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.75rem; color: var(--text-secondary);">
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+                                        <span>Valor de la propiedad:</span>
+                                        <strong id="psim-prop-val" style="color: #fff;">Q0</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+                                        <span>Enganche estimado (20%):</span>
+                                        <strong id="psim-down-val" class="text-cyan">Q0</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+                                        <span>Plazo del crédito:</span>
+                                        <strong style="color: #fff;">20 Años</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">
+                                        <span>Tasa de interés FHA / Com:</span>
+                                        <strong style="color: #fff;">7.26% Anual</strong>
+                                    </div>
+                                    <div class="psim-result-box" style="margin-top: 5px; padding: 12px; background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.15); border-radius: 6px; text-align: center;">
+                                        <span style="font-size: 0.65rem; color: var(--cyan); letter-spacing: 0.5px; font-weight: bold; text-transform: uppercase;">CUOTA MENSUAL ESTIMADA</span>
+                                        <div class="psim-payment font-mono" id="psim-monthly-payment" style="font-size: 1.35rem; font-weight: bold; color: #fff; margin-top: 4px;">Q0</div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-block" id="page-full-simulator-btn" style="width: 100%; font-size: 0.72rem; padding: 8px; margin-top: 5px;">
+                                        AJUSTAR EN EL SIMULADOR COMPLETO
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ASESOR ENCARGADO -->
+                            <div class="card glassmorphism" style="padding: 20px;">
+                                <span class="agent-label" style="font-size: 0.55rem; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">ASESOR ENCARGADO</span>
+                                <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 15px;">
+                                    <div class="agent-logo-wrapper" id="page-agent-logo-container" style="width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--cyan); background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                        <!-- Logo -->
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 3px; text-align: left;">
+                                        <h4 class="agent-name" id="page-agent-name" style="font-size: 0.85rem; font-weight: bold; color: #fff; margin: 0;"></h4>
+                                        <span class="agent-company" id="page-agent-company" style="font-size: 0.65rem; color: var(--text-secondary);"></span>
+                                    </div>
+                                </div>
+                                <a href="#" id="page-whatsapp-btn" target="_blank" class="btn-whatsapp" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border-radius: 6px; font-size: 0.78rem; font-weight: bold; padding: 12px 18px; width: 100%; box-sizing: border-box; text-align: center; transition: all 0.3s; box-shadow: 0 0 10px rgba(37, 211, 102, 0.2);">
+                                    <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> CHATEAR POR WHATSAPP
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
                 <!-- VISTA 4: TERMINAL DE INVERSIÓN -->
                 <section id="view-investor" class="app-view" style="position: relative;">
                     <!-- INSIGNIA DE VISTA PREVIA DE MARKETING TEMPORAL -->
@@ -4272,7 +4409,11 @@
                 </div>
                 
                 <!-- ACCIÓN DE TASACIÓN INTEGRADA -->
-                <button class="btn btn-primary btn-block glowing-effect" id="modal-autotasar-btn" style="margin-top: 18px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <button class="btn btn-secondary btn-block glowing-effect-purple" id="modal-ficha-completa-btn" style="margin-top: 18px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i data-lucide="external-link"></i> VER FICHA COMPLETA Y SIMULACIÓN
+                </button>
+                
+                <button class="btn btn-primary btn-block glowing-effect" id="modal-autotasar-btn" style="margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
                     <i data-lucide="sparkles"></i> VALORAR ESTE INMUEBLE CON IA
                 </button>
             </div>
