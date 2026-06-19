@@ -1244,6 +1244,20 @@
                                     <!-- Dinámico -->
                                 </div>
                             </div>
+
+                            <!-- ANALIZADOR DE SUGERENCIAS PRIVADO -->
+                            <div class="card glassmorphism" style="padding: 24px;">
+                                <h4 style="font-size: 0.8rem; color: var(--cyan); margin: 0 0 8px 0; letter-spacing: 1px; font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;">
+                                    <i data-lucide="message-square-quote" style="width: 16px; height: 16px;"></i> ANALIZADOR DE SUGERENCIAS
+                                </h4>
+                                <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px;">¿Tienes observaciones o comentarios sobre esta propiedad? Envía una nota directamente al asesor de forma 100% privada y segura.</p>
+                                <form id="suggestions-submit-form" onsubmit="submitPropertySuggestion(event)" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <textarea id="suggestion-textarea" required placeholder="Escribe tu sugerencia, observación o consulta aquí..." rows="3" style="width: 100%; font-size: 0.78rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 10px; color: #fff; outline: none; font-family: var(--font-sans); resize: none;"></textarea>
+                                    <button type="submit" class="btn btn-purple" style="align-self: flex-end; padding: 8px 20px; font-size: 0.75rem;">
+                                        <i data-lucide="send" style="width: 12px; height: 12px;"></i> ENVIAR SUGERENCIA PRIVADA
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- COLUMNA LATERAL (DERECHA) - STICKY PANEL -->
@@ -1888,6 +1902,23 @@
                                 </div>
                                 <div class="commercial-section-body" id="b2b-profile-card-body" style="padding: 15px 5px;">
                                     <!-- Poblado dinámicamente con los datos de sesión del agente -->
+                                </div>
+                            </div>
+
+                            <!-- Columna 2: Buzón de Sugerencias del Analizador -->
+                            <div class="card glassmorphism border-purple" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid var(--neon-purple) !important; border-color: rgba(191, 90, 242, 0.25) !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.08) !important;">
+                                <div class="card-header border-purple" style="border-bottom: 1px solid rgba(191, 90, 242, 0.15) !important;">
+                                    <div class="header-icon purple" style="color: var(--neon-purple) !important; border-color: rgba(191, 90, 242, 0.3) !important;"><i data-lucide="message-square-quote"></i></div>
+                                    <h2 style="color: var(--neon-purple) !important;">Analizador de Sugerencias Recibidas</h2>
+                                </div>
+                                <div class="commercial-section-body" style="padding: 15px; height: 310px; overflow-y: auto;">
+                                    <div id="suggestions-empty-state" class="font-mono text-muted" style="text-align: center; padding-top: 50px; font-size: 0.72rem; text-transform: uppercase;">
+                                        <i data-lucide="inbox" style="width: 32px; height: 32px; margin: 0 auto 10px; display: block; opacity: 0.5;"></i>
+                                        Sin sugerencias acumuladas de clientes
+                                    </div>
+                                    <div id="suggestions-agent-list" style="display: flex; flex-direction: column; gap: 12px;">
+                                        <!-- Sugerencias dinámicas -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4807,6 +4838,14 @@
             </div>
         </div>
         <div class="assistant-tooltip">¡Hola! Haz clic para explicarte esta sección.</div>
+    </div>
+
+    <!-- MODAL LIGHTBOX DE IMÁGENES (PANTALLA COMPLETA) -->
+    <div id="image-lightbox-modal" class="lightbox-modal hidden" onclick="if(event.target === this || event.target.classList.contains('lightbox-close')) closeImageLightbox();">
+        <button class="lightbox-close" onclick="closeImageLightbox()">&times;</button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Vista ampliada de propiedad">
+        </div>
     </div>
 
     <script src="mockData.js?v=10.12"></script>

@@ -4369,6 +4369,7 @@ function initCommercialView() {
     updateSaasMetricsHUD();
     updatePromoPropertySelect();
     renderB2bInventory();
+    loadAgentSuggestions();
     updateB2bSubscriptionPendingBanner();
     syncPendingPaymentRequests();
 
@@ -14359,6 +14360,13 @@ function showPropertyPage(zoneKey, index) {
     const prop = PORTFOLIO_DATABASE[zoneKey]?.[index];
     if (!prop) return;
 
+    // Guardar detalles activos para el analizador de sugerencias
+    window.activePropertyPageDetails = {
+        id: prop.id || `ref-${zoneKey}-${index}`,
+        title: prop.title,
+        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || (loggedInB2bClient ? loggedInB2bClient.email.toLowerCase() : 'admin@valorgt.com')
+    };
+
     // Configurar metadatos del encabezado
     document.getElementById('page-property-tag').innerText = prop.tag;
     document.getElementById('page-property-title').innerText = prop.title;
@@ -14425,6 +14433,8 @@ function showPropertyPage(zoneKey, index) {
         // Crear el layout de grilla premium
         const mainItem = document.createElement('div');
         mainItem.className = 'gallery-item main-item';
+        mainItem.style.cursor = 'pointer';
+        mainItem.onclick = () => openImageLightbox(photos[0]);
         mainItem.innerHTML = `<img src="${photos[0]}" alt="${prop.title}">`;
         galleryArea.appendChild(mainItem);
 
@@ -14432,7 +14442,10 @@ function showPropertyPage(zoneKey, index) {
         for (let i = 1; i < Math.min(photos.length, 5); i++) {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${photos[i]}" alt="${prop.title}">`;
+            item.style.cursor = 'pointer';
+            const photoUrl = photos[i];
+            item.onclick = () => openImageLightbox(photoUrl);
+            item.innerHTML = `<img src="${photoUrl}" alt="${prop.title}">`;
             galleryArea.appendChild(item);
         }
 
@@ -14441,6 +14454,8 @@ function showPropertyPage(zoneKey, index) {
             for (let i = 1; i <= 4; i++) {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
+                item.style.cursor = 'pointer';
+                item.onclick = () => openImageLightbox(photos[0]);
                 item.innerHTML = `<img src="${photos[0]}" alt="${prop.title}" style="opacity: 0.65; filter: blur(0.5px);">`;
                 galleryArea.appendChild(item);
             }
@@ -14449,7 +14464,10 @@ function showPropertyPage(zoneKey, index) {
             for (let i = 0; i < missing; i++) {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
-                item.innerHTML = `<img src="${photos[i % photos.length]}" alt="${prop.title}" style="opacity: 0.85;">`;
+                item.style.cursor = 'pointer';
+                const photoUrl = photos[i % photos.length];
+                item.onclick = () => openImageLightbox(photoUrl);
+                item.innerHTML = `<img src="${photoUrl}" alt="${prop.title}" style="opacity: 0.85;">`;
                 galleryArea.appendChild(item);
             }
         }
@@ -14563,4 +14581,186 @@ window.addEventListener('hashchange', () => {
         switchView('home');
     }
 });
+
+/**
+ * Abre el Lightbox de imágenes de pantalla completa
+ */
+function openImageLightbox(src) {
+    const modal = document.getElementById('image-lightbox-modal');
+    const img = document.getElementById('lightbox-img');
+    if (modal && img) {
+        img.src = src;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Evitar scroll
+        
+        // Agregar listener para tecla ESC
+        window.addEventListener('keydown', handleLightboxEscKey);
+    }
+}
+
+/**
+ * Cierra el Lightbox
+ */
+function closeImageLightbox() {
+    const modal = document.getElementById('image-lightbox-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = ''; // Restaurar scroll
+        window.removeEventListener('keydown', handleLightboxEscKey);
+    }
+}
+
+/**
+ * Manejador de la tecla ESC para cerrar el Lightbox
+ */
+function handleLightboxEscKey(e) {
+    if (e.key === 'Escape') {
+        closeImageLightbox();
+    }
+}
+
+/**
+ * Registra y envía una sugerencia/observación privada de propiedad
+ */
+async function submitPropertySuggestion(event) {
+    if (event) event.preventDefault();
+    const textarea = document.getElementById('suggestion-textarea');
+    if (!textarea || !textarea.value.trim()) return;
+
+    const suggestionText = textarea.value.trim();
+    const propDetails = window.activePropertyPageDetails;
+    if (!propDetails) {
+        showCyberToast("Error: No hay detalles de propiedad activos", "x-circle");
+        return;
+    }
+
+    const suggestionData = {
+        property_id: propDetails.id,
+        property_title: propDetails.title,
+        agent_email: propDetails.agentEmail.toLowerCase(),
+        suggestion: suggestionText,
+        created_at: new Date().toISOString()
+    };
+
+    try {
+        let success = false;
+        if (isSupabaseActive && supabaseClient) {
+            const { error } = await supabaseClient
+                .from('property_suggestions')
+                .insert([suggestionData]);
+            if (!error) success = true;
+        }
+
+        // Guardar también localmente para demo / redundancia
+        let localSuggestions = JSON.parse(localStorage.getItem('valorgt_suggestions_db') || '[]');
+        localSuggestions.push(suggestionData);
+        localStorage.setItem('valorgt_suggestions_db', JSON.stringify(localSuggestions));
+
+        textarea.value = ''; // Limpiar campo
+        showCyberToast("¡SUGERENCIA ENVIADA DE FORMA PRIVADA!", "check-circle");
+
+        // Si el asesor está en su consola, recargar la grilla de sugerencias
+        if (document.getElementById('view-commercial').classList.contains('active')) {
+            loadAgentSuggestions();
+        }
+    } catch (err) {
+        console.error("Error al enviar sugerencia:", err);
+        showCyberToast("Sugerencia registrada localmente", "check-circle");
+    }
+}
+
+/**
+ * Carga las sugerencias privadas recibidas por el asesor logueado
+ */
+async function loadAgentSuggestions() {
+    if (!loggedInB2bClient) return;
+    const agentEmail = loggedInB2bClient.email.toLowerCase();
+    const suggestionsList = document.getElementById('suggestions-agent-list');
+    const emptyState = document.getElementById('suggestions-empty-state');
+    if (!suggestionsList) return;
+
+    let suggestions = [];
+
+    // Cargar de Supabase
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('property_suggestions')
+                .select('*')
+                .eq('agent_email', agentEmail)
+                .order('created_at', { ascending: false });
+            if (!error && data) {
+                suggestions = data;
+            }
+        } catch (e) {
+            console.error("Error consultando Supabase:", e);
+        }
+    }
+
+    // Cargar del localStorage
+    try {
+        const localSuggestions = JSON.parse(localStorage.getItem('valorgt_suggestions_db') || '[]');
+        const filteredLocal = localSuggestions.filter(s => s.agent_email === agentEmail);
+        filteredLocal.forEach(ls => {
+            if (!suggestions.some(s => s.property_id === ls.property_id && s.suggestion === ls.suggestion)) {
+                suggestions.push(ls);
+            }
+        });
+    } catch (e) {
+        console.error(e);
+    }
+
+    // Ordenar por fecha decreciente
+    suggestions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    if (suggestions.length === 0) {
+        suggestionsList.innerHTML = '';
+        if (emptyState) emptyState.classList.remove('hidden');
+    } else {
+        if (emptyState) emptyState.classList.add('hidden');
+        suggestionsList.innerHTML = suggestions.map((s, idx) => `
+            <div class="suggestion-item" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; position: relative; display: flex; flex-direction: column; gap: 6px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <span style="font-size: 0.65rem; color: var(--cyan); font-weight: bold; font-family: var(--font-mono);">${s.property_title}</span>
+                    <button onclick="dismissSuggestion('${s.id || ''}', '${s.property_id}', \`${s.suggestion.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)" title="Marcar como leída" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; padding: 2px;">
+                        <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
+                <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; margin: 0;">"${s.suggestion}"</p>
+                <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">${new Date(s.created_at).toLocaleString()}</span>
+            </div>
+        `).join('');
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+}
+
+/**
+ * Archiva o elimina una sugerencia
+ */
+async function dismissSuggestion(id, propId, suggestionText) {
+    try {
+        let localSuggestions = JSON.parse(localStorage.getItem('valorgt_suggestions_db') || '[]');
+        localSuggestions = localSuggestions.filter(s => !(s.property_id === propId && s.suggestion === suggestionText));
+        localStorage.setItem('valorgt_suggestions_db', JSON.stringify(localSuggestions));
+    } catch (e) {
+        console.error(e);
+    }
+
+    if (isSupabaseActive && supabaseClient && id) {
+        try {
+            await supabaseClient
+                .from('property_suggestions')
+                .delete()
+                .eq('id', id);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    showCyberToast("SUGERENCIA LEÍDA Y ARCHIVADA", "check-circle");
+    loadAgentSuggestions();
+}
 
