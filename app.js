@@ -1460,11 +1460,24 @@ function updateB2bFieldVisibility() {
 
     // Reglas para el grid principal B2B
     const b2bMainGroups = {
-        'pub-size-group': cat !== 'Terreno',
+        'pub-size-group': true, // Mantener visible el tamaño siempre
         'pub-beds-group': ['Casa', 'Apartamento'].includes(cat),
         'pub-baths-group': cat !== 'Terreno',
         'pub-parks-group': cat !== 'Terreno'
     };
+
+    // Actualizar etiquetas dinámicas para el tamaño
+    const pubSizeLabel = document.querySelector('#pub-size-group label');
+    const pubSizeInput = document.getElementById('pub-size');
+    if (pubSizeLabel && pubSizeInput) {
+        if (cat === 'Terreno') {
+            pubSizeLabel.innerText = "Varas Cuadradas (vr²)";
+            pubSizeInput.placeholder = "800";
+        } else {
+            pubSizeLabel.innerText = "Metros Cuadrados (M²)";
+            pubSizeInput.placeholder = "185";
+        }
+    }
 
     Object.keys(b2bMainGroups).forEach(id => {
         const el = document.getElementById(id);
@@ -5227,11 +5240,7 @@ async function publishAgentProperty(event) {
     const type = document.getElementById('pub-type').value;
     const locationKey = document.getElementById('pub-location').value;
     const priceRaw = parseFloat(document.getElementById('pub-price').value);
-    let size = parseFloat(document.getElementById('pub-size').value);
-    if (category === 'Terreno') {
-        const landAreaInput = document.getElementById('pub-prop-land-area');
-        size = parseFloat(landAreaInput ? landAreaInput.value : '0') || 0;
-    }
+    let size = parseFloat(document.getElementById('pub-size').value) || 0;
     const rooms = parseInt(document.getElementById('pub-beds').value) || 0;
     const bathrooms = parseFloat(document.getElementById('pub-baths').value) || 0;
     const parkings = parseInt(document.getElementById('pub-parks').value) || 0;
@@ -5269,8 +5278,8 @@ async function publishAgentProperty(event) {
     // Parámetros avanzados del Acordeón B2B
     const city = document.getElementById('pub-prop-city') ? document.getElementById('pub-prop-city').value : 'Guatemala';
     const residential = document.getElementById('pub-prop-residential') ? document.getElementById('pub-prop-residential').value.trim() : '';
-    const landArea = parseFloat(document.getElementById('pub-prop-land-area') ? document.getElementById('pub-prop-land-area').value : '0') || 0;
-    const landUnit = document.getElementById('pub-prop-land-unit') ? document.getElementById('pub-prop-land-unit').value : 'v2';
+    const landArea = category === 'Terreno' ? size : (parseFloat(document.getElementById('pub-prop-land-area') ? document.getElementById('pub-prop-land-area').value : '0') || 0);
+    const landUnit = category === 'Terreno' ? 'v2' : (document.getElementById('pub-prop-land-unit') ? document.getElementById('pub-prop-land-unit').value : 'v2');
     const secondaryRooms = parseInt(document.getElementById('pub-room-secondary-count') ? document.getElementById('pub-room-secondary-count').value : '0') || 0;
     const fullBathrooms = parseInt(document.getElementById('pub-bath-full-count') ? document.getElementById('pub-bath-full-count').value : '0') || 0;
     const parkingType = document.getElementById('pub-parking-type') ? document.getElementById('pub-parking-type').value : 'techados';
