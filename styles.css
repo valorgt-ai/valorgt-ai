@@ -1278,7 +1278,7 @@ select option {
 .legend-color.orange { background-color: var(--orange); box-shadow: 0 0 5px var(--orange); }
 .legend-color.yellow { background-color: var(--gold); box-shadow: 0 0 5px var(--gold); }
 .legend-color.green { background-color: var(--green); box-shadow: 0 0 5px var(--green); }
-.legend-color.blue { background-color: var(--blue); box-shadow: 0 0 5px var(--blue); }
+.legend-color.blue { background-color: var(--cyan); box-shadow: 0 0 5px var(--cyan); }
 
 /* LEAFLET POPUPS CUSTOMS TERMINAL ESTILO */
 .leaflet-popup-content-wrapper {
