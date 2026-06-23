@@ -6125,7 +6125,7 @@ function updateB2bSubscriptionPendingBanner() {
                     Hemos recibido tu comprobante de transferencia y tu cuenta de agente se encuentra bajo auditoría. Usualmente se completa en un plazo de <strong>1 a 24 horas hábiles</strong>.
                 </p>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20consultar%20el%20estado%20de%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(37, 211, 102, 0.2);">
+                    <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20quisiera%20consultar%20el%20estado%20de%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(37, 211, 102, 0.2);">
                         <i data-lucide="message-square" style="width: 12px; height: 12px;"></i> Contactar Soporte WhatsApp (+502 4041-6471)
                     </a>
                 </div>
@@ -6143,7 +6143,7 @@ function updateB2bSubscriptionPendingBanner() {
                     <button onclick="openPlanPayment('${((loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista') ? 'premium' : (activeB2bPlan || 'pro'))}')" style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--cyan) 0%, #0066ff 100%); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 8px rgba(0,240,255,0.25);">
                         <i data-lucide="upload" style="width: 12px; height: 12px;"></i> Subir Comprobante de Pago
                     </button>
-                    <a href="https://wa.me/50240416471?text=Hola%20Toomarket%2C%20quisiera%20ayuda%20con%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text-secondary); text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s;">
+                    <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20quisiera%20ayuda%20con%20mi%20suscripci%C3%B3n%20para%20la%20cuenta%20${encodeURIComponent(loggedInB2bClient.email)}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text-secondary); text-decoration: none; border-radius: 4px; font-size: 0.65rem; font-weight: bold; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s;">
                         <i data-lucide="message-square" style="width: 12px; height: 12px;"></i> Contactar Soporte
                     </a>
                 </div>
@@ -6360,8 +6360,8 @@ async function processB2bTransferPayment(event) {
             if (amountValEl) amountValEl.innerText = `Q${formatNumber(totalGTQ.toFixed(2))}`;
             
             // 5. Configurar el enlace de notificación de WhatsApp al admin
-            const whatsappMsg = `Hola Toomarket, acabo de subir mi comprobante de transferencia bancaria en ValorGT AI.\n\nDetalles de mi cuenta:\n- Asesor: ${request.clientName}\n- Correo: ${request.clientEmail}\n- Concepto: ${request.concept}\n- Plazo: ${months} Mes(es)\n- Total Transferido: Q${totalGTQ.toFixed(2)} (Ref: ${txnId}).\n\nPor favor verificar mi transferencia.`;
-            const whatsappUrl = `https://wa.me/50240416471?text=${encodeURIComponent(whatsappMsg)}`;
+            const whatsappMsg = `Hola ValorGT, acabo de subir mi comprobante de transferencia bancaria en ValorGT AI.\n\nDetalles de mi cuenta:\n- Asesor: ${request.clientName}\n- Correo: ${request.clientEmail}\n- Concepto: ${request.concept}\n- Plazo: ${months} Mes(es)\n- Total Transferido: Q${totalGTQ.toFixed(2)} (Ref: ${txnId}).\n\nPor favor verificar mi transferencia.`;
+            const whatsappUrl = `https://wa.me/50247996413?text=${encodeURIComponent(whatsappMsg)}`;
             
             const waBtn = document.getElementById('success-whatsapp-admin-btn');
             if (waBtn) {
