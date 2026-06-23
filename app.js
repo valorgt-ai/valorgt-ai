@@ -14733,25 +14733,30 @@ async function loadAgentSuggestions() {
     // Cargar de Supabase
     if (isSupabaseActive && supabaseClient) {
         try {
+            console.log(`🔍 [Buzón] Consultando sugerencias de Supabase para el email: "${agentEmail}"`);
             const { data, error } = await supabaseClient
                 .from('property_suggestions')
                 .select('*')
-                .eq('agent_email', agentEmail)
+                .eq('agent_email', agentEmail.trim())
                 .order('created_at', { ascending: false });
             if (!error && data) {
+                console.log(`📊 [Buzón] ${data.length} sugerencias encontradas en Supabase.`);
                 suggestions = data;
+            } else if (error) {
+                console.error("❌ [Buzón] Error consultando Supabase:", error);
             }
         } catch (e) {
-            console.error("Error consultando Supabase:", e);
+            console.error("❌ [Buzón] Excepción consultando Supabase:", e);
         }
     }
 
     // Cargar del localStorage
     try {
         const localSuggestions = JSON.parse(localStorage.getItem('valorgt_suggestions_db') || '[]');
-        const filteredLocal = localSuggestions.filter(s => s.agent_email === agentEmail);
+        const filteredLocal = localSuggestions.filter(s => s.agent_email.trim().toLowerCase() === agentEmail.trim());
+        console.log(`📦 [Buzón] ${filteredLocal.length} sugerencias encontradas localmente en caché.`);
         filteredLocal.forEach(ls => {
-            if (!suggestions.some(s => s.property_id === ls.property_id && s.suggestion === ls.suggestion)) {
+            if (!suggestions.some(s => s.property_id === ls.property_id && s.suggestion.trim() === ls.suggestion.trim())) {
                 suggestions.push(ls);
             }
         });
