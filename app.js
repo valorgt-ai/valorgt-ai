@@ -7432,6 +7432,12 @@ async function handleRegistrationFormSubmit(event) {
 function selectSignupPlan(planKey, priceUSD) {
     selectedSignupPlanKey = planKey;
     
+    // Sincronizar select oculto de registro
+    const planSelect = document.getElementById('com-signup-plan');
+    if (planSelect) {
+        planSelect.value = planKey;
+    }
+    
     let priceGTQ = 240; // Default Pro
     priceUSD = 31;
     if (planKey === 'basico') {
