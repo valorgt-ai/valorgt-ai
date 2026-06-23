@@ -1727,7 +1727,7 @@ function renderFeaturedProperties(zoneKey) {
                         return advancedTagsHTML;
                     })()}
                     <div class="property-specs">
-                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
+                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
                         <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
                         <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
                         <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings || 0} Pq</span>
@@ -1923,7 +1923,7 @@ function renderCatalogProperties() {
                         return advancedTagsHTML;
                     })()}
                     <div class="property-specs">
-                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
+                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
                         <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
                         <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
                         <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
@@ -7854,7 +7854,7 @@ function renderB2bInventory(filter = 'todos') {
                         return advancedTagsHTML;
                     })()}
                     <div class="inv-specs" style="margin-top: 5px; display: flex; gap: 6px; font-size: 0.55rem; color: var(--text-muted);">
-                        <span>📐 M²: ${prop.size}</span>
+                        <span>📐 ${(prop.category || '').toLowerCase() === 'terreno' ? 'VR²' : 'M²'}: ${prop.size}</span>
                         <span>🚗 Pq: ${prop.parkings}</span>
                         <span>🛡️ Smart IoT</span>
                     </div>
@@ -8489,7 +8489,7 @@ function renderAdminReferenceDatabase() {
                 <span class="badge-lbl" style="font-size: 0.7rem; color: #fff;">${prop.type || 'venta'}</span>
             </td>
             <td style="padding: 8px; text-align: right; vertical-align: middle; color: var(--text-secondary);">
-                ${prop.size || 0} m²
+                ${prop.size || 0} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}
             </td>
             <td style="padding: 8px; text-align: right; vertical-align: middle; font-weight: bold; color: var(--cyan);">
                 ${formattedPrice}
@@ -11365,7 +11365,8 @@ function openPropertyDetailModal(zoneKey, index) {
     document.getElementById('modal-property-description').innerText = desc;
 
     // Configurar especificaciones base
-    document.getElementById('modal-spec-size').innerText = prop.size;
+    const modalUnit = (prop.category || '').toLowerCase() === 'terreno' ? ' vr²' : ' m²';
+    document.getElementById('modal-spec-size').innerText = `${formatNumber(prop.size)}${modalUnit}`;
     document.getElementById('modal-spec-rooms').innerText = prop.rooms;
     document.getElementById('modal-spec-baths').innerText = prop.bathrooms;
     document.getElementById('modal-spec-parks').innerText = prop.parkings;
@@ -13933,7 +13934,7 @@ function renderHomeCatalog() {
                         <i data-lucide="map-pin" class="tiny-icon"></i> ${propZoneName}
                     </div>
                     <div class="property-specs">
-                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} m²</span>
+                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
                         <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
                         <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
                         <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
@@ -14407,7 +14408,12 @@ function showPropertyPage(zoneKey, index) {
     document.getElementById('page-property-description').innerText = desc;
 
     // Especificaciones técnicas
-    document.getElementById('page-spec-size').innerText = prop.size;
+    const pageUnit = (prop.category || '').toLowerCase() === 'terreno' ? ' vr²' : ' m²';
+    document.getElementById('page-spec-size').innerText = `${formatNumber(prop.size)}${pageUnit}`;
+    const pageLabelEl = document.getElementById('page-spec-size-label');
+    if (pageLabelEl) {
+        pageLabelEl.innerText = (prop.category || '').toLowerCase() === 'terreno' ? 'Área del Terreno' : 'Área Construida';
+    }
     document.getElementById('page-spec-rooms').innerText = prop.rooms;
     document.getElementById('page-spec-baths').innerText = prop.bathrooms;
     document.getElementById('page-spec-parks').innerText = prop.parkings;
