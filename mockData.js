@@ -593,7 +593,7 @@ const PORTFOLIO_DATABASE = {
             priceUSD: 950000,
             size: 1200, rooms: 0, bathrooms: 0, parkings: 0, garden: 0, study: false, familyRoom: false,
             amenities: ["amenity-security"],
-            photos: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=85"],
+            photos: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=85","https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=800&q=85"],
             photo: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=85",
             badge: "ZONA PRIME",
             category: "Terreno",
