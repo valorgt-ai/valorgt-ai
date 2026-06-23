@@ -14668,10 +14668,18 @@ async function submitPropertySuggestion(event) {
         return;
     }
 
+    const targetEmail = propDetails.agentEmail ? propDetails.agentEmail.toLowerCase() : 'admin@valorgt.com';
+    console.log("📨 [Sugerencias] Preparando envío de sugerencia:", {
+        property_id: propDetails.id,
+        property_title: propDetails.title,
+        agent_email: targetEmail,
+        suggestion: suggestionText
+    });
+
     const suggestionData = {
         property_id: propDetails.id,
         property_title: propDetails.title,
-        agent_email: propDetails.agentEmail.toLowerCase(),
+        agent_email: targetEmail,
         suggestion: suggestionText,
         created_at: new Date().toISOString()
     };
@@ -14679,10 +14687,17 @@ async function submitPropertySuggestion(event) {
     try {
         let success = false;
         if (isSupabaseActive && supabaseClient) {
-            const { error } = await supabaseClient
+            console.log("⚡ [Sugerencias] Intentando insertar en Supabase...");
+            const { data, error } = await supabaseClient
                 .from('property_suggestions')
-                .insert([suggestionData]);
-            if (!error) success = true;
+                .insert([suggestionData])
+                .select();
+            if (error) {
+                console.error("❌ [Sugerencias] Error de Supabase al insertar:", error);
+            } else {
+                console.log("✅ [Sugerencias] Insertado con éxito en Supabase:", data);
+                success = true;
+            }
         }
 
         // Guardar también localmente para demo / redundancia
