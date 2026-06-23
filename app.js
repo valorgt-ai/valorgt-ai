@@ -7811,7 +7811,7 @@ function renderB2bInventory(filter = 'todos') {
         card.setAttribute('onclick', `openPropertyDetailModal('${prop.location}', ${dbIndex})`);
         card.style.cursor = 'pointer';
         card.innerHTML = `
-            ${renderCardImageHTML(prop, 'inv-img-wrap', '120px', isSponsored, '', true)}
+            ${renderCardImageHTML(prop, 'inv-img-wrap', '180px', isSponsored, '', true)}
             <div class="inv-info">
                 <div>
                     <h4 class="inv-title" title="${prop.title}">${prop.title}</h4>

@@ -3920,7 +3920,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .inv-img-wrap {
-    height: 120px;
+    height: 180px;
     position: relative;
     overflow: hidden;
 }
