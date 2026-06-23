@@ -14388,7 +14388,7 @@ function showPropertyPage(zoneKey, index) {
     window.activePropertyPageDetails = {
         id: prop.id || `ref-${zoneKey}-${index}`,
         title: prop.title,
-        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || (loggedInB2bClient ? loggedInB2bClient.email.toLowerCase() : 'admin@valorgt.com')
+        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || 'admin@valorgt.com'
     };
 
     // Configurar metadatos del encabezado
