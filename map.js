@@ -897,11 +897,48 @@ function drawAgentProperties() {
                     const convertedPrice = prop.priceUSD * conversion;
                     
                     const isRef = prop.isReferenceData === true;
-                    const circleColor = isRef ? '#00ff80' : '#00f0ff'; // Verde esmeralda para referencia, Cián para agente
-                    const pulseColor = isRef ? 'rgba(0, 255, 128, 0.4)' : 'rgba(0, 240, 255, 0.4)';
-                    const dotColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
+                    const zoneKey = prop.location || 'zona10';
+                    const zoneData = typeof ZONES_DATABASE !== 'undefined' ? ZONES_DATABASE[zoneKey] : null;
+                    const zoneColorName = zoneData ? zoneData.color : 'blue';
+
+                    // Colores base (Verde para referencia, Cián para agente)
+                    let circleColor = isRef ? '#00ff80' : '#00f0ff';
+                    let pulseColor = isRef ? 'rgba(0, 255, 128, 0.4)' : 'rgba(0, 240, 255, 0.4)';
+                    let dotColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
+                    let beaconClass = isRef ? 'beacon-green' : 'beacon-cyan';
+                    let borderClassColor = isRef ? '#00ff80' : '#00f0ff';
+
+                    // Sincronizar color con índice de plusvalía del sector
+                    if (!isRef && zoneColorName) {
+                        if (zoneColorName === 'red') {
+                            circleColor = '#ff2d55';
+                            pulseColor = 'rgba(255, 45, 85, 0.4)';
+                            dotColor = '#ff2d55';
+                            beaconClass = 'beacon-pink';
+                            borderClassColor = '#ff2d55';
+                        } else if (zoneColorName === 'orange') {
+                            circleColor = 'var(--orange)';
+                            pulseColor = 'rgba(255, 159, 10, 0.4)';
+                            dotColor = 'var(--orange)';
+                            beaconClass = 'beacon-orange';
+                            borderClassColor = 'var(--orange)';
+                        } else if (zoneColorName === 'yellow' || zoneColorName === 'gold') {
+                            circleColor = '#ffd60a';
+                            pulseColor = 'rgba(255, 214, 10, 0.4)';
+                            dotColor = '#ffd60a';
+                            beaconClass = 'beacon-yellow';
+                            borderClassColor = '#ffd60a';
+                        } else if (zoneColorName === 'blue') {
+                            circleColor = '#00f0ff';
+                            pulseColor = 'rgba(0, 240, 255, 0.4)';
+                            dotColor = 'var(--cyan)';
+                            beaconClass = 'beacon-cyan';
+                            borderClassColor = '#00f0ff';
+                        }
+                    }
+
                     const badgeTitle = isRef ? '📍 CALIBRACIÓN IA' : '⭐ SOCIO PREMIUM';
-                    const badgeStyleColor = isRef ? 'var(--neon-emerald)' : 'var(--cyan)';
+                    const badgeStyleColor = dotColor;
 
                     // 1. Círculo de calor
                     const agentCircle = L.circle([prop.lat, prop.lng], {
@@ -924,9 +961,9 @@ function drawAgentProperties() {
                     const agentIcon = L.divIcon({
                         className: 'radar-beacon-container',
                         html: `
-                            <div class="radar-beacon ${isRef ? 'beacon-emerald' : 'beacon-cyan'}" style="width: 32px; height: 32px;">
+                            <div class="radar-beacon ${beaconClass}" style="width: 32px; height: 32px;">
                                 <div class="beacon-pulse" style="width: 32px; height: 32px; animation-duration: 1.8s; background: ${pulseColor};"></div>
-                                <div class="beacon-dot" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background-color: ${dotColor}; border: 1.5px solid ${isRef ? '#00ff80' : '#00f0ff'}; border-radius: 50%; box-shadow: 0 0 12px ${dotColor}; z-index: 10;">
+                                <div class="beacon-dot" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background-color: ${dotColor}; border: 1.5px solid ${borderClassColor}; border-radius: 50%; box-shadow: 0 0 12px ${dotColor}; z-index: 10;">
                                     ${propSvg}
                                 </div>
                             </div>
