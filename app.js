@@ -9982,7 +9982,8 @@ async function _syncSupabaseDataInternal() {
                         sponsored: prop.sponsored,
                         lat: parseFloat(prop.latitude),
                         lng: parseFloat(prop.longitude),
-                        agent_id: prop.agent_id
+                        agent_id: prop.agent_id,
+                        agentEmail: prop.agent_email || (prop.metadata && prop.metadata.agentEmail) || null
                     };
 
                     allRemoteFormatted.push(formattedProp);
