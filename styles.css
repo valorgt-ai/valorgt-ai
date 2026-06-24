@@ -6970,8 +6970,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .lightbox-content img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 98vw;
+    height: 95vh;
+    max-width: 98vw;
+    max-height: 95vh;
     object-fit: contain;
     border-radius: 8px;
     border: 1.5px solid rgba(255, 255, 255, 0.08);
