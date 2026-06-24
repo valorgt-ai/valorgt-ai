@@ -11350,6 +11350,12 @@ function openPropertyDetailModal(zoneKey, index) {
     if (!modal) return;
 
     // Configurar metadatos y título
+    window.activePropertyPageDetails = {
+        id: prop.id || `ref-${zoneKey}-${index}`,
+        title: prop.title,
+        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || 'admin@valorgt.com'
+    };
+
     document.getElementById('modal-property-tag').innerText = prop.tag;
     document.getElementById('modal-property-title').innerText = prop.title;
     
