@@ -5106,7 +5106,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .cyber-modal-content {
     width: 92%;
-    max-width: 580px;
+    max-width: 700px;
     max-height: 90vh;
     background: rgba(18, 22, 32, 0.88) !important;
     border: 1px solid rgba(0, 240, 255, 0.28) !important;
