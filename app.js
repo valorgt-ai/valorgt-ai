@@ -11422,7 +11422,7 @@ function openPropertyDetailModal(zoneKey, index) {
         galleryArea.innerHTML = `
             <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 380px; border-radius: 12px 12px 0 0;">
                 <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
-                    ${photos.map(p => `<img src="${p}" alt="${prop.title}" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover;">`).join('')}
+                    ${photos.map(p => `<img src="${p}" alt="${prop.title}" onclick="openImageLightbox('${p}')" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover; cursor: pointer;">`).join('')}
                 </div>
                 <!-- Botones del slider -->
                 <button class="slider-btn prev" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', -1, ${photos.length})" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
@@ -11437,7 +11437,7 @@ function openPropertyDetailModal(zoneKey, index) {
     } else {
         galleryArea.innerHTML = `
             <div style="width: 100%; height: 380px; overflow: hidden; border-radius: 12px 12px 0 0; position: relative;">
-                <img src="${prop.photo}" alt="${prop.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="${prop.photo}" alt="${prop.title}" onclick="openImageLightbox('${prop.photo}')" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
             </div>
         `;
     }
