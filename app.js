@@ -11353,7 +11353,8 @@ function openPropertyDetailModal(zoneKey, index) {
     window.activePropertyPageDetails = {
         id: prop.id || `ref-${zoneKey}-${index}`,
         title: prop.title,
-        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || 'admin@valorgt.com'
+        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || 'admin@valorgt.com',
+        agentId: prop.agent_id || null
     };
 
     document.getElementById('modal-property-tag').innerText = prop.tag;
@@ -14395,7 +14396,8 @@ function showPropertyPage(zoneKey, index) {
     window.activePropertyPageDetails = {
         id: prop.id || `ref-${zoneKey}-${index}`,
         title: prop.title,
-        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || 'admin@valorgt.com'
+        agentEmail: prop.agentEmail || (prop.metadata && prop.metadata.agentEmail) || 'admin@valorgt.com',
+        agentId: prop.agent_id || null
     };
 
     // Configurar metadatos del encabezado
@@ -14674,7 +14676,27 @@ async function submitPropertySuggestion(event) {
         return;
     }
 
-    const targetEmail = propDetails.agentEmail ? propDetails.agentEmail.toLowerCase() : 'admin@valorgt.com';
+    let targetEmail = propDetails.agentEmail ? propDetails.agentEmail.toLowerCase() : 'admin@valorgt.com';
+    
+    // Si la propiedad no tiene email pero sí tiene un agent_id (como en las propiedades de Supabase que no guardaron email)
+    if ((!propDetails.agentEmail || targetEmail === 'admin@valorgt.com') && propDetails.agentId && isSupabaseActive && supabaseClient) {
+        try {
+            console.log(`🔍 [Sugerencias] Resolviendo email del agente a través de agent_id: "${propDetails.agentId}"`);
+            const { data: profile, error: profileErr } = await supabaseClient
+                .from('profiles')
+                .select('email')
+                .eq('id', propDetails.agentId)
+                .maybeSingle();
+            
+            if (!profileErr && profile && profile.email) {
+                targetEmail = profile.email.toLowerCase();
+                console.log(`🎯 [Sugerencias] Email resuelto con éxito: "${targetEmail}"`);
+            }
+        } catch (e) {
+            console.error("⚠️ [Sugerencias] Error al resolver el email por ID:", e);
+        }
+    }
+
     console.log("📨 [Sugerencias] Preparando envío de sugerencia:", {
         property_id: propDetails.id,
         property_title: propDetails.title,
