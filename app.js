@@ -1116,11 +1116,14 @@ function switchView(viewId) {
             if (grid && !existingLoader) {
                 const loader = document.createElement('div');
                 loader.id = 'catalog-live-sync-loader';
-                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; margin-bottom: 15px; background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.2); border-radius: 8px; text-align: center; animation: pulseGlow 2s infinite ease-in-out;";
+                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; margin-bottom: 15px; text-align: center;";
                 loader.innerHTML = `
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                        <span class="neon-spinner" style="width: 28px; height: 28px; border-width: 2.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span>
-                        <span class="font-mono text-cyan" style="font-size: 0.75rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase;">Sincronizando Ledger Remoto de ValorGT...</span>
+                        <div class="spinner-wrapper-hologram">
+                            <div class="neon-spinner"></div>
+                            <span class="spinner-inner-text">Loading</span>
+                        </div>
+                        <span class="font-mono text-cyan" style="font-size: 0.7rem; letter-spacing: 1px; font-weight: bold; text-transform: uppercase; margin-top: 5px;">Sincronizando Ledger Remoto de ValorGT...</span>
                     </div>
                 `;
                 grid.insertBefore(loader, grid.firstChild);
@@ -1807,7 +1810,7 @@ function renderCatalogProperties() {
     let renderedCount = 0;
 
     // Paginación y Renderizado Progresivo en Lotes para Latencia Cero (Evitar retrasos de renderizado de DOM masivo)
-    const batchSize = 20;
+    const batchSize = 100;
     let index = 0;
     let isFirstBatch = true;
 
@@ -1941,7 +1944,7 @@ function renderCatalogProperties() {
             renderNextBatch();
         } else {
             // Planificar el renderizado de los siguientes lotes en segundo plano sin congelar
-            setTimeout(renderNextBatch, 50);
+            setTimeout(renderNextBatch, 1);
         }
     }
 

@@ -7062,5 +7062,43 @@ input[type="range"]::-webkit-slider-thumb:hover {
     animation: none;
 }
 
+/* Spinner Holográfico con Texto Centrado */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner-wrapper-hologram {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+}
+
+.neon-spinner {
+    border: 2px solid rgba(0, 240, 255, 0.1);
+    border-top: 2px solid var(--cyan);
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    animation: spin 1s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5));
+}
+
+.spinner-inner-text {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--cyan);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    animation: pulseGlow 1.5s infinite ease-in-out;
+}
+
+
 
 
