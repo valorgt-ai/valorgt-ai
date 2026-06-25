@@ -1102,78 +1102,20 @@ function switchView(viewId) {
         // Contar el número total de propiedades cacheadas en memoria
         const totalLocalProps = Object.values(PORTFOLIO_DATABASE || {}).flat().length;
         
-        if (totalLocalProps === 0) {
-            // Si por alguna razón la memoria está vacía, mostramos el loading completo en la cuadrícula con Skeleton Cards holográficas
-            if (grid) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1 / -1; width: 100%;">
-                        <div style="text-align: center; margin-bottom: 25px;">
-                            <div class="processing-spinner-wrap" style="position: relative; width: 42px; height: 42px; margin: 0 auto 10px;">
-                                <div class="neon-spinner" style="filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)); border: 3px solid rgba(0, 240, 255, 0.1); border-top-color: var(--cyan); border-radius: 50%; width: 100%; height: 100%; animation: spin 1s linear infinite;"></div>
-                            </div>
-                            <h4 class="font-mono text-cyan" style="font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">SINCRONIZANDO LEDGER INMOBILIARIO...</h4>
-                            <p class="font-mono text-muted" style="font-size: 0.6rem; margin-top: 3px; text-transform: uppercase;">Estableciendo conexión encriptada con nodo Supabase Cloud</p>
-                        </div>
-                        
-                        <div class="catalog-loading-skeleton" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%;">
-                            <!-- Card Skeleton 1 -->
-                            <div class="skeleton-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; height: 380px; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: pulseGlow 1.5s infinite ease-in-out;">
-                                <div style="width: 100%; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
-                                <div style="width: 60%; height: 18px; background: rgba(0, 240, 255, 0.1); border-radius: 4px; margin-top: 15px;"></div>
-                                <div style="width: 90%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px;"></div>
-                                <div style="width: 40%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 5px;"></div>
-                                <div style="display: flex; gap: 8px; margin-top: 15px;">
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                </div>
-                                <div style="width: 100%; height: 35px; background: rgba(0, 240, 255, 0.05); border-radius: 6px; margin-top: 15px;"></div>
-                            </div>
-                            <!-- Card Skeleton 2 -->
-                            <div class="skeleton-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; height: 380px; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: pulseGlow 1.5s infinite ease-in-out; animation-delay: 0.2s;">
-                                <div style="width: 100%; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
-                                <div style="width: 50%; height: 18px; background: rgba(0, 240, 255, 0.1); border-radius: 4px; margin-top: 15px;"></div>
-                                <div style="width: 80%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px;"></div>
-                                <div style="width: 30%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 5px;"></div>
-                                <div style="display: flex; gap: 8px; margin-top: 15px;">
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                </div>
-                                <div style="width: 100%; height: 35px; background: rgba(0, 240, 255, 0.05); border-radius: 6px; margin-top: 15px;"></div>
-                            </div>
-                            <!-- Card Skeleton 3 -->
-                            <div class="skeleton-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; height: 380px; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; animation: pulseGlow 1.5s infinite ease-in-out; animation-delay: 0.4s;">
-                                <div style="width: 100%; height: 180px; background: rgba(255,255,255,0.05); border-radius: 8px;"></div>
-                                <div style="width: 70%; height: 18px; background: rgba(0, 240, 255, 0.1); border-radius: 4px; margin-top: 15px;"></div>
-                                <div style="width: 85%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 10px;"></div>
-                                <div style="width: 50%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-top: 5px;"></div>
-                                <div style="display: flex; gap: 8px; margin-top: 15px;">
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                    <div style="width: 30%; height: 25px; background: rgba(255,255,255,0.05); border-radius: 4px;"></div>
-                                </div>
-                                <div style="width: 100%; height: 35px; background: rgba(0, 240, 255, 0.05); border-radius: 6px; margin-top: 15px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        } else {
-            // Si ya hay datos cacheados, renderizar de inmediato (¡Carga instantánea!)
-            renderCatalogProperties();
-            if (counter) {
-                counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO CON LA NUBE...</span>`;
-            }
-        }
+        // Carga instantánea: Priorizar caché local en memoria e iniciar actualización en segundo plano
+        renderCatalogProperties();
 
-        // Descargar actualizaciones en segundo plano
         if (isSupabaseActive) {
+            // Mostrar un indicador sutil de sincronización activa de fondo
+            if (counter) {
+                counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO CON LA NUBE...</span>`;
+            }
+
             syncSupabaseData().then(() => {
                 renderCatalogProperties();
             }).catch(err => {
                 console.error("Error al sincronizar datos en segundo plano:", err);
-                renderCatalogProperties(); // Recuperar con datos locales si falla
+                renderCatalogProperties(); // Fallback seguro
             });
         }
     } else if (viewId === 'admin') {
@@ -14620,7 +14562,7 @@ window.addEventListener('hashchange', () => {
     if (window.location.hash.startsWith('#prop=')) {
         checkDeepLinkParams();
     } else if (window.location.hash === '' || window.location.hash === '#') {
-        switchView('home');
+        switchView('catalog');
     }
 });
 
