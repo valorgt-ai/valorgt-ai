@@ -1805,6 +1805,7 @@ function renderCatalogProperties() {
     // Paginación y Renderizado Progresivo en Lotes para Latencia Cero (Evitar retrasos de renderizado de DOM masivo)
     const batchSize = 20;
     let index = 0;
+    let isFirstBatch = true;
 
     function renderNextBatch() {
         if (index >= properties.length) {
@@ -1929,8 +1930,15 @@ function renderCatalogProperties() {
         grid.insertAdjacentHTML('beforeend', batchHTML);
         index = batchLimit;
 
-        // Planificar el renderizado del siguiente lote sin bloquear el hilo principal (UI responsive)
-        setTimeout(renderNextBatch, 25);
+        // Carga diferida progresiva optimizada
+        if (isFirstBatch) {
+            isFirstBatch = false;
+            // Dibujar el siguiente lote inmediatamente
+            renderNextBatch();
+        } else {
+            // Planificar el renderizado de los siguientes lotes en segundo plano sin congelar
+            setTimeout(renderNextBatch, 50);
+        }
     }
 
     // Iniciar el renderizado progresivo
