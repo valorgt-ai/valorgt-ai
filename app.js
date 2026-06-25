@@ -9920,129 +9920,142 @@ async function _syncSupabaseDataInternal() {
             }
         }
 
-        // 1. Descargar todas las propiedades remotas
-        const { data: remoteProperties, error } = await supabaseClient
-            .from('properties')
-            .select('*');
+        // 1. Descargar todas las propiedades remotas de forma asíncrona en segundo plano (sin bloquear)
+        (async () => {
+            try {
+                const { data: remoteProperties, error } = await supabaseClient
+                    .from('properties')
+                    .select('*');
 
-        if (error) {
-            console.error("Error al sincronizar propiedades desde Supabase:", error);
-            return;
-        }
+                if (error) {
+                    console.error("Error al sincronizar propiedades desde Supabase:", error);
+                    return;
+                }
 
-        if (remoteProperties) {
-            const remoteIds = new Set(remoteProperties.map(p => p.id));
-            
-            // Limpiar de agentUploadedProperties las propiedades que ya no están en Supabase
-            agentUploadedProperties = agentUploadedProperties.filter(p => !p.id || remoteIds.has(p.id));
-
-            // Limpiar de PORTFOLIO_DATABASE las propiedades que ya no están en Supabase (dejando las de mockData con ID 'ref-' o 'ref_local_')
-            Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
-                PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => 
-                    !p.id || 
-                    String(p.id).startsWith('ref-') || 
-                    String(p.id).startsWith('ref_local_') || 
-                    remoteIds.has(p.id)
-                );
-            });
-
-            if (remoteProperties.length > 0) {
-                const allRemoteFormatted = [];
-                remoteProperties.forEach(prop => {
-                    const zoneKey = prop.location_key;
-                    const isRef = prop.metadata && prop.metadata.isReferenceData === true;
+                if (remoteProperties) {
+                    const remoteIds = new Set(remoteProperties.map(p => p.id));
                     
-                    // Estructurar al formato interno compatible con mockData.js
-                    const formattedProp = {
-                        id: prop.id,
-                        title: prop.title,
-                        category: prop.category,
-                        type: prop.type,
-                        tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
-                        priceUSD: parseFloat(prop.price_usd),
-                        size: parseFloat(prop.size_m2),
-                        rooms: parseInt(prop.rooms),
-                        bathrooms: parseFloat(prop.bathrooms),
-                        parkings: parseInt(prop.parkings),
-                        garden: prop.metadata && prop.metadata.garden ? parseFloat(prop.metadata.garden) : 0,
-                        study: prop.metadata && prop.metadata.study ? prop.metadata.study : false,
-                        familyRoom: prop.metadata && prop.metadata.familyRoom ? prop.metadata.familyRoom : false,
-                        hasMasterSuite: prop.metadata && prop.metadata.hasMasterSuite ? prop.metadata.hasMasterSuite : false,
-                        hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
-                        amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
-                        photo: prop.photo_url,
-                        photos: (prop.metadata && prop.metadata.photos) ? prop.metadata.photos : [prop.photo_url],
-                        description: (prop.metadata && prop.metadata.description) ? prop.metadata.description : 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
-                        agentName: (prop.metadata && prop.metadata.agentName) ? prop.metadata.agentName : 'Socio Inmobiliario',
-                        agentCompany: (prop.metadata && prop.metadata.agentCompany) ? prop.metadata.agentCompany : 'ValorGT Premium Partner',
-                        agentPhone: (prop.metadata && prop.metadata.agentPhone) ? prop.metadata.agentPhone : '50250129482',
-                        agentLogo: (prop.metadata && prop.metadata.agentLogo) ? prop.metadata.agentLogo : '',
-                        agentPlan: (prop.metadata && prop.metadata.agentPlan) ? prop.metadata.agentPlan : 'Básico',
-                        youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
-                        badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
-                        location: zoneKey,
-                        isAgentUpload: !isRef,
-                        isReferenceData: isRef,
-                        sponsored: prop.sponsored,
-                        lat: parseFloat(prop.latitude),
-                        lng: parseFloat(prop.longitude),
-                        agent_id: prop.agent_id,
-                        agentEmail: prop.agent_email || (prop.metadata && prop.metadata.agentEmail) || null
-                    };
+                    // Limpiar de agentUploadedProperties las propiedades que ya no están en Supabase
+                    agentUploadedProperties = agentUploadedProperties.filter(p => !p.id || remoteIds.has(p.id));
 
-                    allRemoteFormatted.push(formattedProp);
+                    // Limpiar de PORTFOLIO_DATABASE las propiedades que ya no están en Supabase (dejando las de mockData con ID 'ref-' o 'ref_local_')
+                    Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
+                        PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => 
+                            !p.id || 
+                            String(p.id).startsWith('ref-') || 
+                            String(p.id).startsWith('ref_local_') || 
+                            remoteIds.has(p.id)
+                        );
+                    });
 
-                    // Evitar duplicación de listados
-                    if (!PORTFOLIO_DATABASE[zoneKey]) {
-                        PORTFOLIO_DATABASE[zoneKey] = [];
-                    }
+                    if (remoteProperties.length > 0) {
+                        const allRemoteFormatted = [];
+                        remoteProperties.forEach(prop => {
+                            const zoneKey = prop.location_key;
+                            const isRef = prop.metadata && prop.metadata.isReferenceData === true;
+                            
+                            // Estructurar al formato interno compatible con mockData.js
+                            const formattedProp = {
+                                id: prop.id,
+                                title: prop.title,
+                                category: prop.category,
+                                type: prop.type,
+                                tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
+                                priceUSD: parseFloat(prop.price_usd),
+                                size: parseFloat(prop.size_m2),
+                                rooms: parseInt(prop.rooms),
+                                bathrooms: parseFloat(prop.bathrooms),
+                                parkings: parseInt(prop.parkings),
+                                garden: prop.metadata && prop.metadata.garden ? parseFloat(prop.metadata.garden) : 0,
+                                study: prop.metadata && prop.metadata.study ? prop.metadata.study : false,
+                                familyRoom: prop.metadata && prop.metadata.familyRoom ? prop.metadata.familyRoom : false,
+                                hasMasterSuite: prop.metadata && prop.metadata.hasMasterSuite ? prop.metadata.hasMasterSuite : false,
+                                hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
+                                amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
+                                photo: prop.photo_url,
+                                photos: (prop.metadata && prop.metadata.photos) ? prop.metadata.photos : [prop.photo_url],
+                                description: (prop.metadata && prop.metadata.description) ? prop.metadata.description : 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
+                                agentName: (prop.metadata && prop.metadata.agentName) ? prop.metadata.agentName : 'Socio Inmobiliario',
+                                agentCompany: (prop.metadata && prop.metadata.agentCompany) ? prop.metadata.agentCompany : 'ValorGT Premium Partner',
+                                agentPhone: (prop.metadata && prop.metadata.agentPhone) ? prop.metadata.agentPhone : '50250129482',
+                                agentLogo: (prop.metadata && prop.metadata.agentLogo) ? prop.metadata.agentLogo : '',
+                                agentPlan: (prop.metadata && prop.metadata.agentPlan) ? prop.metadata.agentPlan : 'Básico',
+                                youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
+                                badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
+                                location: zoneKey,
+                                isAgentUpload: !isRef,
+                                isReferenceData: isRef,
+                                sponsored: prop.sponsored,
+                                lat: parseFloat(prop.latitude),
+                                lng: parseFloat(prop.longitude),
+                                agent_id: prop.agent_id,
+                                agentEmail: prop.agent_email || (prop.metadata && prop.metadata.agentEmail) || null
+                            };
 
-                    const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
-                    if (!exists) {
-                        if (formattedProp.sponsored) {
-                            PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
-                        } else {
-                            PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
+                            allRemoteFormatted.push(formattedProp);
+
+                            // Evitar duplicación de listados
+                            if (!PORTFOLIO_DATABASE[zoneKey]) {
+                                PORTFOLIO_DATABASE[zoneKey] = [];
+                            }
+
+                            const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
+                            if (!exists) {
+                                if (formattedProp.sponsored) {
+                                    PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
+                                } else {
+                                    PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
+                                }
+                            }
+
+                            // Cargar al inventario de pauta si le pertenece al usuario logueado
+                            if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
+                                const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
+                                if (!agentExists) {
+                                    agentUploadedProperties.push(formattedProp);
+                                }
+                            }
+                        });
+                        
+                        // Guardar en localStorage las propiedades sincronizadas
+                        saveLocalPropertiesToStorage();
+                        try {
+                            localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
+                        } catch (storageErr) {
+                            console.warn("⚠️ [Cache] No se pudo guardar la caché de propiedades en localStorage (límite de cuota excedido):", storageErr);
                         }
                     }
 
-                    // Cargar al inventario de pauta si le pertenece al usuario logueado
-                    if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
-                        const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
-                        if (!agentExists) {
-                            agentUploadedProperties.push(formattedProp);
+                    // Actualizar la interfaz de forma reactiva según la sección visible
+                    const activeViewEl = document.querySelector('.app-view.active');
+                    if (activeViewEl) {
+                        const activeId = activeViewEl.id;
+                        if (activeId === 'view-home') {
+                            renderHomeCatalog();
+                            calculateHomeMacroKPIs();
+                        } else if (activeId === 'view-catalog') {
+                            // Solo pintar si no hay tarjetas
+                            const grid = document.getElementById('catalog-properties-grid');
+                            if (grid) {
+                                const currentCards = grid.querySelectorAll('.cyber-card-catalog');
+                                if (currentCards.length <= 1) {
+                                    renderCatalogProperties();
+                                }
+                            }
+                        } else if (activeId === 'view-heatmap') {
+                            if (typeof initHeatmap === 'function') initHeatmap();
+                            if (typeof drawAgentProperties === 'function') drawAgentProperties();
+                        } else if (activeId === 'view-commercial') {
+                            renderB2bInventory();
+                            updatePromoPropertySelect();
+                            updateSaasMetricsHUD();
                         }
                     }
-                });
-                
-                // Guardar en localStorage las propiedades sincronizadas
-                saveLocalPropertiesToStorage();
-                try {
-                    localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
-                } catch (storageErr) {
-                    console.warn("⚠️ [Cache] No se pudo guardar la caché de propiedades en localStorage (límite de cuota excedido):", storageErr);
                 }
+            } catch (err) {
+                console.error("Fallo al descargar propiedades remota en paralelo:", err);
             }
-
-            // Actualizar la interfaz de forma reactiva según la sección visible
-            const activeViewEl = document.querySelector('.app-view.active');
-            if (activeViewEl) {
-                const activeId = activeViewEl.id;
-                if (activeId === 'view-home') {
-                    renderHomeCatalog();
-                    calculateHomeMacroKPIs();
-                } else if (activeId === 'view-catalog') {
-                    renderCatalogProperties();
-                } else if (activeId === 'view-heatmap') {
-                    if (typeof initHeatmap === 'function') initHeatmap();
-                    if (typeof drawAgentProperties === 'function') drawAgentProperties();
-                } else if (activeId === 'view-commercial') {
-                    renderB2bInventory();
-                    updatePromoPropertySelect();
-                    updateSaasMetricsHUD();
-                }
-            }
-        }
+        })();
         
         // Sincronizar solicitudes de pago pendientes en tiempo real (no bloqueante)
         syncPendingPaymentRequests().catch(err => console.warn("Fallo al obtener solicitudes de pago pendientes:", err));
