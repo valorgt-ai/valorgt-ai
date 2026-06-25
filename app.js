@@ -1129,7 +1129,11 @@ function switchView(viewId) {
             syncSupabaseData().then(() => {
                 const loader = document.getElementById('catalog-live-sync-loader');
                 if (loader) loader.remove();
-                renderCatalogProperties();
+                // Actualizar de forma no bloqueante solo si la grilla está vacía o tiene pocas propiedades
+                const currentCards = grid.querySelectorAll('.cyber-card-catalog');
+                if (currentCards.length <= 1) {
+                    renderCatalogProperties();
+                }
             }).catch(err => {
                 console.error("Error al sincronizar datos en segundo plano:", err);
                 const loader = document.getElementById('catalog-live-sync-loader');
