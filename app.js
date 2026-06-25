@@ -9817,8 +9817,8 @@ async function _syncSupabaseDataInternal() {
     if (!isSupabaseActive) return;
 
     try {
-        // Sincronizar configuraciones globales (videos, banner) de Supabase en segundo plano
-        await fetchSystemSettingsFromSupabase();
+        // Sincronizar configuraciones globales de Supabase de forma totalmente asíncrona en paralelo (no bloqueante)
+        fetchSystemSettingsFromSupabase().catch(err => console.warn("Fallo al obtener configuraciones en paralelo:", err));
 
         // Sincronizar perfiles de agentes para la tabla admin si la vista admin está activa
         const adminViewEl = document.getElementById('view-admin');
@@ -10031,8 +10031,8 @@ async function _syncSupabaseDataInternal() {
             }
         }
         
-        // Sincronizar solicitudes de pago pendientes en tiempo real
-        await syncPendingPaymentRequests();
+        // Sincronizar solicitudes de pago pendientes en tiempo real (no bloqueante)
+        syncPendingPaymentRequests().catch(err => console.warn("Fallo al obtener solicitudes de pago pendientes:", err));
     } catch (err) {
         console.error("Fallo crítico de conexión al sincronizar Supabase:", err);
     }
