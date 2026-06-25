@@ -11250,13 +11250,28 @@ function renderCardImageHTML(prop, wrapperClass = 'card-image-wrapper', heightSt
     const b2bBadge = isB2B ? `<span class="inv-cat-badge ${b2bCatClass}">${prop.category.toUpperCase()}</span>` : '';
     const b2bSponsored = (isB2B && isSponsored) ? '<span class="inv-sponsored-tag" style="z-index: 7;">★ PATROCINADO</span>' : '';
 
+    // Helper local para optimizar URLs de Unsplash a resoluciones adecuadas para tarjetas móviles/desktop
+    const optimizeImageUrl = (url) => {
+        if (!url) return '';
+        if (url.includes('images.unsplash.com')) {
+            // Eliminar parámetros de tamaño anteriores si existen y setear w=600, q=80 y auto=format
+            try {
+                const base = url.split('?')[0];
+                return `${base}?auto=format&fit=crop&w=600&q=80`;
+            } catch (e) {
+                return url;
+            }
+        }
+        return url;
+    };
+
     if (photos.length > 1) {
         const rawId = prop.id || prop.title || Math.random().toString();
         const sliderId = `slider-${rawId.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
         return `
             <div class="card-image-slider-container ${wrapperClass}" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: ${heightStyle};">
                 <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
-                    ${photos.map(p => `<img src="${p}" alt="${prop.title}" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover;">`).join('')}
+                    ${photos.map((p, idx) => `<img src="${optimizeImageUrl(p)}" alt="${prop.title}" loading="${idx === 0 ? 'eager' : 'lazy'}" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover;">`).join('')}
                 </div>
                 <!-- Botones del slider -->
                 <button class="slider-btn prev" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', -1, ${photos.length})" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.25); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s; z-index: 8;"><i data-lucide="chevron-left" style="width: 12px; height: 12px;"></i></button>
@@ -11281,7 +11296,7 @@ function renderCardImageHTML(prop, wrapperClass = 'card-image-wrapper', heightSt
                 ${youtubeBadge}
                 ${b2bBadge}
                 ${b2bSponsored}
-                <img src="${prop.photo}" alt="${prop.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="${optimizeImageUrl(prop.photo)}" alt="${prop.title}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         `;
     }
