@@ -9834,84 +9834,85 @@ async function _syncSupabaseDataInternal() {
             await syncB2bClientsFromSupabase();
         }
 
-        // 0. Sincronizar el estado, plan y saldo del agente activo desde Supabase en tiempo real
+        // 0. Sincronizar el estado, plan y saldo del agente activo desde Supabase de forma asíncrona en tiempo real
         if (loggedInB2bClient) {
             const isUUID = loggedInB2bClient.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(loggedInB2bClient.id);
             if (isUUID) {
-                try {
-                    const { data: latestProfile, error: profileErr } = await supabaseClient
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', loggedInB2bClient.id)
-                        .maybeSingle();
-                    
-                    if (!profileErr && latestProfile) {
-                        // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
-                        let dbPlan = latestProfile.plan || 'Básico';
-                        let dbRole = latestProfile.role || 'agente';
-                        const emailLower = (loggedInB2bClient.email || '').toLowerCase();
-                        const roleLower = dbRole.toLowerCase();
-                        if (roleLower === 'inversionista') {
-                            dbPlan = 'Premium';
-                        } else if (emailLower === 'ana@estevezinmobiliaria.com') {
-                            dbPlan = 'VIP';
-                            dbRole = 'agente';
-                        } else if (emailLower === 'sofia@alianzagt.com') {
-                            dbPlan = 'Básico';
-                            dbRole = 'agente';
-                        }
+                // Ejecución en segundo plano sin bloquear el renderizado del catálogo general
+                (async () => {
+                    try {
+                        const { data: latestProfile, error: profileErr } = await supabaseClient
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', loggedInB2bClient.id)
+                            .maybeSingle();
+                        
+                        if (!profileErr && latestProfile) {
+                            // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
+                            let dbPlan = latestProfile.plan || 'Básico';
+                            let dbRole = latestProfile.role || 'agente';
+                            const emailLower = (loggedInB2bClient.email || '').toLowerCase();
+                            const roleLower = dbRole.toLowerCase();
+                            if (roleLower === 'inversionista') {
+                                dbPlan = 'Premium';
+                            } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+                                dbPlan = 'VIP';
+                                dbRole = 'agente';
+                            } else if (emailLower === 'sofia@alianzagt.com') {
+                                dbPlan = 'Básico';
+                                dbRole = 'agente';
+                            }
 
-                        loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
-                        loggedInB2bClient.status = (typeof latestProfile.status === 'string' && latestProfile.status.length > 0) ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
-                        loggedInB2bClient.plan = dbPlan;
-                        loggedInB2bClient.role = dbRole;
-                        activeB2bPlan = (dbPlan || 'pro').toLowerCase();
-                        
-                        // Actualizar en el listado local de clientes para mantener consistencia
-                        const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
-                        if (clientIdx !== -1) {
-                            b2bClients[clientIdx].status = loggedInB2bClient.status;
-                            b2bClients[clientIdx].plan = loggedInB2bClient.plan;
-                            b2bClients[clientIdx].usdtBalance = loggedInB2bClient.usdtBalance;
-                            b2bClients[clientIdx].role = loggedInB2bClient.role;
+                            loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
+                            loggedInB2bClient.status = (typeof latestProfile.status === 'string' && latestProfile.status.length > 0) ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
+                            loggedInB2bClient.plan = dbPlan;
+                            loggedInB2bClient.role = dbRole;
+                            activeB2bPlan = (dbPlan || 'pro').toLowerCase();
+                            
+                            // Actualizar en el listado local de clientes para mantener consistencia
+                            const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
+                            if (clientIdx !== -1) {
+                                b2bClients[clientIdx].status = loggedInB2bClient.status;
+                                b2bClients[clientIdx].plan = loggedInB2bClient.plan;
+                                b2bClients[clientIdx].usdtBalance = loggedInB2bClient.usdtBalance;
+                                b2bClients[clientIdx].role = loggedInB2bClient.role;
+                            }
+                            localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+                            localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+                            
+                            // Actualizar interfaces
+                            updateSaasMetricsHUD();
+                            updateB2bSubscriptionPendingBanner();
+                            syncCommercialPricingGridUI();
+                            renderB2bAgentProfile();
+                            
+                            // Gestionar Overlays de Bloqueo dinámicamente si cambió el estado
+                            updateLockOverlaysState();
+                        } else if (profileErr || !latestProfile) {
+                            // Auto-healing
+                            console.log("Auto-recuperación activa: Auto-creando perfil ausente en Supabase profiles.");
+                            const fallbackProfile = {
+                                id: loggedInB2bClient.id,
+                                name: loggedInB2bClient.name,
+                                company: loggedInB2bClient.company,
+                                nit: loggedInB2bClient.nit || 'C/F',
+                                phone: loggedInB2bClient.phone || 'N/A',
+                                email: loggedInB2bClient.email,
+                                plan: loggedInB2bClient.plan,
+                                status: (loggedInB2bClient.status || 'pendiente').toLowerCase(),
+                                usdt_balance: loggedInB2bClient.usdtBalance,
+                                role: loggedInB2bClient.role || 'agente'
+                            };
+                            
+                            const { error: insertErr } = await supabaseClient.from('profiles').insert([fallbackProfile]);
+                            if (insertErr) {
+                                console.warn("Fallo de auto-creación en Supabase profiles:", insertErr);
+                            }
                         }
-                        localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
-                        localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
-                        
-                        // Actualizar interfaces
-                        updateSaasMetricsHUD();
-                        updateB2bSubscriptionPendingBanner();
-                        syncCommercialPricingGridUI();
-                        renderB2bAgentProfile();
-                        
-                        // Gestionar Overlays de Bloqueo dinámicamente si cambió el estado
-                        updateLockOverlaysState();
-                    } else if (profileErr || !latestProfile) {
-                        // Auto-healing: Si el usuario existe localmente en sesión pero no tiene fila en Supabase profiles, la insertamos
-                        console.log("Auto-recuperación activa: Auto-creando perfil ausente en Supabase profiles.");
-                        const fallbackProfile = {
-                            id: loggedInB2bClient.id,
-                            name: loggedInB2bClient.name,
-                            company: loggedInB2bClient.company,
-                            nit: loggedInB2bClient.nit || 'C/F',
-                            phone: loggedInB2bClient.phone || 'N/A',
-                            email: loggedInB2bClient.email,
-                            plan: loggedInB2bClient.plan,
-                            status: (loggedInB2bClient.status || 'pendiente').toLowerCase(),
-                            usdt_balance: loggedInB2bClient.usdtBalance,
-                            role: loggedInB2bClient.role || 'agente'
-                        };
-                        
-                        const { error: insertErr } = await supabaseClient.from('profiles').insert([fallbackProfile]);
-                        if (insertErr) {
-                            console.warn("Fallo de auto-creación en Supabase profiles:", insertErr);
-                        } else {
-                            console.log("Perfil auto-creado exitosamente en Supabase para", loggedInB2bClient.email);
-                        }
+                    } catch (syncErr) {
+                        console.error("Error en sincronización en vivo del perfil comercial:", syncErr);
                     }
-                } catch (syncErr) {
-                    console.error("Error en sincronización en vivo del perfil comercial:", syncErr);
-                }
+                })();
             }
         }
 
