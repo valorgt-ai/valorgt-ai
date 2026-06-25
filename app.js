@@ -425,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Array.isArray(cachedProps) && cachedProps.length > 0) {
                 console.log(`🚀 [Cache] Cargando ${cachedProps.length} propiedades remotas desde el almacenamiento local.`);
                 cachedProps.forEach(prop => {
+                    if (prop.isReferenceData === true) return;
                     const zoneKey = prop.location;
                     if (zoneKey) {
                         if (!PORTFOLIO_DATABASE[zoneKey]) {
