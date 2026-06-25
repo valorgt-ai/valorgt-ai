@@ -1747,12 +1747,9 @@ function renderCatalogProperties() {
         properties = PORTFOLIO_DATABASE[zoneKey] || [];
     }
 
-    // Filtrar duplicados por ID o Título, y excluir datos de referencia (demo/tasación)
+    // Filtrar duplicados por ID o Título
     const seen = new Set();
     properties = properties.filter(prop => {
-        if (prop.isReferenceData === true) {
-            return false;
-        }
         const uniqueId = prop.id || prop.title;
         if (seen.has(uniqueId)) {
             return false;
