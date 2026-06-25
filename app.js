@@ -1103,35 +1103,33 @@ function switchView(viewId) {
         const totalLocalProps = Object.values(PORTFOLIO_DATABASE || {}).flat().length;
         
         // Carga instantánea: Priorizar caché local en memoria e iniciar actualización en segundo plano
-        if (grid) {
-            grid.innerHTML = ''; // Limpiar grilla para forzar visibilidad del spinner
-        }
+        renderCatalogProperties();
 
         if (isSupabaseActive) {
-            // Mostrar un indicador sutil de sincronización activa de fondo
+            // Mostrar un indicador sutil de sincronización activa de fondo en el contador
             if (counter) {
-                counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO CON LA NUBE...</span>`;
+                counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO...</span>`;
             }
             
-            // Inyectar un indicador de carga holográfico en el centro de la grilla de propiedades
+            // Inyectar un indicador de carga holográfico no bloqueante en el fondo de la grilla
             const existingLoader = document.getElementById('catalog-live-sync-loader');
             if (grid && !existingLoader) {
                 const loader = document.createElement('div');
                 loader.id = 'catalog-live-sync-loader';
-                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 120px 20px; text-align: center;";
+                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px 20px; text-align: center;";
                 loader.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                        <div class="spinner-wrapper-hologram">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <div class="spinner-wrapper-hologram" style="transform: scale(0.7); margin-bottom: 5px;">
                             <div class="neon-spinner"></div>
                             <span class="spinner-inner-text">Loading</span>
                         </div>
-                        <span class="font-mono text-cyan" style="font-size: 0.75rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase; margin-top: 10px;">Sincronizando Ledger Remoto de ValorGT...</span>
+                        <span class="font-mono text-cyan" style="font-size: 0.65rem; letter-spacing: 1px; font-weight: bold; text-transform: uppercase;">Actualizando catálogo en segundo plano...</span>
                     </div>
                 `;
                 grid.appendChild(loader);
             }
 
-            syncSupabaseData(true).then(() => {
+            syncSupabaseData(false).then(() => {
                 const loader = document.getElementById('catalog-live-sync-loader');
                 if (loader) loader.remove();
                 renderCatalogProperties();
@@ -1141,8 +1139,6 @@ function switchView(viewId) {
                 if (loader) loader.remove();
                 renderCatalogProperties(); // Fallback seguro
             });
-        } else {
-            renderCatalogProperties();
         }
     } else if (viewId === 'admin') {
         titleEl.innerText = "Consola Global Admin & Telemetría";
