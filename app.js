@@ -1110,11 +1110,30 @@ function switchView(viewId) {
             if (counter) {
                 counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO CON LA NUBE...</span>`;
             }
+            
+            // Inyectar un indicador de carga holográfico no bloqueante en el centro de la grilla de propiedades
+            const existingLoader = document.getElementById('catalog-live-sync-loader');
+            if (grid && !existingLoader) {
+                const loader = document.createElement('div');
+                loader.id = 'catalog-live-sync-loader';
+                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; margin-bottom: 10px; background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 8px; animation: pulseGlow 2s infinite ease-in-out;";
+                loader.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="neon-spinner" style="width: 14px; height: 14px; border-width: 2px; animation: spin 0.8s linear infinite; display: inline-block;"></span>
+                        <span class="font-mono text-cyan" style="font-size: 0.72rem; letter-spacing: 1px; font-weight: bold;">SINCRONIZANDO LEDGER REMOTO DE VALORGT...</span>
+                    </div>
+                `;
+                grid.insertBefore(loader, grid.firstChild);
+            }
 
             syncSupabaseData().then(() => {
+                const loader = document.getElementById('catalog-live-sync-loader');
+                if (loader) loader.remove();
                 renderCatalogProperties();
             }).catch(err => {
                 console.error("Error al sincronizar datos en segundo plano:", err);
+                const loader = document.getElementById('catalog-live-sync-loader');
+                if (loader) loader.remove();
                 renderCatalogProperties(); // Fallback seguro
             });
         }
