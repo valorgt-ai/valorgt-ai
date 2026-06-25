@@ -1802,112 +1802,139 @@ function renderCatalogProperties() {
 
     let renderedCount = 0;
 
-    properties.forEach((prop) => {
-        // Parse category and type (scheme) using helper
-        const { category, type } = getPropertyCategoryAndType(prop);
-        
-        // Filter by category
-        if (activeB2cCategory !== 'todos' && category.toLowerCase() !== activeB2cCategory) {
-            return;
-        }
-        
-        // Filter by type (scheme)
-        if (activeB2cType !== 'todos' && type.toLowerCase() !== activeB2cType) {
-            return;
-        }
+    // Paginación y Renderizado Progresivo en Lotes para Latencia Cero (Evitar retrasos de renderizado de DOM masivo)
+    const batchSize = 20;
+    let index = 0;
 
-        // Filter by text search
-        if (searchVal && !prop.title.toLowerCase().includes(searchVal) && !prop.tag.toLowerCase().includes(searchVal)) {
+    function renderNextBatch() {
+        if (index >= properties.length) {
+            counter.innerText = `${renderedCount} ACTIVO${renderedCount === 1 ? '' : 'S'} ENCONTRADO${renderedCount === 1 ? '' : 'S'}`;
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
             return;
         }
 
-        // Filter by price range
-        if (prop.priceUSD < minPriceUSD || prop.priceUSD > maxPriceUSD) {
-            return;
-        }
+        const batchLimit = Math.min(index + batchSize, properties.length);
+        let batchHTML = '';
 
-        renderedCount++;
-        
-        const propZoneKey = prop.location || zoneKey;
-        const absoluteIndex = PORTFOLIO_DATABASE[propZoneKey] ? PORTFOLIO_DATABASE[propZoneKey].indexOf(prop) : -1;
-        const propZoneData = ZONES_DATABASE[propZoneKey];
-        const propZoneName = propZoneData ? propZoneData.name.split(' (')[0] : 'Guatemala';
-        const propZoneColor = propZoneData ? propZoneData.color : 'cyan';
+        for (let i = index; i < batchLimit; i++) {
+            const prop = properties[i];
+            // Parse category and type (scheme) using helper
+            const { category, type } = getPropertyCategoryAndType(prop);
+            
+            // Filter by category
+            if (activeB2cCategory !== 'todos' && category.toLowerCase() !== activeB2cCategory) {
+                continue;
+            }
+            
+            // Filter by type (scheme)
+            if (activeB2cType !== 'todos' && type.toLowerCase() !== activeB2cType) {
+                continue;
+            }
 
-        const convertedPrice = prop.priceUSD * conversion;
-        const isSponsored = prop.sponsored === true;
-        const sponsoredClass = isSponsored ? 'sponsored' : '';
-        const badgeColorClass = isSponsored ? 'green' : propZoneColor;
-        
-        const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
-        
-        const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
-            loggedInB2bClient.email.toLowerCase().includes('admin') || 
-            loggedInB2bClient.email.toLowerCase().includes('sgalindo')
-        )) || (!loggedInB2bClient && isCommercialAuthenticated);
-        const deleteButtonHTML = (isAdmin && prop.id) ? `
-            <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
-                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
-            </button>
-        ` : '';
+            // Filter by text search
+            if (searchVal && !prop.title.toLowerCase().includes(searchVal) && !prop.tag.toLowerCase().includes(searchVal)) {
+                continue;
+            }
 
-        const cardHTML = `
-            <div class="card glassmorphism featured-card glow-${propZoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${propZoneKey}', ${absoluteIndex})">
-                ${deleteButtonHTML}
-                ${renderCardImageHTML(prop, 'card-image-wrapper', '260px', isSponsored, badgeColorClass)}
-                <div class="card-info">
-                    <span class="property-tag">${prop.tag}</span>
-                    <h4>${prop.title}</h4>
-                    <div class="property-location">
-                        <i data-lucide="map-pin" class="tiny-icon"></i> ${propZoneName}
-                    </div>
-                    ${(() => {
-                        let advancedTagsHTML = '';
-                        const tags = [];
-                        if (prop.hasMasterSuite) tags.push("Suite Principal");
-                        if (prop.hasVisitorBath) tags.push("Baño Visitas");
-                        if (prop.study) tags.push("Estudio");
-                        if (prop.familyRoom) tags.push("Sala Fam.");
-                        if (prop.amenities && prop.amenities.length > 0) {
-                            prop.amenities.forEach(am => {
-                                if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
-                                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
-                                if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
-                                if (am === "amenity-view" || am === "view") tags.push("Vista");
-                            });
-                        }
-                        if (tags.length > 0) {
-                            advancedTagsHTML = `
-                                <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
-                                    ${tags.slice(0, 3).map(t => `<span style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
-                                    ${tags.length > 3 ? `<span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 2px 6px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
-                                </div>
-                            `;
-                        }
-                        return advancedTagsHTML;
-                    })()}
-                    <div class="property-specs">
-                        <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
-                        <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
-                        <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
-                        <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
-                    </div>
-                    <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                        <span class="price-val" id="cat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
-                                <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
-                            </button>
-                            <button class="btn-micro-cyber">
-                                <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
-                            </button>
+            // Filter by price range
+            if (prop.priceUSD < minPriceUSD || prop.priceUSD > maxPriceUSD) {
+                continue;
+            }
+
+            renderedCount++;
+            
+            const propZoneKey = prop.location || zoneKey;
+            const absoluteIndex = PORTFOLIO_DATABASE[propZoneKey] ? PORTFOLIO_DATABASE[propZoneKey].indexOf(prop) : -1;
+            const propZoneData = ZONES_DATABASE[propZoneKey];
+            const propZoneName = propZoneData ? propZoneData.name.split(' (')[0] : 'Guatemala';
+            const propZoneColor = propZoneData ? propZoneData.color : 'cyan';
+
+            const convertedPrice = prop.priceUSD * conversion;
+            const isSponsored = prop.sponsored === true;
+            const sponsoredClass = isSponsored ? 'sponsored' : '';
+            const badgeColorClass = isSponsored ? 'green' : propZoneColor;
+            
+            const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
+            
+            const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
+                loggedInB2bClient.email.toLowerCase().includes('admin') || 
+                loggedInB2bClient.email.toLowerCase().includes('sgalindo')
+            )) || (!loggedInB2bClient && isCommercialAuthenticated);
+            const deleteButtonHTML = (isAdmin && prop.id) ? `
+                <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
+                    <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                </button>
+            ` : '';
+
+            const cardHTML = `
+                <div class="card glassmorphism featured-card glow-${propZoneColor} ${sponsoredClass}" onclick="openPropertyDetailModal('${propZoneKey}', ${absoluteIndex})">
+                    ${deleteButtonHTML}
+                    ${renderCardImageHTML(prop, 'card-image-wrapper', '260px', isSponsored, badgeColorClass)}
+                    <div class="card-info">
+                        <span class="property-tag">${prop.tag}</span>
+                        <h4>${prop.title}</h4>
+                        <div class="property-location">
+                            <i data-lucide="map-pin" class="tiny-icon"></i> ${propZoneName}
+                        </div>
+                        ${(() => {
+                            let advancedTagsHTML = '';
+                            const tags = [];
+                            if (prop.hasMasterSuite) tags.push("Suite Principal");
+                            if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                            if (prop.study) tags.push("Estudio");
+                            if (prop.familyRoom) tags.push("Sala Fam.");
+                            if (prop.amenities && prop.amenities.length > 0) {
+                                prop.amenities.forEach(am => {
+                                    if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                                    if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
+                                    if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
+                                    if (am === "amenity-view" || am === "view") tags.push("Vista");
+                                });
+                            }
+                            if (tags.length > 0) {
+                                advancedTagsHTML = `
+                                    <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
+                                        ${tags.slice(0, 3).map(t => `<span style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
+                                        ${tags.length > 3 ? `<span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 2px 6px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
+                                    </div>
+                                `;
+                            }
+                            return advancedTagsHTML;
+                        })()}
+                        <div class="property-specs">
+                            <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
+                            <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
+                            <span><i data-lucide="bath" class="tiny-icon"></i> ${prop.bathrooms} Baños</span>
+                            <span><i data-lucide="car" class="tiny-icon"></i> ${prop.parkings} Pq</span>
+                        </div>
+                        <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                            <span class="price-val" id="cat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                    <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
+                                </button>
+                                <button class="btn-micro-cyber">
+                                    <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
-        grid.insertAdjacentHTML('beforeend', cardHTML);
-    });
+            `;
+            batchHTML += cardHTML;
+        }
+
+        grid.insertAdjacentHTML('beforeend', batchHTML);
+        index = batchLimit;
+
+        // Planificar el renderizado del siguiente lote sin bloquear el hilo principal (UI responsive)
+        setTimeout(renderNextBatch, 25);
+    }
+
+    // Iniciar el renderizado progresivo
+    renderNextBatch();
 
     counter.innerText = `${renderedCount} ACTIVO${renderedCount === 1 ? '' : 'S'} ENCONTRADO${renderedCount === 1 ? '' : 'S'}`;
 
