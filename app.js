@@ -1637,7 +1637,7 @@ function renderFeaturedProperties(zoneKey) {
         }
 
         // En la portada principal, ONLY render sponsored properties of format 'deck' (or default)
-        if (prop.sponsored !== true || (prop.sponsoredFormat && prop.sponsoredFormat !== 'deck')) {
+        if (prop.sponsored !== true || (prop.sponsoredFormat && prop.sponsoredFormat !== 'deck') || prop.isReferenceData === true) {
             return;
         }
 
