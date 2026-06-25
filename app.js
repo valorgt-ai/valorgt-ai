@@ -417,6 +417,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Forzar la limpieza de caché local corrompida por única vez para Chrome / Safari móvil
+    if (localStorage.getItem('valorgt_cache_clear_v10.47') !== 'true') {
+        localStorage.removeItem('valorgt_remote_properties_cache');
+        localStorage.removeItem('valorgt_local_properties');
+        localStorage.removeItem('admin_zone_banners');
+        localStorage.setItem('valorgt_cache_clear_v10.47', 'true');
+        console.log("🧹 [Cache Clear] Caché local obsoleta limpiada con éxito.");
+    }
+
     // Cargar caché local de propiedades de Supabase (SWR de alto rendimiento)
     try {
         const cachedPropsJson = localStorage.getItem('valorgt_remote_properties_cache');
