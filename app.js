@@ -9923,12 +9923,11 @@ async function _syncSupabaseDataInternal() {
             }
         }
 
-        // 1. Descargar todas las propiedades remotas de forma asíncrona en segundo plano (sin bloquear)
-        (async () => {
-            try {
-                const { data: remoteProperties, error } = await supabaseClient
-                    .from('properties')
-                    .select('*');
+        // 1. Descargar todas las propiedades remotas
+        try {
+            const { data: remoteProperties, error } = await supabaseClient
+                .from('properties')
+                .select('*');
 
                 if (error) {
                     console.error("Error al sincronizar propiedades desde Supabase:", error);
@@ -10054,11 +10053,10 @@ async function _syncSupabaseDataInternal() {
                             updateSaasMetricsHUD();
                         }
                     }
-                }
-            } catch (err) {
-                console.error("Fallo al descargar propiedades remota en paralelo:", err);
             }
-        })();
+        } catch (err) {
+            console.error("Fallo al descargar propiedades remota:", err);
+        }
         
         // Sincronizar solicitudes de pago pendientes en tiempo real (no bloqueante)
         syncPendingPaymentRequests().catch(err => console.warn("Fallo al obtener solicitudes de pago pendientes:", err));
