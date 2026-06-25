@@ -1747,9 +1747,15 @@ function renderCatalogProperties() {
         properties = PORTFOLIO_DATABASE[zoneKey] || [];
     }
 
-    // Filtrar duplicados por ID o Título
+    // Comprobar si hay alguna propiedad que sea de agente (real) en los datos cargados
+    const hasAgentProps = properties.some(p => p.isReferenceData !== true);
+
+    // Filtrar duplicados por ID o Título y ocultar referencias si hay propiedades reales
     const seen = new Set();
     properties = properties.filter(prop => {
+        if (hasAgentProps && prop.isReferenceData === true) {
+            return false;
+        }
         const uniqueId = prop.id || prop.title;
         if (seen.has(uniqueId)) {
             return false;
