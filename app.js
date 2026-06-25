@@ -1130,7 +1130,7 @@ function switchView(viewId) {
                 const loader = document.getElementById('catalog-live-sync-loader');
                 if (loader) loader.remove();
                 // Actualizar de forma no bloqueante solo si la grilla está vacía o tiene pocas propiedades
-                const currentCards = grid.querySelectorAll('.cyber-card-catalog');
+                const currentCards = grid.querySelectorAll('.featured-card');
                 if (currentCards.length <= 1) {
                     renderCatalogProperties();
                 }
@@ -10037,7 +10037,7 @@ async function _syncSupabaseDataInternal() {
                             // Solo pintar si no hay tarjetas
                             const grid = document.getElementById('catalog-properties-grid');
                             if (grid) {
-                                const currentCards = grid.querySelectorAll('.cyber-card-catalog');
+                                const currentCards = grid.querySelectorAll('.featured-card');
                                 if (currentCards.length <= 1) {
                                     renderCatalogProperties();
                                 }
