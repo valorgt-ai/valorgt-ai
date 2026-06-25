@@ -10034,14 +10034,7 @@ async function _syncSupabaseDataInternal() {
                             renderHomeCatalog();
                             calculateHomeMacroKPIs();
                         } else if (activeId === 'view-catalog') {
-                            // Solo pintar si no hay tarjetas
-                            const grid = document.getElementById('catalog-properties-grid');
-                            if (grid) {
-                                const currentCards = grid.querySelectorAll('.featured-card');
-                                if (currentCards.length <= 1) {
-                                    renderCatalogProperties();
-                                }
-                            }
+                            renderCatalogProperties();
                         } else if (activeId === 'view-heatmap') {
                             if (typeof initHeatmap === 'function') initHeatmap();
                             if (typeof drawAgentProperties === 'function') drawAgentProperties();
