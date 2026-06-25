@@ -1116,11 +1116,11 @@ function switchView(viewId) {
             if (grid && !existingLoader) {
                 const loader = document.createElement('div');
                 loader.id = 'catalog-live-sync-loader';
-                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; margin-bottom: 10px; background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 8px; animation: pulseGlow 2s infinite ease-in-out;";
+                loader.style.cssText = "grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; margin-bottom: 15px; background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.2); border-radius: 8px; text-align: center; animation: pulseGlow 2s infinite ease-in-out;";
                 loader.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span class="neon-spinner" style="width: 14px; height: 14px; border-width: 2px; animation: spin 0.8s linear infinite; display: inline-block;"></span>
-                        <span class="font-mono text-cyan" style="font-size: 0.72rem; letter-spacing: 1px; font-weight: bold;">SINCRONIZANDO LEDGER REMOTO DE VALORGT...</span>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                        <span class="neon-spinner" style="width: 28px; height: 28px; border-width: 2.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span>
+                        <span class="font-mono text-cyan" style="font-size: 0.75rem; letter-spacing: 1.5px; font-weight: bold; text-transform: uppercase;">Sincronizando Ledger Remoto de ValorGT...</span>
                     </div>
                 `;
                 grid.insertBefore(loader, grid.firstChild);
