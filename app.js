@@ -177,6 +177,15 @@ function saveUserPortfolio() {
     }
 }
 
+// Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
+if (localStorage.getItem('valorgt_cache_clear_v10.48') !== 'true') {
+    localStorage.removeItem('valorgt_remote_properties_cache');
+    localStorage.removeItem('valorgt_local_properties');
+    localStorage.removeItem('admin_zone_banners');
+    localStorage.setItem('valorgt_cache_clear_v10.48', 'true');
+    console.log("🧹 [Cache Clear Global] Limpieza forzada de base de datos local completada.");
+}
+
 const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
 if (savedB2bClient) {
     try {
@@ -415,15 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-    }
-
-    // Forzar la limpieza de caché local corrompida por única vez para Chrome / Safari móvil
-    if (localStorage.getItem('valorgt_cache_clear_v10.47') !== 'true') {
-        localStorage.removeItem('valorgt_remote_properties_cache');
-        localStorage.removeItem('valorgt_local_properties');
-        localStorage.removeItem('admin_zone_banners');
-        localStorage.setItem('valorgt_cache_clear_v10.47', 'true');
-        console.log("🧹 [Cache Clear] Caché local obsoleta limpiada con éxito.");
     }
 
     // Cargar caché local de propiedades de Supabase (SWR de alto rendimiento)
@@ -1781,13 +1781,15 @@ function renderCatalogProperties() {
         properties = PORTFOLIO_DATABASE[zoneKey] || [];
     }
 
-    // Comprobar si hay alguna propiedad que sea de agente (real) en los datos cargados
-    const hasAgentProps = properties.some(p => p.isReferenceData !== true);
+    // Ocultar incondicionalmente las propiedades de referencia (de prueba) en el catálogo público
+    const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
+        loggedInB2bClient.email.toLowerCase().includes('admin') || 
+        loggedInB2bClient.email.toLowerCase().includes('sgalindo')
+    )) || (!loggedInB2bClient && isCommercialAuthenticated);
 
-    // Filtrar duplicados por ID o Título y ocultar referencias si hay propiedades reales
     const seen = new Set();
     properties = properties.filter(prop => {
-        if (hasAgentProps && prop.isReferenceData === true) {
+        if (!isAdmin && prop.isReferenceData === true) {
             return false;
         }
         const uniqueId = prop.id || prop.title;
