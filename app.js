@@ -11295,7 +11295,7 @@ function renderCardImageHTML(prop, wrapperClass = 'card-image-wrapper', heightSt
                 ${youtubeBadge}
                 ${b2bBadge}
                 ${b2bSponsored}
-                <img src="${optimizeImageUrl(prop.photo)}" alt="${prop.title}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="${optimizeImageUrl(prop.photo)}" alt="${prop.title}" loading="eager" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         `;
     }
