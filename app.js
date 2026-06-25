@@ -1133,12 +1133,10 @@ function switchView(viewId) {
                 syncSupabaseData(false).then(() => {
                     const loader = document.getElementById('catalog-live-sync-loader');
                     if (loader) loader.remove();
-                    renderCatalogProperties();
                 }).catch(err => {
                     console.error("Error al sincronizar datos en segundo plano:", err);
                     const loader = document.getElementById('catalog-live-sync-loader');
                     if (loader) loader.remove();
-                    renderCatalogProperties(); // Fallback seguro
                 });
             }, 1);
         }
