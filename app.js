@@ -178,9 +178,9 @@ function saveUserPortfolio() {
 }
 
 // Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.53') !== 'true') {
+if (localStorage.getItem('valorgt_cache_clear_v10.54') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.setItem('valorgt_cache_clear_v10.53', 'true');
+    localStorage.setItem('valorgt_cache_clear_v10.54', 'true');
     console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
 }
 
@@ -9932,7 +9932,7 @@ async function _syncSupabaseDataInternal() {
         try {
             const { data: remoteProperties, error } = await supabaseClient
                 .from('properties')
-                .select('id, title, category, type, price_usd, size_m2, rooms, bathrooms, parkings, photo_url, location_key, latitude, longitude, agent_id, agent_email, sponsored');
+                .select('id, title, category, type, price_usd, size_m2, rooms, bathrooms, parkings, photo_url, location_key, latitude, longitude, agent_id, sponsored');
 
                 if (error) {
                     console.error("Error al sincronizar propiedades desde Supabase:", error);
@@ -9996,7 +9996,7 @@ async function _syncSupabaseDataInternal() {
                                 lat: parseFloat(prop.latitude),
                                 lng: parseFloat(prop.longitude),
                                 agent_id: prop.agent_id,
-                                agentEmail: prop.agent_email || 'admin@valorgt.com'
+                                agentEmail: 'admin@valorgt.com'
                             };
 
                             allRemoteFormatted.push(formattedProp);
