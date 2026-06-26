@@ -178,9 +178,9 @@ function saveUserPortfolio() {
 }
 
 // Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.51') !== 'true') {
+if (localStorage.getItem('valorgt_cache_clear_v10.52') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.setItem('valorgt_cache_clear_v10.51', 'true');
+    localStorage.setItem('valorgt_cache_clear_v10.52', 'true');
     console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
 }
 
@@ -9932,7 +9932,7 @@ async function _syncSupabaseDataInternal() {
         try {
             const { data: remoteProperties, error } = await supabaseClient
                 .from('properties')
-                .select('*');
+                .select('id, title, category, type, price_usd, size_m2, rooms, bathrooms, parkings, photo_url, location_key, latitude, longitude, agent_id, agent_email, sponsored');
 
                 if (error) {
                     console.error("Error al sincronizar propiedades desde Supabase:", error);
