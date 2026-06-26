@@ -9839,6 +9839,7 @@ async function _syncSupabaseDataInternal() {
     try {
         // Sincronizar configuraciones globales de Supabase de forma totalmente asíncrona en paralelo (no bloqueante)
         fetchSystemSettingsFromSupabase().catch(err => console.warn("Fallo al obtener configuraciones en paralelo:", err));
+        syncBannersFromSupabase().catch(err => console.warn("Fallo al sincronizar portadas en paralelo:", err));
 
         // Sincronizar perfiles de agentes para la tabla admin si la vista admin está activa
         const adminViewEl = document.getElementById('view-admin');
@@ -10697,6 +10698,34 @@ function saveAdminBanner() {
         localStorage.setItem('admin_zone_banners', JSON.stringify(banners));
         appendAdminLog("SYSTEM", `banner_config: Portada alternativa para ${zoneName} guardada y ${enabled ? 'HABILITADA' : 'DESHABILITADA'}.`, true);
         alert(`¡Portada Alternativa para ${zoneName} guardada con éxito!`);
+
+        // Sincronizar asíncronamente con Supabase
+        if (isSupabaseActive && supabaseClient) {
+            (async () => {
+                try {
+                    console.log(`📡 [Banners] Guardando portada para ${zoneKey} en Supabase...`);
+                    const { error } = await supabaseClient
+                        .from('zone_banners')
+                        .upsert({
+                            zone_key: zoneKey,
+                            enabled: enabled,
+                            title: title,
+                            subtitle: subtitle,
+                            cta_text: ctaText,
+                            link: link,
+                            photo: photo,
+                            updated_at: new Date().toISOString()
+                        });
+                    if (error) {
+                        console.error("❌ [Banners] Error de Supabase al guardar portada alternativa:", error);
+                    } else {
+                        console.log("✅ [Banners] Portada alternativa sincronizada exitosamente con Supabase.");
+                    }
+                } catch (dbErr) {
+                    console.error("⚠️ [Banners] Fallo al conectar a Supabase para guardar portada:", dbErr);
+                }
+            })();
+        }
     } catch (e) {
         console.error("Error al guardar admin_zone_banners:", e);
         if (e.name === 'QuotaExceededError' || e.code === 22) {
@@ -12443,6 +12472,52 @@ async function fetchSystemSettingsFromSupabase() {
                 openWelcomeVideoModal();
             }
         }, 1500);
+    }
+}
+
+/**
+ * Descarga y sincroniza las portadas alternativas del administrador desde Supabase
+ */
+async function syncBannersFromSupabase() {
+    if (!isSupabaseActive || !supabaseClient) return;
+    try {
+        console.log("📡 [Banners] Sincronizando portadas alternativas desde Supabase...");
+        const { data, error } = await supabaseClient
+            .from('zone_banners')
+            .select('*');
+
+        if (!error && data) {
+            let banners = {};
+            try {
+                // Cargar configuraciones locales existentes primero para no perder otras posibles claves locales
+                banners = JSON.parse(localStorage.getItem('admin_zone_banners') || '{}');
+            } catch (e) {
+                console.error(e);
+            }
+            
+            data.forEach(item => {
+                banners[item.zone_key] = {
+                    enabled: item.enabled,
+                    title: item.title,
+                    subtitle: item.subtitle,
+                    ctaText: item.cta_text,
+                    link: item.link,
+                    photo: item.photo
+                };
+            });
+            
+            localStorage.setItem('admin_zone_banners', JSON.stringify(banners));
+            console.log(`✅ [Banners] ${data.length} portadas sincronizadas con éxito de Supabase.`);
+            
+            // Si la zona de búsqueda actual en el Dashboard es alguna de estas, actualizar deck para ver el cambio de inmediato
+            const activeDashboardZoneSelect = document.getElementById('prop-location');
+            const zoneKey = activeDashboardZoneSelect ? activeDashboardZoneSelect.value : 'todos';
+            renderFeaturedProperties(zoneKey);
+        } else if (error) {
+            console.error("❌ [Banners] Error al sincronizar portadas de Supabase:", error);
+        }
+    } catch (e) {
+        console.error("⚠️ [Banners] Fallo de conexión al sincronizar portadas:", e);
     }
 }
 
