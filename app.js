@@ -1826,6 +1826,18 @@ function renderCatalogProperties() {
     function renderNextBatch() {
         if (index >= properties.length) {
             counter.innerText = `${renderedCount} ACTIVO${renderedCount === 1 ? '' : 'S'} ENCONTRADO${renderedCount === 1 ? '' : 'S'}`;
+            if (renderedCount === 0) {
+                const zoneData = ZONES_DATABASE[zoneKey] || { name: zoneKey };
+                const zoneName = zoneData.name.split(' (')[0];
+                grid.innerHTML = `
+                    <div class="empty-deck-state font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px; border: 1px dashed rgba(0, 240, 255, 0.25); border-radius: 8px; background: rgba(0, 240, 255, 0.01); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
+                        <i data-lucide="search-code" style="width: 32px; height: 32px; stroke-width: 1.5; color: var(--cyan); margin-bottom: 12px;"></i>
+                        <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); margin-bottom: 6px;">BÚSQUEDA SIN RESULTADOS</h4>
+                        <p style="font-size: 0.65rem; max-width: 450px; line-height: 1.4;">No se detectaron activos de la categoría <strong style="color: var(--cyan);">${activeB2cCategory.toUpperCase()}</strong> en <strong style="color: var(--cyan);">${activeB2cType === 'todos' ? 'VENTA/RENTA' : activeB2cType.toUpperCase()}</strong> en el sector de <strong style="color: var(--cyan);">${zoneName}</strong>.</p>
+                        <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 8px;">Intenta seleccionando otra ubicación en el menú desplegable superior, o restablece los filtros.</p>
+                    </div>
+                `;
+            }
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -1947,6 +1959,7 @@ function renderCatalogProperties() {
         index = batchLimit;
 
         // Carga diferida progresiva optimizada
+        // Carga diferida progresiva optimizada
         if (isFirstBatch) {
             isFirstBatch = false;
             // Dibujar el siguiente lote inmediatamente
@@ -1959,23 +1972,6 @@ function renderCatalogProperties() {
 
     // Iniciar el renderizado progresivo
     renderNextBatch();
-
-    counter.innerText = `${renderedCount} ACTIVO${renderedCount === 1 ? '' : 'S'} ENCONTRADO${renderedCount === 1 ? '' : 'S'}`;
-
-    if (renderedCount === 0) {
-        grid.innerHTML = `
-            <div class="empty-deck-state font-mono" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px; border: 1px dashed rgba(0, 240, 255, 0.25); border-radius: 8px; background: rgba(0, 240, 255, 0.01); color: var(--text-secondary); width: 100%; box-sizing: border-box; text-align: center;">
-                <i data-lucide="search-code" style="width: 32px; height: 32px; stroke-width: 1.5; color: var(--cyan); margin-bottom: 12px;"></i>
-                <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); margin-bottom: 6px;">BÚSQUEDA SIN RESULTADOS</h4>
-                <p style="font-size: 0.65rem; max-width: 450px; line-height: 1.4;">No se detectaron activos de la categoría <strong style="color: var(--cyan);">${activeB2cCategory.toUpperCase()}</strong> en <strong style="color: var(--cyan);">${activeB2cType === 'todos' ? 'VENTA/RENTA' : activeB2cType.toUpperCase()}</strong> en el sector de <strong style="color: var(--cyan);">${zoneName}</strong>.</p>
-                <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 8px;">Intenta seleccionando otra ubicación en el menú desplegable superior, o restablece los filtros.</p>
-            </div>
-        `;
-    }
-
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
 }
 
 /**
