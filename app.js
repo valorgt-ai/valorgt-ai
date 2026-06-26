@@ -178,9 +178,9 @@ function saveUserPortfolio() {
 }
 
 // Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.49') !== 'true') {
+if (localStorage.getItem('valorgt_cache_clear_v10.50') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.setItem('valorgt_cache_clear_v10.49', 'true');
+    localStorage.setItem('valorgt_cache_clear_v10.50', 'true');
     console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
 }
 
@@ -1787,6 +1787,7 @@ function renderCatalogProperties() {
 
     const seen = new Set();
     properties = properties.filter(prop => {
+        // Si no es admin y es una propiedad de referencia (las de prueba de mockData), ocultarla
         if (!isAdmin && prop.isReferenceData === true) {
             return false;
         }
