@@ -14159,7 +14159,18 @@ function initPautaView() {
     Object.keys(PORTFOLIO_DATABASE).forEach(zoneKey => {
         const list = PORTFOLIO_DATABASE[zoneKey] || [];
         list.forEach(p => {
-            if (p.isAgentUpload === true) {
+            const isOwner = loggedInB2bClient && (
+                p.agent_id === loggedInB2bClient.id || 
+                (p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) ||
+                (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
+            );
+            
+            const isAdminBypass = (loggedInB2bClient && loggedInB2bClient.email && (
+                loggedInB2bClient.email.toLowerCase().includes('admin') || 
+                loggedInB2bClient.email.toLowerCase().includes('sgalindo')
+            )) || (!loggedInB2bClient && isCommercialAuthenticated);
+
+            if (p.isAgentUpload === true && (isOwner || isAdminBypass)) {
                 agentProps.push({ prop: p, zoneKey: zoneKey });
             }
         });
