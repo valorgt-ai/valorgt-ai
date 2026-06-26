@@ -11371,6 +11371,58 @@ function jumpToCardImageSlide(sliderId, slideIndex, totalSlides) {
  */
 
 /**
+ * Carga de forma diferida los metadatos y fotos de la propiedad desde Supabase
+ */
+async function lazyLoadPropertyMetadata(prop, callback) {
+    if (!isSupabaseActive || !supabaseClient || !prop.id || String(prop.id).startsWith('ref-') || String(prop.id).startsWith('ref_local_')) {
+        if (callback) callback(prop);
+        return;
+    }
+    
+    if (prop.metadataLoaded) {
+        if (callback) callback(prop);
+        return;
+    }
+
+    try {
+        console.log(`📡 [Metadata] Cargando metadatos para propiedad #${prop.id}...`);
+        const { data, error } = await supabaseClient
+            .from('properties')
+            .select('metadata')
+            .eq('id', prop.id)
+            .maybeSingle();
+
+        if (!error && data && data.metadata) {
+            prop.metadata = data.metadata;
+            prop.metadataLoaded = true;
+            console.log(`✅ [Metadata] Datos cargados con éxito:`, data.metadata);
+            
+            if (data.metadata.photos && Array.isArray(data.metadata.photos)) {
+                prop.photos = data.metadata.photos;
+            }
+            if (data.metadata.description) {
+                prop.description = data.metadata.description;
+            }
+            if (data.metadata.agentEmail) {
+                prop.agentEmail = data.metadata.agentEmail;
+                if (window.activePropertyPageDetails && window.activePropertyPageDetails.id === prop.id) {
+                    window.activePropertyPageDetails.agentEmail = data.metadata.agentEmail;
+                }
+            }
+            if (data.metadata.agentName) prop.agentName = data.metadata.agentName;
+            if (data.metadata.agentCompany) prop.agentCompany = data.metadata.agentCompany;
+            if (data.metadata.agentLogo) prop.agentLogo = data.metadata.agentLogo;
+            if (data.metadata.agentPhone) prop.agentPhone = data.metadata.agentPhone;
+            if (data.metadata.agentPlan) prop.agentPlan = data.metadata.agentPlan;
+        }
+    } catch (err) {
+        console.error("⚠️ Error al cargar metadatos diferidos:", err);
+    }
+    
+    if (callback) callback(prop);
+}
+
+/**
  * Abre el Modal Premium con todos los detalles de la propiedad seleccionada
  */
 function openPropertyDetailModal(zoneKey, index) {
@@ -11380,7 +11432,7 @@ function openPropertyDetailModal(zoneKey, index) {
     const modal = document.getElementById('property-detail-modal');
     if (!modal) return;
 
-    // Configurar metadatos y título
+    // Configurar metadatos y título iniciales
     window.activePropertyPageDetails = {
         id: prop.id || `ref-${zoneKey}-${index}`,
         title: prop.title,
@@ -11391,7 +11443,6 @@ function openPropertyDetailModal(zoneKey, index) {
     document.getElementById('modal-property-tag').innerText = prop.tag;
     document.getElementById('modal-property-title').innerText = prop.title;
     
-    // Configurar precio dinámico según moneda
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
     const convertedPrice = prop.priceUSD * conversion;
@@ -11399,18 +11450,15 @@ function openPropertyDetailModal(zoneKey, index) {
     const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
     document.getElementById('modal-property-price').innerText = `${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}`;
 
-    // Configurar descripción (usar por defecto si no tiene)
     const desc = prop.description || (prop.metadata && prop.metadata.description) || 'Propiedad exclusiva seleccionada y tasada por el nodo inteligente de ValorGT AI.';
     document.getElementById('modal-property-description').innerText = desc;
 
-    // Configurar especificaciones base
     const modalUnit = (prop.category || '').toLowerCase() === 'terreno' ? ' vr²' : ' m²';
     document.getElementById('modal-spec-size').innerText = `${formatNumber(prop.size)}${modalUnit}`;
     document.getElementById('modal-spec-rooms').innerText = prop.rooms;
     document.getElementById('modal-spec-baths').innerText = prop.bathrooms;
     document.getElementById('modal-spec-parks').innerText = prop.parkings;
 
-    // Configurar tags avanzados en cian
     const tagsArea = document.getElementById('modal-advanced-tags');
     tagsArea.innerHTML = '';
     
@@ -11441,65 +11489,72 @@ function openPropertyDetailModal(zoneKey, index) {
         tagsArea.innerHTML = '<span style="font-size: 0.65rem; color: var(--text-muted);">Sin características adicionales configuradas.</span>';
     }
 
-    // Configurar carrusel de imágenes en el modal
-    const galleryArea = document.getElementById('modal-property-gallery');
-    const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0) 
-        ? prop.metadata.photos 
-        : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo]);
+    // Renderizado del carrusel e información del asesor, manejado tras cargar metadatos diferidos
+    const updateModalDynamicContent = (updatedProp) => {
+        const galleryArea = document.getElementById('modal-property-gallery');
+        const photos = (updatedProp.metadata && updatedProp.metadata.photos && updatedProp.metadata.photos.length > 0) 
+            ? updatedProp.metadata.photos 
+            : (updatedProp.photos && updatedProp.photos.length > 0 ? updatedProp.photos : [updatedProp.photo]);
 
-    if (photos.length > 1) {
-        const rawId = prop.id || prop.title || Math.random().toString();
-        const sliderId = `modal-slider-${rawId.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
-        galleryArea.innerHTML = `
-            <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 380px; border-radius: 12px 12px 0 0;">
-                <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
-                    ${photos.map(p => `<img src="${p}" alt="${prop.title}" onclick="openImageLightbox('${p}')" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover; cursor: pointer;">`).join('')}
+        if (photos.length > 1) {
+            const rawId = updatedProp.id || updatedProp.title || Math.random().toString();
+            const sliderId = `modal-slider-${rawId.toString().replace(/[^a-zA-Z0-9]/g, '')}`;
+            galleryArea.innerHTML = `
+                <div class="card-image-slider-container" id="${sliderId}" style="position: relative; overflow: hidden; width: 100%; height: 380px; border-radius: 12px 12px 0 0;">
+                    <div class="card-image-slider-track" style="display: flex; width: ${photos.length * 100}%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); transform: translateX(0);">
+                        ${photos.map(p => `<img src="${p}" alt="${updatedProp.title}" onclick="openImageLightbox('${p}')" style="width: ${100 / photos.length}%; height: 100%; object-fit: cover; cursor: pointer;">`).join('')}
+                    </div>
+                    <button class="slider-btn prev" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', -1, ${photos.length})" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
+                    <button class="slider-btn next" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', 1, ${photos.length})" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i></button>
+                    <div class="slider-indicators" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 8;">
+                        ${photos.map((_, idx) => `<span class="slider-dot ${idx === 0 ? 'active' : ''}" style="width: 7px; height: 7px; border-radius: 50%; background: ${idx === 0 ? 'var(--cyan)' : 'rgba(255,255,255,0.4)'}; transition: background 0.2s, transform 0.2s; cursor: pointer;" onclick="event.stopPropagation(); jumpToCardImageSlide('${sliderId}', ${idx}, ${photos.length})"></span>`).join('')}
+                    </div>
                 </div>
-                <!-- Botones del slider -->
-                <button class="slider-btn prev" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', -1, ${photos.length})" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i></button>
-                <button class="slider-btn next" onclick="event.stopPropagation(); changeCardImageSlide('${sliderId}', 1, ${photos.length})" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: #fff; border: 1px solid rgba(255,255,255,0.3); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 1; z-index: 8;"><i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i></button>
-                
-                <!-- Indicadores de dots -->
-                <div class="slider-indicators" style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 8;">
-                    ${photos.map((_, idx) => `<span class="slider-dot ${idx === 0 ? 'active' : ''}" style="width: 7px; height: 7px; border-radius: 50%; background: ${idx === 0 ? 'var(--cyan)' : 'rgba(255,255,255,0.4)'}; transition: background 0.2s, transform 0.2s; cursor: pointer;" onclick="event.stopPropagation(); jumpToCardImageSlide('${sliderId}', ${idx}, ${photos.length})"></span>`).join('')}
+            `;
+        } else {
+            galleryArea.innerHTML = `
+                <div style="width: 100%; height: 380px; overflow: hidden; border-radius: 12px 12px 0 0; position: relative;">
+                    <img src="${updatedProp.photo}" alt="${updatedProp.title}" onclick="openImageLightbox('${updatedProp.photo}')" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
                 </div>
-            </div>
-        `;
-    } else {
-        galleryArea.innerHTML = `
-            <div style="width: 100%; height: 380px; overflow: hidden; border-radius: 12px 12px 0 0; position: relative;">
-                <img src="${prop.photo}" alt="${prop.title}" onclick="openImageLightbox('${prop.photo}')" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
-            </div>
-        `;
-    }
+            `;
+        }
 
-    // Configurar información de contacto del agente creador
-    const agentName = prop.agentName || (prop.metadata && prop.metadata.agentName) || 'Asesor Inmobiliario';
-    const agentCompany = prop.agentCompany || (prop.metadata && prop.metadata.agentCompany) || 'ValorGT Premium Partner';
-    const agentLogo = prop.agentLogo || (prop.metadata && prop.metadata.agentLogo) || '';
-    const agentPhone = prop.agentPhone || (prop.metadata && prop.metadata.agentPhone) || '50250129482'; // fallback Ana Estévez
-    const ownerPlan = prop.agentPlan || (prop.metadata && prop.metadata.agentPlan) || 'Básico';
+        const descText = updatedProp.description || (updatedProp.metadata && updatedProp.metadata.description) || 'Propiedad exclusiva seleccionada y tasada por el nodo inteligente de ValorGT AI.';
+        document.getElementById('modal-property-description').innerText = descText;
 
-    document.getElementById('modal-agent-name').innerText = agentName;
-    document.getElementById('modal-agent-company').innerText = agentCompany;
+        const agentName = updatedProp.agentName || (updatedProp.metadata && updatedProp.metadata.agentName) || 'Asesor Inmobiliario';
+        const agentCompany = updatedProp.agentCompany || (updatedProp.metadata && updatedProp.metadata.agentCompany) || 'ValorGT Premium Partner';
+        const agentLogo = updatedProp.agentLogo || (updatedProp.metadata && updatedProp.metadata.agentLogo) || '';
+        const agentPhone = updatedProp.agentPhone || (updatedProp.metadata && updatedProp.metadata.agentPhone) || '50250129482';
+        const ownerPlan = updatedProp.agentPlan || (updatedProp.metadata && updatedProp.metadata.agentPlan) || 'Básico';
 
-    // Renderizar logo del agente si tiene plan Pro/Premium
-    const logoContainer = document.getElementById('modal-agent-logo-container');
-    const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
-    
-    if (isPremiumPartner && agentLogo) {
-        logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
-        logoContainer.style.display = "flex";
-    } else {
-        logoContainer.innerHTML = `<i data-lucide="user" style="width: 20px; height: 20px; color: var(--cyan);"></i>`;
-        logoContainer.style.display = "flex";
-    }
+        document.getElementById('modal-agent-name').innerText = agentName;
+        document.getElementById('modal-agent-company').innerText = agentCompany;
 
-    // Configurar enlace directo de WhatsApp con mensaje personalizado
-    const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
-    const waText = encodeURIComponent(`¡Hola! Estoy interesado en la propiedad "${prop.title}" (${prop.tag}) que vi listada en ValorGT AI. ¿Me podrías brindar más información sobre esta opción?`);
-    const waBtn = document.getElementById('modal-whatsapp-btn');
-    waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
+        const logoContainer = document.getElementById('modal-agent-logo-container');
+        const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
+        
+        if (isPremiumPartner && agentLogo) {
+            logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
+            logoContainer.style.display = "flex";
+        } else {
+            logoContainer.innerHTML = `<i data-lucide="user" style="width: 20px; height: 20px; color: var(--cyan);"></i>`;
+            logoContainer.style.display = "flex";
+        }
+
+        const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
+        const waText = encodeURIComponent(`¡Hola! Estoy interesado en la propiedad "${updatedProp.title}" (${updatedProp.tag}) que vi listada en ValorGT AI. ¿Me podrías brindar más información sobre esta opción?`);
+        const waBtn = document.getElementById('modal-whatsapp-btn');
+        waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    };
+
+    // Lanzar carga diferida e inicializar con lo que tengamos
+    updateModalDynamicContent(prop);
+    lazyLoadPropertyMetadata(prop, updateModalDynamicContent);
 
     // Configurar botón Ficha Completa integrado
     const fichaCompletaBtn = document.getElementById('modal-ficha-completa-btn');
@@ -11516,7 +11571,6 @@ function openPropertyDetailModal(zoneKey, index) {
         autotasarBtn.onclick = () => {
             closePropertyDetailModal();
             autofillValuationForm(zoneKey, index);
-            // Desplazar suavemente a la sección de valoración
             document.getElementById('nav-btn-dashboard').click();
             document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
         };
@@ -14490,85 +14544,100 @@ function showPropertyPage(zoneKey, index) {
         }
     }
 
-    // Grilla premium de imágenes (Zillow-style)
-    const galleryArea = document.getElementById('page-gallery-grid');
-    if (galleryArea) {
-        const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0) 
-            ? prop.metadata.photos 
-            : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo || prop.photoUrl || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80']);
+    // Callback de actualización dinámica de contenido de página
+    const updatePageDynamicContent = (updatedProp) => {
+        // Descripción general
+        const desc = updatedProp.description || (updatedProp.metadata && updatedProp.metadata.description) || 'Propiedad exclusiva seleccionada y tasada por el nodo inteligente de ValorGT AI.';
+        document.getElementById('page-property-description').innerText = desc;
 
-        galleryArea.innerHTML = '';
-        
-        // Crear el layout de grilla premium
-        const mainItem = document.createElement('div');
-        mainItem.className = 'gallery-item main-item';
-        mainItem.style.cursor = 'pointer';
-        mainItem.onclick = () => openImageLightbox(photos[0]);
-        mainItem.innerHTML = `<img src="${photos[0]}" alt="${prop.title}">`;
-        galleryArea.appendChild(mainItem);
+        // Grilla premium de imágenes (Zillow-style)
+        const galleryArea = document.getElementById('page-gallery-grid');
+        if (galleryArea) {
+            const photos = (updatedProp.metadata && updatedProp.metadata.photos && updatedProp.metadata.photos.length > 0) 
+                ? updatedProp.metadata.photos 
+                : (updatedProp.photos && updatedProp.photos.length > 0 ? updatedProp.photos : [updatedProp.photo || updatedProp.photoUrl || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80']);
 
-        // Rellenar con fotos secundarias (máximo 4)
-        for (let i = 1; i < Math.min(photos.length, 5); i++) {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.style.cursor = 'pointer';
-            const photoUrl = photos[i];
-            item.onclick = () => openImageLightbox(photoUrl);
-            item.innerHTML = `<img src="${photoUrl}" alt="${prop.title}">`;
-            galleryArea.appendChild(item);
-        }
+            galleryArea.innerHTML = '';
+            
+            // Crear el layout de grilla premium
+            const mainItem = document.createElement('div');
+            mainItem.className = 'gallery-item main-item';
+            mainItem.style.cursor = 'pointer';
+            mainItem.onclick = () => openImageLightbox(photos[0]);
+            mainItem.innerHTML = `<img src="${photos[0]}" alt="${updatedProp.title}">`;
+            galleryArea.appendChild(mainItem);
 
-        // Rellenar si faltan imágenes secundarias
-        if (photos.length === 1) {
-            for (let i = 1; i <= 4; i++) {
+            // Rellenar con fotos secundarias (máximo 4)
+            for (let i = 1; i < Math.min(photos.length, 5); i++) {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
                 item.style.cursor = 'pointer';
-                item.onclick = () => openImageLightbox(photos[0]);
-                item.innerHTML = `<img src="${photos[0]}" alt="${prop.title}" style="opacity: 0.65; filter: blur(0.5px);">`;
-                galleryArea.appendChild(item);
-            }
-        } else if (photos.length < 5) {
-            let missing = 5 - photos.length;
-            for (let i = 0; i < missing; i++) {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.style.cursor = 'pointer';
-                const photoUrl = photos[i % photos.length];
+                const photoUrl = photos[i];
                 item.onclick = () => openImageLightbox(photoUrl);
-                item.innerHTML = `<img src="${photoUrl}" alt="${prop.title}" style="opacity: 0.85;">`;
+                item.innerHTML = `<img src="${photoUrl}" alt="${updatedProp.title}">`;
                 galleryArea.appendChild(item);
             }
+
+            // Rellenar si faltan imágenes secundarias
+            if (photos.length === 1) {
+                for (let i = 1; i <= 4; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.style.cursor = 'pointer';
+                    item.onclick = () => openImageLightbox(photos[0]);
+                    item.innerHTML = `<img src="${photos[0]}" alt="${updatedProp.title}" style="opacity: 0.65; filter: blur(0.5px);">`;
+                    galleryArea.appendChild(item);
+                }
+            } else if (photos.length < 5) {
+                let missing = 5 - photos.length;
+                for (let i = 0; i < missing; i++) {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.style.cursor = 'pointer';
+                    const photoUrl = photos[i % photos.length];
+                    item.onclick = () => openImageLightbox(photoUrl);
+                    item.innerHTML = `<img src="${photoUrl}" alt="${updatedProp.title}" style="opacity: 0.85;">`;
+                    galleryArea.appendChild(item);
+                }
+            }
         }
-    }
 
-    // Configurar Asesor Encargado
-    const agentName = prop.agentName || (prop.metadata && prop.metadata.agentName) || 'Asesor Inmobiliario';
-    const agentCompany = prop.agentCompany || (prop.metadata && prop.metadata.agentCompany) || 'ValorGT Premium Partner';
-    const agentLogo = prop.agentLogo || (prop.metadata && prop.metadata.agentLogo) || '';
-    const agentPhone = prop.agentPhone || (prop.metadata && prop.metadata.agentPhone) || '50250129482';
-    const ownerPlan = prop.agentPlan || (prop.metadata && prop.metadata.agentPlan) || 'Básico';
+        // Configurar Asesor Encargado
+        const agentName = updatedProp.agentName || (updatedProp.metadata && updatedProp.metadata.agentName) || 'Asesor Inmobiliario';
+        const agentCompany = updatedProp.agentCompany || (updatedProp.metadata && updatedProp.metadata.agentCompany) || 'ValorGT Premium Partner';
+        const agentLogo = updatedProp.agentLogo || (updatedProp.metadata && updatedProp.metadata.agentLogo) || '';
+        const agentPhone = updatedProp.agentPhone || (updatedProp.metadata && updatedProp.metadata.agentPhone) || '50250129482';
+        const ownerPlan = updatedProp.agentPlan || (updatedProp.metadata && updatedProp.metadata.agentPlan) || 'Básico';
 
-    document.getElementById('page-agent-name').innerText = agentName;
-    document.getElementById('page-agent-company').innerText = agentCompany;
+        document.getElementById('page-agent-name').innerText = agentName;
+        document.getElementById('page-agent-company').innerText = agentCompany;
 
-    const logoContainer = document.getElementById('page-agent-logo-container');
-    if (logoContainer) {
-        const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
-        if (isPremiumPartner && agentLogo) {
-            logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
-        } else {
-            logoContainer.innerHTML = `<i data-lucide="user" style="width: 20px; height: 20px; color: var(--cyan);"></i>`;
+        const logoContainer = document.getElementById('page-agent-logo-container');
+        if (logoContainer) {
+            const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
+            if (isPremiumPartner && agentLogo) {
+                logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
+            } else {
+                logoContainer.innerHTML = `<i data-lucide="user" style="width: 20px; height: 20px; color: var(--cyan);"></i>`;
+            }
         }
-    }
 
-    // Enlace de WhatsApp
-    const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
-    const waText = encodeURIComponent(`¡Hola! Estoy interesado en la propiedad "${prop.title}" (${prop.tag}) que vi en su ficha de ValorGT AI. ¿Me podrías brindar más información?`);
-    const waBtn = document.getElementById('page-whatsapp-btn');
-    if (waBtn) {
-        waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
-    }
+        // Enlace de WhatsApp
+        const cleanPhone = agentPhone.replace(/[^0-9]/g, '');
+        const waText = encodeURIComponent(`¡Hola! Estoy interesado en la propiedad "${updatedProp.title}" (${updatedProp.tag}) que vi en su ficha de ValorGT AI. ¿Me podrías brindar más información?`);
+        const waBtn = document.getElementById('page-whatsapp-btn');
+        if (waBtn) {
+            waBtn.href = `https://wa.me/${cleanPhone}?text=${waText}`;
+        }
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    };
+
+    // Renderizar inicialmente con lo que tengamos y luego de forma diferida
+    updatePageDynamicContent(prop);
+    lazyLoadPropertyMetadata(prop, updatePageDynamicContent);
 
     // Configurar Autotasar IA en la página dedicada
     const autotasarBtn = document.getElementById('page-autotasar-btn');
