@@ -178,9 +178,9 @@ function saveUserPortfolio() {
 }
 
 // Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.52') !== 'true') {
+if (localStorage.getItem('valorgt_cache_clear_v10.53') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.setItem('valorgt_cache_clear_v10.52', 'true');
+    localStorage.setItem('valorgt_cache_clear_v10.53', 'true');
     console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
 }
 
@@ -9973,21 +9973,21 @@ async function _syncSupabaseDataInternal() {
                                 rooms: parseInt(prop.rooms),
                                 bathrooms: parseFloat(prop.bathrooms),
                                 parkings: parseInt(prop.parkings),
-                                garden: prop.metadata && prop.metadata.garden ? parseFloat(prop.metadata.garden) : 0,
-                                study: prop.metadata && prop.metadata.study ? prop.metadata.study : false,
-                                familyRoom: prop.metadata && prop.metadata.familyRoom ? prop.metadata.familyRoom : false,
-                                hasMasterSuite: prop.metadata && prop.metadata.hasMasterSuite ? prop.metadata.hasMasterSuite : false,
-                                hasVisitorBath: prop.metadata && prop.metadata.hasVisitorBath ? prop.metadata.hasVisitorBath : false,
-                                amenities: prop.metadata && prop.metadata.amenities ? prop.metadata.amenities : [],
+                                garden: 0,
+                                study: false,
+                                familyRoom: false,
+                                hasMasterSuite: false,
+                                hasVisitorBath: false,
+                                amenities: [],
                                 photo: prop.photo_url,
-                                photos: (prop.metadata && prop.metadata.photos) ? prop.metadata.photos : [prop.photo_url],
-                                description: (prop.metadata && prop.metadata.description) ? prop.metadata.description : 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
-                                agentName: (prop.metadata && prop.metadata.agentName) ? prop.metadata.agentName : 'Socio Inmobiliario',
-                                agentCompany: (prop.metadata && prop.metadata.agentCompany) ? prop.metadata.agentCompany : 'ValorGT Premium Partner',
-                                agentPhone: (prop.metadata && prop.metadata.agentPhone) ? prop.metadata.agentPhone : '50250129482',
-                                agentLogo: (prop.metadata && prop.metadata.agentLogo) ? prop.metadata.agentLogo : '',
-                                agentPlan: (prop.metadata && prop.metadata.agentPlan) ? prop.metadata.agentPlan : 'Básico',
-                                youtubeUrl: (prop.metadata && prop.metadata.youtubeUrl) ? prop.metadata.youtubeUrl : '',
+                                photos: [prop.photo_url],
+                                description: 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
+                                agentName: 'Socio Inmobiliario',
+                                agentCompany: 'ValorGT Premium Partner',
+                                agentPhone: '50250129482',
+                                agentLogo: '',
+                                agentPlan: 'Básico',
+                                youtubeUrl: '',
                                 badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
                                 location: zoneKey,
                                 isAgentUpload: !isRef,
@@ -9996,7 +9996,7 @@ async function _syncSupabaseDataInternal() {
                                 lat: parseFloat(prop.latitude),
                                 lng: parseFloat(prop.longitude),
                                 agent_id: prop.agent_id,
-                                agentEmail: prop.agent_email || (prop.metadata && prop.metadata.agentEmail) || null
+                                agentEmail: prop.agent_email || 'admin@valorgt.com'
                             };
 
                             allRemoteFormatted.push(formattedProp);
