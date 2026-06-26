@@ -178,12 +178,10 @@ function saveUserPortfolio() {
 }
 
 // Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.48') !== 'true') {
+if (localStorage.getItem('valorgt_cache_clear_v10.49') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.removeItem('valorgt_local_properties');
-    localStorage.removeItem('admin_zone_banners');
-    localStorage.setItem('valorgt_cache_clear_v10.48', 'true');
-    console.log("🧹 [Cache Clear Global] Limpieza forzada de base de datos local completada.");
+    localStorage.setItem('valorgt_cache_clear_v10.49', 'true');
+    console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
 }
 
 const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
