@@ -178,9 +178,9 @@ function saveUserPortfolio() {
 }
 
 // Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.50') !== 'true') {
+if (localStorage.getItem('valorgt_cache_clear_v10.51') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.setItem('valorgt_cache_clear_v10.50', 'true');
+    localStorage.setItem('valorgt_cache_clear_v10.51', 'true');
     console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
 }
 
@@ -9959,7 +9959,7 @@ async function _syncSupabaseDataInternal() {
                         const allRemoteFormatted = [];
                         remoteProperties.forEach(prop => {
                             const zoneKey = prop.location_key;
-                            const isRef = prop.metadata && prop.metadata.isReferenceData === true;
+                            const isRef = false; // Forzar a que todos los registros de Supabase sean reales en el cliente
                             
                             // Estructurar al formato interno compatible con mockData.js
                             const formattedProp = {
