@@ -1300,9 +1300,9 @@
                             </div>
                             
                             <!-- Sección Central del Medidor (Escala Monumental 400px con Optimismo Superior flotante) -->
-                                              <!-- Indicador Flotante de OPTIMISMO arriba del arco (a un 75% del recorrido, lado derecho superior) -->
-                                <div style="position: absolute; top: -5px; right: 120px; z-index: 12; pointer-events: none;">
-                                    <span style="font-size: 0.85rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.8px; text-shadow: 0 0 10px rgba(191,90,242,0.4);">OPTIMISMO</span>
+                                <!-- Indicador Flotante de OPTIMISMO arriba del arco (a un 75% del recorrido, lado derecho superior) -->
+                                <div style="position: absolute; top: 15px; right: 55px; z-index: 999; pointer-events: none;">
+                                    <span style="font-size: 0.85rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.8px; text-shadow: 0 0 10px rgba(191,90,242,0.6);">OPTIMISMO</span>
                                 </div>
                                 
                                 <div style="position: relative; width: 400px; height: 230px; display: flex; align-items: flex-end; justify-content: center;">
@@ -1323,9 +1323,9 @@
                                         <path d="M 35,200 A 165,165 0 0,1 365,200" fill="none" stroke="url(#sentimentGradientLarge)" stroke-width="26" stroke-linecap="round"/>
                                     </svg>
                                     
-                                    <!-- Aguja Rotatoria Dinámica de Alta Calidad (150px) -->
-                                    <div id="sentiment-needle" style="position: absolute; bottom: 30px; width: 11px; height: 150px; background: linear-gradient(to top, #fff 70%, var(--cyan) 100%); border-radius: 8px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 0 25px rgba(0, 240, 255, 0.5); z-index: 10;">
-                                        <div style="width: 26px; height: 26px; border-radius: 50%; background: #fff; position: absolute; bottom: -8px; left: -8px; box-shadow: 0 0 15px rgba(0,0,0,0.6); border: 3px solid var(--cyan);"></div>
+                                    <!-- Aguja Rotatoria Dinámica de Alta Calidad (150px) con Transparencia de 40% -->
+                                    <div id="sentiment-needle" style="position: absolute; bottom: 30px; width: 11px; height: 150px; background: linear-gradient(to top, rgba(255,255,255,0.4) 70%, rgba(0,240,255,0.4) 100%); border-radius: 8px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 0 25px rgba(0, 240, 255, 0.2); z-index: 10; opacity: 0.4;">
+                                        <div style="width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.4); position: absolute; bottom: -8px; left: -8px; box-shadow: 0 0 15px rgba(0,0,0,0.6); border: 3px solid rgba(0,240,255,0.4);"></div>
                                     </div>
 
                                     <!-- Valor e Indicador del Estado Actual (Centrado Grande) -->
