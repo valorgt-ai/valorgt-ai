@@ -7161,26 +7161,26 @@ input[type="range"]::-webkit-slider-thumb:hover {
     /* Centrado horizontal nativo y reescala limpia */
     .sentiment-gauge-wrapper {
         position: relative !important;
-        left: 50% !important;
-        transform: translateX(-50%) scale(0.72) !important;
-        margin: -25px 0 -20px 0 !important;
-        transform-origin: center center !important;
+        left: 0 !important;
+        margin: -10px auto !important;
         display: flex !important;
         justify-content: center !important;
         align-items: flex-end !important;
-        width: 400px !important;
-        height: 230px !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        height: 185px !important;
         overflow: visible !important;
     }
 
     /* Redimensionar SVG y sus trazados para que no se deformen ni descentren */
     .sentiment-gauge-wrapper svg {
         position: absolute !important;
-        left: 0 !important;
+        left: 50% !important;
         top: 0 !important;
+        transform: translateX(-50%) scale(0.8) !important;
+        transform-origin: center top !important;
         width: 400px !important;
         height: 230px !important;
-        transform: none !important;
     }
 
     .sentiment-gauge-wrapper svg path {
@@ -7190,34 +7190,37 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
     /* Reposicionar y redimensionar aguja física */
     #sentiment-needle {
-        height: 150px !important;
-        bottom: 30px !important;
-        width: 11px !important;
-        left: calc(50% - 5.5px) !important;
+        height: 120px !important;
+        bottom: 25px !important;
+        width: 9px !important;
+        left: calc(50% - 4.5px) !important;
         transform-origin: bottom center !important;
     }
     #sentiment-needle div {
-        width: 26px !important;
-        height: 26px !important;
-        bottom: -8px !important;
-        left: -8px !important;
+        width: 20px !important;
+        height: 20px !important;
+        bottom: -6px !important;
+        left: -6px !important;
     }
 
     /* Ajustar tamaño de textos y etiquetas dentro del velocímetro */
     #sentiment-score-lbl {
-        font-size: 4.2rem !important;
+        font-size: 3.2rem !important;
         text-align: center !important;
         margin: 0 auto !important;
+        position: relative !important;
+        top: -15px !important;
     }
 
-    /* Reposicionar etiqueta flotante OPTIMISMO para el arco de 400px */
+    /* Reposicionar etiqueta flotante OPTIMISMO para móvil */
     .sentiment-optimism-float {
-        top: 12px !important;
-        left: 280px !important;
+        top: 15px !important;
+        left: 220px !important;
+        transform: scale(0.8) !important;
     }
     
     .sentiment-optimism-float span {
-        font-size: 0.85rem !important;
+        font-size: 0.68rem !important;
     }
 
     /* Reducir leyendas de abajo para que no se superpongan */
