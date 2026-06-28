@@ -7147,151 +7147,93 @@ input[type="range"]::-webkit-slider-thumb:hover {
    OPTIMIZACIONES MÓVILES PARA WIDGETS DE SENTIMIENTO Y KPIS MACRO
    ========================================================================== */
 @media (max-width: 768px) {
-    /* Colapsar la grilla principal de inversión a 1 sola columna en móvil */
+    /* Ajustes generales del grid inversor en móvil */
     .investor-grid {
-        grid-template-columns: 1fr !important;
-        gap: 16px !important;
+        grid-template-columns: 1fr 1fr !important; /* Volver a 2 columnas nativas */
+        gap: 10px !important;
     }
 
     .market-sentiment-card {
-        grid-column: span 1 !important;
+        grid-column: span 2 !important; /* Ocupar ancho completo */
         padding: 15px !important;
     }
 
-    /* Grilla de dos columnas ordenadas para los KPIs macro */
-    .kpi-premium-row {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
-        grid-column: span 1 !important;
-    }
-
-    /* Forzar que las tarjetas se adapten a móvil y tengan altura flexible para leerse bien */
-    .kpi-card-premium {
-        height: auto !important;
-        min-height: 80px !important;
-        padding: 10px 8px !important;
-    }
-    
-    .kpi-card-premium .kpi-lbl {
-        font-size: 0.58rem !important;
-        white-space: normal !important;
-        line-height: 1.2 !important;
-    }
-    
-    .kpi-card-premium .kpi-val {
-        font-size: 0.98rem !important;
-        margin-top: 2px;
-    }
-
-    .kpi-card-premium span[style*="font-size: 0.58rem"] {
-        font-size: 0.52rem !important;
-        white-space: normal !important;
-        margin-top: 1px;
-    }
-    
-    /* Ocultar el texto de anclaje secundario en móvil para no desbordar */
-    .kpi-card-premium div span:last-child {
-        display: block !important;
-    }
-    .kpi-mobile-anchor-lbl {
-        display: none !important;
-    }
-
-    /* Evitar recortar el velocímetro en móvil mediante flex normalizado y padding */
+    /* Reducir el tamaño general del velocímetro de forma nativa por CSS transform */
     .sentiment-gauge-wrapper {
-        width: 320px !important;
-        height: 185px !important;
-        overflow: visible !important;
-        margin: 10px auto !important;
-        display: flex !important;
-        justify-content: center !important;
+        transform: scale(0.85);
+        margin: -10px auto !important;
+        transform-origin: center center;
     }
 
-    /* Redimensionar SVG y sus trazados */
-    .sentiment-gauge-wrapper svg {
-        width: 320px !important;
-        height: 185px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-    }
-
-    .sentiment-gauge-wrapper svg path {
-        d: path("M 25,160 A 135,135 0 0,1 295,160") !important;
-        stroke-width: 20px !important;
-    }
-
-    /* Reposicionar y redimensionar aguja física */
-    #sentiment-needle {
-        height: 120px !important;
-        bottom: 25px !important;
-        width: 7px !important;
-        left: calc(50% - 3.5px) !important;
-    }
-    #sentiment-needle div {
-        width: 18px !important;
-        height: 18px !important;
-        bottom: -5px !important;
-        left: -5px !important;
-    }
-
-    /* Ajustar tamaño de textos y etiquetas dentro del velocímetro */
-    #sentiment-score-lbl {
-        font-size: 2.8rem !important;
-    }
-
+    /* Reducir leyendas de abajo para que no se superpongan */
     .sentiment-scale-labels {
-        width: 100% !important;
-        max-width: 340px !important;
         font-size: 0.52rem !important;
-        gap: 2px !important;
-        margin-top: 10px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        width: 100% !important;
+        max-width: 290px !important;
+        margin-top: 5px !important;
     }
 
-    /* Reposicionar etiqueta flotante OPTIMISMO */
-    .sentiment-optimism-float {
-        top: 12px !important;
-        left: 220px !important;
-    }
-    
-    .sentiment-optimism-float span {
-        font-size: 0.65rem !important;
-    }
-
-    /* Ajustar las tres métricas horizontales de abajo */
+    /* Tres métricas horizontales en móvil */
     .sentiment-factors-wrapper {
-        gap: 15px !important;
-        flex-direction: column !important;
+        gap: 10px !important;
         width: 100% !important;
-        max-width: 320px !important;
-        margin: 0 auto !important;
+        padding-top: 10px !important;
     }
-
     .sentiment-factors-wrapper div {
-        border-left: none !important;
-        padding-left: 0 !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 10px;
-        flex: none !important;
-        width: 100% !important;
+        min-width: 80px !important;
+        padding: 0 4px !important;
     }
-    
-    .sentiment-factors-wrapper div:last-child {
-        border-bottom: none !important;
-        padding-bottom: 0 !important;
+    .sentiment-factors-wrapper div span:first-child {
+        font-size: 0.6rem !important;
+    }
+    .sentiment-factors-wrapper div span:last-child {
+        font-size: 0.85rem !important;
     }
 
     /* Alinear cabeceras del Sentiment Index */
     .sentiment-header-row {
         flex-direction: column !important;
-        gap: 15px !important;
+        gap: 10px !important;
         align-items: flex-start !important;
+    }
+    
+    .sentiment-header-row h2 {
+        font-size: 1rem !important;
+    }
+    
+    .sentiment-header-row span {
+        font-size: 0.55rem !important;
     }
     
     .sentiment-select-group {
         width: 100% !important;
         justify-content: space-between !important;
+    }
+
+    /* Grilla de dos columnas para los KPIs macro avanzados */
+    .kpi-premium-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        grid-column: span 2 !important;
+    }
+
+    .kpi-card-premium {
+        height: 80px !important;
+        min-height: 80px !important;
+        padding: 10px 8px !important;
+    }
+    
+    .kpi-card-premium .kpi-lbl {
+        font-size: 0.52rem !important;
+        line-height: 1.1 !important;
+    }
+    
+    .kpi-card-premium .kpi-val {
+        font-size: 0.9rem !important;
+    }
+
+    .kpi-card-premium span[style*="font-size: 0.58rem"] {
+        font-size: 0.48rem !important;
     }
 }
 
