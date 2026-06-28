@@ -1300,12 +1300,14 @@
                             </div>
                             
                             <!-- Sección Central del Medidor (Escala Monumental 400px con Optimismo Superior flotante) -->
-                                <!-- Indicador Flotante de OPTIMISMO arriba del arco (a un 75% del recorrido, lado derecho superior) -->
-                                <div style="position: absolute; top: 15px; right: 55px; z-index: 999; pointer-events: none;">
-                                    <span style="font-size: 0.85rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.8px; text-shadow: 0 0 10px rgba(191,90,242,0.6);">OPTIMISMO</span>
-                                </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; width: 100%; max-width: 600px; margin: 15px 0;">
                                 
                                 <div style="position: relative; width: 400px; height: 230px; display: flex; align-items: flex-end; justify-content: center;">
+                                    <!-- Indicador Flotante de OPTIMISMO arriba de la media luna (en el 75% del arco) -->
+                                    <div style="position: absolute; top: 12px; left: 280px; z-index: 999; pointer-events: none;">
+                                        <span style="font-size: 0.85rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.8px; text-shadow: 0 0 10px rgba(191,90,242,0.6);">OPTIMISMO</span>
+                                    </div>
+
                                     <!-- Dial de medio arco semicircular (Escala Monumental 400px) -->
                                     <svg width="400" height="230" viewBox="0 0 400 230" style="position: absolute; top: 0; left: 0;">
                                         <!-- Arco Fondo -->
@@ -1343,25 +1345,25 @@
                             </div>
 
                             <!-- Diagnóstico del Analista IA -->
-                            <div style="width: 100%; max-width: 650px; text-align: center; z-index: 2;">
-                                <p id="sentiment-desc-text" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.55; margin: 0; font-family: 'Inter', sans-serif;">
+                            <div style="width: 100%; max-width: 650px; text-align: center; z-index: 2; margin-top: 10px;">
+                                <p id="sentiment-desc-text" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin: 0 0 15px 0; font-family: 'Inter', sans-serif; background: rgba(255,255,255,0.02); padding: 12px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
                                     El mercado guatemalteco se encuentra en equilibrio dinámico. Las tasas estables de interés y la absorción controlada favorecen la adquisición inteligente.
                                 </p>
                             </div>
                             
-                            <!-- Factores Clave Ponderados (Fila Horizontal Premium) -->
-                            <div style="display: flex; justify-content: center; gap: 35px; width: 100%; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px; margin-top: 5px; z-index: 2; flex-wrap: wrap;">
-                                <div style="text-align: center;">
-                                    <span style="font-size: 0.6rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono); font-weight: bold; margin-bottom: 2px;">Velocidad de Venta</span>
-                                    <span id="sentiment-speed-val" style="font-size: 0.8rem; font-weight: bold; color: var(--cyan); font-family: var(--font-mono);">Estable (42 días)</span>
+                            <!-- Factores Clave Ponderados (Fila Horizontal Premium - Ordenado y Limpio) -->
+                            <div style="display: flex; justify-content: center; gap: 40px; width: 100%; max-width: 650px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; z-index: 2; flex-wrap: wrap;">
+                                <div style="text-align: center; flex: 1; min-width: 120px;">
+                                    <span style="font-size: 0.62rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono); font-weight: bold; margin-bottom: 4px; letter-spacing: 0.5px;">Velocidad de Venta</span>
+                                    <span id="sentiment-speed-val" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); font-family: var(--font-mono);">Estable (42 días)</span>
                                 </div>
-                                <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.06); padding-left: 35px;">
-                                    <span style="font-size: 0.6rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono); font-weight: bold; margin-bottom: 2px;">Presión de Precios</span>
-                                    <span id="sentiment-pressure-val" style="font-size: 0.8rem; font-weight: bold; color: var(--neon-purple); font-family: var(--font-mono);">Moderada (+5.1%)</span>
+                                <div style="text-align: center; flex: 1; min-width: 120px; border-left: 1px solid rgba(255,255,255,0.08);">
+                                    <span style="font-size: 0.62rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono); font-weight: bold; margin-bottom: 4px; letter-spacing: 0.5px;">Presión de Precios</span>
+                                    <span id="sentiment-pressure-val" style="font-size: 0.85rem; font-weight: bold; color: var(--neon-purple); font-family: var(--font-mono);">Moderada (+5.1%)</span>
                                 </div>
-                                <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.06); padding-left: 35px;">
-                                    <span style="font-size: 0.6rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono); font-weight: bold; margin-bottom: 2px;">Acceso Hipotecario</span>
-                                    <span id="sentiment-fha-val" style="font-size: 0.8rem; font-weight: bold; color: var(--neon-emerald); font-family: var(--font-mono);">Favorable (FHA 7.3%)</span>
+                                <div style="text-align: center; flex: 1; min-width: 120px; border-left: 1px solid rgba(255,255,255,0.08);">
+                                    <span style="font-size: 0.62rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono); font-weight: bold; margin-bottom: 4px; letter-spacing: 0.5px;">Acceso Hipotecario</span>
+                                    <span id="sentiment-fha-val" style="font-size: 0.85rem; font-weight: bold; color: var(--neon-emerald); font-family: var(--font-mono);">Favorable (FHA 7.3%)</span>
                                 </div>
                             </div>
                         </div>
