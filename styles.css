@@ -7247,19 +7247,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 
     /* Ajustar las tres métricas horizontales de abajo */
-    div[style*="gap: 40px"] {
+    .sentiment-factors-wrapper {
         gap: 15px !important;
         flex-direction: column !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        margin: 0 auto !important;
     }
 
-    div[style*="gap: 40px"] div {
+    .sentiment-factors-wrapper div {
         border-left: none !important;
         padding-left: 0 !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         padding-bottom: 10px;
+        flex: none !important;
+        width: 100% !important;
     }
     
-    div[style*="gap: 40px"] div:last-child {
+    .sentiment-factors-wrapper div:last-child {
         border-bottom: none !important;
         padding-bottom: 0 !important;
     }
