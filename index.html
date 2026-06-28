@@ -1300,11 +1300,9 @@
                             </div>
                             
                             <!-- Sección Central del Medidor (Escala Monumental 400px con Optimismo Superior flotante) -->
-                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; width: 100%; max-width: 600px; margin: 15px 0;">
-                                
-                                <!-- Indicador Flotante de OPTIMISMO arriba del arco (a un 75% del recorrido, lado derecho superior) -->
-                                <div style="position: absolute; top: -5px; right: 120px; background: rgba(191, 90, 242, 0.15); border: 1px solid #bf5af2; padding: 3px 8px; border-radius: 4px; z-index: 12; pointer-events: none; box-shadow: 0 0 10px rgba(191,90,242,0.2);">
-                                    <span style="font-size: 0.62rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.5px;">[ OPTIMISMO ]</span>
+                                              <!-- Indicador Flotante de OPTIMISMO arriba del arco (a un 75% del recorrido, lado derecho superior) -->
+                                <div style="position: absolute; top: -5px; right: 120px; z-index: 12; pointer-events: none;">
+                                    <span style="font-size: 0.85rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.8px; text-shadow: 0 0 10px rgba(191,90,242,0.4);">OPTIMISMO</span>
                                 </div>
                                 
                                 <div style="position: relative; width: 400px; height: 230px; display: flex; align-items: flex-end; justify-content: center;">
@@ -1333,7 +1331,6 @@
                                     <!-- Valor e Indicador del Estado Actual (Centrado Grande) -->
                                     <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-20px); z-index: 11;">
                                         <span id="sentiment-score-lbl" class="font-mono" style="font-size: 4.2rem; font-weight: 900; color: #fff; text-shadow: 0 0 18px rgba(255,255,255,0.4); line-height: 1;">50</span>
-                                        <span id="sentiment-status-lbl" style="font-size: 1.05rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Neutro</span>
                                     </div>
                                 </div>
                                 
