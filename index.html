@@ -1299,13 +1299,13 @@
                                 </div>
                             </div>
                             
-                            <!-- Sección Central del Medidor (Escala Grande) -->
-                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; width: 100%; max-width: 480px; margin: 10px 0;">
-                                <div style="position: relative; width: 260px; height: 145px; display: flex; align-items: flex-end; justify-content: center;">
-                                    <!-- Dial de medio arco semicircular (Escala más grande) -->
-                                    <svg width="260" height="145" viewBox="0 0 260 145" style="position: absolute; top: 0; left: 0;">
+                            <!-- Sección Central del Medidor (Escala Monumental) -->
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; width: 100%; max-width: 600px; margin: 15px 0;">
+                                <div style="position: relative; width: 360px; height: 205px; display: flex; align-items: flex-end; justify-content: center;">
+                                    <!-- Dial de medio arco semicircular (Escala Monumental) -->
+                                    <svg width="360" height="205" viewBox="0 0 360 205" style="position: absolute; top: 0; left: 0;">
                                         <!-- Arco Fondo -->
-                                        <path d="M 25,130 A 105,105 0 0,1 235,130" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="18" stroke-linecap="round"/>
+                                        <path d="M 30,180 A 150,150 0 0,1 330,180" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="24" stroke-linecap="round"/>
                                         <!-- Arco Gradiente Dinámico -->
                                         <defs>
                                             <linearGradient id="sentimentGradientLarge" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -1316,23 +1316,23 @@
                                                 <stop offset="100%" stop-color="#34c759"/> <!-- Codicia Extrema -->
                                             </linearGradient>
                                         </defs>
-                                        <path d="M 25,130 A 105,105 0 0,1 235,130" fill="none" stroke="url(#sentimentGradientLarge)" stroke-width="18" stroke-linecap="round"/>
+                                        <path d="M 30,180 A 150,150 0 0,1 330,180" fill="none" stroke="url(#sentimentGradientLarge)" stroke-width="24" stroke-linecap="round"/>
                                     </svg>
                                     
                                     <!-- Aguja Rotatoria Dinámica de Alta Calidad -->
-                                    <div id="sentiment-needle" style="position: absolute; bottom: 15px; width: 8px; height: 95px; background: linear-gradient(to top, #fff 70%, var(--cyan) 100%); border-radius: 6px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); z-index: 10;">
-                                        <div style="width: 18px; height: 18px; border-radius: 50%; background: #fff; position: absolute; bottom: -5px; left: -5px; box-shadow: 0 0 10px rgba(0,0,0,0.6); border: 2px solid var(--cyan);"></div>
+                                    <div id="sentiment-needle" style="position: absolute; bottom: 25px; width: 10px; height: 135px; background: linear-gradient(to top, #fff 70%, var(--cyan) 100%); border-radius: 8px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); z-index: 10;">
+                                        <div style="width: 24px; height: 24px; border-radius: 50%; background: #fff; position: absolute; bottom: -7px; left: -7px; box-shadow: 0 0 12px rgba(0,0,0,0.6); border: 3px solid var(--cyan);"></div>
                                     </div>
 
                                     <!-- Valor e Indicador del Estado Actual (Centrado Grande) -->
-                                    <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-8px);">
-                                        <span id="sentiment-score-lbl" class="font-mono" style="font-size: 2.85rem; font-weight: 900; color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.3); line-height: 1;">50</span>
-                                        <span id="sentiment-status-lbl" style="font-size: 0.82rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px;">Neutro</span>
+                                    <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-15px); z-index: 11;">
+                                        <span id="sentiment-score-lbl" class="font-mono" style="font-size: 3.85rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.4); line-height: 1;">50</span>
+                                        <span id="sentiment-status-lbl" style="font-size: 0.95rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Neutro</span>
                                     </div>
                                 </div>
                                 
                                 <!-- Etiquetas de Escala Debajo del Arco -->
-                                <div style="display: flex; justify-content: space-between; align-items: center; width: 440px; font-size: 0.65rem; font-weight: bold; color: var(--text-muted); font-family: var(--font-mono); margin-top: 15px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; width: 560px; font-size: 0.72rem; font-weight: bold; color: var(--text-muted); font-family: var(--font-mono); margin-top: 25px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 10px;">
                                     <span style="color: #ff3b30; flex: 1; text-align: left;">INCERTIDUMBRE EXTREMA</span>
                                     <span style="color: var(--cyan); flex: 1; text-align: center;">NEUTRO</span>
                                     <span style="color: #bf5af2; flex: 1; text-align: center;">OPTIMISMO</span>
