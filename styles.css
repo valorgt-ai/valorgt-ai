@@ -7161,8 +7161,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     /* Reducir el tamaño general del velocímetro de forma nativa por CSS transform y CENTRARLO */
     .sentiment-gauge-wrapper {
         position: relative !important;
-        left: 50% !important;
-        transform: translateX(-50%) scale(0.72) !important;
+        left: calc(50% - 200px) !important;
+        transform: scale(0.72) !important;
         margin: -25px 0 -20px 0 !important;
         transform-origin: center center !important;
         display: flex !important;
