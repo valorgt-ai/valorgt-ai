@@ -1299,35 +1299,41 @@
                                 </div>
                             </div>
                             
-                            <!-- Sección Central del Medidor (Escala Monumental) -->
+                            <!-- Sección Central del Medidor (Escala Monumental 400px con Optimismo Superior flotante) -->
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; width: 100%; max-width: 600px; margin: 15px 0;">
-                                <div style="position: relative; width: 360px; height: 205px; display: flex; align-items: flex-end; justify-content: center;">
-                                    <!-- Dial de medio arco semicircular (Escala Monumental) -->
-                                    <svg width="360" height="205" viewBox="0 0 360 205" style="position: absolute; top: 0; left: 0;">
+                                
+                                <!-- Indicador Flotante de OPTIMISMO arriba del arco (a un 75% del recorrido, lado derecho superior) -->
+                                <div style="position: absolute; top: -5px; right: 120px; background: rgba(191, 90, 242, 0.15); border: 1px solid #bf5af2; padding: 3px 8px; border-radius: 4px; z-index: 12; pointer-events: none; box-shadow: 0 0 10px rgba(191,90,242,0.2);">
+                                    <span style="font-size: 0.62rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.5px;">[ OPTIMISMO ]</span>
+                                </div>
+                                
+                                <div style="position: relative; width: 400px; height: 230px; display: flex; align-items: flex-end; justify-content: center;">
+                                    <!-- Dial de medio arco semicircular (Escala Monumental 400px) -->
+                                    <svg width="400" height="230" viewBox="0 0 400 230" style="position: absolute; top: 0; left: 0;">
                                         <!-- Arco Fondo -->
-                                        <path d="M 30,180 A 150,150 0 0,1 330,180" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="24" stroke-linecap="round"/>
+                                        <path d="M 35,200 A 165,165 0 0,1 365,200" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="26" stroke-linecap="round"/>
                                         <!-- Arco Gradiente Dinámico -->
                                         <defs>
                                             <linearGradient id="sentimentGradientLarge" x1="0%" y1="0%" x2="100%" y2="0%">
                                                 <stop offset="0%" stop-color="#ff3b30"/> <!-- Miedo Extremo -->
                                                 <stop offset="25%" stop-color="#ff9500"/> <!-- Miedo -->
                                                 <stop offset="50%" stop-color="#00f0ff"/> <!-- Neutro -->
-                                                <stop offset="75%" stop-color="#bf5af2"/> <!-- Codicia -->
+                                                <stop offset="75%" stop-color="#bf5af2"/> <!-- Codicia (Optimismo) -->
                                                 <stop offset="100%" stop-color="#34c759"/> <!-- Codicia Extrema -->
                                             </linearGradient>
                                         </defs>
-                                        <path d="M 30,180 A 150,150 0 0,1 330,180" fill="none" stroke="url(#sentimentGradientLarge)" stroke-width="24" stroke-linecap="round"/>
+                                        <path d="M 35,200 A 165,165 0 0,1 365,200" fill="none" stroke="url(#sentimentGradientLarge)" stroke-width="26" stroke-linecap="round"/>
                                     </svg>
                                     
-                                    <!-- Aguja Rotatoria Dinámica de Alta Calidad -->
-                                    <div id="sentiment-needle" style="position: absolute; bottom: 25px; width: 10px; height: 135px; background: linear-gradient(to top, #fff 70%, var(--cyan) 100%); border-radius: 8px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); z-index: 10;">
-                                        <div style="width: 24px; height: 24px; border-radius: 50%; background: #fff; position: absolute; bottom: -7px; left: -7px; box-shadow: 0 0 12px rgba(0,0,0,0.6); border: 3px solid var(--cyan);"></div>
+                                    <!-- Aguja Rotatoria Dinámica de Alta Calidad (150px) -->
+                                    <div id="sentiment-needle" style="position: absolute; bottom: 30px; width: 11px; height: 150px; background: linear-gradient(to top, #fff 70%, var(--cyan) 100%); border-radius: 8px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); box-shadow: 0 0 25px rgba(0, 240, 255, 0.5); z-index: 10;">
+                                        <div style="width: 26px; height: 26px; border-radius: 50%; background: #fff; position: absolute; bottom: -8px; left: -8px; box-shadow: 0 0 15px rgba(0,0,0,0.6); border: 3px solid var(--cyan);"></div>
                                     </div>
 
                                     <!-- Valor e Indicador del Estado Actual (Centrado Grande) -->
-                                    <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-15px); z-index: 11;">
-                                        <span id="sentiment-score-lbl" class="font-mono" style="font-size: 3.85rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.4); line-height: 1;">50</span>
-                                        <span id="sentiment-status-lbl" style="font-size: 0.95rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Neutro</span>
+                                    <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-20px); z-index: 11;">
+                                        <span id="sentiment-score-lbl" class="font-mono" style="font-size: 4.2rem; font-weight: 900; color: #fff; text-shadow: 0 0 18px rgba(255,255,255,0.4); line-height: 1;">50</span>
+                                        <span id="sentiment-status-lbl" style="font-size: 1.05rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Neutro</span>
                                     </div>
                                 </div>
                                 
@@ -1335,7 +1341,6 @@
                                 <div style="display: flex; justify-content: space-between; align-items: center; width: 560px; font-size: 0.72rem; font-weight: bold; color: var(--text-muted); font-family: var(--font-mono); margin-top: 25px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 10px;">
                                     <span style="color: #ff3b30; flex: 1; text-align: left;">INCERTIDUMBRE EXTREMA</span>
                                     <span style="color: var(--cyan); flex: 1; text-align: center;">NEUTRO</span>
-                                    <span style="color: #bf5af2; flex: 1; text-align: center;">OPTIMISMO</span>
                                     <span style="color: #34c759; flex: 1; text-align: right;">CONFIANZA EXTREMA</span>
                                 </div>
                             </div>
