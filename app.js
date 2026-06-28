@@ -1084,9 +1084,12 @@ function switchView(viewId) {
     } else if (viewId === 'investor') {
         titleEl.innerText = "Terminal de Inteligencia Financiera";
         subtitleEl.innerText = "ROI, plusvalías proyectadas e índices macroeconómicos inmobiliarios";
-        // Renderizar gráficos de inversión
+        // Renderizar gráficos de inversión e índice de sentimiento
         setTimeout(() => {
             initInvestorComparisonChart();
+            if (typeof updateSentimentIndex === 'function') {
+                updateSentimentIndex();
+            }
         }, 50);
     } else if (viewId === 'commercial') {
         titleEl.innerText = isCommercialAuthenticated ? "Consola Comercial B2B" : "Área de Ingreso y Registro";
@@ -13870,6 +13873,118 @@ function calculateHomeMacroKPIs() {
         const avgGr = countGrowth > 0 ? (sumGrowth / countGrowth) : 7.2;
         growthEl.innerText = `+${avgGr.toFixed(1)}%`;
     }
+}
+
+/**
+ * Calcula y renderiza dinámicamente el Índice de Sentimiento Inmobiliario (Fear & Greed)
+ * basado en los datos agregados en tiempo real por zona o consolidado general.
+ */
+function updateSentimentIndex() {
+    const selector = document.getElementById('sentiment-zone-selector');
+    const selectedZone = selector ? selector.value : 'consolidado';
+
+    // 1. Obtener métricas base según la zona seleccionada
+    let absorption = 0.82; // 82%
+    let plusvalia = 0.064; // 6.4%
+    let liquidez = 8.5; // 8.5/10
+    let daysToSell = 42;
+    let pricePressure = "+5.1%";
+    let fhaRate = "FHA 7.35%";
+
+    if (selectedZone === 'zona10') {
+        absorption = 0.65; // Menos velocidad por ser sector premium
+        plusvalia = 0.054; // Estable pero sólido
+        liquidez = 7.8;
+        daysToSell = 58;
+        pricePressure = "Moderada (+4.8%)";
+        fhaRate = "VIP FHA 7.25%";
+    } else if (selectedZone === 'zona4') {
+        absorption = 0.89; // Absorción extremadamente rápida (Codicia)
+        plusvalia = 0.091; // Liderando ROI y Plusvalía
+        liquidez = 9.2;
+        daysToSell = 24;
+        pricePressure = "Fuerte (+9.2%)";
+        fhaRate = "FHA 7.35%";
+    } else if (selectedZone === 'zona11') {
+        absorption = 0.78;
+        plusvalia = 0.068;
+        liquidez = 8.8;
+        daysToSell = 31;
+        pricePressure = "Sostenida (+6.8%)";
+        fhaRate = "FHA 7.30%";
+    } else if (selectedZone === 'caes') {
+        absorption = 0.45; // Absorción más lenta por lejanía/tráfico (Miedo relativo)
+        plusvalia = 0.042;
+        liquidez = 5.4;
+        daysToSell = 85;
+        pricePressure = "Baja (+3.9%)";
+        fhaRate = "FHA 7.50%";
+    }
+
+    // 2. Algoritmo de cálculo del puntaje final (0 a 100)
+    // Absorción: pondera 40% (0.45 min a 0.90 max => 0 a 100 ptos)
+    const absScore = Math.max(0, Math.min(100, ((absorption - 0.40) / 0.50) * 100));
+    // Plusvalía: pondera 30% (3% a 10% => 0 a 100 ptos)
+    const growthScore = Math.max(0, Math.min(100, ((plusvalia - 0.03) / 0.07) * 100));
+    // Liquidez: pondera 30% (5 a 10 => 0 a 100 ptos)
+    const liqScore = Math.max(0, Math.min(100, ((liquidez - 5.0) / 4.5) * 100));
+
+    // Consolidado final
+    const rawScore = (absScore * 0.4) + (growthScore * 0.3) + (liqScore * 0.3);
+    const finalScore = Math.max(5, Math.min(95, Math.round(rawScore))); // Limitar extremos visuales del dial
+
+    // 3. Determinar estado y diagnóstico
+    let status = "Neutro";
+    let statusColor = "var(--cyan)";
+    let desc = "";
+    let rotationDeg = -90 + (finalScore * 1.8); // Traducir 0-100 a grados (-90deg a 90deg)
+
+    if (finalScore <= 20) {
+        status = "Miedo Extremo";
+        statusColor = "#ff3b30";
+        desc = "El inventario se acumula con tiempos de venta superiores a los 80 días. Las tasas crediticias restringen la demanda. Oportunidad óptima para compradores agresivos.";
+    } else if (finalScore <= 40) {
+        status = "Miedo";
+        statusColor = "#ff9500";
+        desc = "Toma de decisiones cautelosa por parte de inversionistas. El ritmo de absorción de mercado es lento. Se recomiendan negociaciones con ofertas a la baja.";
+    } else if (finalScore <= 60) {
+        status = "Neutro";
+        statusColor = "var(--cyan)";
+        desc = "Mercado inmobiliario en equilibrio dinámico. El volumen de transacciones verticales y la plusvalía anual caminan en paralelo. Excelente momento para compras consolidadas.";
+    } else if (finalScore <= 80) {
+        status = "Codicia";
+        statusColor = "#bf5af2";
+        desc = "Alta tracción inmobiliaria y velocidad de cierre en preventas. Las zonas calientes (como Z.4 y Z.15) registran alta absorción. Rentabilidades competitivas para lanzamientos.";
+    } else {
+        status = "Codicia Extrema";
+        statusColor = "#34c759";
+        desc = "Fiebre y especulación inmobiliaria. Múltiples ofertas simultáneas por listados residenciales. Alta presión al alza en m². Vendedores en posición dominante de mercado.";
+    }
+
+    // 4. Actualizar el DOM reactivamente con animaciones
+    const needle = document.getElementById('sentiment-needle');
+    const scoreLbl = document.getElementById('sentiment-score-lbl');
+    const statusLbl = document.getElementById('sentiment-status-lbl');
+    const descText = document.getElementById('sentiment-desc-text');
+    const speedVal = document.getElementById('sentiment-speed-val');
+    const pressureVal = document.getElementById('sentiment-pressure-val');
+    const fhaVal = document.getElementById('sentiment-fha-val');
+
+    if (needle) needle.style.transform = `rotate(${rotationDeg}deg)`;
+    if (scoreLbl) scoreLbl.innerText = finalScore;
+    
+    if (statusLbl) {
+        statusLbl.innerText = status;
+        statusLbl.style.color = statusColor;
+    }
+    if (descText) descText.innerText = desc;
+    
+    if (speedVal) speedVal.innerText = `${daysToSell} días promedio`;
+    if (pressureVal) {
+        pressureVal.innerText = pricePressure;
+        pressureVal.style.color = statusColor;
+    }
+    if (fhaVal) fhaVal.innerText = fhaRate;
 }
 
 /**

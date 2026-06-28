@@ -1407,6 +1407,89 @@
                             </div>
                         </div>
 
+                        <!-- TARJETA DEL ÍNDICE DE SENTIMIENTO DE MERCADO (FEAR & GREED INMOBILIARIO) -->
+                        <div class="card glassmorphism market-sentiment-card" style="grid-column: span 2; padding: 20px; display: grid; grid-template-columns: 1.2fr 2fr; gap: 25px; align-items: center; border: 1px solid rgba(0, 240, 255, 0.15) !important; background: rgba(8, 10, 16, 0.75); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: radial-gradient(circle, rgba(0, 240, 255, 0.05) 0%, transparent 70%); pointer-events: none; z-index: 1;"></div>
+                            
+                            <!-- Columna 1: Medidor Visual -->
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2;">
+                                <div style="position: relative; width: 160px; height: 100px; display: flex; align-items: flex-end; justify-content: center;">
+                                    <!-- Dial de medio arco semicircular -->
+                                    <svg width="160" height="90" viewBox="0 0 160 90" style="position: absolute; top: 0; left: 0;">
+                                        <!-- Arco Fondo -->
+                                        <path d="M 15,80 A 65,65 0 0,1 145,80" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12" stroke-linecap="round"/>
+                                        <!-- Zonas de Colores (Miedo Extremo, Miedo, Neutro, Codicia, Codicia Extrema) -->
+                                        <!-- Arco Gradiente Dinámico -->
+                                        <defs>
+                                            <linearGradient id="sentimentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stop-color="#ff3b30"/> <!-- Miedo Extremo -->
+                                                <stop offset="25%" stop-color="#ff9500"/> <!-- Miedo -->
+                                                <stop offset="50%" stop-color="#00f0ff"/> <!-- Neutro -->
+                                                <stop offset="75%" stop-color="#bf5af2"/> <!-- Codicia -->
+                                                <stop offset="100%" stop-color="#34c759"/> <!-- Codicia Extrema -->
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M 15,80 A 65,65 0 0,1 145,80" fill="none" stroke="url(#sentimentGradient)" stroke-width="12" stroke-linecap="round"/>
+                                    </svg>
+                                    
+                                    <!-- Aguja Rotatoria Dinámica -->
+                                    <div id="sentiment-needle" style="position: absolute; bottom: 10px; width: 6px; height: 60px; background: #fff; border-radius: 4px; transform-origin: bottom center; transform: rotate(0deg); transition: transform 1.2s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 10px rgba(255,255,255,0.8); z-index: 10;">
+                                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; position: absolute; bottom: -3px; left: -3px; box-shadow: 0 0 8px rgba(0,0,0,0.5);"></div>
+                                    </div>
+
+                                    <!-- Valor e Indicador del Estado Actual -->
+                                    <div style="display: flex; flex-direction: column; align-items: center; transform: translateY(-5px);">
+                                        <span id="sentiment-score-lbl" class="font-mono" style="font-size: 1.85rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.2);">50</span>
+                                        <span id="sentiment-status-lbl" style="font-size: 0.68rem; font-weight: 800; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px;">Neutro</span>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; width: 150px; font-size: 0.55rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 5px;">
+                                    <span>MIEDO</span>
+                                    <span>NEUTRO</span>
+                                    <span>CODICIA</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna 2: Diagnóstico y Selector de Sector -->
+                            <div style="display: flex; flex-direction: column; gap: 8px; z-index: 2;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div class="header-icon purple" style="width: 26px; height: 26px; font-size: 0.8rem; border-radius: 6px;"><i data-lucide="gauge"></i></div>
+                                        <h3 style="font-size: 0.95rem; font-weight: bold; color: #fff; margin: 0; font-family: 'Outfit', sans-serif;">Índice de Sentimiento Inmobiliario (2026)</h3>
+                                    </div>
+                                    
+                                    <!-- SELECTOR DE ZONA / SECTOR DENTRO DE LA TERMINAL -->
+                                    <select id="sentiment-zone-selector" onchange="updateSentimentIndex()" class="cyber-input font-mono" style="font-size: 0.68rem; padding: 4px 8px; width: auto; min-width: 140px; background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.1); border-radius: 5px; height: 26px; color: var(--text-primary);">
+                                        <option value="consolidado" selected>Consolidado Gral.</option>
+                                        <option value="zona10">Zona 10 / 14 / 15</option>
+                                        <option value="zona4">Zona 4 / 5 / 16</option>
+                                        <option value="zona11">Zona 11 / 12</option>
+                                        <option value="caes">CAES & Fraijanes</option>
+                                    </select>
+                                </div>
+                                
+                                <p id="sentiment-desc-text" style="font-size: 0.76rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">
+                                    El mercado guatemalteco se encuentra en equilibrio dinámico. Las tasas estables de interés y la absorción controlada favorecen la adquisición inteligente.
+                                </p>
+                                
+                                <!-- Factores de Impulso Corto -->
+                                <div style="display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; margin-top: 4px;">
+                                    <div>
+                                        <span style="font-size: 0.58rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono);">Velocidad de Venta</span>
+                                        <span id="sentiment-speed-val" style="font-size: 0.72rem; font-weight: bold; color: var(--cyan); font-family: var(--font-mono);">Estable (42 días)</span>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 0.58rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono);">Presión de Precios</span>
+                                        <span id="sentiment-pressure-val" style="font-size: 0.72rem; font-weight: bold; color: var(--neon-purple); font-family: var(--font-mono);">Moderada (+5.1%)</span>
+                                    </div>
+                                    <div>
+                                        <span style="font-size: 0.58rem; color: var(--text-muted); display: block; text-transform: uppercase; font-family: var(--font-mono);">Acceso Hipotecario</span>
+                                        <span id="sentiment-fha-val" style="font-size: 0.72rem; font-weight: bold; color: var(--neon-emerald); font-family: var(--font-mono);">Favorable (FHA 7.3%)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Resumen del Mercado Guatemalteco -->
                         <div class="card glassmorphism investor-summary-card">
                             <div class="card-header">
