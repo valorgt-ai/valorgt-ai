@@ -7160,8 +7160,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
     /* Reducir el tamaño general del velocímetro de forma nativa por CSS transform y CENTRARLO */
     .sentiment-gauge-wrapper {
-        transform: scale(0.72) !important;
-        margin: -25px auto -20px auto !important;
+        position: relative !important;
+        left: 50% !important;
+        transform: translateX(-50%) scale(0.72) !important;
+        margin: -25px 0 -20px 0 !important;
         transform-origin: center center !important;
         display: flex !important;
         flex-direction: column !important;
@@ -7169,9 +7171,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
         justify-content: flex-end !important;
         width: 400px !important;
         height: 230px !important;
-        position: relative !important;
-        left: 0 !important;
-        right: 0 !important;
     }
 
     /* Redimensionar SVG y sus trazados para que no se deformen ni descentren */
