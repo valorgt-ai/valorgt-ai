@@ -1369,9 +1369,9 @@
                         </div>
 
                         <!-- FILA DE KPIS MACRO AVANZADOS (ESTILO PREMIUM TERMINAL BLOOMBERG: ANGOSTOS Y ALTOS) -->
-                        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 5px;">
+                        <div class="kpi-premium-row">
                             <!-- VOLUMEN MERCADO -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border: 1px solid rgba(0, 240, 255, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-volume-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyan);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">VOLUMEN MERCADO</span>
@@ -1381,10 +1381,11 @@
                                     <span class="kpi-val font-mono text-cyan" id="home-kpi-volume" style="font-size: 1.45rem; line-height: 1; font-weight: 800;">Q10.3M</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">CIUDAD GUATEMALA</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">CIUDAD GUATEMALA</div>
                             </div>
 
                             <!-- PROM. METRO² -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(191, 90, 242, 0.08) !important; border: 1px solid rgba(191, 90, 242, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-m2-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon-purple);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">PROM. METRO²</span>
@@ -1394,10 +1395,11 @@
                                     <span class="kpi-val font-mono text-purple" id="home-kpi-m2" style="font-size: 1.25rem; line-height: 1; font-weight: 800; white-space: nowrap;">Q12,526/m²</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">VALOR PROMEDIO</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">VALOR PROMEDIO</div>
                             </div>
 
                             <!-- LÍDER ROI -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(0, 255, 102, 0.08) !important; border: 1px solid rgba(0, 255, 102, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-roi-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon-emerald);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">LÍDER ROI</span>
@@ -1407,10 +1409,11 @@
                                     <span class="kpi-val font-mono text-green" id="home-kpi-roi" style="font-size: 1.15rem; line-height: 1; font-weight: 800; white-space: nowrap;">Zona 4 (9.1%)</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">ALTA RENTABILIDAD</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">ALTA RENTABILIDAD</div>
                             </div>
 
                             <!-- LIQUIDEZ PROMEDIO -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(255, 159, 10, 0.08) !important; border: 1px solid rgba(255, 159, 10, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-liquidity-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #ff9f0a;"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">LIQUIDEZ</span>
@@ -1420,10 +1423,11 @@
                                     <span class="kpi-val font-mono text-orange" id="home-kpi-liquidity" style="font-size: 1.45rem; line-height: 1; font-weight: 800;">8.5/10</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">INDICE ROTACIÓN</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">INDICE ROTACIÓN</div>
                             </div>
 
                             <!-- PLUSVALÍA ANUAL -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border: 1px solid rgba(0, 240, 255, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-growth-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyan);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">PLUSVALÍA</span>
@@ -1433,12 +1437,13 @@
                                     <span class="kpi-val font-mono text-cyan" id="home-kpi-growth" style="font-size: 1.45rem; line-height: 1; font-weight: 800;">+6.4%</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">ANUAL COMPUESTA</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">ANUAL COMPUESTA</div>
                             </div>
                         </div>
 
-                        <div style="grid-column: span 2; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 15px;">
+                        <div class="kpi-premium-row" style="margin-bottom: 15px;">
                             <!-- SECTORES EMERGENTES -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(191, 90, 242, 0.08) !important; border: 1px solid rgba(191, 90, 242, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-m2-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon-purple);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">EMERGENTES</span>
@@ -1448,10 +1453,11 @@
                                     <span class="kpi-val font-mono text-purple" id="home-kpi-emerging" style="font-size: 0.85rem; line-height: 1.2; font-weight: 800;" title="Z.14, Z.10, CAES, Antigua">Z.14, Z.10, CAES...</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">EN ALTA DEMANDA</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">EN ALTA DEMANDA</div>
                             </div>
 
                             <!-- EXPANSION URBANA -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(0, 255, 102, 0.08) !important; border: 1px solid rgba(0, 255, 102, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-roi-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--neon-emerald);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">EXPANSION</span>
@@ -1461,10 +1467,11 @@
                                     <span class="kpi-val font-mono text-green" id="home-kpi-expansion" style="font-size: 0.82rem; line-height: 1.2; font-weight: 800;" title="CAES & Fraijanes">CAES & Fraijanes</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">CRECIMIENTO HORIZ.</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">CRECIMIENTO HORIZ.</div>
                             </div>
 
                             <!-- TASA ABSORCIÓN -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border: 1px solid rgba(0, 240, 255, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-volume-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyan);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">ABSORCIÓN</span>
@@ -1474,10 +1481,11 @@
                                     <span class="kpi-val font-mono text-cyan" id="home-kpi-absorption" style="font-size: 1.25rem; line-height: 1; font-weight: 800;">82% / mes</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">VELOCIDAD VENTAS</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">VELOCIDAD VENTAS</div>
                             </div>
 
                             <!-- TENDENCIA MERCADO -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(255, 159, 10, 0.08) !important; border: 1px solid rgba(255, 159, 10, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-liquidity-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #ff9f0a;"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">TENDENCIA</span>
@@ -1487,10 +1495,11 @@
                                     <span class="kpi-val font-mono text-orange" id="home-kpi-trend" style="font-size: 1.05rem; line-height: 1.2; font-weight: 800; white-space: nowrap;">Acelera (+4%)</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">MOMENTUM PRECIOS</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">MOMENTUM PRECIOS</div>
                             </div>
 
                             <!-- MARKET SCORE -->
-                            <div class="card glassmorphism kpi-card-premium" style="padding: 15px 12px !important; height: 95px !important; min-height: 95px !important; box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important; border: 1px solid rgba(0, 240, 255, 0.25) !important; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; border-radius: 8px;">
+                            <div class="card glassmorphism kpi-card-premium kpi-growth-card">
                                 <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--cyan);"></div>
                                 <div class="kpi-icon-row" style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                     <span class="kpi-lbl" style="font-size: 0.62rem; font-weight: bold; letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;">MARKET SCORE</span>
@@ -1500,6 +1509,7 @@
                                     <span class="kpi-val font-mono text-cyan" id="home-kpi-score" style="font-size: 1.25rem; line-height: 1; font-weight: 800;">8.8 (Fuerte)</span>
                                     <span style="font-size: 0.58rem; color: var(--text-muted); font-family: var(--font-mono);">CONFIANZA INVERSOR</span>
                                 </div>
+                                <div class="kpi-mobile-anchor-lbl" style="display: none; font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">CONFIANZA INVERSOR</div>
                             </div>
                         </div>
 
