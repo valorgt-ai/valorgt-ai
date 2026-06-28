@@ -7147,10 +7147,22 @@ input[type="range"]::-webkit-slider-thumb:hover {
    OPTIMIZACIONES MÓVILES PARA WIDGETS DE SENTIMIENTO Y KPIS MACRO
    ========================================================================== */
 @media (max-width: 768px) {
+    /* Colapsar la grilla principal de inversión a 1 sola columna en móvil */
+    .investor-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .market-sentiment-card {
+        grid-column: span 1 !important;
+        padding: 15px !important;
+    }
+
     /* Permitir que la grilla macro de KPIs use columnas adaptables */
     .kpi-premium-row {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-        gap: 10px !important;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+        gap: 8px !important;
+        grid-column: span 1 !important;
     }
 
     /* Forzar que las tarjetas se adapten a móvil y tengan altura flexible para leerse bien */
@@ -7270,13 +7282,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 
     /* Alinear cabeceras del Sentiment Index */
-    div[style*="justify-content: space-between; align-items: center; width: 100%; z-index: 2;"] {
+    .sentiment-header-row {
         flex-direction: column !important;
         gap: 15px !important;
         align-items: flex-start !important;
     }
     
-    div[style*="display: flex; align-items: center; gap: 8px;"] {
+    .sentiment-select-group {
         width: 100% !important;
         justify-content: space-between !important;
     }

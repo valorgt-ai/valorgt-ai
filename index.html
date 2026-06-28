@@ -1277,7 +1277,7 @@
                             <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0, 240, 255, 0.03) 0%, transparent 60%); pointer-events: none; z-index: 1;"></div>
                             
                             <!-- Cabecera del Indicador -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; z-index: 2; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 12px;">
+                            <div class="sentiment-header-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%; z-index: 2; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom: 12px;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div class="header-icon purple" style="width: 32px; height: 32px; font-size: 1rem; border-radius: 8px; box-shadow: 0 0 15px rgba(191,90,242,0.3);"><i data-lucide="gauge"></i></div>
                                     <div>
@@ -1287,7 +1287,7 @@
                                 </div>
                                 
                                 <!-- Selector de Sector -->
-                                <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="sentiment-select-group" style="display: flex; align-items: center; gap: 8px;">
                                     <span style="font-size: 0.62rem; color: var(--text-muted); font-family: var(--font-mono); font-weight: bold;">SECTOR:</span>
                                     <select id="sentiment-zone-selector" onchange="updateSentimentIndex()" class="cyber-input font-mono" style="font-size: 0.72rem; padding: 5px 12px; width: auto; min-width: 160px; background: rgba(0,0,0,0.6); border-color: rgba(0, 240, 255, 0.2); border-radius: 6px; height: 30px; color: var(--text-primary); cursor: pointer; font-weight: bold; box-shadow: 0 0 10px rgba(0, 240, 255, 0.05);">
                                         <option value="consolidado" selected>Consolidado Gral.</option>
