@@ -7099,6 +7099,103 @@ input[type="range"]::-webkit-slider-thumb:hover {
     animation: pulseGlow 1.5s infinite ease-in-out;
 }
 
+/* ==========================================================================
+   OPTIMIZACIONES MÓVILES PARA WIDGETS DE SENTIMIENTO Y KPIS MACRO
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Permitir que la grilla macro de KPIs use columnas adaptables */
+    .investor-grid, 
+    div[style*="grid-template-columns: repeat(5, 1fr)"],
+    div[style*="grid-template-columns: repeat(5,1fr)"] {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        gap: 8px !important;
+    }
+
+    /* Redimensionar contenedor del velocímetro a escala responsive */
+    div[style*="width: 400px; height: 230px"] {
+        width: 290px !important;
+        height: 175px !important;
+        overflow: hidden;
+    }
+
+    /* Redimensionar SVG y sus trazados */
+    div[style*="width: 400px; height: 230px"] svg {
+        width: 290px !important;
+        height: 175px !important;
+    }
+
+    div[style*="width: 400px; height: 230px"] svg path {
+        d: path("M 25,150 A 120,120 0 0,1 265,150") !important;
+        stroke-width: 18px !important;
+    }
+
+    /* Reposicionar y redimensionar aguja física */
+    #sentiment-needle {
+        height: 105px !important;
+        bottom: 25px !important;
+        width: 8px !important;
+    }
+    #sentiment-needle div {
+        width: 18px !important;
+        height: 18px !important;
+        bottom: -5px !important;
+        left: -5px !important;
+    }
+
+    /* Ajustar tamaño de textos y etiquetas dentro del velocímetro */
+    #sentiment-score-lbl {
+        font-size: 3rem !important;
+    }
+
+    div[style*="width: 560px"] {
+        width: 100% !important;
+        max-width: 320px !important;
+        font-size: 0.55rem !important;
+        gap: 4px !important;
+        margin-top: 15px !important;
+    }
+
+    /* Reposicionar etiqueta flotante OPTIMISMO */
+    div[style*="position: absolute; top: 12px; left: 280px;"] {
+        top: 20px !important;
+        left: 195px !important;
+    }
+    
+    div[style*="position: absolute; top: 12px; left: 280px;"] span {
+        font-size: 0.65rem !important;
+    }
+
+    /* Ajustar las tres métricas horizontales de abajo */
+    div[style*="gap: 40px"] {
+        gap: 15px !important;
+        flex-direction: column !important;
+    }
+
+    div[style*="gap: 40px"] div {
+        border-left: none !important;
+        padding-left: 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 10px;
+    }
+    
+    div[style*="gap: 40px"] div:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    /* Alinear cabeceras del Sentiment Index */
+    div[style*="justify-content: space-between; align-items: center; width: 100%; z-index: 2;"] {
+        flex-direction: column !important;
+        gap: 15px !important;
+        align-items: flex-start !important;
+    }
+    
+    div[style*="display: flex; align-items: center; gap: 8px;"] {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+}
+
 
 
 
