@@ -7158,11 +7158,15 @@ input[type="range"]::-webkit-slider-thumb:hover {
         padding: 15px !important;
     }
 
-    /* Reducir el tamaño general del velocímetro de forma nativa por CSS transform */
+    /* Reducir el tamaño general del velocímetro de forma nativa por CSS transform y CENTRARLO */
     .sentiment-gauge-wrapper {
-        transform: scale(0.85);
-        margin: -10px auto !important;
+        transform: scale(0.78);
+        margin: -25px auto !important;
         transform-origin: center center;
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        max-width: 400px !important;
     }
 
     /* Reducir leyendas de abajo para que no se superpongan */
@@ -7170,7 +7174,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
         font-size: 0.52rem !important;
         width: 100% !important;
         max-width: 290px !important;
-        margin-top: 5px !important;
+        margin: 5px auto 0 auto !important;
     }
 
     /* Tres métricas horizontales en móvil */
@@ -7178,16 +7182,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
         gap: 10px !important;
         width: 100% !important;
         padding-top: 10px !important;
+        justify-content: center !important;
     }
     .sentiment-factors-wrapper div {
         min-width: 80px !important;
         padding: 0 4px !important;
     }
     .sentiment-factors-wrapper div span:first-child {
-        font-size: 0.6rem !important;
+        font-size: 0.58rem !important;
     }
     .sentiment-factors-wrapper div span:last-child {
-        font-size: 0.85rem !important;
+        font-size: 0.8rem !important;
     }
 
     /* Alinear cabeceras del Sentiment Index */
@@ -7215,25 +7220,26 @@ input[type="range"]::-webkit-slider-thumb:hover {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 8px !important;
         grid-column: span 2 !important;
+        width: 100% !important;
     }
 
     .kpi-card-premium {
-        height: 80px !important;
-        min-height: 80px !important;
-        padding: 10px 8px !important;
+        height: 75px !important;
+        min-height: 75px !important;
+        padding: 8px 6px !important;
     }
     
     .kpi-card-premium .kpi-lbl {
-        font-size: 0.52rem !important;
+        font-size: 0.48rem !important;
         line-height: 1.1 !important;
     }
     
     .kpi-card-premium .kpi-val {
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
     }
 
     .kpi-card-premium span[style*="font-size: 0.58rem"] {
-        font-size: 0.48rem !important;
+        font-size: 0.44rem !important;
     }
 }
 
