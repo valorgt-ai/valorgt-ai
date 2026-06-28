@@ -1302,9 +1302,9 @@
                             <!-- Sección Central del Medidor (Escala Monumental 400px con Optimismo Superior flotante) -->
                             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 2; width: 100%; max-width: 600px; margin: 15px 0;">
                                 
-                                <div style="position: relative; width: 400px; height: 230px; display: flex; align-items: flex-end; justify-content: center;">
+                                <div class="sentiment-gauge-wrapper" style="position: relative; width: 400px; height: 230px; display: flex; align-items: flex-end; justify-content: center;">
                                     <!-- Indicador Flotante de OPTIMISMO arriba de la media luna (en el 75% del arco) -->
-                                    <div style="position: absolute; top: 12px; left: 280px; z-index: 999; pointer-events: none;">
+                                    <div class="sentiment-optimism-float" style="position: absolute; top: 12px; left: 280px; z-index: 999; pointer-events: none;">
                                         <span style="font-size: 0.85rem; font-weight: 900; color: #bf5af2; font-family: var(--font-mono); letter-spacing: 0.8px; text-shadow: 0 0 10px rgba(191,90,242,0.6);">OPTIMISMO</span>
                                     </div>
 
@@ -1337,7 +1337,7 @@
                                 </div>
                                 
                                 <!-- Etiquetas de Escala Debajo del Arco -->
-                                <div style="display: flex; justify-content: space-between; align-items: center; width: 560px; font-size: 0.72rem; font-weight: bold; color: var(--text-muted); font-family: var(--font-mono); margin-top: 25px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 10px;">
+                                <div class="sentiment-scale-labels" style="display: flex; justify-content: space-between; align-items: center; width: 560px; font-size: 0.72rem; font-weight: bold; color: var(--text-muted); font-family: var(--font-mono); margin-top: 25px; letter-spacing: 0.5px; border-top: 1px solid rgba(255,255,255,0.03); padding-top: 10px;">
                                     <span style="color: #ff3b30; flex: 1; text-align: left;">INCERTIDUMBRE EXTREMA</span>
                                     <span style="color: var(--cyan); flex: 1; text-align: center;">NEUTRO</span>
                                     <span style="color: #34c759; flex: 1; text-align: right;">CONFIANZA EXTREMA</span>

@@ -7099,32 +7099,110 @@ input[type="range"]::-webkit-slider-thumb:hover {
     animation: pulseGlow 1.5s infinite ease-in-out;
 }
 
+/* Estructuras base Bloomberg KPIs en Desktop */
+.kpi-premium-row {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.kpi-card-premium {
+    padding: 15px 12px !important;
+    height: 95px !important;
+    min-height: 95px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    transition: var(--transition-smooth);
+}
+
+.kpi-volume-card {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important;
+    border: 1px solid rgba(0, 240, 255, 0.25) !important;
+}
+.kpi-m2-card {
+    box-shadow: 0 0 20px rgba(191, 90, 242, 0.08) !important;
+    border: 1px solid rgba(191, 90, 242, 0.25) !important;
+}
+.kpi-roi-card {
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.08) !important;
+    border: 1px solid rgba(0, 255, 102, 0.25) !important;
+}
+.kpi-liquidity-card {
+    box-shadow: 0 0 20px rgba(255, 159, 10, 0.08) !important;
+    border: 1px solid rgba(255, 159, 10, 0.25) !important;
+}
+.kpi-growth-card {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.08) !important;
+    border: 1px solid rgba(0, 240, 255, 0.25) !important;
+}
+
 /* ==========================================================================
    OPTIMIZACIONES MÓVILES PARA WIDGETS DE SENTIMIENTO Y KPIS MACRO
    ========================================================================== */
 @media (max-width: 768px) {
     /* Permitir que la grilla macro de KPIs use columnas adaptables */
-    .investor-grid, 
-    div[style*="grid-template-columns: repeat(5, 1fr)"],
-    div[style*="grid-template-columns: repeat(5,1fr)"] {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
-        gap: 8px !important;
+    .kpi-premium-row {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 10px !important;
     }
 
-    /* Redimensionar contenedor del velocímetro a escala responsive */
-    div[style*="width: 400px; height: 230px"] {
+    /* Forzar que las tarjetas se adapten a móvil y tengan altura flexible para leerse bien */
+    .kpi-card-premium {
+        height: auto !important;
+        min-height: 85px !important;
+        padding: 12px 10px !important;
+    }
+    
+    .kpi-card-premium .kpi-lbl {
+        font-size: 0.62rem !important;
+        white-space: normal !important;
+    }
+    
+    .kpi-card-premium .kpi-val {
+        font-size: 1.15rem !important;
+        margin-top: 5px;
+    }
+
+    .kpi-card-premium span[style*="font-size: 0.58rem"] {
+        font-size: 0.55rem !important;
+        white-space: normal !important;
+        margin-top: 2px;
+    }
+    
+    /* Ocultar el texto de anclaje secundario en móvil para no desbordar */
+    .kpi-card-premium div span:last-child {
+        display: block !important;
+    }
+    .kpi-mobile-anchor-lbl {
+        display: none !important;
+    }
+
+    /* Redimensionar contenedor del velocímetro a escala responsive y CENTRARLO */
+    .sentiment-gauge-wrapper {
         width: 290px !important;
         height: 175px !important;
-        overflow: hidden;
+        overflow: hidden !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        justify-content: center !important;
     }
 
     /* Redimensionar SVG y sus trazados */
-    div[style*="width: 400px; height: 230px"] svg {
+    .sentiment-gauge-wrapper svg {
         width: 290px !important;
         height: 175px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
     }
 
-    div[style*="width: 400px; height: 230px"] svg path {
+    .sentiment-gauge-wrapper svg path {
         d: path("M 25,150 A 120,120 0 0,1 265,150") !important;
         stroke-width: 18px !important;
     }
@@ -7134,6 +7212,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
         height: 105px !important;
         bottom: 25px !important;
         width: 8px !important;
+        left: calc(50% - 4px) !important;
     }
     #sentiment-needle div {
         width: 18px !important;
@@ -7147,21 +7226,23 @@ input[type="range"]::-webkit-slider-thumb:hover {
         font-size: 3rem !important;
     }
 
-    div[style*="width: 560px"] {
+    .sentiment-scale-labels {
         width: 100% !important;
         max-width: 320px !important;
         font-size: 0.55rem !important;
         gap: 4px !important;
         margin-top: 15px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 
     /* Reposicionar etiqueta flotante OPTIMISMO */
-    div[style*="position: absolute; top: 12px; left: 280px;"] {
+    .sentiment-optimism-float {
         top: 20px !important;
         left: 195px !important;
     }
     
-    div[style*="position: absolute; top: 12px; left: 280px;"] span {
+    .sentiment-optimism-float span {
         font-size: 0.65rem !important;
     }
 
