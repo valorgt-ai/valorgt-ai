@@ -7158,9 +7158,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
         padding: 15px !important;
     }
 
-    /* Permitir que la grilla macro de KPIs use columnas adaptables */
+    /* Grilla de dos columnas ordenadas para los KPIs macro */
     .kpi-premium-row {
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 8px !important;
         grid-column: span 1 !important;
     }
@@ -7168,24 +7168,25 @@ input[type="range"]::-webkit-slider-thumb:hover {
     /* Forzar que las tarjetas se adapten a móvil y tengan altura flexible para leerse bien */
     .kpi-card-premium {
         height: auto !important;
-        min-height: 85px !important;
-        padding: 12px 10px !important;
+        min-height: 80px !important;
+        padding: 10px 8px !important;
     }
     
     .kpi-card-premium .kpi-lbl {
-        font-size: 0.62rem !important;
+        font-size: 0.58rem !important;
         white-space: normal !important;
+        line-height: 1.2 !important;
     }
     
     .kpi-card-premium .kpi-val {
-        font-size: 1.15rem !important;
-        margin-top: 5px;
+        font-size: 0.98rem !important;
+        margin-top: 2px;
     }
 
     .kpi-card-premium span[style*="font-size: 0.58rem"] {
-        font-size: 0.55rem !important;
+        font-size: 0.52rem !important;
         white-space: normal !important;
-        margin-top: 2px;
+        margin-top: 1px;
     }
     
     /* Ocultar el texto de anclaje secundario en móvil para no desbordar */
@@ -7196,35 +7197,35 @@ input[type="range"]::-webkit-slider-thumb:hover {
         display: none !important;
     }
 
-    /* Redimensionar contenedor del velocímetro a escala responsive y CENTRARLO */
+    /* Evitar recortar el velocímetro en móvil mediante flex normalizado y padding */
     .sentiment-gauge-wrapper {
-        width: 290px !important;
-        height: 175px !important;
-        overflow: hidden !important;
-        margin: 0 auto !important;
+        width: 320px !important;
+        height: 185px !important;
+        overflow: visible !important;
+        margin: 10px auto !important;
         display: flex !important;
         justify-content: center !important;
     }
 
     /* Redimensionar SVG y sus trazados */
     .sentiment-gauge-wrapper svg {
-        width: 290px !important;
-        height: 175px !important;
+        width: 320px !important;
+        height: 185px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
     }
 
     .sentiment-gauge-wrapper svg path {
-        d: path("M 25,150 A 120,120 0 0,1 265,150") !important;
-        stroke-width: 18px !important;
+        d: path("M 25,160 A 135,135 0 0,1 295,160") !important;
+        stroke-width: 20px !important;
     }
 
     /* Reposicionar y redimensionar aguja física */
     #sentiment-needle {
-        height: 105px !important;
+        height: 120px !important;
         bottom: 25px !important;
-        width: 8px !important;
-        left: calc(50% - 4px) !important;
+        width: 7px !important;
+        left: calc(50% - 3.5px) !important;
     }
     #sentiment-needle div {
         width: 18px !important;
@@ -7235,23 +7236,23 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
     /* Ajustar tamaño de textos y etiquetas dentro del velocímetro */
     #sentiment-score-lbl {
-        font-size: 3rem !important;
+        font-size: 2.8rem !important;
     }
 
     .sentiment-scale-labels {
         width: 100% !important;
-        max-width: 320px !important;
-        font-size: 0.55rem !important;
-        gap: 4px !important;
-        margin-top: 15px !important;
+        max-width: 340px !important;
+        font-size: 0.52rem !important;
+        gap: 2px !important;
+        margin-top: 10px !important;
         margin-left: auto !important;
         margin-right: auto !important;
     }
 
     /* Reposicionar etiqueta flotante OPTIMISMO */
     .sentiment-optimism-float {
-        top: 20px !important;
-        left: 195px !important;
+        top: 12px !important;
+        left: 220px !important;
     }
     
     .sentiment-optimism-float span {
