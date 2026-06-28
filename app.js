@@ -13940,11 +13940,11 @@ function updateSentimentIndex() {
     let rotationDeg = -90 + (finalScore * 1.8); // Traducir 0-100 a grados (-90deg a 90deg)
 
     if (finalScore <= 20) {
-        status = "Miedo Extremo";
+        status = "Incertidumbre Extrema";
         statusColor = "#ff3b30";
         desc = "El inventario se acumula con tiempos de venta superiores a los 80 días. Las tasas crediticias restringen la demanda. Oportunidad óptima para compradores agresivos.";
     } else if (finalScore <= 40) {
-        status = "Miedo";
+        status = "Incertidumbre";
         statusColor = "#ff9500";
         desc = "Toma de decisiones cautelosa por parte de inversionistas. El ritmo de absorción de mercado es lento. Se recomiendan negociaciones con ofertas a la baja.";
     } else if (finalScore <= 60) {
@@ -13952,11 +13952,11 @@ function updateSentimentIndex() {
         statusColor = "var(--cyan)";
         desc = "Mercado inmobiliario en equilibrio dinámico. El volumen de transacciones verticales y la plusvalía anual caminan en paralelo. Excelente momento para compras consolidadas.";
     } else if (finalScore <= 80) {
-        status = "Codicia";
+        status = "Optimismo";
         statusColor = "#bf5af2";
         desc = "Alta tracción inmobiliaria y velocidad de cierre en preventas. Las zonas calientes (como Z.4 y Z.15) registran alta absorción. Rentabilidades competitivas para lanzamientos.";
     } else {
-        status = "Codicia Extrema";
+        status = "Confianza Extrema";
         statusColor = "#34c759";
         desc = "Fiebre y especulación inmobiliaria. Múltiples ofertas simultáneas por listados residenciales. Alta presión al alza en m². Vendedores en posición dominante de mercado.";
     }
