@@ -7160,20 +7160,60 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
     /* Reducir el tamaño general del velocímetro de forma nativa por CSS transform y CENTRARLO */
     .sentiment-gauge-wrapper {
-        transform: scale(0.78);
-        margin: -25px auto !important;
-        transform-origin: center center;
+        transform: scale(0.72) !important;
+        margin: -25px auto -20px auto !important;
+        transform-origin: center center !important;
         display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-        max-width: 400px !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        width: 400px !important;
+        height: 230px !important;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    /* Redimensionar SVG y sus trazados para que no se deformen ni descentren */
+    .sentiment-gauge-wrapper svg {
+        position: absolute !important;
+        left: 50% !important;
+        top: 0 !important;
+        transform: translateX(-50%) !important;
+        width: 400px !important;
+        height: 230px !important;
+    }
+
+    .sentiment-gauge-wrapper svg path {
+        stroke-width: 26px !important;
+    }
+
+    /* Reposicionar y redimensionar aguja física */
+    #sentiment-needle {
+        height: 150px !important;
+        bottom: 30px !important;
+        width: 11px !important;
+        left: calc(50% - 5.5px) !important;
+        transform-origin: bottom center !important;
+    }
+    #sentiment-needle div {
+        width: 26px !important;
+        height: 26px !important;
+        bottom: -8px !important;
+        left: -8px !important;
+    }
+
+    /* Ajustar tamaño de textos y etiquetas dentro del velocímetro */
+    #sentiment-score-lbl {
+        font-size: 4.2rem !important;
+        text-align: center !important;
     }
 
     /* Reducir leyendas de abajo para que no se superpongan */
     .sentiment-scale-labels {
         font-size: 0.52rem !important;
         width: 100% !important;
-        max-width: 290px !important;
+        max-width: 320px !important;
         margin: 5px auto 0 auto !important;
     }
 
@@ -7218,9 +7258,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
     /* Grilla de dos columnas para los KPIs macro avanzados */
     .kpi-premium-row {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
+        gap: 10px !important;
         grid-column: span 2 !important;
         width: 100% !important;
+        display: grid !important;
     }
 
     .kpi-card-premium {
