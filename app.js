@@ -12895,6 +12895,77 @@ function setSignupRole(role) {
  * Selecciona una tarjeta de plan de forma interactiva y sincroniza el select oculto
  * @param {string} planKey - 'basico' | 'pro' | 'vip' | 'premium'
  */
+function toggleInitSignupBillingCycle(isAnnual) {
+    // Sincronizar el estado del selector global de registro
+    toggleSignupBillingCycle(isAnnual);
+
+    // Sincronizar el checkbox de la pantalla inicial
+    const initCheckbox = document.getElementById('init-signup-billing-cycle-checkbox');
+    if (initCheckbox) {
+        initCheckbox.checked = isAnnual;
+    }
+
+    const initMensualLbl = document.getElementById('init-signup-billing-cycle-mensual-lbl');
+    const initAnualLbl = document.getElementById('init-signup-billing-cycle-anual-lbl');
+    if (initMensualLbl && initAnualLbl) {
+        if (isAnnual) {
+            initMensualLbl.classList.remove('active');
+            initMensualLbl.style.color = 'var(--text-muted)';
+            initMensualLbl.style.opacity = '0.6';
+            initMensualLbl.style.fontWeight = 'normal';
+
+            initAnualLbl.classList.add('active');
+            initAnualLbl.style.color = 'var(--cyan)';
+            initAnualLbl.style.opacity = '0.9';
+            initAnualLbl.style.fontWeight = 'bold';
+        } else {
+            initMensualLbl.classList.add('active');
+            initMensualLbl.style.color = 'var(--cyan)';
+            initMensualLbl.style.opacity = '0.9';
+            initMensualLbl.style.fontWeight = 'bold';
+
+            initAnualLbl.classList.remove('active');
+            initAnualLbl.style.color = 'var(--text-muted)';
+            initAnualLbl.style.opacity = '0.6';
+            initAnualLbl.style.fontWeight = 'normal';
+        }
+    }
+
+    // Actualizar precios e indicación de las tarjetas iniciales de membresía
+    const cardsPrices = {
+        basico: { gtq: 140, usd: 18, badge: 'INDIVIDUAL', title: 'Individual', colorClass: 'var(--neon-blue)' },
+        pro: { gtq: 240, usd: 31, badge: 'PRO', title: 'Empresa Pro', colorClass: 'var(--cyan)' },
+        vip: { gtq: 640, usd: 82, badge: 'PREMIUM', title: 'Inmobiliaria VIP', colorClass: '#bf5af2' },
+        premium: { gtq: 340, usd: 43.70, badge: 'INVERSIONISTA', title: 'Inversionista Premium', colorClass: '#ffd700' }
+    };
+
+    Object.keys(cardsPrices).forEach(key => {
+        const cardObj = cardsPrices[key];
+        let priceGtq = cardObj.gtq;
+        let priceUsd = cardObj.usd;
+        if (isAnnual) {
+            priceGtq = Math.round(priceGtq * 0.85);
+            priceUsd = Math.round(priceUsd * 0.85);
+        }
+
+        const card = document.getElementById(`plan-card-signup-${key}`);
+        if (card) {
+            // Re-inyectar el contenido con los precios correctos
+            const isPro = key === 'pro';
+            const isPremium = key === 'premium';
+            const badgeBorder = isPremium ? 'rgba(255, 215, 0, 0.3)' : (isPro ? 'rgba(0, 240, 255, 0.3)' : (key === 'vip' ? 'rgba(191, 90, 242, 0.3)' : 'rgba(10, 132, 255, 0.3)'));
+            const badgeBg = isPremium ? 'rgba(255, 215, 0, 0.15)' : (isPro ? 'rgba(0, 240, 255, 0.15)' : (key === 'vip' ? 'rgba(191, 90, 242, 0.15)' : 'rgba(10, 132, 255, 0.15)'));
+            
+            card.innerHTML = `
+                ${(isPro || isPremium) ? `<div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>` : ''}
+                <span class="plan-card-badge" style="background: ${badgeBg}; color: ${cardObj.colorClass}; border: 1px solid ${badgeBorder};">${cardObj.badge}</span>
+                <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">${cardObj.title}</span>
+                <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: ${cardObj.colorClass}; margin-top: 4px;">Q${priceGtq}<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes ($${priceUsd} USD)</span></span>
+            `;
+        }
+    });
+}
+
 function selectSignupPlanCard(planKey) {
     const planSelect = document.getElementById('com-signup-plan');
     if (planSelect) {
