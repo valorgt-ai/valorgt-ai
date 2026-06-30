@@ -6042,8 +6042,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
    ========================================================================== */
 .signup-plan-card {
     flex: 1;
-    min-width: 100px;
-    padding: 12px 8px !important;
+    min-width: 130px;
+    padding: 15px 12px !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     background: rgba(8, 6, 12, 0.72) !important;
     border-radius: 8px;
