@@ -12933,7 +12933,7 @@ function toggleInitSignupBillingCycle(isAnnual) {
 
     // Actualizar precios e indicación de las tarjetas iniciales de membresía
     const cardsPrices = {
-        basico: { gtq: 140, usd: 18, badge: 'INDIVIDUAL', title: 'Individual', colorClass: 'var(--neon-blue)' },
+        basico: { gtq: 140, usd: 18, badge: 'INDIVIDUAL', title: 'Agente Individual', colorClass: 'var(--neon-blue)' },
         pro: { gtq: 240, usd: 31, badge: 'PRO', title: 'Empresa Pro', colorClass: 'var(--cyan)' },
         vip: { gtq: 640, usd: 82, badge: 'PREMIUM', title: 'Inmobiliaria VIP', colorClass: '#bf5af2' },
         premium: { gtq: 340, usd: 43.70, badge: 'INVERSIONISTA', title: 'Inversionista Premium', colorClass: '#ffd700' }
