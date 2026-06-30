@@ -3105,6 +3105,16 @@
                                 <!-- Banner Dinámico de Suscripción Pendiente de Verificación Bancaria -->
                                 <div id="b2b-subscription-pending-banner" style="display: none; margin-bottom: 20px;"></div>
 
+                                <!-- Selector Mensual/Anual de Facturación B2B -->
+                                <div class="billing-cycle-toggle-wrapper" style="margin-top: 10px; margin-bottom: 20px;">
+                                    <span class="billing-cycle-label active" id="b2b-billing-cycle-mensual-lbl">Mensual</span>
+                                    <label class="billing-cycle-switch">
+                                        <input type="checkbox" id="b2b-billing-cycle-checkbox" onchange="toggleB2bBillingCycle()">
+                                        <span class="billing-cycle-slider"></span>
+                                    </label>
+                                    <span class="billing-cycle-label" id="b2b-billing-cycle-anual-lbl">Anual <span class="billing-cycle-badge">Ahorra 15%</span></span>
+                                </div>
+
                                 <div class="saas-pricing-grid" id="b2b-pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
                                     <!-- Cargado dinámicamente por renderB2bPricingGrid() -->
                                 </div>
@@ -3393,6 +3403,16 @@
                                 <i data-lucide="play-circle" style="width: 16px; height: 16px;"></i>
                                 <span>VER VIDEO EXPLICATIVO</span>
                             </button>
+                        </div>
+
+                        <!-- Selector Mensual/Anual de Facturación -->
+                        <div class="billing-cycle-toggle-wrapper">
+                            <span class="billing-cycle-label active" id="billing-cycle-mensual-lbl">Mensual</span>
+                            <label class="billing-cycle-switch">
+                                <input type="checkbox" id="billing-cycle-checkbox" onchange="toggleBillingCycle()">
+                                <span class="billing-cycle-slider"></span>
+                            </label>
+                            <span class="billing-cycle-label" id="billing-cycle-anual-lbl">Anual <span class="billing-cycle-badge">Ahorra 15%</span></span>
                         </div>
 
                         <!-- Grilla de precios (ancho completo centrado) -->

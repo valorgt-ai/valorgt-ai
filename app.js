@@ -62,6 +62,7 @@ let activeB2bPlan = 'pro'; // 'basico' | 'pro' | 'vip' | 'premium'
 let adminMonthlyRevenueUSD = 1000.00;
 let isCommercialAuthenticated = false;
 let loggedInB2bClient = null;
+let billingPeriod = 'mensual'; // 'mensual' | 'anual'
 
 // Base de datos de portafolio inicial de demostración (Guardada internamente en USD por defecto)
 const PORTFOLIO_DEMO_ASSETS = [
@@ -6188,11 +6189,20 @@ function updateDynamicB2bPaymentTotals() {
     const durationSelect = document.getElementById('payment-duration-select');
     if (!durationSelect) return;
     
+    // Si es plan de suscripción, auto-seleccionar según billingPeriod
+    if (pendingPaymentType !== 'ad') {
+        if (billingPeriod === 'anual') {
+            durationSelect.value = "12";
+        } else {
+            durationSelect.value = "1";
+        }
+    }
+
     const months = parseInt(durationSelect.value);
     let discount = 0;
     if (months === 3) discount = 0.03;
     else if (months === 6) discount = 0.05;
-    else if (months === 12) discount = 0.10;
+    else if (months === 12) discount = 0.15; // 15% descuento para Anual (12 Meses)
     
     let baseGTQ = 0;
     if (pendingPaymentTarget === 'basico') baseGTQ = 140;
@@ -11863,7 +11873,22 @@ function renderPublicPricingGrid() {
 
     plans.forEach(plan => {
         const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
-        const priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        
+        let priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        let discountBadgeHtml = '';
+
+        if (billingPeriod === 'anual') {
+            const originalPrice = priceNum;
+            priceNum = originalPrice * 0.85; // 15% de descuento
+            const savings = (originalPrice - priceNum) * 12;
+            const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+            discountBadgeHtml = `
+                <div class="plan-discount-badge">
+                    <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
+                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(2))}</span>
+                </div>
+            `;
+        }
         
         const card = document.createElement('div');
         card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
@@ -11906,10 +11931,13 @@ function renderPublicPricingGrid() {
                     <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
                     <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 22px;">
+                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 8px;">
                     <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
                     <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
                     <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                </div>
+                <div style="margin-bottom: 22px; min-height: 32px;">
+                    ${discountBadgeHtml}
                 </div>
                 <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
                     ${featuresHtml}
@@ -12043,7 +12071,22 @@ function renderB2bPricingGrid() {
 
     plans.forEach(plan => {
         const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
-        const priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        
+        let priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        let discountBadgeHtml = '';
+
+        if (billingPeriod === 'anual') {
+            const originalPrice = priceNum;
+            priceNum = originalPrice * 0.85; // 15% de descuento
+            const savings = (originalPrice - priceNum) * 12;
+            const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+            discountBadgeHtml = `
+                <div class="plan-discount-badge">
+                    <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
+                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(2))}</span>
+                </div>
+            `;
+        }
         
         const card = document.createElement('div');
         card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
@@ -12080,10 +12123,13 @@ function renderB2bPricingGrid() {
                     <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
                     <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 22px;">
+                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 8px;">
                     <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
                     <span class="plan-price-num">${formatNumber(priceNum % 1 === 0 ? priceNum.toFixed(0) : priceNum.toFixed(2))}</span>
                     <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                </div>
+                <div style="margin-bottom: 22px; min-height: 32px;">
+                    ${discountBadgeHtml}
                 </div>
                 <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
                     ${featuresHtml}
@@ -12098,6 +12144,86 @@ function renderB2bPricingGrid() {
         lucide.createIcons();
     }
 }
+function toggleBillingCycle() {
+    const checkbox = document.getElementById('billing-cycle-checkbox');
+    if (!checkbox) return;
+
+    billingPeriod = checkbox.checked ? 'anual' : 'mensual';
+
+    // Sincronizar etiquetas de estado activo/inactivo
+    const mensualLbl = document.getElementById('billing-cycle-mensual-lbl');
+    const anualLbl = document.getElementById('billing-cycle-anual-lbl');
+    
+    if (mensualLbl && anualLbl) {
+        if (billingPeriod === 'anual') {
+            mensualLbl.classList.remove('active');
+            anualLbl.classList.add('active');
+        } else {
+            mensualLbl.classList.add('active');
+            anualLbl.classList.remove('active');
+        }
+    }
+
+    // Sincronizar el checkbox B2B por si acaso
+    const b2bCheckbox = document.getElementById('b2b-billing-cycle-checkbox');
+    if (b2bCheckbox) {
+        b2bCheckbox.checked = checkbox.checked;
+        const b2bMensual = document.getElementById('b2b-billing-cycle-mensual-lbl');
+        const b2bAnual = document.getElementById('b2b-billing-cycle-anual-lbl');
+        if (b2bMensual && b2bAnual) {
+            if (billingPeriod === 'anual') {
+                b2bMensual.classList.remove('active');
+                b2bAnual.classList.add('active');
+            } else {
+                b2bMensual.classList.add('active');
+                b2bAnual.classList.remove('active');
+            }
+        }
+    }
+
+    renderPublicPricingGrid();
+    renderB2bPricingGrid();
+}
+
+function toggleB2bBillingCycle() {
+    const checkbox = document.getElementById('b2b-billing-cycle-checkbox');
+    if (!checkbox) return;
+
+    billingPeriod = checkbox.checked ? 'anual' : 'mensual';
+
+    // Sincronizar el checkbox público
+    const publicCheckbox = document.getElementById('billing-cycle-checkbox');
+    if (publicCheckbox) {
+        publicCheckbox.checked = checkbox.checked;
+        const publicMensual = document.getElementById('billing-cycle-mensual-lbl');
+        const publicAnual = document.getElementById('billing-cycle-anual-lbl');
+        if (publicMensual && publicAnual) {
+            if (billingPeriod === 'anual') {
+                publicMensual.classList.remove('active');
+                publicAnual.classList.add('active');
+            } else {
+                publicMensual.classList.add('active');
+                publicAnual.classList.remove('active');
+            }
+        }
+    }
+
+    const b2bMensual = document.getElementById('b2b-billing-cycle-mensual-lbl');
+    const b2bAnual = document.getElementById('b2b-billing-cycle-anual-lbl');
+    if (b2bMensual && b2bAnual) {
+        if (billingPeriod === 'anual') {
+            b2bMensual.classList.remove('active');
+            b2bAnual.classList.add('active');
+        } else {
+            b2bMensual.classList.add('active');
+            b2bAnual.classList.remove('active');
+        }
+    }
+
+    renderPublicPricingGrid();
+    renderB2bPricingGrid();
+}
+
 function switchPublicPlansProfile(profile) {
     activePlansProfile = profile;
     
