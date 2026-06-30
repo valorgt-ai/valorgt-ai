@@ -1729,19 +1729,17 @@
                                 <!-- SECTOR PREMIUM DE TARJETAS DE SELECCIÓN DE PLANES -->
                                 <!-- 1. Contenedor de planes de Agente -->
                                 <div id="agent-plans-container" class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px; margin-bottom: 2px;">
-                                        <label style="font-size: 0.72rem; margin: 0;">Selecciona tu Plan de Membresía</label>
-                                        
-                                        <!-- Switch de Ciclo de Facturación en Registro (Vista Inicial - Arriba, grande y centrado) -->
-                                        <div class="billing-cycle-container" style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 6px 15px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.15);">
-                                            <span class="billing-cycle-label active" id="init-signup-billing-cycle-mensual-lbl" style="font-size: 0.72rem; opacity: 0.9; cursor: pointer; color: var(--cyan); transition: all 0.3s; font-weight: bold;" onclick="toggleInitSignupBillingCycle(false)">Pago Mensual</span>
-                                            <label class="billing-cycle-switch" style="position: relative; display: inline-block; width: 34px; height: 18px; margin: 0; vertical-align: middle;">
-                                                <input type="checkbox" id="init-signup-billing-cycle-checkbox" onchange="toggleInitSignupBillingCycle(this.checked)" style="opacity: 0; width: 0; height: 0;">
-                                                <span class="billing-cycle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.15); transition: .3s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.1);"></span>
-                                            </label>
-                                            <span class="billing-cycle-label" id="init-signup-billing-cycle-anual-lbl" style="font-size: 0.72rem; opacity: 0.6; cursor: pointer; color: var(--text-muted); transition: all 0.3s;" onclick="toggleInitSignupBillingCycle(true)">Pago Anual <span class="billing-cycle-badge" style="background: var(--neon-emerald); color: #000; font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;">-15%</span></span>
-                                        </div>
+                                    <!-- Switch de Ciclo de Facturación en Registro (Vista Inicial - Ancho completo de campos, centrado y alineado) -->
+                                    <div class="billing-cycle-container" style="display: flex; align-items: center; justify-content: center; gap: 14px; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.15); margin-bottom: 5px; width: 100%; box-sizing: border-box;">
+                                        <span class="billing-cycle-label active" id="init-signup-billing-cycle-mensual-lbl" style="font-size: 0.8rem; opacity: 0.9; cursor: pointer; color: var(--cyan); transition: all 0.3s; font-weight: bold;" onclick="toggleInitSignupBillingCycle(false)">Pago Mensual</span>
+                                        <label class="billing-cycle-switch" style="position: relative; display: inline-block; width: 54px; height: 28px; margin: 0; vertical-align: middle;">
+                                            <input type="checkbox" id="init-signup-billing-cycle-checkbox" onchange="toggleInitSignupBillingCycle(this.checked)">
+                                            <span class="billing-cycle-slider"></span>
+                                        </label>
+                                        <span class="billing-cycle-label" id="init-signup-billing-cycle-anual-lbl" style="font-size: 0.8rem; opacity: 0.6; cursor: pointer; color: var(--text-muted); transition: all 0.3s;" onclick="toggleInitSignupBillingCycle(true)">Pago Anual <span class="billing-cycle-badge" style="background: var(--neon-emerald); color: #000; font-size: 0.58rem; padding: 1.5px 5px; border-radius: 3px; font-weight: bold; margin-left: 3px;">Ahorra 15%</span></span>
                                     </div>
+                                    
+                                    <label style="font-size: 0.72rem; margin: 5px 0 2px 0;">Selecciona tu Plan de Membresía</label>
                                     
                                     <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
                                         <div id="plan-card-signup-basico" class="signup-plan-card" onclick="selectSignupPlanCard('basico')">
