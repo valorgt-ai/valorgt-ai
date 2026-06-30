@@ -1797,6 +1797,16 @@
                             <div class="plan-selection-column" style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
                                 <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">1. SELECCIONAR NIVEL DE SUSCRIPCIÓN</h3>
                                 
+                                <!-- Switch de Ciclo de Facturación en Registro -->
+                                <div class="billing-cycle-container" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.15);">
+                                    <span class="billing-cycle-label active" id="signup-billing-cycle-mensual-lbl" style="font-size: 0.72rem; opacity: 0.9; cursor: pointer; color: var(--cyan); transition: all 0.3s; font-weight: bold;" onclick="toggleSignupBillingCycle(false)">Mensual</span>
+                                    <label class="billing-cycle-switch" style="position: relative; display: inline-block; width: 34px; height: 18px; margin: 0;">
+                                        <input type="checkbox" id="signup-billing-cycle-checkbox" onchange="toggleSignupBillingCycle(this.checked)" style="opacity: 0; width: 0; height: 0;">
+                                        <span class="billing-cycle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.15); transition: .3s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.1);"></span>
+                                    </label>
+                                    <span class="billing-cycle-label" id="signup-billing-cycle-anual-lbl" style="font-size: 0.72rem; opacity: 0.6; cursor: pointer; color: var(--text-muted); transition: all 0.3s;" onclick="toggleSignupBillingCycle(true)">Anual <span class="billing-cycle-badge" style="background: var(--neon-emerald); color: #000; font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;">-15%</span></span>
+                                </div>
+
                                 <div class="pricing-card" id="signup-plan-basico" data-usd="18" data-gtq="140" onclick="selectSignupPlan('basico', 18)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
                                     <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
                                         <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">INDIVIDUAL</span>

@@ -7457,6 +7457,74 @@ async function handleRegistrationFormSubmit(event) {
     }, 450);
 }
 
+let signupBillingPeriod = 'mensual';
+
+function toggleSignupBillingCycle(isAnnual) {
+    signupBillingPeriod = isAnnual ? 'anual' : 'mensual';
+    
+    const checkbox = document.getElementById('signup-billing-cycle-checkbox');
+    if (checkbox) {
+        checkbox.checked = isAnnual;
+    }
+    
+    const mensualLbl = document.getElementById('signup-billing-cycle-mensual-lbl');
+    const anualLbl = document.getElementById('signup-billing-cycle-anual-lbl');
+    if (mensualLbl && anualLbl) {
+        if (isAnnual) {
+            mensualLbl.classList.remove('active');
+            mensualLbl.style.color = 'var(--text-muted)';
+            mensualLbl.style.opacity = '0.6';
+            mensualLbl.style.fontWeight = 'normal';
+            
+            anualLbl.classList.add('active');
+            anualLbl.style.color = 'var(--cyan)';
+            anualLbl.style.opacity = '0.9';
+            anualLbl.style.fontWeight = 'bold';
+        } else {
+            mensualLbl.classList.add('active');
+            mensualLbl.style.color = 'var(--cyan)';
+            mensualLbl.style.opacity = '0.9';
+            mensualLbl.style.fontWeight = 'bold';
+            
+            anualLbl.classList.remove('active');
+            anualLbl.style.color = 'var(--text-muted)';
+            anualLbl.style.opacity = '0.6';
+            anualLbl.style.fontWeight = 'normal';
+        }
+    }
+    
+    // Actualizar visualmente los precios de las tarjetas de registro
+    const plansInfo = {
+        basico: { gtq: 140, usd: 18 },
+        pro: { gtq: 240, usd: 31 },
+        vip: { gtq: 640, usd: 82 },
+        premium: { gtq: 340, usd: 43.70 }
+    };
+    
+    Object.keys(plansInfo).forEach(key => {
+        let baseGtq = plansInfo[key].gtq;
+        let baseUsd = plansInfo[key].usd;
+        if (signupBillingPeriod === 'anual') {
+            baseGtq = Math.round(baseGtq * 0.85);
+            baseUsd = Math.round(baseUsd * 0.85);
+        }
+        
+        const priceEl = document.getElementById(`signup-price-${key}`);
+        if (priceEl) {
+            priceEl.innerText = baseGtq;
+        }
+        const equivEl = document.getElementById(`signup-equiv-${key}`);
+        if (equivEl) {
+            equivEl.innerText = `(equiv. $${baseUsd} USD)`;
+        }
+    });
+
+    // Re-ejecutar selectSignupPlan para refrescar los totales
+    if (typeof selectedSignupPlanKey !== 'undefined') {
+        selectSignupPlan(selectedSignupPlanKey, selectedSignupPlanPrice);
+    }
+}
+
 /**
  * Alterna visualmente el plan seleccionado en la pantalla de pago de registro
  */
@@ -7480,6 +7548,11 @@ function selectSignupPlan(planKey, priceUSD) {
     } else if (planKey === 'premium') {
         priceGTQ = 340;
         priceUSD = 43.70;
+    }
+    
+    if (signupBillingPeriod === 'anual') {
+        priceGTQ = priceGTQ * 0.85;
+        priceUSD = priceUSD * 0.85;
     }
     
     selectedSignupPlanPrice = priceUSD;
