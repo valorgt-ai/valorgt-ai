@@ -6200,9 +6200,7 @@ function updateDynamicB2bPaymentTotals() {
 
     const months = parseInt(durationSelect.value);
     let discount = 0;
-    if (months === 3) discount = 0.03;
-    else if (months === 6) discount = 0.05;
-    else if (months === 12) discount = 0.15; // 15% descuento para Anual (12 Meses)
+    if (months === 12) discount = 0.15; // 15% descuento para Anual (12 Meses)
     
     let baseGTQ = 0;
     if (pendingPaymentTarget === 'basico') baseGTQ = 140;
@@ -11885,7 +11883,7 @@ function renderPublicPricingGrid() {
             discountBadgeHtml = `
                 <div class="plan-discount-badge">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
-                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(2))}</span>
+                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00</span>
                 </div>
             `;
         }
@@ -12083,7 +12081,7 @@ function renderB2bPricingGrid() {
             discountBadgeHtml = `
                 <div class="plan-discount-badge">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
-                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(2))}</span>
+                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00</span>
                 </div>
             `;
         }
