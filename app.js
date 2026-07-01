@@ -12444,8 +12444,9 @@ function closeWelcomeVideoModal() {
 let promoInterval = null;
 
 function openPromoLaunchModal() {
-    const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
-    if (isDismissed) return;
+    // Comentamos la persistencia temporalmente para facilitar las pruebas del usuario en vivo
+    // const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
+    // if (isDismissed) return;
 
     const modal = document.getElementById('promo-launch-modal');
     if (modal) {
