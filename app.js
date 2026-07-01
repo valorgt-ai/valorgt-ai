@@ -7578,19 +7578,30 @@ function selectSignupPlan(planKey, priceUSD) {
     if (planKey === 'vip') planName = "Suscripción Inmobiliaria Premium";
     if (planKey === 'premium') planName = "Suscripción Inversionista Premium";
 
-    // Calcular conversión y símbolo basado en GTQ dominante
+    // Actualizar labels
+    let finalGTQ = priceGTQ;
+    let finalUSD = priceUSD;
+    let discountNotice = "";
+    
+    // Si tiene descuento por código promocional VGT-0626
+    if (planKey === 'vip' && appliedPromoDiscount > 0) {
+        // La promo es de Q250.00 + Q10.00 de pasarela = Q260.00 total
+        finalGTQ = 260;
+        finalUSD = 33.50;
+        discountNotice = " (Promo VGT-0626 Aplicada)";
+    }
+    
     let priceConverted = 0;
     let currencySym = '';
     if (activeCurrency === 'GTQ') {
-        priceConverted = priceGTQ;
+        priceConverted = finalGTQ;
         currencySym = 'Q';
     } else {
-        priceConverted = priceUSD;
+        priceConverted = finalUSD;
         currencySym = '$';
     }
 
-    // Actualizar labels
-    document.getElementById('signup-payment-concept-lbl').innerText = planName;
+    document.getElementById('signup-payment-concept-lbl').innerText = planName + discountNotice;
     document.getElementById('signup-payment-total-lbl').innerText = `${currencySym}${formatNumber(priceConverted.toFixed(2))}`;
 }
 
@@ -7658,7 +7669,16 @@ async function completeSignupSubscriptionTransaction() {
     // Generar recibo
     const authCode = "AUT-" + Math.floor(100000 + Math.random() * 900000);
     const refCode = "REF-" + Math.floor(10000000 + Math.random() * 90000000);
-    const amountVal = selectedSignupPlanPrice * conversion;
+    
+    // Si la promo está activa y es el plan VIP
+    let amountVal = selectedSignupPlanPrice * conversion;
+    if (selectedSignupPlanKey === 'vip' && appliedPromoDiscount > 0) {
+        if (activeCurrency === 'GTQ') {
+            amountVal = 260; // Promo Q250.00 + cargo = Q260.00
+        } else {
+            amountVal = 33.50;
+        }
+    }
 
     document.getElementById('signup-receipt-auth-code').innerText = `#${authCode}`;
     document.getElementById('signup-receipt-ref-code').innerText = `#${refCode}`;
@@ -12481,8 +12501,8 @@ function openPromoLaunchModal() {
             document.getElementById('promo-seconds').innerText = String(seconds).padStart(2, '0');
         }, 1000);
 
-        // 2. Simular/Obtener cupos vendidos dinámicos (Ej. 42 de 100)
-        let savedCupos = parseInt(localStorage.getItem('valorgt_promo_cupos_sold')) || 37;
+        // 2. Simular/Obtener cupos vendidos dinámicos (Empieza en 22)
+        let savedCupos = parseInt(localStorage.getItem('valorgt_promo_cupos_sold')) || 22;
         // Pequeño factor aleatorio para simular urgencia de compra fintech en tiempo real
         if (Math.random() > 0.7 && savedCupos < 98) {
             savedCupos += Math.floor(Math.random() * 2) + 1;
@@ -12498,6 +12518,51 @@ function openPromoLaunchModal() {
                 progressBar.style.width = `${savedCupos}%`;
             }, 300);
         }
+    }
+}
+
+// Lógica de Códigos de Descuento de Pasarela
+let appliedPromoDiscount = 0;
+
+function applySignupPromoCode() {
+    const codeInput = document.getElementById('signup-promo-code');
+    const statusLbl = document.getElementById('signup-promo-status');
+    if (!codeInput) return;
+    
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code) {
+        statusLbl.innerText = "";
+        return;
+    }
+    
+    // Validar el código promocional de lanzamiento
+    if (code === 'VGT-0626') {
+        const now = new Date();
+        const expiryDate = new Date("July 30, 2026 23:59:59");
+        if (now.getTime() > expiryDate.getTime()) {
+            statusLbl.innerText = "EXPIRADO";
+            statusLbl.style.color = "var(--red)";
+            appliedPromoDiscount = 0;
+            showCyberToast("Este código promocional ha caducado.", "x-circle");
+        } else {
+            statusLbl.innerText = "VÁLIDO (PROMO Q250)";
+            statusLbl.style.color = "var(--green)";
+            // Activar descuento promocional: Total a debitar de Q260.00
+            appliedPromoDiscount = 250; 
+            showCyberToast("¡Código VGT-0626 aplicado con éxito!", "check-circle");
+        }
+    } else {
+        statusLbl.innerText = "INVÁLIDO";
+        statusLbl.style.color = "var(--red)";
+        appliedPromoDiscount = 0;
+        showCyberToast("Código promocional inválido o inexistente.", "alert-triangle");
+    }
+    
+    // Recalcular montos de cobro de pasarela inmediatamente
+    if (typeof updateSignupPaymentTotals === 'function') {
+        updateSignupPaymentTotals();
+    } else if (typeof calculateSignupPaymentSummary === 'function') {
+        calculateSignupPaymentSummary();
     }
 }
 
