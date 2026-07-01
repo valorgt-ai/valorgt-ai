@@ -7585,9 +7585,9 @@ function selectSignupPlan(planKey, priceUSD) {
     
     // Si tiene descuento por código promocional VGT-0626
     if (planKey === 'vip' && appliedPromoDiscount > 0) {
-        // La promo es de Q250.00 + Q10.00 de pasarela = Q260.00 total
-        finalGTQ = 260;
-        finalUSD = 33.50;
+        // La promo es de Q250.00 exactos
+        finalGTQ = 250;
+        finalUSD = 32.00;
         discountNotice = " (Promo VGT-0626 Aplicada)";
     }
     
@@ -7674,9 +7674,9 @@ async function completeSignupSubscriptionTransaction() {
     let amountVal = selectedSignupPlanPrice * conversion;
     if (selectedSignupPlanKey === 'vip' && appliedPromoDiscount > 0) {
         if (activeCurrency === 'GTQ') {
-            amountVal = 260; // Promo Q250.00 + cargo = Q260.00
+            amountVal = 250; // Promo Q250.00 exactos
         } else {
-            amountVal = 33.50;
+            amountVal = 32.00;
         }
     }
 
