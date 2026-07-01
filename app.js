@@ -12434,7 +12434,103 @@ function closeWelcomeVideoModal() {
         modal.classList.remove('active');
         // Persistir que el usuario cerró el video de bienvenida
         localStorage.setItem('valorgt_welcome_video_dismissed', 'true');
+        
+        // Iniciar inmediatamente el modal de la promoción por lanzamiento si corresponde
+        openPromoLaunchModal();
     }
+}
+
+// Variables del Intervalo del Contador
+let promoInterval = null;
+
+function openPromoLaunchModal() {
+    const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
+    if (isDismissed) return;
+
+    const modal = document.getElementById('promo-launch-modal');
+    if (modal) {
+        modal.classList.add('active');
+        
+        // 1. Iniciar Temporizador Regresivo (30 de Julio 2026 00:00:00)
+        const targetDate = new Date("July 30, 2026 00:00:00").getTime();
+        
+        if (promoInterval) clearInterval(promoInterval);
+        
+        promoInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+            
+            if (difference < 0) {
+                clearInterval(promoInterval);
+                document.getElementById('promo-days').innerText = "00";
+                document.getElementById('promo-hours').innerText = "00";
+                document.getElementById('promo-minutes').innerText = "00";
+                document.getElementById('promo-seconds').innerText = "00";
+                return;
+            }
+            
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            document.getElementById('promo-days').innerText = String(days).padStart(2, '0');
+            document.getElementById('promo-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('promo-minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('promo-seconds').innerText = String(seconds).padStart(2, '0');
+        }, 1000);
+
+        // 2. Simular/Obtener cupos vendidos dinámicos (Ej. 42 de 100)
+        let savedCupos = parseInt(localStorage.getItem('valorgt_promo_cupos_sold')) || 37;
+        // Pequeño factor aleatorio para simular urgencia de compra fintech en tiempo real
+        if (Math.random() > 0.7 && savedCupos < 98) {
+            savedCupos += Math.floor(Math.random() * 2) + 1;
+            localStorage.setItem('valorgt_promo_cupos_sold', savedCupos);
+        }
+        
+        const counterVal = document.getElementById('promo-counter-val');
+        const progressBar = document.getElementById('promo-progress-bar');
+        
+        if (counterVal && progressBar) {
+            counterVal.innerText = savedCupos;
+            setTimeout(() => {
+                progressBar.style.width = `${savedCupos}%`;
+            }, 300);
+        }
+    }
+}
+
+function closePromoLaunchModal() {
+    const modal = document.getElementById('promo-launch-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        localStorage.setItem('valorgt_promo_launch_dismissed', 'true');
+        if (promoInterval) clearInterval(promoInterval);
+    }
+}
+
+function actionPromoSignup() {
+    // Cerrar el modal y redireccionar a la pantalla de registro con el plan VIP preseleccionado
+    closePromoLaunchModal();
+    
+    // Cambiar a la vista comercial de Ingreso/Registro
+    switchView('commercial');
+    
+    // Seleccionar plan VIP e ir al paso de registro
+    setTimeout(() => {
+        selectSignupPlanCard('basico'); // Agente Individual
+        const planSelect = document.getElementById('com-signup-plan');
+        if (planSelect) {
+            planSelect.value = 'vip'; // Inmobiliaria VIP
+            planSelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Simular clic en la tarjeta VIP visual
+        const cardVip = document.getElementById('plan-card-signup-vip');
+        if (cardVip) cardVip.click();
+        
+        showCyberToast("¡Aplicando Q250 de Tarifa Promo Lanzamiento!", "sparkles");
+    }, 400);
 }
 
 /**
@@ -12657,10 +12753,12 @@ async function fetchSystemSettingsFromSupabase() {
             if (plansBtn) plansBtn.style.display = 'none';
         }
 
-        // Lanzar Lightbox de Bienvenida automáticamente si la URL descargada de la nube no está vacía
+        // Lanzar Lightbox de Bienvenida automáticamente si la URL descargada de la nube no está vacía, de lo contrario abrir la promo de lanzamiento
         setTimeout(() => {
             if (supabaseWelcomeVideoUrl && supabaseWelcomeVideoUrl.trim() !== '') {
                 openWelcomeVideoModal();
+            } else {
+                openPromoLaunchModal();
             }
         }, 1000);
 
@@ -12670,6 +12768,8 @@ async function fetchSystemSettingsFromSupabase() {
         setTimeout(() => {
             if (welcomeVideoUrl && welcomeVideoUrl.trim() !== '') {
                 openWelcomeVideoModal();
+            } else {
+                openPromoLaunchModal();
             }
         }, 1500);
     }
