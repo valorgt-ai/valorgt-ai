@@ -12533,6 +12533,13 @@ function actionPromoSignup() {
     }, 400);
 }
 
+function goToTutorialVideos() {
+    closePromoLaunchModal();
+    // Navegar a la pestaña 'tutorials'
+    switchView('tutorials');
+    showCyberToast("Abriendo Centro de Video Guías y Tutoriales", "play-circle");
+}
+
 /**
  * Permite al administrador calibrar persistentemente la URL del video de bienvenida principal
  */
