@@ -12464,9 +12464,12 @@ function closeWelcomeVideoModal() {
 let promoInterval = null;
 
 function openPromoLaunchModal() {
-    // Comentamos la persistencia temporalmente para facilitar las pruebas del usuario en vivo
-    // const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
-    // if (isDismissed) return;
+    // Si el usuario ya inició sesión o está registrado, no mostrar la promo
+    if (isCommercialAuthenticated) return;
+
+    // Verificar si el modal ya fue cerrado previamente
+    const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
+    if (isDismissed) return;
 
     const modal = document.getElementById('promo-launch-modal');
     if (modal) {
@@ -12581,6 +12584,9 @@ function actionPromoSignup() {
     
     // Cambiar a la vista comercial de Ingreso/Registro
     switchView('commercial');
+    
+    // Asegurar que se muestre la pestaña de Registro de Nuevo Usuario en lugar de Acceso
+    switchLoginTab('signup');
     
     // Seleccionar plan VIP e ir al paso de registro
     setTimeout(() => {
