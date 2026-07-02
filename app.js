@@ -5787,6 +5787,16 @@ function openPlanPayment(planKey) {
     pendingPaymentType = 'subscription';
     pendingPaymentTarget = planKey;
 
+    // Resetear código promocional de transferencias B2B
+    b2bPromoDiscountApplied = false;
+    const b2bPromoInput = document.getElementById('b2b-promo-code');
+    const b2bPromoStatus = document.getElementById('b2b-promo-status');
+    if (b2bPromoInput) b2bPromoInput.value = "";
+    if (b2bPromoStatus) {
+        b2bPromoStatus.innerText = "";
+        b2bPromoStatus.style.color = "";
+    }
+
     // Habilitar y resetear duración
     const durationSelect = document.getElementById('payment-duration-select');
     if (durationSelect) {
@@ -6205,11 +6215,38 @@ function updateDynamicB2bPaymentTotals() {
     let baseGTQ = 0;
     if (pendingPaymentTarget === 'basico') baseGTQ = 140;
     else if (pendingPaymentTarget === 'pro') baseGTQ = 240;
-    else if (pendingPaymentTarget === 'vip') baseGTQ = 640;
+    else if (pendingPaymentTarget === 'vip') {
+        if (b2bPromoDiscountApplied) {
+            baseGTQ = 250;
+            discount = 0; // Sin descuento adicional sobre la promo
+        } else {
+            baseGTQ = 640;
+        }
+    }
     else if (pendingPaymentTarget === 'premium') baseGTQ = 340;
     else if (pendingPaymentType === 'ad') {
         baseGTQ = 450;
         durationSelect.disabled = true;
+    }
+    
+    // Actualizar dinámicamente el concepto con el indicador de promo si corresponde
+    let planName = "";
+    if (pendingPaymentTarget === 'basico') planName = "Suscripción Agente Individual";
+    else if (pendingPaymentTarget === 'pro') planName = "Suscripción Inmobiliaria Pro";
+    else if (pendingPaymentTarget === 'vip') {
+        planName = "Suscripción Inmobiliaria Premium";
+        if (b2bPromoDiscountApplied) {
+            planName += " (Promo VGT-0626)";
+        }
+    }
+    else if (pendingPaymentTarget === 'premium') planName = "Suscripción Inversionista Premium";
+    else if (pendingPaymentType === 'ad') {
+        planName = "Pauta Publicitaria";
+    }
+
+    const conceptEl = document.getElementById('payment-concept-label');
+    if (conceptEl) {
+        conceptEl.innerText = planName;
     }
     
     const subtotalGTQ = baseGTQ * months;
@@ -6272,9 +6309,7 @@ async function processB2bTransferPayment(event) {
             const durationSelect = document.getElementById('payment-duration-select');
             const months = durationSelect ? parseInt(durationSelect.value) || 1 : 1;
             let discount = 0;
-            if (months === 3) discount = 0.03;
-            else if (months === 6) discount = 0.05;
-            else if (months === 12) discount = 0.10;
+            if (months === 12) discount = 0.15;
             
             const pTarget = pendingPaymentTarget || 'basico';
             const pType = pendingPaymentType || 'subscription';
@@ -6282,7 +6317,14 @@ async function processB2bTransferPayment(event) {
             let baseGTQ = 0;
             if (pTarget === 'basico') baseGTQ = 140;
             else if (pTarget === 'pro') baseGTQ = 240;
-            else if (pTarget === 'vip') baseGTQ = 640;
+            else if (pTarget === 'vip') {
+                if (b2bPromoDiscountApplied) {
+                    baseGTQ = 250;
+                    discount = 0; // Sin descuento adicional
+                } else {
+                    baseGTQ = 640;
+                }
+            }
             else if (pTarget === 'premium') baseGTQ = 340;
             else if (pType === 'ad') baseGTQ = 450;
             else baseGTQ = 240; // fallback (Pro)
@@ -6298,6 +6340,9 @@ async function processB2bTransferPayment(event) {
             if (pType === 'subscription') {
                 const planStr = (typeof pTarget === 'string' ? pTarget : 'pro').toUpperCase();
                 conceptText = `Suscripción: Plan ${planStr}`;
+                if (planStr === 'VIP' && b2bPromoDiscountApplied) {
+                    conceptText += " (Promo VGT-0626)";
+                }
                 planKeyVal = typeof pTarget === 'string' ? pTarget : 'pro';
             } else {
                 const propId = pTarget && pTarget.propertyId ? pTarget.propertyId : 'unknown';
@@ -12526,6 +12571,7 @@ function openPromoLaunchModal() {
 
 // Lógica de Códigos de Descuento de Pasarela
 let appliedPromoDiscount = 0;
+let b2bPromoDiscountApplied = false;
 
 function applySignupPromoCode() {
     const codeInput = document.getElementById('signup-promo-code');
@@ -12567,6 +12613,50 @@ function applySignupPromoCode() {
     } else if (typeof calculateSignupPaymentSummary === 'function') {
         calculateSignupPaymentSummary();
     }
+}
+
+function applyB2bTransferPromoCode() {
+    const codeInput = document.getElementById('b2b-promo-code');
+    const statusLbl = document.getElementById('b2b-promo-status');
+    if (!codeInput) return;
+    
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code) {
+        statusLbl.innerText = "";
+        return;
+    }
+    
+    if (pendingPaymentTarget !== 'vip') {
+        statusLbl.innerText = "SÓLO VIP";
+        statusLbl.style.color = "var(--red)";
+        b2bPromoDiscountApplied = false;
+        showCyberToast("Este código sólo aplica al Plan Inmobiliaria Premium (VIP)", "alert-triangle");
+        updateDynamicB2bPaymentTotals();
+        return;
+    }
+
+    if (code === 'VGT-0626') {
+        const now = new Date();
+        const expiryDate = new Date("July 30, 2026 23:59:59");
+        if (now.getTime() > expiryDate.getTime()) {
+            statusLbl.innerText = "EXPIRADO";
+            statusLbl.style.color = "var(--red)";
+            b2bPromoDiscountApplied = false;
+            showCyberToast("Este código promocional ha caducado.", "x-circle");
+        } else {
+            statusLbl.innerText = "VÁLIDO (Q250)";
+            statusLbl.style.color = "var(--green)";
+            b2bPromoDiscountApplied = true;
+            showCyberToast("¡Promo VGT-0626 aplicada con éxito!", "check-circle");
+        }
+    } else {
+        statusLbl.innerText = "INVÁLIDO";
+        statusLbl.style.color = "var(--red)";
+        b2bPromoDiscountApplied = false;
+        showCyberToast("Código promocional inválido.", "alert-triangle");
+    }
+    
+    updateDynamicB2bPaymentTotals();
 }
 
 function closePromoLaunchModal() {

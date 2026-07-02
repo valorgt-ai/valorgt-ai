@@ -3548,6 +3548,18 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Campo de Código Promocional para Transferencias -->
+                                <div class="input-group" style="display: flex; flex-direction: column; gap: 3px; margin-top: 8px; margin-bottom: 8px;">
+                                    <label for="b2b-promo-code" style="font-size: 0.65rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                                        <span style="color: var(--text-secondary);">Código de Activación (Promo)</span>
+                                        <span id="b2b-promo-status" style="font-weight: bold; font-family: var(--font-mono); font-size: 0.65rem;"></span>
+                                    </label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="text" id="b2b-promo-code" placeholder="Ej. VGT-XXXX" style="padding: 8px; font-size: 0.75rem; flex: 2; text-transform: uppercase; font-family: var(--font-mono); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px; outline: none;">
+                                        <button type="button" class="btn btn-outline" onclick="applyB2bTransferPromoCode()" style="flex: 1; padding: 0 10px; font-size: 0.68rem; font-weight: bold; border: 1px solid rgba(0, 240, 255, 0.3); background: rgba(0, 240, 255, 0.05); color: var(--cyan); height: 35px; border-radius: 4px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(0, 240, 255, 0.15)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.05)'">APLICAR</button>
+                                    </div>
+                                </div>
+                                
                                 <div class="payment-summary font-mono" style="margin-top: 8px; padding: 8px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px;">
                                     <div class="summary-line" style="display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.65rem; color: var(--text-muted);">
                                         <span>Concepto:</span>
@@ -5146,6 +5158,6 @@
     <script src="mockData.js?v=10.12"></script>
     <script src="charts.js?v=10.12"></script>
     <script src="map.js?v=10.12"></script>
-    <script src="app.js?v=10.55"></script>
+    <script src="app.js?v=10.56"></script>
 </body>
 </html>
