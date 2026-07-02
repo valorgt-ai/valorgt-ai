@@ -1714,17 +1714,6 @@
                                     </div>
                                 </div>
 
-                                <!-- SECCIÓN DINÁMICA: CAMPOS EXCLUSIVOS DE AGENTE INMOBILIARIO -->
-                                <div id="agent-only-fields" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                        <label for="com-signup-company">Empresa / Inmobiliaria</label>
-                                        <input type="text" id="com-signup-company" placeholder="Ej. MultiBienes S.A." required style="padding: 8px; font-size: 0.75rem;">
-                                    </div>
-                                    <div class="input-group" style="display: flex; flex-direction: column; gap: 4px;">
-                                        <label for="com-signup-nit">NIT Comercial</label>
-                                        <input type="text" id="com-signup-nit" placeholder="Ej. 8493021-9" required style="padding: 8px; font-size: 0.75rem;">
-                                    </div>
-                                </div>
 
                                 <!-- SECTOR PREMIUM DE TARJETAS DE SELECCIÓN DE PLANES -->
                                 <!-- 1. Contenedor de planes de Agente -->
@@ -3500,7 +3489,7 @@
                         <!-- VISTA 1: FORMULARIO DE TRANSFERENCIA -->
                         <div id="payment-view-form">
                             <form id="saas-card-form" class="commercial-form font-mono" onsubmit="processB2bTransferPayment(event)">
-                                <div class="input-group" style="margin-top: 8px;">
+                                <div class="input-group" style="margin-top: 8px; display: none;">
                                     <label for="payment-duration-select" style="font-size: 0.7rem; margin-bottom: 4px; display: block;">Duración del Plan</label>
                                     <select id="payment-duration-select" onchange="updateDynamicB2bPaymentTotals()" style="padding: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 6px; font-size: 0.75rem; color: #fff; width: 100%; outline: none; font-family: var(--font-mono); cursor: pointer;">
                                         <option value="1">1 Mes (Precio Regular)</option>

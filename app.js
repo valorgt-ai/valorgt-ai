@@ -4743,9 +4743,19 @@ function renderB2bAgentProfile() {
                 </div>
             </div>
 
-            <!-- Fila 3: Ajustes de Perfil (WhatsApp & Logo) -->
+            <!-- Fila 3: Ajustes de Perfil (WhatsApp, Logo, Empresa & NIT) -->
             <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="sliders" style="width: 12px; height: 12px;"></i> AJUSTES DE MARCA B2B</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.62rem; color: var(--text-secondary);">EMPRESA / INMOBILIARIA:</label>
+                        <input type="text" id="profile-company" placeholder="Ej: Mi Inmobiliaria S.A." value="${client.company || ''}" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.62rem; color: var(--text-secondary);">NIT COMERCIAL:</label>
+                        <input type="text" id="profile-nit" placeholder="Ej: 12345678-9" value="${client.nit || ''}" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
+                    </div>
+                </div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <label style="font-size: 0.62rem; color: var(--text-secondary);">WHATSAPP DE CONTACTO (SÓLO NÚMEROS):</label>
                     <input type="tel" id="profile-whatsapp" placeholder="Ej: 50250129482" value="${client.whatsapp || client.phone || ''}" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
@@ -5797,10 +5807,11 @@ function openPlanPayment(planKey) {
         b2bPromoStatus.style.color = "";
     }
 
-    // Habilitar y resetear duración
+    // Habilitar y resetear duración según el ciclo seleccionado
     const durationSelect = document.getElementById('payment-duration-select');
     if (durationSelect) {
-        durationSelect.value = "1";
+        const period = loggedInB2bClient ? billingPeriod : signupBillingPeriod;
+        durationSelect.value = period === 'anual' ? "12" : "1";
         durationSelect.removeAttribute('disabled');
     }
 
@@ -6199,9 +6210,10 @@ function updateDynamicB2bPaymentTotals() {
     const durationSelect = document.getElementById('payment-duration-select');
     if (!durationSelect) return;
     
-    // Si es plan de suscripción, auto-seleccionar según billingPeriod
+    // Si es plan de suscripción, auto-seleccionar según el ciclo activo (de registro o de dashboard)
     if (pendingPaymentType !== 'ad') {
-        if (billingPeriod === 'anual') {
+        const period = loggedInB2bClient ? billingPeriod : signupBillingPeriod;
+        if (period === 'anual') {
             durationSelect.value = "12";
         } else {
             durationSelect.value = "1";
@@ -7361,23 +7373,16 @@ async function handleRegistrationFormSubmit(event) {
     const companyRaw = document.getElementById('com-signup-company') ? document.getElementById('com-signup-company').value.trim() : '';
     const nitRaw = document.getElementById('com-signup-nit') ? document.getElementById('com-signup-nit').value.trim() : '';
     
-    const company = role === 'inversionista' ? 'Inversionista Particular' : companyRaw;
-    const nit = role === 'inversionista' ? 'C/F' : nitRaw;
+    const company = role === 'inversionista' ? 'Inversionista Particular' : (companyRaw || 'Inmobiliaria Personal');
+    const nit = role === 'inversionista' ? 'C/F' : (nitRaw || 'C/F');
 
     const phone = document.getElementById('com-signup-phone').value.trim();
     const email = document.getElementById('com-signup-email').value.trim().toLowerCase();
     const pass = document.getElementById('com-signup-pass').value.trim();
 
-    if (role === 'agente') {
-        if (!name || !companyRaw || !nitRaw || !phone || !email || !pass) {
-            alert("Por favor completa todos los campos del registro.");
-            return;
-        }
-    } else {
-        if (!name || !phone || !email || !pass) {
-            alert("Por favor completa todos los campos del registro.");
-            return;
-        }
+    if (!name || !phone || !email || !pass) {
+        alert("Por favor completa todos los campos del registro.");
+        return;
     }
 
     // Verificar si el usuario ya está registrado
@@ -11786,6 +11791,8 @@ function closePropertyDetailModal() {
 async function saveB2bAgentProfile() {
     if (!loggedInB2bClient) return;
 
+    const companyInput = document.getElementById('profile-company');
+    const nitInput = document.getElementById('profile-nit');
     const whatsappInput = document.getElementById('profile-whatsapp');
     const logoInput = document.getElementById('profile-logo-url');
 
@@ -11793,6 +11800,8 @@ async function saveB2bAgentProfile() {
 
     const whatsapp = whatsappInput.value.trim().replace(/[^0-9]/g, '');
     const logo = logoInput.value.trim();
+    const company = companyInput ? companyInput.value.trim() : '';
+    const nit = nitInput ? nitInput.value.trim() : '';
 
     if (!whatsapp) {
         alert("Por favor ingresa un número de WhatsApp de contacto válido.");
@@ -11803,11 +11812,29 @@ async function saveB2bAgentProfile() {
     loggedInB2bClient.whatsapp = whatsapp;
     loggedInB2bClient.logo = logo;
     loggedInB2bClient.phone = whatsapp; // Sincronizar campo telefónico genérico
+    if (companyInput) loggedInB2bClient.company = company;
+    if (nitInput) loggedInB2bClient.nit = nit;
 
-    // Guardar localmente en localStorage
+    // Actualizar en el listado de clientes en localStorage
+    const clientIdx = b2bClients.findIndex(c => c.id === loggedInB2bClient.id || c.email === loggedInB2bClient.email);
+    if (clientIdx !== -1) {
+        b2bClients[clientIdx].company = loggedInB2bClient.company;
+        b2bClients[clientIdx].nit = loggedInB2bClient.nit;
+        b2bClients[clientIdx].whatsapp = whatsapp;
+        b2bClients[clientIdx].phone = whatsapp;
+        b2bClients[clientIdx].logo = logo;
+        localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
+    }
+
+    // Guardar sesión activa actualizada
+    localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+
+    // Guardar extras localmente
     localStorage.setItem(`b2b_profile_extras_${loggedInB2bClient.id}`, JSON.stringify({
         whatsapp: whatsapp,
-        logo: logo
+        logo: logo,
+        company: company,
+        nit: nit
     }));
 
     // Intentar sincronizar en Supabase
@@ -11817,10 +11844,13 @@ async function saveB2bAgentProfile() {
                 .from('profiles')
                 .update({ 
                     phone: whatsapp,
-                    // Si la base de datos lo soporta, actualizar el metadata
+                    company: company,
+                    nit: nit,
                     metadata: {
                         whatsapp: whatsapp,
-                        logo: logo
+                        logo: logo,
+                        company: company,
+                        nit: nit
                     }
                 })
                 .eq('id', loggedInB2bClient.id);
@@ -11835,7 +11865,7 @@ async function saveB2bAgentProfile() {
         }
     }
 
-    alert("🏆 ¡PERFIL ACTUALIZADO CON ÉXITO!\n\nTu WhatsApp de contacto y marca de agua (Logo) han sido consolidados. Tus propiedades reflejarán esta información de inmediato.");
+    alert("🏆 ¡PERFIL ACTUALIZADO CON ÉXITO!\n\nTus datos corporativos, WhatsApp de contacto y marca de agua (Logo) han sido consolidados.");
     
     // Re-renderizar perfil e inventarios
     renderB2bAgentProfile();
@@ -13125,18 +13155,12 @@ function setSignupRole(role) {
     
     const cardAgente = document.getElementById('role-card-agente');
     const cardInversionista = document.getElementById('role-card-inversionista');
-    const agentFields = document.getElementById('agent-only-fields');
-    const companyInput = document.getElementById('com-signup-company');
-    const nitInput = document.getElementById('com-signup-nit');
     const agentPlans = document.getElementById('agent-plans-container');
     const inversionistaPlans = document.getElementById('inversionista-plans-container');
     
     if (role === 'agente') {
         if (cardAgente) cardAgente.classList.add('active');
         if (cardInversionista) cardInversionista.classList.remove('active');
-        if (agentFields) agentFields.style.display = 'flex';
-        if (companyInput) companyInput.required = true;
-        if (nitInput) nitInput.required = true;
         
         if (agentPlans) agentPlans.style.display = 'flex';
         if (inversionistaPlans) inversionistaPlans.style.display = 'none';
@@ -13144,15 +13168,6 @@ function setSignupRole(role) {
     } else {
         if (cardAgente) cardAgente.classList.remove('active');
         if (cardInversionista) cardInversionista.classList.add('active');
-        if (agentFields) agentFields.style.display = 'none';
-        if (companyInput) {
-            companyInput.required = false;
-            companyInput.value = '';
-        }
-        if (nitInput) {
-            nitInput.required = false;
-            nitInput.value = '';
-        }
         
         if (agentPlans) agentPlans.style.display = 'none';
         if (inversionistaPlans) inversionistaPlans.style.display = 'flex';
