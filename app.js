@@ -12512,9 +12512,9 @@ function openPromoLaunchModal() {
     // Si el usuario ya inició sesión o está registrado, no mostrar la promo
     if (isCommercialAuthenticated) return;
 
-    // Verificar si el modal ya fue cerrado previamente
-    const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
-    if (isDismissed) return;
+    // Verificar si el modal ya fue cerrado previamente (comentado para pruebas en vivo del usuario)
+    // const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
+    // if (isDismissed) return;
 
     const modal = document.getElementById('promo-launch-modal');
     if (modal) {
