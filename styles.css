@@ -7332,14 +7332,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
         font-size: 0.68rem !important;
     }
 
-    /* Reposicionar etiqueta flotante INCERTIDUMBRE para móvil */
-    .sentiment-uncertainty-float {
+    /* Reposicionar etiqueta flotante INDECISIÓN para móvil */
+    .sentiment-indecision-float {
         top: 15px !important;
         right: 220px !important;
         transform: scale(0.8) !important;
     }
     
-    .sentiment-uncertainty-float span {
+    .sentiment-indecision-float span {
         font-size: 0.68rem !important;
     }
 
