@@ -14590,7 +14590,7 @@ function updateSentimentIndex() {
         statusColor = "#ff3b30";
         desc = "El inventario se acumula con tiempos de venta superiores a los 80 días. Las tasas crediticias restringen la demanda. Oportunidad óptima para compradores agresivos.";
     } else if (finalScore <= 40) {
-        status = "Incertidumbre";
+        status = "Indecisión";
         statusColor = "#ff9500";
         desc = "Toma de decisiones cautelosa por parte de inversionistas. El ritmo de absorción de mercado es lento. Se recomiendan negociaciones con ofertas a la baja.";
     } else if (finalScore <= 60) {
