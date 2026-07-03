@@ -12635,9 +12635,9 @@ function openPromoLaunchModal() {
     // Si está en medio del flujo de registro de la promoción, no interrumpir
     if (localStorage.getItem('valorgt_promo_signup_active') === 'true') return;
 
-    // Verificar si el modal ya fue cerrado previamente
-    const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
-    if (isDismissed) return;
+    // No verificar si el modal fue cerrado previamente para que aparezca en cada recarga
+    // const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
+    // if (isDismissed) return;
 
     const modal = document.getElementById('promo-launch-modal');
     if (modal) {
