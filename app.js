@@ -4322,6 +4322,70 @@ function sendPortfolioAiChatMessage() {
 }
 
 /**
+ * Verifica de forma centralizada si un cliente es Miembro Fundador (ha adquirido membresía en promo)
+ */
+function checkIfClientIsFounder(client) {
+    if (!client) return false;
+    const email = (client.email || '').toLowerCase();
+    const plan = (client.plan || '').toLowerCase();
+    return client.isFounderPremium === true || 
+           plan === 'founder' || 
+           (plan === 'vip' && (
+               client.isFounderPremium === true || 
+               localStorage.getItem(`valorgt_is_founder_${email}`) === 'true' ||
+               (client.company && client.company.includes('Promo VGT-0626')) ||
+               client.is_founder_premium === true
+           ));
+}
+
+/**
+ * Actualiza el badge visual del nivel de socio (con soporte para Miembro Fundador y borde amarillo)
+ */
+function updateB2bPartnerLevelBadge() {
+    const partnerLevelEl = document.getElementById('commercial-partner-level');
+    const welcomeNameEl = document.getElementById('commercial-welcome-name');
+    const badgeEl = document.getElementById('commercial-saas-badge');
+    if (!partnerLevelEl || !loggedInB2bClient) return;
+
+    const client = loggedInB2bClient;
+    const dbPlan = client.plan || 'Pro';
+    const plan = dbPlan.toLowerCase();
+    
+    const isFounder = checkIfClientIsFounder(client);
+
+    if (isFounder) {
+        partnerLevelEl.innerText = "Miembro Fundador";
+        partnerLevelEl.style.color = "#ffd700";
+        partnerLevelEl.style.textShadow = "0 0 10px rgba(255, 215, 0, 0.6)";
+        if (badgeEl) {
+            badgeEl.style.borderColor = "#ffd700";
+            badgeEl.style.background = "rgba(255, 215, 0, 0.08)";
+            badgeEl.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.25)";
+        }
+    } else {
+        const isPremium = (dbPlan === 'VIP' || dbPlan === 'Premium' || plan === 'premium' || plan === 'vip');
+        const isPro = (dbPlan === 'Pro' || plan === 'pro');
+        const isInvestor = (client.role || '').toLowerCase() === 'inversionista';
+        
+        partnerLevelEl.innerText = isPremium ? 
+            (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") : 
+            (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+            
+        partnerLevelEl.style.color = "var(--cyan)";
+        partnerLevelEl.style.textShadow = "0 0 10px rgba(0, 240, 255, 0.35)";
+        if (badgeEl) {
+            badgeEl.style.borderColor = "var(--cyan)";
+            badgeEl.style.background = "rgba(0, 240, 255, 0.05)";
+            badgeEl.style.boxShadow = "0 0 10px rgba(0, 240, 255, 0.05)";
+        }
+    }
+
+    if (welcomeNameEl) {
+        welcomeNameEl.innerText = client.name || 'Socio';
+    }
+}
+
+/**
  * Gestiona los Overlays de Bloqueo Criptográficos según Plan, Rol y Estado de Pago
  */
 function updateLockOverlaysState() {
@@ -4333,15 +4397,19 @@ function updateLockOverlaysState() {
     const btnPromote = document.getElementById('btn-promote-property');
     const goldLockMessage = document.getElementById('gold-lock-message');
 
-    // La cartera de Tether Gold (Gold Wallet) se desbloquea para:
-    // 1. Agentes con plan VIP (Inmobiliaria Premium)
-    // 2. Inversionistas con plan Premium (Inversionista Premium)
-    const unlockGold = !isPending && (
-        (activeB2bPlan === 'vip' && !isInvestor) || 
-        (activeB2bPlan === 'premium' && isInvestor)
-    );
-    // La promoción de propiedades se desbloquea para VIP y Premium que no estén pendientes.
-    const unlockPromo = (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') && !isPending;
+    const client = loggedInB2bClient;
+    const email = client ? (client.email || '').toLowerCase() : '';
+    const dbPlan = client ? (client.plan || 'Pro') : 'Pro';
+    const plan = dbPlan.toLowerCase();
+    
+    const isFounder = checkIfClientIsFounder(client);
+
+    // La cartera de Tether Gold (Gold Wallet) y la promo se desbloquean completamente para Fundadores (acceso a todo)
+    const unlockGold = isFounder || (!isPending && (
+        (plan === 'vip' && !isInvestor) || 
+        (plan === 'premium' && isInvestor)
+    ));
+    const unlockPromo = isFounder || ((plan === 'vip' || plan === 'premium') && !isPending);
 
     if (goldLockMessage) {
         if (isInvestor) {
@@ -4439,23 +4507,7 @@ function initCommercialView() {
     }
 
     // Actualizar nivel de socio en la cabecera comercial
-    const partnerLevelEl = document.getElementById('commercial-partner-level');
-    const welcomeNameEl = document.getElementById('commercial-welcome-name');
-    if (partnerLevelEl && loggedInB2bClient) {
-        const client = loggedInB2bClient;
-        const dbPlan = client.plan || 'Pro';
-        const isPremium = (dbPlan === 'VIP' || dbPlan === 'Premium' || dbPlan.toLowerCase() === 'premium' || dbPlan.toLowerCase() === 'vip');
-        const isPro = (dbPlan === 'Pro' || dbPlan.toLowerCase() === 'pro');
-        const isInvestor = (client.role || '').toLowerCase() === 'inversionista';
-        
-        partnerLevelEl.innerText = isPremium ? 
-            (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") : 
-            (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
-            
-        if (welcomeNameEl) {
-            welcomeNameEl.innerText = client.name || 'Socio';
-        }
-    }
+    updateB2bPartnerLevelBadge();
 
     // Renderizar grilla de suscripción B2B dinámica
     renderB2bPricingGrid();
@@ -4859,9 +4911,16 @@ function updateSaasMetricsHUD() {
         const isInvestor = (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
 
         // 1. Determinar facturación SaaS real exacta según plan contratado y estado de pago
-        if (!isPending) {
-            const plan = (loggedInB2bClient.plan || '').toLowerCase();
-            if (plan === 'básico' || plan === 'basico') {
+        const plan = (loggedInB2bClient.plan || '').toLowerCase();
+        const isFounder = checkIfClientIsFounder(loggedInB2bClient);
+
+        // 1. Determinar facturación SaaS real exacta según plan contratado y estado de pago
+        if (!isPending || isFounder) {
+            if (isFounder) {
+                billingGTQ = 250;
+                billingUSD = 250 / exchangeRate;
+                planFriendlyName = 'Miembro Fundador';
+            } else if (plan === 'básico' || plan === 'basico') {
                 billingGTQ = 140;
                 billingUSD = 18;
                 planFriendlyName = 'Agente Individual';
@@ -5797,14 +5856,24 @@ function openPlanPayment(planKey) {
     pendingPaymentType = 'subscription';
     pendingPaymentTarget = planKey;
 
-    // Resetear código promocional de transferencias B2B
-    b2bPromoDiscountApplied = false;
+    // Resetear/Aplicar código promocional de transferencias B2B según el flujo
+    const isPromoActive = localStorage.getItem('valorgt_promo_signup_active') === 'true';
+    if (planKey === 'vip' && isPromoActive) {
+        b2bPromoDiscountApplied = true;
+        // Limpiar el flag para que no interfiera en futuras navegaciones
+        localStorage.removeItem('valorgt_promo_signup_active');
+    } else {
+        b2bPromoDiscountApplied = false;
+    }
+
     const b2bPromoInput = document.getElementById('b2b-promo-code');
     const b2bPromoStatus = document.getElementById('b2b-promo-status');
-    if (b2bPromoInput) b2bPromoInput.value = "";
+    if (b2bPromoInput) {
+        b2bPromoInput.value = (planKey === 'vip' && isPromoActive) ? "VGT-0626" : "";
+    }
     if (b2bPromoStatus) {
-        b2bPromoStatus.innerText = "";
-        b2bPromoStatus.style.color = "";
+        b2bPromoStatus.innerText = (planKey === 'vip' && isPromoActive) ? "VÁLIDO (Q250)" : "";
+        b2bPromoStatus.style.color = (planKey === 'vip' && isPromoActive) ? "var(--green)" : "";
     }
 
     // Habilitar y resetear duración según el ciclo seleccionado
@@ -6210,14 +6279,9 @@ function updateDynamicB2bPaymentTotals() {
     const durationSelect = document.getElementById('payment-duration-select');
     if (!durationSelect) return;
     
-    // Si es plan de suscripción, auto-seleccionar según el ciclo activo (de registro o de dashboard)
+    // Permitir selección manual en la pasarela de pagos, no forzar su valor
     if (pendingPaymentType !== 'ad') {
-        const period = loggedInB2bClient ? billingPeriod : signupBillingPeriod;
-        if (period === 'anual') {
-            durationSelect.value = "12";
-        } else {
-            durationSelect.value = "1";
-        }
+        durationSelect.disabled = false;
     }
 
     const months = parseInt(durationSelect.value);
@@ -6230,7 +6294,7 @@ function updateDynamicB2bPaymentTotals() {
     else if (pendingPaymentTarget === 'vip') {
         if (b2bPromoDiscountApplied) {
             baseGTQ = 250;
-            discount = 0; // Sin descuento adicional sobre la promo
+            // Permitir el descuento del 15% si es anual
         } else {
             baseGTQ = 640;
         }
@@ -6332,7 +6396,7 @@ async function processB2bTransferPayment(event) {
             else if (pTarget === 'vip') {
                 if (b2bPromoDiscountApplied) {
                     baseGTQ = 250;
-                    discount = 0; // Sin descuento adicional
+                    // Permitir el descuento del 15% si es anual
                 } else {
                     baseGTQ = 640;
                 }
@@ -7402,21 +7466,29 @@ async function handleRegistrationFormSubmit(event) {
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
+    const isPromoActive = localStorage.getItem('valorgt_promo_signup_active') === 'true';
     const planSelect = document.getElementById('com-signup-plan');
     let selectedPlanKey = planSelect ? planSelect.value : 'pro'; // basico | pro | vip
     if (role === 'inversionista') {
         selectedPlanKey = 'premium';
     }
+    if (isPromoActive) {
+        selectedPlanKey = 'vip';
+    }
     const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : (selectedPlanKey === 'premium' ? 'Premium' : 'Básico'));
+
+    const finalCompany = isPromoActive ? (company ? `${company} (Promo VGT-0626)` : 'Promo VGT-0626') : company;
 
     const newClient = {
         id: 'agent-' + Date.now(),
         name: name,
-        company: company,
+        company: finalCompany,
         nit: nit,
         phone: phone,
         email: email,
         plan: selectedPlanName,
+        isFounderPremium: isPromoActive ? true : false,
+        is_founder_premium: isPromoActive ? true : false,
         status: 'Pendiente', // Pendiente de pago de transferencia
         password: pass,
         usdtBalance: 0.00, // Inicializado en cero
@@ -7448,14 +7520,15 @@ async function handleRegistrationFormSubmit(event) {
                     {
                         id: authData.user.id,
                         name: name,
-                        company: company,
+                        company: finalCompany,
                         nit: nit,
                         phone: phone,
                         email: email,
                         plan: selectedPlanName,
                         status: 'pendiente',
                         usdt_balance: 0.00,
-                        role: role
+                        role: role,
+                        is_founder_premium: isPromoActive ? true : false
                     }
                 ]);
                 
@@ -7488,6 +7561,7 @@ async function handleRegistrationFormSubmit(event) {
     isCommercialAuthenticated = true;
     loggedInB2bClient = newClient;
     activeB2bPlan = selectedPlanKey; 
+    localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(newClient)); 
 
     const partnerLevelEl = document.getElementById('commercial-partner-level');
     if (partnerLevelEl) {
@@ -12236,9 +12310,25 @@ function renderB2bPricingGrid() {
     }
 
     plans.forEach(plan => {
-        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
+        const email = loggedInB2bClient ? (loggedInB2bClient.email || '').toLowerCase() : '';
+        const isFounder = loggedInB2bClient && checkIfClientIsFounder(loggedInB2bClient);
+
+        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && (
+            activeB2bPlan === plan.key || 
+            (isFounder && plan.key === 'vip')
+        );
         
         let priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        if (isFounder && plan.key === 'vip') {
+            priceNum = activeCurrency === 'GTQ' ? 250 : 32.05;
+            plan.title = 'Miembro Fundador';
+            plan.subtitle = 'Suscripción de por vida con tarifa premium especial VGT-0626.';
+            plan.badge = 'FUNDADOR VIP';
+            plan.badgeColor = '#00ff80';
+            plan.badgeBg = 'rgba(0, 255, 128, 0.15)';
+            plan.badgeBorder = 'rgba(0, 255, 128, 0.3)';
+        }
+
         let discountBadgeHtml = '';
 
         if (billingPeriod === 'anual') {
@@ -12542,9 +12632,12 @@ function openPromoLaunchModal() {
     // Si el usuario ya inició sesión o está registrado, no mostrar la promo
     if (isCommercialAuthenticated) return;
 
-    // Verificar si el modal ya fue cerrado previamente (comentado para pruebas en vivo del usuario)
-    // const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
-    // if (isDismissed) return;
+    // Si está en medio del flujo de registro de la promoción, no interrumpir
+    if (localStorage.getItem('valorgt_promo_signup_active') === 'true') return;
+
+    // Verificar si el modal ya fue cerrado previamente
+    const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
+    if (isDismissed) return;
 
     const modal = document.getElementById('promo-launch-modal');
     if (modal) {
@@ -12701,6 +12794,7 @@ function closePromoLaunchModal() {
 function actionPromoSignup() {
     // Cerrar el modal y redireccionar a la pantalla de registro con el plan VIP preseleccionado
     closePromoLaunchModal();
+    localStorage.setItem('valorgt_promo_signup_active', 'true');
     
     // Cambiar a la vista comercial de Ingreso/Registro
     switchView('commercial');
