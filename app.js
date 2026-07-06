@@ -1859,7 +1859,7 @@ function renderCatalogProperties() {
         const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
         const propEmail = (prop.agentEmail || '').toLowerCase();
         
-        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail));
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
         if (!hasValidAgent) {
             return false;
         }
