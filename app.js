@@ -195,9 +195,12 @@ if (savedB2bClient) {
             const roleLower = (loggedInB2bClient.role || '').toLowerCase();
             if (roleLower === 'inversionista') {
                 loggedInB2bClient.plan = 'Premium';
-            } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+            } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                 loggedInB2bClient.plan = 'VIP';
                 loggedInB2bClient.role = 'agente';
+                loggedInB2bClient.isFounderPremium = true;
+                loggedInB2bClient.is_founder_premium = true;
+                loggedInB2bClient.billing_period = 'anual';
             } else if (emailLower === 'sofia@alianzagt.com') {
                 loggedInB2bClient.plan = 'Básico';
                 loggedInB2bClient.role = 'agente';
@@ -216,7 +219,7 @@ let saasBillingAmountUSD = 31; // Inicializado con el cobro mensual del plan Pro
 let saasImpressionsCount = 12450;
 let saasClientClicks = 320;
 let b2bClients = JSON.parse(localStorage.getItem('b2b_clients_local')) || [
-    { name: 'Ana Estévez', company: 'Estévez Inmobiliaria', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250, role: 'agente', whatsapp: '50250129482', logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&h=100&q=80' },
+    { name: 'Ana Estévez', company: 'Estévez Inmobiliaria (Promo VGT-0626)', nit: '4593021-3', phone: '5012-9482', email: 'ana@estevezinmobiliaria.com', plan: 'VIP', status: 'Activo', password: 'valorgt', usdtBalance: 250, role: 'agente', whatsapp: '50250129482', logo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=100&h=100&q=80', isFounderPremium: true, is_founder_premium: true },
     { name: 'Roberto Valenzuela', company: 'Inversiones R.V.', nit: '8294012-8', phone: '4002-8593', email: 'roberto@inversionesrv.com', plan: 'Premium', status: 'Activo', password: 'valorgt', usdtBalance: 100, role: 'inversionista', whatsapp: '50240028593', logo: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?auto=format&fit=crop&w=100&h=100&q=80' },
     { name: 'Sofía Rodas', company: 'Bienes Raíces Alianza', nit: '3940294-2', phone: '3948-2049', email: 'sofia@alianzagt.com', plan: 'Básico', status: 'Activo', password: 'valorgt', usdtBalance: 50, role: 'agente', whatsapp: '50239482049', logo: '' }
 ];
@@ -227,9 +230,12 @@ b2bClients.forEach((client, idx) => {
         client.plan = 'Premium';
     } else if (client.email) {
         const emailLower = client.email.toLowerCase();
-        if (emailLower === 'ana@estevezinmobiliaria.com') {
+        if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
             client.plan = 'VIP';
             client.role = 'agente';
+            client.isFounderPremium = true;
+            client.is_founder_premium = true;
+            client.billing_period = 'anual';
         } else if (emailLower === 'sofia@alianzagt.com') {
             client.plan = 'Básico';
             client.role = 'agente';
@@ -1630,6 +1636,41 @@ function renderFeaturedProperties(zoneKey) {
         });
     }
 
+    const activeAgentIds = new Set();
+    const activeEmails = new Set();
+    if (loggedInB2bClient) {
+        if (loggedInB2bClient.id) activeAgentIds.add(String(loggedInB2bClient.id).toLowerCase());
+        if (loggedInB2bClient.email) activeEmails.add(loggedInB2bClient.email.toLowerCase());
+    }
+    if (typeof b2bClients !== 'undefined' && Array.isArray(b2bClients)) {
+        b2bClients.forEach(c => {
+            if (c.id) activeAgentIds.add(String(c.id).toLowerCase());
+            if (c.email) activeEmails.add(c.email.toLowerCase());
+        });
+    }
+
+    const seenFeatured = new Set();
+    listToRender = listToRender.filter(item => {
+        const prop = item.prop;
+        if (prop.isAgentUpload !== true) return false;
+        if (prop.isReferenceData === true) return false;
+        
+        const titleLower = (prop.title || '').toLowerCase();
+        if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
+            return false;
+        }
+
+        const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+        const propEmail = (prop.agentEmail || '').toLowerCase();
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail));
+        if (!hasValidAgent) return false;
+
+        const uniqueId = titleLower.trim();
+        if (seenFeatured.has(uniqueId)) return false;
+        seenFeatured.add(uniqueId);
+        return true;
+    });
+
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
@@ -1789,13 +1830,46 @@ function renderCatalogProperties() {
         loggedInB2bClient.email.toLowerCase().includes('sgalindo')
     )) || (!loggedInB2bClient && isCommercialAuthenticated);
 
+    const activeAgentIds = new Set();
+    const activeEmails = new Set();
+    if (loggedInB2bClient) {
+        if (loggedInB2bClient.id) activeAgentIds.add(String(loggedInB2bClient.id).toLowerCase());
+        if (loggedInB2bClient.email) activeEmails.add(loggedInB2bClient.email.toLowerCase());
+    }
+    if (typeof b2bClients !== 'undefined' && Array.isArray(b2bClients)) {
+        b2bClients.forEach(c => {
+            if (c.id) activeAgentIds.add(String(c.id).toLowerCase());
+            if (c.email) activeEmails.add(c.email.toLowerCase());
+        });
+    }
+
     const seen = new Set();
     properties = properties.filter(prop => {
-        // Si no es admin y es una propiedad de referencia (las de prueba de mockData), ocultarla
-        if (!isAdmin && prop.isReferenceData === true) {
+        // Mostrar únicamente las propiedades subidas por agentes reales o por nosotros
+        if (prop.isAgentUpload !== true) {
             return false;
         }
-        const uniqueId = prop.id || prop.title;
+        
+        // Ocultar las de referencia (reservadas para la IA)
+        if (prop.isReferenceData === true) {
+            return false;
+        }
+
+        // Validar que la propiedad pertenezca a un agente suscrito activo o a nosotros
+        const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+        const propEmail = (prop.agentEmail || '').toLowerCase();
+        
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail));
+        if (!hasValidAgent) {
+            return false;
+        }
+        
+        const titleLower = (prop.title || '').toLowerCase();
+        if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
+            return false;
+        }
+
+        const uniqueId = titleLower.trim();
         if (seen.has(uniqueId)) {
             return false;
         }
@@ -4484,11 +4558,22 @@ function initCommercialView() {
     // Controlar visibilidad de pestañas del panel comercial según rol y plan
     const isInvestor = loggedInB2bClient && ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista');
     const clientPlan = loggedInB2bClient && loggedInB2bClient.plan ? loggedInB2bClient.plan.toLowerCase() : '';
+    const isFounder = loggedInB2bClient && checkIfClientIsFounder(loggedInB2bClient);
     
     const btnPropiedades = document.getElementById('comm-tab-btn-propiedades');
     const btnPropiedadesList = document.getElementById('comm-tab-btn-propiedades-list');
     const btnPortfolio = document.getElementById('comm-tab-btn-portfolio') || document.getElementById('comm-tab-btn-portfolio-redirect');
+    const btnOro = document.getElementById('comm-tab-btn-oro');
     
+    if (isFounder) {
+        if (btnOro) {
+            btnOro.style.display = 'flex';
+            btnOro.disabled = false;
+            btnOro.style.opacity = '1';
+            btnOro.style.pointerEvents = 'auto';
+        }
+    }
+
     if (isInvestor) {
         if (btnPropiedades) btnPropiedades.style.display = 'none';
         if (btnPropiedadesList) btnPropiedadesList.style.display = 'none';
@@ -4647,7 +4732,7 @@ function initCommercialView() {
         // 2. Consulta de estado directa como fallback o actualización de saldo
         supabaseClient
             .from('profiles')
-            .select('status, plan, usdt_balance, role')
+            .select('status, plan, usdt_balance, role, billing_period')
             .eq('id', loggedInB2bClient.id)
             .maybeSingle()
             .then(({ data, error }) => {
@@ -4656,6 +4741,7 @@ function initCommercialView() {
                     let dbPlan = data.plan;
                     const dbBalance = parseFloat(data.usdt_balance || 0);
                     let dbRole = data.role || 'agente';
+                    const dbBillingPeriod = data.billing_period || 'mensual';
                     
                     // Sanitizar cuentas demo e inversionistas en Supabase sync
                     const emailLower = (loggedInB2bClient.email || '').toLowerCase();
@@ -4668,26 +4754,30 @@ function initCommercialView() {
                             .then(() => console.log("⚡ [Auto-Heal] Updated investor plan to Premium in remote database."))
                             .catch(err => console.error("⚠️ [Auto-Heal] Failed to update investor plan in remote database:", err));
                         }
-                    } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+                    } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                         dbPlan = 'VIP';
                         dbRole = 'agente';
+                        dbBillingPeriod = 'anual';
+                        loggedInB2bClient.isFounderPremium = true;
+                        loggedInB2bClient.is_founder_premium = true;
                     } else if (emailLower === 'sofia@alianzagt.com') {
                         dbPlan = 'Básico';
                         dbRole = 'agente';
                     }
                     
-                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole) {
+                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole || loggedInB2bClient.billing_period !== dbBillingPeriod) {
                         const oldStatus = loggedInB2bClient.status;
                         
                         loggedInB2bClient.status = dbStatus;
                         loggedInB2bClient.plan = dbPlan;
                         loggedInB2bClient.usdtBalance = dbBalance;
                         loggedInB2bClient.role = dbRole;
+                        loggedInB2bClient.billing_period = dbBillingPeriod;
                         activeB2bPlan = (dbPlan || 'pro').toLowerCase();
                         
                         localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
                         
-                        console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}, Rol -> ${dbRole}`);
+                        console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}, Rol -> ${dbRole}, Periodo -> ${dbBillingPeriod}`);
                         
                         // Si pasó de Pendiente a Activo, lanzar alerta al usuario
                         if ((oldStatus === 'Pendiente' || (oldStatus || '').toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
@@ -4917,8 +5007,10 @@ function updateSaasMetricsHUD() {
         // 1. Determinar facturación SaaS real exacta según plan contratado y estado de pago
         if (!isPending || isFounder) {
             if (isFounder) {
-                billingGTQ = 250;
-                billingUSD = 250 / exchangeRate;
+                const period = (loggedInB2bClient.billing_period || loggedInB2bClient.billingPeriod || localStorage.getItem(`valorgt_billing_period_${email}`) || 'mensual').toLowerCase();
+                const isAnnual = period === 'anual';
+                billingGTQ = isAnnual ? (250 * 12 * 0.85) : 250;
+                billingUSD = billingGTQ / exchangeRate;
                 planFriendlyName = 'Miembro Fundador';
             } else if (plan === 'básico' || plan === 'basico') {
                 billingGTQ = 140;
@@ -4978,7 +5070,14 @@ function updateSaasMetricsHUD() {
         // Actualizar subtítulos dinámicos de las tarjetas KPI Premium
         const billingSubEl = document.getElementById('saas-billing-sub-card');
         if (billingSubEl) {
-            billingSubEl.innerText = isPending ? `🛑 PENDIENTE` : `💳 PLAN: ${planFriendlyName.toUpperCase()}`;
+            if (isPending) {
+                billingSubEl.innerText = `🛑 PENDIENTE`;
+            } else {
+                const period = (loggedInB2bClient.billing_period || loggedInB2bClient.billingPeriod || localStorage.getItem(`valorgt_billing_period_${email}`) || 'mensual').toLowerCase();
+                const periodLabel = period === 'anual' ? 'Anual' : 'Mensual';
+                const formattedPrice = activeCurrency === 'GTQ' ? `Q${formatNumber(billingGTQ.toFixed(2))}` : `$${formatNumber(billingUSD.toFixed(2))}`;
+                billingSubEl.innerText = `💳 PLAN: ${planFriendlyName.toUpperCase()} (${periodLabel} - ${formattedPrice})`;
+            }
         }
 
         const impressionsSubEl = document.getElementById('saas-impressions-sub-card');
@@ -7246,9 +7345,12 @@ async function authenticateCommercialAgent(event) {
                         .then(() => console.log("⚡ [Auto-Heal] Corrected investor plan in database to Premium"))
                         .catch(err => console.warn("⚠️ [Auto-Heal] Failed to correct investor plan in database:", err));
                     }
-                } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+                } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                     profile.plan = 'VIP';
                     profile.role = 'agente';
+                    profile.isFounderPremium = true;
+                    profile.is_founder_premium = true;
+                    profile.billing_period = 'anual';
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     profile.plan = 'Básico';
                     profile.role = 'agente';
@@ -7266,7 +7368,8 @@ async function authenticateCommercialAgent(event) {
                 plan: profile.plan,
                 status: profile.status.charAt(0).toUpperCase() + profile.status.slice(1),
                 usdtBalance: parseFloat(profile.usdt_balance),
-                role: profile.role || 'agente'
+                role: profile.role || 'agente',
+                billing_period: profile.billing_period || 'mensual'
             };
             activeB2bPlan = profile.plan.toLowerCase();
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
@@ -7808,10 +7911,18 @@ async function completeSignupSubscriptionTransaction() {
     document.getElementById('signup-receipt-ref-code').innerText = `#${refCode}`;
     document.getElementById('signup-receipt-amount-val').innerText = `${currencySym}${formatNumber(amountVal.toFixed(2))}`;
 
+    const isPromoActive = localStorage.getItem('valorgt_promo_signup_active') === 'true';
+    const isFounder = (selectedSignupPlanKey === 'vip' && (isPromoActive || appliedPromoDiscount > 0)) ||
+                      (pendingSignupUser.company && pendingSignupUser.company.includes('Promo VGT-0626')) ||
+                      (pendingSignupUser.email && pendingSignupUser.email.toLowerCase() === 'ana@gmail.com');
+
     // 1. Agregar nuevo cliente a la lista b2bClients
     const isInvestorRole = (pendingSignupUser.role || '').toLowerCase() === 'inversionista';
     const clientPlanKey = isInvestorRole ? 'premium' : selectedSignupPlanKey;
-    const clientPlanName = isInvestorRole ? 'Premium' : (clientPlanKey.charAt(0).toUpperCase() + clientPlanKey.slice(1));
+    let clientPlanName = isInvestorRole ? 'Premium' : (clientPlanKey.charAt(0).toUpperCase() + clientPlanKey.slice(1));
+    if (isFounder) {
+        clientPlanName = 'VIP';
+    }
 
     const newClient = {
         name: pendingSignupUser.name,
@@ -7823,7 +7934,9 @@ async function completeSignupSubscriptionTransaction() {
         status: 'Activo',
         password: pendingSignupUser.pass,
         usdtBalance: 0.00, // Inicializado en cero
-        role: pendingSignupUser.role
+        role: pendingSignupUser.role,
+        isFounderPremium: isFounder,
+        is_founder_premium: isFounder
     };
 
     if (isSupabaseActive) {
@@ -7855,7 +7968,9 @@ async function completeSignupSubscriptionTransaction() {
                         plan: newClient.plan,
                         status: 'activo',
                         usdt_balance: 0.00,
-                        role: pendingSignupUser.role
+                        role: pendingSignupUser.role,
+                        is_founder_premium: isFounder,
+                        billing_period: signupBillingPeriod
                     }
                 ]);
 
@@ -10314,9 +10429,12 @@ async function syncB2bClientsFromSupabase() {
                 
                 if (roleLower === 'inversionista') {
                     plan = 'Premium';
-                } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+                } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                     plan = 'VIP';
                     role = 'agente';
+                    profile.isFounderPremium = true;
+                    profile.is_founder_premium = true;
+                    profile.billing_period = 'anual';
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     plan = 'Básico';
                     role = 'agente';
@@ -10333,7 +10451,9 @@ async function syncB2bClientsFromSupabase() {
                     status: (typeof profile.status === 'string' && profile.status.length > 0) ? (profile.status.charAt(0).toUpperCase() + profile.status.slice(1)) : 'Activo',
                     password: 'valorgt',
                     usdtBalance: parseFloat(profile.usdt_balance || 0),
-                    role: role
+                    role: role,
+                    isFounderPremium: profile.isFounderPremium || profile.is_founder_premium || false,
+                    is_founder_premium: profile.isFounderPremium || profile.is_founder_premium || false
                 };
             });
             
@@ -14133,6 +14253,41 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
         });
     }
 
+    const activeAgentIds = new Set();
+    const activeEmails = new Set();
+    if (typeof loggedInB2bClient !== 'undefined' && loggedInB2bClient) {
+        if (loggedInB2bClient.id) activeAgentIds.add(String(loggedInB2bClient.id).toLowerCase());
+        if (loggedInB2bClient.email) activeEmails.add(loggedInB2bClient.email.toLowerCase());
+    }
+    if (typeof b2bClients !== 'undefined' && Array.isArray(b2bClients)) {
+        b2bClients.forEach(c => {
+            if (c.id) activeAgentIds.add(String(c.id).toLowerCase());
+            if (c.email) activeEmails.add(c.email.toLowerCase());
+        });
+    }
+
+    const seenSlider = new Set();
+    sponsoredProps = sponsoredProps.filter(item => {
+        const prop = item.prop;
+        if (prop.isAgentUpload !== true) return false;
+        if (prop.isReferenceData === true) return false;
+
+        const titleLower = (prop.title || '').toLowerCase();
+        if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
+            return false;
+        }
+
+        const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+        const propEmail = (prop.agentEmail || '').toLowerCase();
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
+        if (!hasValidAgent) return false;
+
+        const uniqueId = titleLower.trim();
+        if (seenSlider.has(uniqueId)) return false;
+        seenSlider.add(uniqueId);
+        return true;
+    });
+
     // Dar formato a propiedades pautadas como slides
     sponsoredProps.forEach(item => {
         const p = item.prop;
@@ -14785,12 +14940,49 @@ function renderHomeCatalog() {
         properties = PORTFOLIO_DATABASE[zoneSelectVal] || [];
     }
 
-    // Filtrar duplicados y datos de referencia
+    // Filtrar duplicados, datos de referencia y agentes
+    const activeAgentIds = new Set();
+    const activeEmails = new Set();
+    if (loggedInB2bClient) {
+        if (loggedInB2bClient.id) activeAgentIds.add(String(loggedInB2bClient.id).toLowerCase());
+        if (loggedInB2bClient.email) activeEmails.add(loggedInB2bClient.email.toLowerCase());
+    }
+    if (typeof b2bClients !== 'undefined' && Array.isArray(b2bClients)) {
+        b2bClients.forEach(c => {
+            if (c.id) activeAgentIds.add(String(c.id).toLowerCase());
+            if (c.email) activeEmails.add(c.email.toLowerCase());
+        });
+    }
+
     const seen = new Set();
     properties = properties.filter(prop => {
-        if (prop.isReferenceData === true) return false;
-        const uniqueId = prop.id || prop.title;
-        if (seen.has(uniqueId)) return false;
+        // Mostrar únicamente las propiedades subidas por agentes reales o por nosotros
+        if (prop.isAgentUpload !== true) {
+            return false;
+        }
+        
+        // Ocultar las de referencia (reservadas para la IA)
+        if (prop.isReferenceData === true) {
+            return false;
+        }
+
+        // Validar que la propiedad pertenezca a un agente suscrito activo o a nosotros
+        const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+        const propEmail = (prop.agentEmail || '').toLowerCase();
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
+        if (!hasValidAgent) {
+            return false;
+        }
+
+        const titleLower = (prop.title || '').toLowerCase();
+        if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
+            return false;
+        }
+
+        const uniqueId = titleLower.trim();
+        if (seen.has(uniqueId)) {
+            return false;
+        }
         seen.add(uniqueId);
         return true;
     });

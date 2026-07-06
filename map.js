@@ -886,12 +886,42 @@ function drawAgentProperties() {
     agentMapMarkers = [];
     agentMapCircles = [];
 
+    // Recopilar agentes válidos activos
+    const activeAgentIds = new Set();
+    const activeEmails = new Set();
+    if (typeof loggedInB2bClient !== 'undefined' && loggedInB2bClient) {
+        if (loggedInB2bClient.id) activeAgentIds.add(String(loggedInB2bClient.id).toLowerCase());
+        if (loggedInB2bClient.email) activeEmails.add(loggedInB2bClient.email.toLowerCase());
+    }
+    if (typeof b2bClients !== 'undefined' && Array.isArray(b2bClients)) {
+        b2bClients.forEach(c => {
+            if (c.id) activeAgentIds.add(String(c.id).toLowerCase());
+            if (c.email) activeEmails.add(c.email.toLowerCase());
+        });
+    }
+
+    const seenOnMap = new Set();
+
     // Recorrer todas las propiedades en PORTFOLIO_DATABASE que tengan coordenadas GPS y sean de agente o de referencia
     if (typeof PORTFOLIO_DATABASE !== 'undefined') {
         Object.keys(PORTFOLIO_DATABASE).forEach(zoneKey => {
             const properties = PORTFOLIO_DATABASE[zoneKey] || [];
             properties.forEach(prop => {
-                if (prop.lat && prop.lng && (prop.isAgentUpload || prop.isReferenceData)) {
+                if (prop.lat && prop.lng && prop.isAgentUpload && !prop.isReferenceData) {
+                    const titleLower = (prop.title || '').toLowerCase();
+                    if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
+                        return;
+                    }
+                    
+                    const uniqueId = titleLower.trim();
+                    if (seenOnMap.has(uniqueId)) return;
+                    seenOnMap.add(uniqueId);
+
+                    const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+                    const propEmail = (prop.agentEmail || '').toLowerCase();
+                    const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
+                    if (!hasValidAgent) return;
+
                     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
                     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
                     const convertedPrice = prop.priceUSD * conversion;
