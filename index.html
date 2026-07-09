@@ -2086,49 +2086,25 @@
                             </div>
                         </div>
                         
-                        <!-- TARJETA EXCLUSIVA DE REFERIDOS PARA MIEMBROS PREMIUM Y VIP (FUNDADORES) -->
-                        <div id="b2b-referral-card-container" class="hidden" style="margin-bottom: 20px; width: 100%;">
-                            <div class="card glassmorphism border-gold pauta-flash-alert" style="padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border-left: 3px solid #ffd700 !important; flex-wrap: wrap;">
-                                <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-                                    <div style="background: rgba(255,215,0,0.1); border: 1px solid #ffd700; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <i data-lucide="gift" style="color: #ffd700; width: 20px; height: 20px;"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-mono text-gold" style="margin: 0; font-size: 0.85rem; font-weight: bold; color: #ffd700; text-transform: uppercase;">Programa de Socios Fundadores & Premium</h4>
-                                        <p class="font-sans" style="margin: 3px 0 0 0; font-size: 0.68rem; color: var(--text-secondary); line-height: 1.4;">Comparte tu código único de referidos. ¡Recibe el <strong>5%</strong> del valor de su suscripción directamente en tu Cartera de Oro (XAUt)!</p>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,215,0,0.3); border-radius: 6px; padding: 6px 12px; display: flex; flex-direction: column; align-items: center;">
-                                        <span style="font-size: 0.55rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px;">CÓDIGO ÚNICO:</span>
-                                        <strong id="b2b-referral-code-val" style="font-size: 0.95rem; color: #fff; font-family: var(--font-mono); letter-spacing: 1px;">REF-VGT</strong>
-                                    </div>
-                                    <button onclick="copyB2bReferralLink()" class="btn-micro-cyber" style="height: 36px; padding: 0 12px; background: rgba(255, 215, 0, 0.08); border: 1px solid #ffd700; color: #ffd700; font-size: 0.68rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                                        <i data-lucide="copy" style="width: 12px; height: 12px;"></i> COPIAR ENLACE
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; justify-content: center;">
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; justify-content: center; align-items: stretch; margin-top: 15px;">
                             <!-- Columna 1: Mi Perfil Profesional -->
-                            <div class="card glassmorphism border-cyan" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid var(--cyan) !important; border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important;">
+                            <div class="card glassmorphism border-cyan" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid var(--cyan) !important; border-color: rgba(0, 240, 255, 0.25) !important; box-shadow: 0 0 15px rgba(0, 240, 255, 0.08) !important; display: flex; flex-direction: column;">
                                 <div class="card-header border-cyan" style="border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;">
                                     <div class="header-icon cyan" style="color: var(--cyan) !important; border-color: rgba(0, 240, 255, 0.3) !important;"><i data-lucide="user"></i></div>
                                     <h2 style="color: var(--cyan) !important;">Mi Perfil Profesional y Membresía</h2>
                                 </div>
-                                <div class="commercial-section-body" id="b2b-profile-card-body" style="padding: 15px 5px;">
+                                <div class="commercial-section-body" id="b2b-profile-card-body" style="padding: 15px 5px; flex: 1;">
                                     <!-- Poblado dinámicamente con los datos de sesión del agente -->
                                 </div>
                             </div>
 
                             <!-- Columna 2: Buzón de Sugerencias del Analizador -->
-                            <div class="card glassmorphism border-purple" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid var(--neon-purple) !important; border-color: rgba(191, 90, 242, 0.25) !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.08) !important;">
+                            <div class="card glassmorphism border-purple" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid var(--neon-purple) !important; border-color: rgba(191, 90, 242, 0.25) !important; box-shadow: 0 0 15px rgba(191, 90, 242, 0.08) !important; display: flex; flex-direction: column;">
                                 <div class="card-header border-purple" style="border-bottom: 1px solid rgba(191, 90, 242, 0.15) !important;">
                                     <div class="header-icon purple" style="color: var(--neon-purple) !important; border-color: rgba(191, 90, 242, 0.3) !important;"><i data-lucide="message-square-quote"></i></div>
                                     <h2 style="color: var(--neon-purple) !important;">Analizador de Sugerencias Recibidas</h2>
                                 </div>
-                                <div class="commercial-section-body" style="padding: 15px; height: 310px; overflow-y: auto;">
+                                <div class="commercial-section-body" style="padding: 15px; height: 310px; overflow-y: auto; flex: 1;">
                                     <p class="font-sans" style="font-size: 0.68rem; color: var(--text-secondary); line-height: 1.4; margin: 0 0 12px 0; text-align: left;">Una vez que verifiques la sugerencia, puedes eliminarla permanentemente al hacer clic en el check.</p>
                                     <div id="suggestions-empty-state" class="font-mono text-muted" style="text-align: center; padding-top: 35px; font-size: 0.72rem; text-transform: uppercase;">
                                         <i data-lucide="inbox" style="width: 32px; height: 32px; margin: 0 auto 10px; display: block; opacity: 0.5;"></i>
@@ -2136,6 +2112,29 @@
                                     </div>
                                     <div id="suggestions-agent-list" style="display: flex; flex-direction: column; gap: 12px;">
                                         <!-- Sugerencias dinámicas -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Columna 3: Tarjeta Dorada de Referidos (A la par del analizador, mismo tamaño) -->
+                            <div id="b2b-referral-card-container" class="card glassmorphism border-gold hidden" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; display: flex; flex-direction: column;">
+                                <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
+                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="gift"></i></div>
+                                    <h2 style="color: #ffd700 !important;">Programa de Referidos Premium</h2>
+                                </div>
+                                <div class="commercial-section-body" style="padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 15px; text-align: left;">
+                                    <div>
+                                        <h4 class="font-mono text-gold" style="margin: 0; font-size: 0.85rem; font-weight: bold; color: #ffd700; text-transform: uppercase;">Socios Fundadores & Premium</h4>
+                                        <p class="font-sans" style="margin: 5px 0 0 0; font-size: 0.68rem; color: var(--text-secondary); line-height: 1.4;">Comparte tu código único de referidos con otros agentes y recibe el <strong>5%</strong> del valor de su suscripción directamente en tu Cartera de Oro (XAUt) cada mes.</p>
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255, 215, 0, 0.08);">
+                                        <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,215,0,0.3); border-radius: 6px; padding: 6px 12px; display: flex; flex-direction: column; align-items: center; flex: 1;">
+                                            <span style="font-size: 0.55rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px;">CÓDIGO ÚNICO:</span>
+                                            <strong id="b2b-referral-code-val" style="font-size: 0.95rem; color: #fff; font-family: var(--font-mono); letter-spacing: 1px;">REF-VGT</strong>
+                                        </div>
+                                        <button onclick="copyB2bReferralLink()" class="btn-micro-cyber" style="height: 38px; padding: 0 15px; background: rgba(255, 215, 0, 0.08); border: 1px solid #ffd700; color: #ffd700; font-size: 0.68rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; border-radius: 4px;">
+                                            <i data-lucide="copy" style="width: 12px; height: 12px;"></i> COPIAR ENLACE
+                                        </button>
                                     </div>
                                 </div>
                             </div>

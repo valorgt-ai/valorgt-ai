@@ -204,6 +204,9 @@ if (savedB2bClient) {
             } else if (emailLower === 'sofia@alianzagt.com') {
                 loggedInB2bClient.plan = 'Básico';
                 loggedInB2bClient.role = 'agente';
+            } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
+                loggedInB2bClient.plan = 'Premium';
+                loggedInB2bClient.role = 'inversionista';
             }
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
         }
@@ -4794,6 +4797,9 @@ function initCommercialView() {
                     } else if (emailLower === 'sofia@alianzagt.com') {
                         dbPlan = 'Básico';
                         dbRole = 'agente';
+                    } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
+                        dbPlan = 'Premium';
+                        dbRole = 'inversionista';
                     }
                     
                     if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole || loggedInB2bClient.billing_period !== dbBillingPeriod || loggedInB2bClient.is_founder_premium !== dbIsFounder) {
@@ -7467,6 +7473,9 @@ async function authenticateCommercialAgent(event) {
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     profile.plan = 'Básico';
                     profile.role = 'agente';
+                } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
+                    profile.plan = 'Premium';
+                    profile.role = 'inversionista';
                 }
             }
 
