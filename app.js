@@ -4818,6 +4818,7 @@ function initCommercialView() {
                         }
                         
                         // Re-inicializar UI
+                        updateB2bPartnerLevelBadge();
                         renderB2bAgentProfile();
                         updateSaasMetricsHUD();
                         updateB2bSubscriptionPendingBanner();
