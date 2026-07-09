@@ -7692,7 +7692,8 @@ async function handleRegistrationFormSubmit(event) {
                         status: 'pendiente',
                         usdt_balance: 0.00,
                         role: role,
-                        is_founder_premium: isPromoActive ? true : false
+                        is_founder_premium: isPromoActive ? true : false,
+                        billing_period: signupBillingPeriod
                     }
                 ]);
                 
