@@ -4950,9 +4950,17 @@ function renderB2bAgentProfile() {
 
             <!-- Fila 4: Resumen de facturación y firma digital -->
             <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Costo de Licencia SaaS:</span>
-                    <strong style="font-size: 0.95rem; color: var(--green);">${currencySym}${formatNumber(formattedPrice)} / ${periodSuffix}</strong>
+                    ${isFounder ? `
+                        <div style="font-size: 0.85rem; display: flex; gap: 8px; align-items: center;">
+                            <span style="${!isAnnual ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); font-weight: bold;' : 'color: var(--text-muted); opacity: 0.6;'}">${activeCurrency === 'GTQ' ? 'Q250 / mes' : '$32 / mes'}</span>
+                            <span style="color: rgba(255,255,255,0.15);">|</span>
+                            <span style="${isAnnual ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); font-weight: bold;' : 'color: var(--text-muted); opacity: 0.6;'}">${activeCurrency === 'GTQ' ? 'Q2,550 / anual' : '$326.40 / anual'}</span>
+                        </div>
+                    ` : `
+                        <strong style="font-size: 0.95rem; color: var(--green);">${currencySym}${formatNumber(formattedPrice)} / ${periodSuffix}</strong>
+                    `}
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 3px;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Firma Digital Autorizada:</span>
@@ -5111,12 +5119,23 @@ function updateSaasMetricsHUD() {
         const billingSubEl = document.getElementById('saas-billing-sub-card');
         if (billingSubEl) {
             if (isPending) {
-                billingSubEl.innerText = `🛑 PENDIENTE`;
+                billingSubEl.innerHTML = `<span style="color: var(--red); font-weight: bold;">🛑 PENDIENTE</span>`;
             } else {
                 const period = (loggedInB2bClient.billing_period || loggedInB2bClient.billingPeriod || localStorage.getItem(`valorgt_billing_period_${email}`) || 'mensual').toLowerCase();
-                const periodLabel = period === 'anual' ? 'Anual' : 'Mensual';
-                const formattedPrice = activeCurrency === 'GTQ' ? `Q${formatNumber(billingGTQ.toFixed(2))}` : `$${formatNumber(billingUSD.toFixed(2))}`;
-                billingSubEl.innerText = `💳 PLAN: ${planFriendlyName.toUpperCase()} (${periodLabel} - ${formattedPrice})`;
+                const isAnnual = period === 'anual';
+                
+                if (isFounder) {
+                    const monthlyStyle = !isAnnual ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); font-weight: bold;' : 'color: var(--text-muted); opacity: 0.7;';
+                    const annualStyle = isAnnual ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); font-weight: bold;' : 'color: var(--text-muted); opacity: 0.7;';
+                    const monthlyText = activeCurrency === 'GTQ' ? 'Q250.00/mes' : '$32.00/mes';
+                    const annualText = activeCurrency === 'GTQ' ? 'Q2,550.00/año' : '$326.40/año';
+                    
+                    billingSubEl.innerHTML = `💳 PLAN: MIEMBRO FUNDADOR (<span style="${monthlyStyle}">${monthlyText}</span> | <span style="${annualStyle}">${annualText}</span>)`;
+                } else {
+                    const periodLabel = isAnnual ? 'Anual' : 'Mensual';
+                    const formattedPrice = activeCurrency === 'GTQ' ? `Q${formatNumber(billingGTQ.toFixed(2))}` : `$${formatNumber(billingUSD.toFixed(2))}`;
+                    billingSubEl.innerText = `💳 PLAN: ${planFriendlyName.toUpperCase()} (${periodLabel} - ${formattedPrice})`;
+                }
             }
         }
 
