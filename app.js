@@ -4543,6 +4543,15 @@ function initCommercialView() {
     } else {
         if (loginGate) loginGate.classList.add('hidden');
         if (dashboardArea) dashboardArea.classList.remove('hidden');
+        
+        // Asegurar que la vista comercial esté activa en las clases del DOM
+        document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+        const commView = document.getElementById('view-commercial');
+        if (commView) commView.classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+        const commBtn = document.getElementById('nav-btn-commercial');
+        if (commBtn) commBtn.classList.add('active');
     }
     
     // Cargar el portafolio del usuario activo (o vacío si es la primera vez)
