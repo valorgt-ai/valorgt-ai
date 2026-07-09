@@ -12967,10 +12967,8 @@ function applySignupPromoCode() {
         } else {
             statusLbl.innerText = "VÁLIDO (PROMO Q250)";
             statusLbl.style.color = "var(--green)";
-            // Activar descuento promocional: Total a debitar de Q260.00
             appliedPromoDiscount = 250; 
             showCyberToast("¡Código VGT-0626 aplicado con éxito!", "check-circle");
-        }
         }
     } else if (code.startsWith('REF-')) {
         // Validación dinámica de referidos contra base de datos o en memoria
