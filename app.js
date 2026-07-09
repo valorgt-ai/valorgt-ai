@@ -4830,20 +4830,54 @@ function renderB2bAgentProfile() {
     const plan = (client.plan || 'pro').toLowerCase();
     const status = (client.status || 'Activo').toUpperCase();
 
+    const isFounder = checkIfClientIsFounder(client);
+    const period = (client.billing_period || client.billingPeriod || localStorage.getItem(`valorgt_billing_period_${client.email}`) || 'mensual').toLowerCase();
+    const isAnnual = period === 'anual';
+
     let planPriceGTQ = 0;
     let planPriceUSD = 0;
-    if (plan === 'vip') {
-        planPriceGTQ = 640;
-        planPriceUSD = 82;
+    let periodSuffix = isAnnual ? 'anual' : 'mes';
+
+    if (isFounder) {
+        if (isAnnual) {
+            planPriceGTQ = 2550; // Q250 * 12 * 0.85 = Q2550 exactos
+            planPriceUSD = 326.40;
+        } else {
+            planPriceGTQ = 250;
+            planPriceUSD = 32;
+        }
+    } else if (plan === 'vip') {
+        if (isAnnual) {
+            planPriceGTQ = Math.round(640 * 12 * 0.85);
+            planPriceUSD = Math.round(82 * 12 * 0.85);
+        } else {
+            planPriceGTQ = 640;
+            planPriceUSD = 82;
+        }
     } else if (plan === 'premium') {
-        planPriceGTQ = 340;
-        planPriceUSD = 43.70;
+        if (isAnnual) {
+            planPriceGTQ = Math.round(340 * 12 * 0.85);
+            planPriceUSD = Math.round(43.70 * 12 * 0.85);
+        } else {
+            planPriceGTQ = 340;
+            planPriceUSD = 43.70;
+        }
     } else if (plan === 'pro') {
-        planPriceGTQ = 240;
-        planPriceUSD = 31;
+        if (isAnnual) {
+            planPriceGTQ = Math.round(240 * 12 * 0.85);
+            planPriceUSD = Math.round(31 * 12 * 0.85);
+        } else {
+            planPriceGTQ = 240;
+            planPriceUSD = 31;
+        }
     } else {
-        planPriceGTQ = 140;
-        planPriceUSD = 18;
+        if (isAnnual) {
+            planPriceGTQ = Math.round(140 * 12 * 0.85);
+            planPriceUSD = Math.round(18 * 12 * 0.85);
+        } else {
+            planPriceGTQ = 140;
+            planPriceUSD = 18;
+        }
     }
 
     const planPriceConverted = activeCurrency === 'GTQ' ? planPriceGTQ : planPriceUSD;
@@ -4915,7 +4949,7 @@ function renderB2bAgentProfile() {
             <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Costo de Licencia SaaS:</span>
-                    <strong style="font-size: 0.95rem; color: var(--green);">${currencySym}${formatNumber(formattedPrice)} / mes</strong>
+                    <strong style="font-size: 0.95rem; color: var(--green);">${currencySym}${formatNumber(formattedPrice)} / ${periodSuffix}</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 6px; margin-top: 3px;">
                     <span style="font-size: 0.75rem; color: var(--text-secondary);">Firma Digital Autorizada:</span>
