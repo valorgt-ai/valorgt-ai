@@ -4466,7 +4466,8 @@ function updateB2bPartnerLevelBadge() {
     const refContainer = document.getElementById('b2b-referral-card-container');
     const refCodeVal = document.getElementById('b2b-referral-code-val');
     if (refContainer) {
-        if (isFounder || dbPlan === 'Premium' || dbPlan === 'VIP') {
+        const isPremiumOrVip = plan === 'premium' || plan === 'vip' || dbPlan === 'Premium' || dbPlan === 'VIP';
+        if (isFounder || isPremiumOrVip) {
             refContainer.classList.remove('hidden');
             if (refCodeVal) {
                 let seed = client.name ? client.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
