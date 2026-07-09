@@ -497,8 +497,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar la rotación de iluminación de KPIs del HOME
     initKpiGlowRotation();
 
-    // Establecer vista inicial en HOME de forma sincrónica
-    switchView('home');
+    // Establecer vista inicial en HOME de forma sincrónica o restaurar panel comercial
+    if (isCommercialAuthenticated) {
+        initCommercialView();
+    } else {
+        switchView('home');
+    }
 
     // Sincronizar datos de Supabase si está activo en segundo plano
     if (isSupabaseActive) {
