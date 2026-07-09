@@ -2085,6 +2085,30 @@
                                 <div class="kpi-glow-bar"></div>
                             </div>
                         </div>
+                        
+                        <!-- TARJETA EXCLUSIVA DE REFERIDOS PARA MIEMBROS PREMIUM Y VIP (FUNDADORES) -->
+                        <div id="b2b-referral-card-container" class="hidden" style="margin-bottom: 20px; width: 100%;">
+                            <div class="card glassmorphism border-gold pauta-flash-alert" style="padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border-left: 3px solid #ffd700 !important; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                                    <div style="background: rgba(255,215,0,0.1); border: 1px solid #ffd700; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="gift" style="color: #ffd700; width: 20px; height: 20px;"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-mono text-gold" style="margin: 0; font-size: 0.85rem; font-weight: bold; color: #ffd700; text-transform: uppercase;">Programa de Socios Fundadores & Premium</h4>
+                                        <p class="font-sans" style="margin: 3px 0 0 0; font-size: 0.68rem; color: var(--text-secondary); line-height: 1.4;">Comparte tu código único de referidos. ¡Recibe el <strong>5%</strong> del valor de su suscripción directamente en tu Cartera de Oro (XAUt)!</p>
+                                    </div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,215,0,0.3); border-radius: 6px; padding: 6px 12px; display: flex; flex-direction: column; align-items: center;">
+                                        <span style="font-size: 0.55rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px;">CÓDIGO ÚNICO:</span>
+                                        <strong id="b2b-referral-code-val" style="font-size: 0.95rem; color: #fff; font-family: var(--font-mono); letter-spacing: 1px;">REF-VGT</strong>
+                                    </div>
+                                    <button onclick="copyB2bReferralLink()" class="btn-micro-cyber" style="height: 36px; padding: 0 12px; background: rgba(255, 215, 0, 0.08); border: 1px solid #ffd700; color: #ffd700; font-size: 0.68rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                        <i data-lucide="copy" style="width: 12px; height: 12px;"></i> COPIAR ENLACE
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                         <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; justify-content: center;">
                             <!-- Columna 1: Mi Perfil Profesional -->

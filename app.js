@@ -5220,6 +5220,29 @@ function updateSaasMetricsHUD() {
                 }
             }
         }
+
+        // Lógica de Referidos: Mostrar tarjeta únicamente a planes Premium e Inmobiliaria VIP (Fundadores)
+        const refContainer = document.getElementById('b2b-referral-card-container');
+        if (refContainer) {
+            const isPremium = (loggedInB2bClient.plan === 'VIP' || loggedInB2bClient.plan === 'Premium');
+            if (isPremium && !isPending) {
+                refContainer.classList.remove('hidden');
+                
+                // Generar código de referidos basado en su nombre
+                let codeSeed = 'VGT';
+                if (loggedInB2bClient.name) {
+                    codeSeed = loggedInB2bClient.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '');
+                }
+                const refCode = `REF-${codeSeed}${loggedInB2bClient.id.substring(loggedInB2bClient.id.length - 4).toUpperCase()}`;
+                
+                const refValEl = document.getElementById('b2b-referral-code-val');
+                if (refValEl) {
+                    refValEl.innerText = refCode;
+                }
+            } else {
+                refContainer.classList.add('hidden');
+            }
+        }
     }
     updateAdminMonthlyRevenueHUD();
 }
@@ -8001,6 +8024,10 @@ async function completeSignupSubscriptionTransaction() {
         is_founder_premium: isFounder
     };
 
+    // Lógica de comisiones por referido (5% de cashback)
+    const referrerId = localStorage.getItem('valorgt_pending_referrer_id');
+    const referrerName = localStorage.getItem('valorgt_pending_referrer_name');
+    
     if (isSupabaseActive) {
         try {
             // A. Registrar el usuario en Supabase Auth
@@ -8032,7 +8059,8 @@ async function completeSignupSubscriptionTransaction() {
                         usdt_balance: 0.00,
                         role: pendingSignupUser.role,
                         is_founder_premium: isFounder,
-                        billing_period: signupBillingPeriod
+                        billing_period: signupBillingPeriod,
+                        referred_by: referrerId || null
                     }
                 ]);
 
@@ -8040,12 +8068,50 @@ async function completeSignupSubscriptionTransaction() {
                     console.error("Error al registrar perfil B2B en base de datos:", dbErr);
                 } else {
                     newClient.id = authData.user.id;
+                    
+                    // Si fue referido, acreditar el 5% de comisión al balance de Oro Digital (XAUt) del patrocinador
+                    if (referrerId) {
+                        try {
+                            // Calcular el 5% de la tarifa
+                            // El precio por XAUt cotiza actualmente en ~2380.00 USD
+                            const xautPrice = currentAirdropXautPrice || 2380.00;
+                            const amountUSD = selectedSignupPlanPrice;
+                            const commissionUSD = amountUSD * 0.05;
+                            const commissionXAUt = commissionUSD / xautPrice;
+                            
+                            // 1. Obtener balance actual del patrocinador
+                            const { data: refProfile } = await supabaseClient.from('profiles').select('usdt_balance').eq('id', referrerId).maybeSingle();
+                            if (refProfile) {
+                                const currentBalance = parseFloat(refProfile.usdt_balance || 0);
+                                const newBalance = currentBalance + commissionXAUt;
+                                
+                                // 2. Actualizar balance en Supabase
+                                await supabaseClient.from('profiles').update({ usdt_balance: newBalance }).eq('id', referrerId);
+                                console.log(`🪙 [Referidos] Acreditado 5% de comisión (${commissionXAUt.toFixed(6)} XAUt) a ${referrerName}`);
+                            }
+                        } catch (refErr) {
+                            console.error("Error al procesar la acreditación de comisión de referidos:", refErr);
+                        }
+                    }
                 }
             }
         } catch (err) {
             console.error("Fallo de red al registrar en Supabase:", err);
         }
+    } else {
+        // Simulación en memoria local
+        if (referrerId) {
+            const localRef = b2bClients.find(c => c.id === referrerId);
+            if (localRef) {
+                const commissionXAUt = (selectedSignupPlanPrice * 0.05) / (currentAirdropXautPrice || 2380.00);
+                localRef.usdtBalance = (localRef.usdtBalance || 0) + commissionXAUt;
+            }
+        }
     }
+    
+    // Limpiar referidos pendientes
+    localStorage.removeItem('valorgt_pending_referrer_id');
+    localStorage.removeItem('valorgt_pending_referrer_name');
 
     b2bClients.unshift(newClient);
 
@@ -12905,10 +12971,71 @@ function applySignupPromoCode() {
             appliedPromoDiscount = 250; 
             showCyberToast("¡Código VGT-0626 aplicado con éxito!", "check-circle");
         }
+        }
+    } else if (code.startsWith('REF-')) {
+        // Validación dinámica de referidos contra base de datos o en memoria
+        statusLbl.innerText = "VALIDANDO...";
+        statusLbl.style.color = "#ffd700";
+        
+        if (isSupabaseActive && supabaseClient) {
+            supabaseClient.from('profiles')
+                .select('id, name, plan, is_founder_premium')
+                .then(({ data: matches, error }) => {
+                    let referrer = null;
+                    if (!error && matches) {
+                        referrer = matches.find(m => {
+                            let seed = m.name ? m.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
+                            let generated = `REF-${seed}${m.id.substring(m.id.length - 4).toUpperCase()}`;
+                            return generated === code && (m.plan === 'VIP' || m.plan === 'Premium' || m.is_founder_premium === true);
+                        });
+                    }
+                    
+                    if (referrer) {
+                        statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
+                        statusLbl.style.color = "#ffd700";
+                        appliedPromoDiscount = 0; // El descuento lo recibe el que refiere como cashback del 5%, no se le descuenta al que entra
+                        localStorage.setItem('valorgt_pending_referrer_id', referrer.id);
+                        localStorage.setItem('valorgt_pending_referrer_name', referrer.name);
+                        showCyberToast(`¡Código de referido de ${referrer.name} aplicado!`, "gift");
+                    } else {
+                        statusLbl.innerText = "INVÁLIDO / INACTIVO";
+                        statusLbl.style.color = "var(--red)";
+                        localStorage.removeItem('valorgt_pending_referrer_id');
+                        localStorage.removeItem('valorgt_pending_referrer_name');
+                        showCyberToast("Código de referido no válido o pertenece a un plan básico.", "x-circle");
+                    }
+                    if (typeof updateSignupPaymentTotals === 'function') updateSignupPaymentTotals();
+                });
+            return;
+        } else {
+            // Fallback local
+            const matches = b2bClients.filter(c => c.plan === 'VIP' || c.plan === 'Premium' || c.isFounderPremium === true);
+            const referrer = matches.find(m => {
+                let seed = m.name ? m.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
+                let generated = `REF-${seed}${m.id.substring(m.id.length - 4).toUpperCase()}`;
+                return generated === code;
+            });
+            
+            if (referrer) {
+                statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
+                statusLbl.style.color = "#ffd700";
+                localStorage.setItem('valorgt_pending_referrer_id', referrer.id);
+                localStorage.setItem('valorgt_pending_referrer_name', referrer.name);
+                showCyberToast(`¡Código de referido de ${referrer.name} aplicado!`, "gift");
+            } else {
+                statusLbl.innerText = "INVÁLIDO / INACTIVO";
+                statusLbl.style.color = "var(--red)";
+                localStorage.removeItem('valorgt_pending_referrer_id');
+                localStorage.removeItem('valorgt_pending_referrer_name');
+                showCyberToast("Código de referido inválido.", "alert-triangle");
+            }
+        }
     } else {
         statusLbl.innerText = "INVÁLIDO";
         statusLbl.style.color = "var(--red)";
         appliedPromoDiscount = 0;
+        localStorage.removeItem('valorgt_pending_referrer_id');
+        localStorage.removeItem('valorgt_pending_referrer_name');
         showCyberToast("Código promocional inválido o inexistente.", "alert-triangle");
     }
     
@@ -16045,5 +16172,45 @@ async function dismissSuggestion(id, propId, suggestionText) {
 
     showCyberToast("SUGERENCIA LEÍDA Y ARCHIVADA", "check-circle");
     loadAgentSuggestions();
+}
+
+/**
+ * Copia el código de referidos del agente activo al portapapeles
+ */
+function copyB2bReferralLink() {
+    const codeEl = document.getElementById('b2b-referral-code-val');
+    if (!codeEl) return;
+    
+    const code = codeEl.innerText.trim();
+    if (!code || code === 'REF-VGT') return;
+    
+    // Intentar copiar al portapapeles
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+            showCyberToast(`¡CÓDIGO ${code} COPIADO!`, "check-circle");
+        }).catch(err => {
+            console.error("Fallo al copiar enlace:", err);
+            // Fallback manual en caso de error o permisos bloqueados
+            fallbackCopyText(code);
+        });
+    } else {
+        fallbackCopyText(code);
+    }
+}
+
+function fallbackCopyText(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showCyberToast(`¡CÓDIGO ${text} COPIADO!`, "check-circle");
+    } catch (err) {
+        console.error('Fallo en fallback de copiado:', err);
+    }
+    document.body.removeChild(textArea);
 }
 
