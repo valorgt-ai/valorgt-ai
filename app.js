@@ -7409,7 +7409,9 @@ async function authenticateCommercialAgent(event) {
                 status: profile.status.charAt(0).toUpperCase() + profile.status.slice(1),
                 usdtBalance: parseFloat(profile.usdt_balance),
                 role: profile.role || 'agente',
-                billing_period: profile.billing_period || 'mensual'
+                billing_period: profile.billing_period || 'mensual',
+                isFounderPremium: profile.is_founder_premium === true || profile.isFounderPremium === true,
+                is_founder_premium: profile.is_founder_premium === true || profile.isFounderPremium === true
             };
             activeB2bPlan = profile.plan.toLowerCase();
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
