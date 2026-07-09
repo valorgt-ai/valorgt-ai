@@ -4457,6 +4457,22 @@ function updateB2bPartnerLevelBadge() {
     if (welcomeNameEl) {
         welcomeNameEl.innerText = client.name || 'Socio';
     }
+
+    // Mostrar u ocultar y rellenar la tarjeta del programa de referidos
+    const refContainer = document.getElementById('b2b-referral-card-container');
+    const refCodeVal = document.getElementById('b2b-referral-code-val');
+    if (refContainer) {
+        if (isFounder || dbPlan === 'Premium' || dbPlan === 'VIP') {
+            refContainer.classList.remove('hidden');
+            if (refCodeVal) {
+                let seed = client.name ? client.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
+                let suffix = client.id ? client.id.substring(client.id.length - 4).toUpperCase() : '0000';
+                refCodeVal.innerText = `REF-${seed}${suffix}`;
+            }
+        } else {
+            refContainer.classList.add('hidden');
+        }
+    }
 }
 
 /**
