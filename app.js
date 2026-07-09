@@ -4907,7 +4907,7 @@ function renderB2bAgentProfile() {
                 </div>
                 <div>
                     <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">PLAN DE MEMBRESÍA:</span>
-                    <span class="plan-col ${planClass}" style="font-size: 0.8rem; padding: 2px 6px; border-radius: 4px;">${(client.plan || 'pro').toUpperCase()}</span>
+                    <span class="plan-col ${planClass}" style="font-size: 0.8rem; padding: 2px 6px; border-radius: 4px;">${isFounder ? 'MIEMBRO FUNDADOR' : (client.plan || 'pro').toUpperCase()}</span>
                 </div>
                 <div>
                     <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">CORREO CORPORATIVO:</span>
