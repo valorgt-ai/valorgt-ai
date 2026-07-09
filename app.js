@@ -4823,19 +4823,20 @@ function initCommercialView() {
                             alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales.");
                         }
                         
-                        // Re-inicializar UI
-                        updateB2bPartnerLevelBadge();
-                        renderB2bAgentProfile();
-                        updateSaasMetricsHUD();
-                        updateB2bSubscriptionPendingBanner();
-                        updateLockOverlaysState();
-                        
-                        const isPending = dbStatus === 'Pendiente' || (dbStatus || '').toLowerCase() === 'pendiente';
-                        if (isPending) {
-                            switchCommercialTab('suscripcion');
-                        } else {
-                            switchCommercialTab('home');
-                        }
+                    }
+                    
+                    // Actualizar siempre la UI local para reflejar los datos actualizados y el saludo de Jaime
+                    updateB2bPartnerLevelBadge();
+                    renderB2bAgentProfile();
+                    updateSaasMetricsHUD();
+                    updateB2bSubscriptionPendingBanner();
+                    updateLockOverlaysState();
+
+                    const isPending = dbStatus === 'Pendiente' || (dbStatus || '').toLowerCase() === 'pendiente';
+                    if (isPending) {
+                        switchCommercialTab('suscripcion');
+                    } else {
+                        switchCommercialTab('home');
                     }
                 }
             })
