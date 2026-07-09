@@ -4732,7 +4732,7 @@ function initCommercialView() {
         // 2. Consulta de estado directa como fallback o actualización de saldo
         supabaseClient
             .from('profiles')
-            .select('status, plan, usdt_balance, role, billing_period')
+            .select('status, plan, usdt_balance, role, billing_period, is_founder_premium')
             .eq('id', loggedInB2bClient.id)
             .maybeSingle()
             .then(({ data, error }) => {
@@ -4742,6 +4742,7 @@ function initCommercialView() {
                     const dbBalance = parseFloat(data.usdt_balance || 0);
                     let dbRole = data.role || 'agente';
                     const dbBillingPeriod = data.billing_period || 'mensual';
+                    const dbIsFounder = data.is_founder_premium === true;
                     
                     // Sanitizar cuentas demo e inversionistas en Supabase sync
                     const emailLower = (loggedInB2bClient.email || '').toLowerCase();
@@ -4765,7 +4766,7 @@ function initCommercialView() {
                         dbRole = 'agente';
                     }
                     
-                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole || loggedInB2bClient.billing_period !== dbBillingPeriod) {
+                    if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole || loggedInB2bClient.billing_period !== dbBillingPeriod || loggedInB2bClient.is_founder_premium !== dbIsFounder) {
                         const oldStatus = loggedInB2bClient.status;
                         
                         loggedInB2bClient.status = dbStatus;
@@ -4773,6 +4774,8 @@ function initCommercialView() {
                         loggedInB2bClient.usdtBalance = dbBalance;
                         loggedInB2bClient.role = dbRole;
                         loggedInB2bClient.billing_period = dbBillingPeriod;
+                        loggedInB2bClient.is_founder_premium = dbIsFounder;
+                        loggedInB2bClient.isFounderPremium = dbIsFounder;
                         activeB2bPlan = (dbPlan || 'pro').toLowerCase();
                         
                         localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
@@ -5035,8 +5038,11 @@ function updateSaasMetricsHUD() {
         const isInvestor = (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
 
         // 1. Determinar facturación SaaS real exacta según plan contratado y estado de pago
-        const plan = (loggedInB2bClient.plan || '').toLowerCase();
         const isFounder = checkIfClientIsFounder(loggedInB2bClient);
+        if (isFounder) {
+            loggedInB2bClient.plan = 'VIP';
+        }
+        const plan = (loggedInB2bClient.plan || '').toLowerCase();
 
         // 1. Determinar facturación SaaS real exacta según plan contratado y estado de pago
         if (!isPending || isFounder) {
