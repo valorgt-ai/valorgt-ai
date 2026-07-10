@@ -193,7 +193,13 @@ if (savedB2bClient) {
         if (loggedInB2bClient) {
             const emailLower = (loggedInB2bClient.email || '').toLowerCase();
             const roleLower = (loggedInB2bClient.role || '').toLowerCase();
-            if (roleLower === 'inversionista') {
+            if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (loggedInB2bClient.name && (loggedInB2bClient.name.toLowerCase().includes('jaime') || loggedInB2bClient.name.toLowerCase().includes('mejia')))) {
+                loggedInB2bClient.name = 'Jaime Mejía';
+                loggedInB2bClient.plan = 'Premium';
+                loggedInB2bClient.role = 'inversionista';
+                loggedInB2bClient.isFounderPremium = true;
+                loggedInB2bClient.is_founder_premium = true;
+            } else if (roleLower === 'inversionista') {
                 loggedInB2bClient.plan = 'Premium';
             } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                 loggedInB2bClient.plan = 'VIP';
@@ -204,12 +210,6 @@ if (savedB2bClient) {
             } else if (emailLower === 'sofia@alianzagt.com') {
                 loggedInB2bClient.plan = 'Básico';
                 loggedInB2bClient.role = 'agente';
-            } else if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (loggedInB2bClient.name && (loggedInB2bClient.name.toLowerCase().includes('jaime') || loggedInB2bClient.name.toLowerCase().includes('mejia')))) {
-                loggedInB2bClient.name = 'Jaime Mejía';
-                loggedInB2bClient.plan = 'Premium';
-                loggedInB2bClient.role = 'inversionista';
-                loggedInB2bClient.isFounderPremium = true;
-                loggedInB2bClient.is_founder_premium = true;
             }
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
         }
@@ -7473,7 +7473,13 @@ async function authenticateCommercialAgent(event) {
             if (profile) {
                 const roleLower = (profile.role || 'agente').toLowerCase();
                 const emailLower = (profile.email || user || '').toLowerCase();
-                if (roleLower === 'inversionista') {
+                if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (profile.name && (profile.name.toLowerCase().includes('jaime') || profile.name.toLowerCase().includes('mejia')))) {
+                    profile.name = 'Jaime Mejía';
+                    profile.plan = 'Premium';
+                    profile.role = 'inversionista';
+                    profile.isFounderPremium = true;
+                    profile.is_founder_premium = true;
+                } else if (roleLower === 'inversionista') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
                     
@@ -7492,12 +7498,6 @@ async function authenticateCommercialAgent(event) {
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     profile.plan = 'Básico';
                     profile.role = 'agente';
-                } else if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (profile.name && (profile.name.toLowerCase().includes('jaime') || profile.name.toLowerCase().includes('mejia')))) {
-                    profile.name = 'Jaime Mejía';
-                    profile.plan = 'Premium';
-                    profile.role = 'inversionista';
-                    profile.isFounderPremium = true;
-                    profile.is_founder_premium = true;
                 }
             }
 
@@ -10399,7 +10399,14 @@ async function _syncSupabaseDataInternal() {
                             let dbRole = latestProfile.role || 'agente';
                             const emailLower = (loggedInB2bClient.email || latestProfile.email || '').toLowerCase();
                             const roleLower = dbRole.toLowerCase();
-                            if (roleLower === 'inversionista') {
+
+                            if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (loggedInB2bClient.name && (loggedInB2bClient.name.toLowerCase().includes('jaime') || loggedInB2bClient.name.toLowerCase().includes('mejia')))) {
+                                dbPlan = 'Premium';
+                                dbRole = 'inversionista';
+                                loggedInB2bClient.name = 'Jaime Mejía';
+                                loggedInB2bClient.isFounderPremium = true;
+                                loggedInB2bClient.is_founder_premium = true;
+                            } else if (roleLower === 'inversionista') {
                                 dbPlan = 'Premium';
                             } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                                 dbPlan = 'VIP';
@@ -10407,12 +10414,6 @@ async function _syncSupabaseDataInternal() {
                             } else if (emailLower === 'sofia@alianzagt.com') {
                                 dbPlan = 'Básico';
                                 dbRole = 'agente';
-                            } else if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (loggedInB2bClient.name && (loggedInB2bClient.name.toLowerCase().includes('jaime') || loggedInB2bClient.name.toLowerCase().includes('mejia')))) {
-                                dbPlan = 'Premium';
-                                dbRole = 'inversionista';
-                                loggedInB2bClient.name = 'Jaime Mejía';
-                                loggedInB2bClient.isFounderPremium = true;
-                                loggedInB2bClient.is_founder_premium = true;
                             }
 
                             loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
@@ -10629,7 +10630,12 @@ async function syncB2bClientsFromSupabase() {
                 const emailLower = (profile.email || '').toLowerCase();
                 const roleLower = role.toLowerCase();
                 
-                if (roleLower === 'inversionista') {
+                if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (profile.name && (profile.name.toLowerCase().includes('jaime') || profile.name.toLowerCase().includes('mejia')))) {
+                    plan = 'Premium';
+                    role = 'inversionista';
+                    profile.isFounderPremium = true;
+                    profile.is_founder_premium = true;
+                } else if (roleLower === 'inversionista') {
                     plan = 'Premium';
                 } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                     plan = 'VIP';
@@ -10640,11 +10646,6 @@ async function syncB2bClientsFromSupabase() {
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     plan = 'Básico';
                     role = 'agente';
-                } else if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (profile.name && (profile.name.toLowerCase().includes('jaime') || profile.name.toLowerCase().includes('mejia')))) {
-                    plan = 'Premium';
-                    role = 'inversionista';
-                    profile.isFounderPremium = true;
-                    profile.is_founder_premium = true;
                 }
                 
                 return {
