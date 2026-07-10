@@ -7468,7 +7468,7 @@ async function authenticateCommercialAgent(event) {
             // Sanitizar perfiles al iniciar sesión (demo e inversionistas)
             if (profile) {
                 const roleLower = (profile.role || 'agente').toLowerCase();
-                const emailLower = (profile.email || '').toLowerCase();
+                const emailLower = (profile.email || user || '').toLowerCase();
                 if (roleLower === 'inversionista') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
@@ -7488,7 +7488,7 @@ async function authenticateCommercialAgent(event) {
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     profile.plan = 'Básico';
                     profile.role = 'agente';
-                } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
+                } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com' || emailLower === 'jaime@jaime.com') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
                     if (!profile.name || profile.name.toLowerCase() === 'invitado' || profile.name.toLowerCase() === 'socio') {
@@ -7504,7 +7504,7 @@ async function authenticateCommercialAgent(event) {
                 company: profile.company || 'Inversiones VGT',
                 nit: profile.nit || 'C/F',
                 phone: profile.phone || 'N/A',
-                email: profile.email,
+                email: profile.email || user,
                 plan: profile.plan,
                 status: profile.status.charAt(0).toUpperCase() + profile.status.slice(1),
                 usdtBalance: parseFloat(profile.usdt_balance),
@@ -10393,7 +10393,7 @@ async function _syncSupabaseDataInternal() {
                             // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
                             let dbPlan = latestProfile.plan || 'Básico';
                             let dbRole = latestProfile.role || 'agente';
-                            const emailLower = (loggedInB2bClient.email || '').toLowerCase();
+                            const emailLower = (loggedInB2bClient.email || latestProfile.email || '').toLowerCase();
                             const roleLower = dbRole.toLowerCase();
                             if (roleLower === 'inversionista') {
                                 dbPlan = 'Premium';
@@ -10415,6 +10415,7 @@ async function _syncSupabaseDataInternal() {
                             loggedInB2bClient.status = (typeof latestProfile.status === 'string' && latestProfile.status.length > 0) ? (latestProfile.status.charAt(0).toUpperCase() + latestProfile.status.slice(1)) : 'Activo';
                             loggedInB2bClient.plan = dbPlan;
                             loggedInB2bClient.role = dbRole;
+                            loggedInB2bClient.email = loggedInB2bClient.email || latestProfile.email;
                             activeB2bPlan = (dbPlan || 'pro').toLowerCase();
 
                             // Forzar actualización de la tarjeta de socio para Jaime Mejía
