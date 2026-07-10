@@ -216,6 +216,17 @@
                         </div>
                     </div>
 
+                    <!-- BANNER DE FILTRADO ACTIVO POR AGENTE -->
+                    <div id="home-catalog-filter-banner" style="display: none; margin-bottom: 20px; width: 100%; background: rgba(0, 240, 255, 0.05); border: 1px solid var(--cyan); border-radius: 8px; padding: 12px 20px; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.85rem; color: #fff; box-shadow: 0 0 10px rgba(0,240,255,0.05);">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="filter" style="color: var(--cyan); width: 16px; height: 16px;"></i>
+                            <span>Filtrando propiedades del agente: <strong id="home-catalog-filter-agent-name" style="color: var(--cyan);">N/A</strong></span>
+                        </div>
+                        <button onclick="clearHomeAgentFilter()" style="background: rgba(255,55,95,0.15); border: 1px solid var(--red); color: var(--red); border-radius: 4px; padding: 4px 10px; cursor: pointer; font-weight: bold; font-size: 0.75rem; transition: var(--transition-smooth); display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="x" style="width: 12px; height: 12px;"></i> QUITAR FILTRO
+                        </button>
+                    </div>
+
                     <!-- GRILA DE RESULTADOS DEL CATÁLOGO EN HOME -->
                     <div id="home-catalog-grid" class="catalog-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%;">
                         <!-- Carga dinámica de propiedades del catálogo -->

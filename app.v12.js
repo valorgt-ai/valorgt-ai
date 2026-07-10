@@ -5007,6 +5007,15 @@ function renderB2bAgentProfile() {
                 </div>
             </div>
 
+            <!-- Fila 2.5: Enlace directo de catálogo para compartir -->
+            <div style="background: rgba(0,240,255,0.03); border: 1px dashed rgba(0,240,255,0.2); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+                <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="share-2" style="width: 12px; height: 12px;"></i> TU CATÁLOGO EXCLUSIVO</span>
+                <span style="font-size: 0.65rem; color: var(--text-secondary); line-height: 1.25;">Comparte este enlace para que tus clientes vean únicamente las propiedades que has subido.</span>
+                <button onclick="copyB2bCatalogLink()" class="btn-micro-cyber" style="width: 100%; text-align: center; justify-content: center; height: 28px; font-size: 0.68rem; background: rgba(0, 240, 255, 0.08); border: 1px solid var(--cyan); color: var(--cyan); cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <i data-lucide="copy" style="width: 11px; height: 11px;"></i> COPIAR ENLACE DE MIS PROPIEDADES
+                </button>
+            </div>
+
             <!-- Fila 3: Ajustes de Perfil (WhatsApp, Logo, Empresa & NIT) -->
             <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="sliders" style="width: 12px; height: 12px;"></i> AJUSTES DE MARCA B2B</span>
@@ -15269,6 +15278,9 @@ function renderHomeCatalog() {
         });
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const agentParam = (urlParams.get('agent') || urlParams.get('agente') || '').trim().toLowerCase();
+
     const seen = new Set();
     properties = properties.filter(prop => {
         // Mostrar únicamente las propiedades subidas por agentes reales o por nosotros
@@ -15294,6 +15306,16 @@ function renderHomeCatalog() {
             return false;
         }
 
+        // Filtro por parámetro URL de Agente (?agent=email o ?agente=nombre)
+        if (agentParam) {
+            const propName = (prop.agentName || '').toLowerCase();
+            const matchEmail = propEmail === agentParam || propEmail.includes(agentParam);
+            const matchName = propName.includes(agentParam);
+            if (!matchEmail && !matchName) {
+                return false;
+            }
+        }
+
         const uniqueId = titleLower.trim();
         if (seen.has(uniqueId)) {
             return false;
@@ -15301,6 +15323,20 @@ function renderHomeCatalog() {
         seen.add(uniqueId);
         return true;
     });
+
+    // Controlar visibilidad del banner de filtrado por agente
+    const filterBanner = document.getElementById('home-catalog-filter-banner');
+    const filterAgentNameEl = document.getElementById('home-catalog-filter-agent-name');
+    if (filterBanner) {
+        if (agentParam) {
+            filterBanner.style.display = 'flex';
+            if (filterAgentNameEl) {
+                filterAgentNameEl.innerText = agentParam.toUpperCase();
+            }
+        } else {
+            filterBanner.style.display = 'none';
+        }
+    }
 
     // Filtros
     const searchVal = document.getElementById('home-search-input')?.value.trim().toLowerCase() || '';
@@ -16333,10 +16369,45 @@ function fallbackCopyText(text) {
     textArea.select();
     try {
         document.execCommand('copy');
-        showCyberToast(`¡CÓDIGO ${text} COPIADO!`, "check-circle");
+        showCyberToast("¡COPIADO AL PORTAPAPELES!", "check-circle");
     } catch (err) {
         console.error('Fallo en fallback de copiado:', err);
     }
     document.body.removeChild(textArea);
 }
+
+/**
+ * Copia el enlace exclusivo de catálogo del agente al portapapeles
+ */
+function copyB2bCatalogLink() {
+    if (!loggedInB2bClient || !loggedInB2bClient.email) {
+        showCyberToast("NO HAY SESIÓN ACTIVA", "x-circle");
+        return;
+    }
+    const email = loggedInB2bClient.email.toLowerCase();
+    const url = `${window.location.origin}${window.location.pathname}?agent=${encodeURIComponent(email)}`;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+            showCyberToast("¡ENLACE DE CATÁLOGO COPIADO!", "check-circle");
+        }).catch(err => {
+            console.error("Fallo al copiar enlace:", err);
+            fallbackCopyText(url);
+        });
+    } else {
+        fallbackCopyText(url);
+    }
+}
+
+/**
+ * Quita el filtro de agente de la URL y refresca el catálogo
+ */
+function clearHomeAgentFilter() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('agent');
+    url.searchParams.delete('agente');
+    window.history.replaceState({}, '', url.toString());
+    renderHomeCatalog();
+}
+
 
