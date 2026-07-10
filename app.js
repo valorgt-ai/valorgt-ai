@@ -4432,6 +4432,14 @@ function updateB2bPartnerLevelBadge() {
     if (!partnerLevelEl || !loggedInB2bClient) return;
 
     const client = loggedInB2bClient;
+    if (client && client.email && (client.email.toLowerCase().includes('jaime') || client.email.toLowerCase() === 'jmejia@valorgt.com' || client.email.toLowerCase() === 'jaime@jaime.com')) {
+        if (!client.name || client.name.toLowerCase() === 'invitado' || client.name.toLowerCase() === 'socio') {
+            client.name = 'Jaime Mejía';
+        }
+        client.plan = 'Premium';
+        client.role = 'inversionista';
+    }
+
     const dbPlan = client.plan || 'Pro';
     const plan = dbPlan.toLowerCase();
     
@@ -4800,6 +4808,7 @@ function initCommercialView() {
                     } else if (emailLower === 'sofia@alianzagt.com') {
                         dbPlan = 'Básico';
                         dbRole = 'agente';
+                    } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
                         dbPlan = 'Premium';
                         dbRole = 'inversionista';
                         if (!loggedInB2bClient.name || loggedInB2bClient.name.toLowerCase() === 'invitado' || loggedInB2bClient.name.toLowerCase() === 'socio') {
