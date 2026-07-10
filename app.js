@@ -10397,12 +10397,18 @@ async function _syncSupabaseDataInternal() {
                             const roleLower = dbRole.toLowerCase();
                             if (roleLower === 'inversionista') {
                                 dbPlan = 'Premium';
-                            } else if (emailLower === 'ana@estevezinmobiliaria.com') {
+                            } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                                 dbPlan = 'VIP';
                                 dbRole = 'agente';
                             } else if (emailLower === 'sofia@alianzagt.com') {
                                 dbPlan = 'Básico';
                                 dbRole = 'agente';
+                            } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com' || emailLower === 'jaime@jaime.com') {
+                                dbPlan = 'Premium';
+                                dbRole = 'inversionista';
+                                if (!loggedInB2bClient.name || loggedInB2bClient.name.toLowerCase() === 'invitado' || loggedInB2bClient.name.toLowerCase() === 'socio') {
+                                    loggedInB2bClient.name = 'Jaime Mejía';
+                                }
                             }
 
                             loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
@@ -10410,6 +10416,11 @@ async function _syncSupabaseDataInternal() {
                             loggedInB2bClient.plan = dbPlan;
                             loggedInB2bClient.role = dbRole;
                             activeB2bPlan = (dbPlan || 'pro').toLowerCase();
+
+                            // Forzar actualización de la tarjeta de socio para Jaime Mejía
+                            if (typeof updateB2bPartnerLevelBadge === 'function') {
+                                updateB2bPartnerLevelBadge();
+                            }
                             
                             // Actualizar en el listado local de clientes para mantener consistencia
                             const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
@@ -10624,6 +10635,9 @@ async function syncB2bClientsFromSupabase() {
                 } else if (emailLower === 'sofia@alianzagt.com') {
                     plan = 'Básico';
                     role = 'agente';
+                } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com' || emailLower === 'jaime@jaime.com') {
+                    plan = 'Premium';
+                    role = 'inversionista';
                 }
                 
                 return {
