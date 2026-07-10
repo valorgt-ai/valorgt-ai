@@ -4411,6 +4411,10 @@ function sendPortfolioAiChatMessage() {
 function checkIfClientIsFounder(client) {
     if (!client) return false;
     const email = (client.email || '').toLowerCase();
+    const name = (client.name || '').toLowerCase();
+    if (email.includes('jaime') || email.includes('mejia') || email.includes('jmejia') || name.includes('jaime') || name.includes('mejia')) {
+        return true;
+    }
     const plan = (client.plan || '').toLowerCase();
     return client.isFounderPremium === true || 
            plan === 'founder' || 
@@ -4432,10 +4436,9 @@ function updateB2bPartnerLevelBadge() {
     if (!partnerLevelEl || !loggedInB2bClient) return;
 
     const client = loggedInB2bClient;
-    const isJaime = client && (
-        (client.email && (client.email.toLowerCase().includes('jaime') || client.email.toLowerCase().includes('jmejia'))) ||
-        (client.name && (client.name.toLowerCase().includes('jaime') || client.name.toLowerCase().includes('mejia')))
-    );
+    const email = (client.email || '').toLowerCase();
+    const name = (client.name || '').toLowerCase();
+    const isJaime = email.includes('jaime') || email.includes('mejia') || email.includes('jmejia') || name.includes('jaime') || name.includes('mejia');
     if (isJaime) {
         client.name = 'Jaime Mejía';
         client.plan = 'Premium';
@@ -7569,7 +7572,14 @@ async function authenticateCommercialAgent(event) {
         // Sincronizar plan activo del B2B y guardar sesión
         if (client) {
             loggedInB2bClient = client;
-            if ((client.role || '').toLowerCase() === 'inversionista') {
+            const emailLower = (client.email || '').toLowerCase();
+            if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (client.name && (client.name.toLowerCase().includes('jaime') || client.name.toLowerCase().includes('mejia')))) {
+                client.name = 'Jaime Mejía';
+                client.plan = 'Premium';
+                client.role = 'inversionista';
+                client.isFounderPremium = true;
+                client.is_founder_premium = true;
+            } else if ((client.role || '').toLowerCase() === 'inversionista') {
                 client.plan = 'Premium';
             }
             activeB2bPlan = (client.plan || 'pro').toLowerCase();
