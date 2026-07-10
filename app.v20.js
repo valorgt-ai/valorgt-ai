@@ -5400,6 +5400,7 @@ function updateSaasMetricsHUD() {
 
     // Cartera Oro Digital (XAUt Airdrops)
     if (loggedInB2bClient) {
+        const isPending = loggedInB2bClient.status && (loggedInB2bClient.status.toLowerCase() === 'pendiente');
         const usdtCard = document.getElementById('saas-usdt-balance-card');
         if (usdtCard) {
             usdtCard.innerText = `${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt`;
