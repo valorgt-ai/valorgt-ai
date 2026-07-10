@@ -212,6 +212,32 @@ if (savedB2bClient) {
                 loggedInB2bClient.role = 'agente';
             }
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+
+            // Reparación asíncrona inmediata si el email o nombre están vacíos en localstorage pero es Jaime
+            if (isSupabaseActive && supabaseClient) {
+                (async () => {
+                    try {
+                        const { data: authUserObj } = await supabaseClient.auth.getUser();
+                        if (authUserObj && authUserObj.user && authUserObj.user.email) {
+                            const authEmail = authUserObj.user.email.toLowerCase();
+                            if (authEmail.includes('jaime') || authEmail.includes('jmejia') || authEmail.includes('mejia')) {
+                                loggedInB2bClient.name = 'Jaime Mejía';
+                                loggedInB2bClient.email = authUserObj.user.email;
+                                loggedInB2bClient.plan = 'Premium';
+                                loggedInB2bClient.role = 'inversionista';
+                                loggedInB2bClient.isFounderPremium = true;
+                                loggedInB2bClient.is_founder_premium = true;
+                                localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+                                activeB2bPlan = 'premium';
+                                if (typeof updateB2bPartnerLevelBadge === 'function') updateB2bPartnerLevelBadge();
+                                if (typeof renderB2bAgentProfile === 'function') renderB2bAgentProfile();
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("Fallo en verificación de sesión de Jaime:", err);
+                    }
+                })();
+            }
         }
         isCommercialAuthenticated = true;
         activeB2bPlan = (loggedInB2bClient.plan || 'pro').toLowerCase();
@@ -10397,6 +10423,18 @@ async function _syncSupabaseDataInternal() {
                 // Ejecución en segundo plano sin bloquear el renderizado del catálogo general
                 (async () => {
                     try {
+                        let authEmail = '';
+                        if (isSupabaseActive && supabaseClient) {
+                            try {
+                                const { data: authUserObj } = await supabaseClient.auth.getUser();
+                                if (authUserObj && authUserObj.user && authUserObj.user.email) {
+                                    authEmail = authUserObj.user.email;
+                                }
+                            } catch (e) {
+                                console.warn("No se pudo obtener el email del usuario de auth:", e);
+                            }
+                        }
+
                         const { data: latestProfile, error: profileErr } = await supabaseClient
                             .from('profiles')
                             .select('*')
@@ -10407,7 +10445,7 @@ async function _syncSupabaseDataInternal() {
                             // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
                             let dbPlan = latestProfile.plan || 'Básico';
                             let dbRole = latestProfile.role || 'agente';
-                            const emailLower = (loggedInB2bClient.email || latestProfile.email || '').toLowerCase();
+                            const emailLower = (loggedInB2bClient.email || latestProfile.email || authEmail || '').toLowerCase();
                             const roleLower = dbRole.toLowerCase();
 
                             if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (loggedInB2bClient.name && (loggedInB2bClient.name.toLowerCase().includes('jaime') || loggedInB2bClient.name.toLowerCase().includes('mejia')))) {
