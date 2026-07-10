@@ -178,11 +178,12 @@ function saveUserPortfolio() {
     }
 }
 
-// Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil
-if (localStorage.getItem('valorgt_cache_clear_v10.54') !== 'true') {
+// Purga incondicional de caché local corrupta de Supabase para forzar renderizados limpios en Chrome/móvil (v14.00)
+if (localStorage.getItem('valorgt_cache_clear_v14.00') !== 'true') {
     localStorage.removeItem('valorgt_remote_properties_cache');
-    localStorage.setItem('valorgt_cache_clear_v10.54', 'true');
-    console.log("🧹 [Cache Clear Global] Limpieza de caché de red remota completada.");
+    localStorage.removeItem('valorgt_active_b2b_client'); // Forzar cierre de sesión limpia para recrear perfiles corruptos
+    localStorage.setItem('valorgt_cache_clear_v14.00', 'true');
+    console.log("🧹 [Cache Clear Global] Limpieza de caché y sesión completada para v14.00.");
 }
 
 const savedB2bClient = localStorage.getItem('valorgt_active_b2b_client');
