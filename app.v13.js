@@ -5016,9 +5016,13 @@ function renderB2bAgentProfile() {
                 </button>
             </div>
 
-            <!-- Fila 3: Ajustes de Perfil (WhatsApp, Logo, Empresa & NIT) -->
+            <!-- Fila 3: Ajustes de Perfil (Nombre, WhatsApp, Logo, Empresa & NIT) -->
             <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="sliders" style="width: 12px; height: 12px;"></i> AJUSTES DE MARCA B2B</span>
+                <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 5px;">
+                    <label style="font-size: 0.62rem; color: var(--text-secondary);">NOMBRE DEL ASESOR / SOCIO PÚBLICO:</label>
+                    <input type="text" id="profile-name-input" placeholder="Ej: Vicorp" value="${client.name || ''}" style="font-size: 0.75rem; padding: 6px 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <label style="font-size: 0.62rem; color: var(--text-secondary);">EMPRESA / INMOBILIARIA:</label>
@@ -7542,14 +7546,14 @@ async function authenticateCommercialAgent(event) {
             // Guardar credenciales en la sesión activa de la app
             loggedInB2bClient = {
                 id: profile.id,
-                name: profile.name || 'Jaime Mejía',
+                name: profile.name || 'Invitado',
                 company: profile.company || 'Inversiones VGT',
                 nit: profile.nit || 'C/F',
                 phone: profile.phone || 'N/A',
                 email: profile.email || user,
                 plan: profile.plan,
-                status: profile.status.charAt(0).toUpperCase() + profile.status.slice(1),
-                usdtBalance: parseFloat(profile.usdt_balance),
+                status: profile.status ? (profile.status.charAt(0).toUpperCase() + profile.status.slice(1)) : 'Activo',
+                usdtBalance: parseFloat(profile.usdt_balance || 0),
                 role: profile.role || 'agente',
                 billing_period: profile.billing_period || 'mensual',
                 isFounderPremium: profile.is_founder_premium === true || profile.isFounderPremium === true,
@@ -10463,14 +10467,19 @@ async function _syncSupabaseDataInternal() {
                                 loggedInB2bClient.name = 'Jaime Mejía';
                                 loggedInB2bClient.isFounderPremium = true;
                                 loggedInB2bClient.is_founder_premium = true;
-                            } else if (roleLower === 'inversionista') {
-                                dbPlan = 'Premium';
-                            } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
-                                dbPlan = 'VIP';
-                                dbRole = 'agente';
-                            } else if (emailLower === 'sofia@alianzagt.com') {
-                                dbPlan = 'Básico';
-                                dbRole = 'agente';
+                            } else {
+                                if (latestProfile.name) {
+                                    loggedInB2bClient.name = latestProfile.name;
+                                }
+                                if (roleLower === 'inversionista') {
+                                    dbPlan = 'Premium';
+                                } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
+                                    dbPlan = 'VIP';
+                                    dbRole = 'agente';
+                                } else if (emailLower === 'sofia@alianzagt.com') {
+                                    dbPlan = 'Básico';
+                                    dbRole = 'agente';
+                                }
                             }
 
                             loggedInB2bClient.usdtBalance = parseFloat(latestProfile.usdt_balance || 0);
@@ -12250,6 +12259,7 @@ function closePropertyDetailModal() {
 async function saveB2bAgentProfile() {
     if (!loggedInB2bClient) return;
 
+    const nameInput = document.getElementById('profile-name-input');
     const companyInput = document.getElementById('profile-company');
     const nitInput = document.getElementById('profile-nit');
     const whatsappInput = document.getElementById('profile-whatsapp');
@@ -12257,10 +12267,16 @@ async function saveB2bAgentProfile() {
 
     if (!whatsappInput || !logoInput) return;
 
+    const name = nameInput ? nameInput.value.trim() : '';
     const whatsapp = whatsappInput.value.trim().replace(/[^0-9]/g, '');
     const logo = logoInput.value.trim();
     const company = companyInput ? companyInput.value.trim() : '';
     const nit = nitInput ? nitInput.value.trim() : '';
+
+    if (!name) {
+        alert("Por favor ingresa un nombre válido.");
+        return;
+    }
 
     if (!whatsapp) {
         alert("Por favor ingresa un número de WhatsApp de contacto válido.");
@@ -12268,6 +12284,7 @@ async function saveB2bAgentProfile() {
     }
 
     // Actualizar localmente el cliente activo
+    loggedInB2bClient.name = name;
     loggedInB2bClient.whatsapp = whatsapp;
     loggedInB2bClient.logo = logo;
     loggedInB2bClient.phone = whatsapp; // Sincronizar campo telefónico genérico
@@ -12277,6 +12294,7 @@ async function saveB2bAgentProfile() {
     // Actualizar en el listado de clientes en localStorage
     const clientIdx = b2bClients.findIndex(c => c.id === loggedInB2bClient.id || c.email === loggedInB2bClient.email);
     if (clientIdx !== -1) {
+        b2bClients[clientIdx].name = name;
         b2bClients[clientIdx].company = loggedInB2bClient.company;
         b2bClients[clientIdx].nit = loggedInB2bClient.nit;
         b2bClients[clientIdx].whatsapp = whatsapp;
@@ -12290,6 +12308,7 @@ async function saveB2bAgentProfile() {
 
     // Guardar extras localmente
     localStorage.setItem(`b2b_profile_extras_${loggedInB2bClient.id}`, JSON.stringify({
+        name: name,
         whatsapp: whatsapp,
         logo: logo,
         company: company,
@@ -12302,10 +12321,12 @@ async function saveB2bAgentProfile() {
             const { error } = await supabaseClient
                 .from('profiles')
                 .update({ 
+                    name: name,
                     phone: whatsapp,
                     company: company,
                     nit: nit,
                     metadata: {
+                        name: name,
                         whatsapp: whatsapp,
                         logo: logo,
                         company: company,
