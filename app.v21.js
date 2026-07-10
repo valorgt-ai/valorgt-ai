@@ -7370,11 +7370,34 @@ async function approvePendingPayment(reqId) {
                 }
                 
                 supabaseClient.from('profiles').update(updatePayload).eq('id', req.clientId)
-                .then(({ error }) => {
+                .then(async ({ error }) => {
                     if (error) {
                         console.warn("La actualización directa de perfil falló (bloqueado por políticas RLS). Se utilizará la auto-activación por el cliente:", error.message);
                     } else {
                         console.log("Perfil actualizado exitosamente a activo en Supabase.");
+                        
+                        // ACREDITAR COMISIÓN AL REFERENTE
+                        if (isSub) {
+                            try {
+                                const { data: profData } = await supabaseClient.from('profiles').select('referred_by').eq('id', req.clientId).maybeSingle();
+                                if (profData && profData.referred_by) {
+                                    const referrerId = profData.referred_by;
+                                    const xautPrice = currentAirdropXautPrice || 2380.00;
+                                    const commissionUSD = req.totalUSD * 0.05;
+                                    const commissionXAUt = commissionUSD / xautPrice;
+                                    
+                                    const { data: refProfile } = await supabaseClient.from('profiles').select('usdt_balance').eq('id', referrerId).maybeSingle();
+                                    if (refProfile) {
+                                        const currentBalance = parseFloat(refProfile.usdt_balance || 0);
+                                        const newBalance = currentBalance + commissionXAUt;
+                                        await supabaseClient.from('profiles').update({ usdt_balance: newBalance }).eq('id', referrerId);
+                                        console.log(`🪙 [Referidos Admin] Acreditado 5% de comisión (${commissionXAUt.toFixed(6)} XAUt) al patrocinador ${referrerId}`);
+                                    }
+                                }
+                            } catch (commissionErr) {
+                                console.error("Error al acreditar comisión en aprobación bancaria:", commissionErr);
+                            }
+                        }
                     }
                 });
             } catch (dbErr) {
@@ -13329,6 +13352,73 @@ function applyB2bTransferPromoCode() {
         return;
     }
     
+    if (code.startsWith('REF-')) {
+        statusLbl.innerText = "VALIDANDO...";
+        statusLbl.style.color = "#ffd700";
+        
+        if (isSupabaseActive && supabaseClient) {
+            supabaseClient.from('profiles')
+                .select('id, name, plan, is_founder_premium')
+                .then(async ({ data: matches, error }) => {
+                    let referrer = null;
+                    if (!error && matches) {
+                        referrer = matches.find(m => {
+                            let seed = m.name ? m.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
+                            let generated = `REF-${seed}${m.id.substring(m.id.length - 4).toUpperCase()}`;
+                            return generated === code && (m.plan === 'VIP' || m.plan === 'Premium' || m.is_founder_premium === true);
+                        });
+                    }
+                    
+                    if (referrer) {
+                        statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
+                        statusLbl.style.color = "#ffd700";
+                        showCyberToast(`¡Código de referido de ${referrer.name} aplicado!`, "gift");
+                        
+                        // Guardar en la base de datos que este cliente fue referido por el patrocinador
+                        if (loggedInB2bClient) {
+                            try {
+                                await supabaseClient.from('profiles')
+                                    .update({ referred_by: referrer.id })
+                                    .eq('id', loggedInB2bClient.id);
+                                loggedInB2bClient.referred_by = referrer.id;
+                                localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+                            } catch (e) {
+                                console.error("Error al actualizar referido en BD:", e);
+                            }
+                        }
+                    } else {
+                        statusLbl.innerText = "INVÁLIDO / INACTIVO";
+                        statusLbl.style.color = "var(--red)";
+                        showCyberToast("Código de referido no válido o pertenece a un plan básico.", "x-circle");
+                    }
+                });
+            return;
+        } else {
+            // Fallback local
+            const matches = b2bClients.filter(c => c.plan === 'VIP' || c.plan === 'Premium' || c.isFounderPremium === true);
+            const referrer = matches.find(m => {
+                let seed = m.name ? m.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
+                let generated = `REF-${seed}${m.id.substring(m.id.length - 4).toUpperCase()}`;
+                return generated === code;
+            });
+            
+            if (referrer) {
+                statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
+                statusLbl.style.color = "#ffd700";
+                if (loggedInB2bClient) {
+                    loggedInB2bClient.referredBy = referrer.id;
+                    localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
+                }
+                showCyberToast(`¡Código de referido de ${referrer.name} aplicado!`, "gift");
+            } else {
+                statusLbl.innerText = "INVÁLIDO";
+                statusLbl.style.color = "var(--red)";
+                showCyberToast("Código de referido inválido.", "alert-triangle");
+            }
+        }
+        return;
+    }
+
     if (pendingPaymentTarget !== 'vip') {
         statusLbl.innerText = "SÓLO VIP";
         statusLbl.style.color = "var(--red)";
