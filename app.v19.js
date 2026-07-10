@@ -4564,7 +4564,82 @@ function updateB2bPartnerLevelBadge() {
             if (refLockedMessage) refLockedMessage.classList.remove('hidden');
         }
     }
+    if (typeof renderB2bReferralsList === 'function') {
+        renderB2bReferralsList();
+    }
 }
+
+/**
+ * Renderiza dinámicamente el listado de agentes referidos por el usuario activo
+ */
+async function renderB2bReferralsList() {
+    const listSection = document.getElementById('b2b-referrals-list-section');
+    const listContainer = document.getElementById('b2b-referrals-list');
+    const countEl = document.getElementById('b2b-referrals-count');
+    if (!listSection || !listContainer || !loggedInB2bClient) return;
+
+    // Solo se muestra el listado si tiene plan VIP o Premium
+    const plan = (loggedInB2bClient.plan || '').toLowerCase();
+    const isPremium = plan === 'vip' || plan === 'premium';
+    const isFounder = checkIfClientIsFounder(loggedInB2bClient);
+
+    if (!isPremium && !isFounder) {
+        listSection.classList.add('hidden');
+        return;
+    }
+
+    listSection.classList.remove('hidden');
+
+    let referrals = [];
+
+    if (isSupabaseActive && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('name, email, plan, status, company')
+                .eq('referred_by', loggedInB2bClient.id);
+            if (!error && data) {
+                referrals = data;
+            }
+        } catch (err) {
+            console.warn("Fallo al obtener referidos desde Supabase:", err);
+        }
+    } else {
+        // Fallback local
+        referrals = b2bClients.filter(c => c.referredBy === loggedInB2bClient.id);
+    }
+
+    if (countEl) countEl.innerText = referrals.length;
+
+    if (referrals.length === 0) {
+        listContainer.innerHTML = `
+            <div style="font-size: 0.68rem; color: var(--text-muted); text-align: center; padding: 10px; border: 1px dashed rgba(255,255,255,0.05); border-radius: 4px; font-family: var(--font-mono); width: 100%;">
+                Aún no tienes agentes registrados con tu código.
+            </div>`;
+        return;
+    }
+
+    listContainer.innerHTML = referrals.map(ref => {
+        const refName = ref.name || 'Agente Invitado';
+        const refCompany = ref.company && ref.company !== 'Inversiones VGT' && ref.company !== 'Particular' ? ` (${ref.company})` : '';
+        const refPlan = (ref.plan || 'Pro').toUpperCase();
+        const refStatus = (ref.status || 'activo').toLowerCase() === 'activo' ? '🟢 Activo' : '🔴 Inactivo';
+        
+        return `
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 4px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); gap: 10px; width: 100%; box-sizing: border-box;">
+                <div style="display: flex; flex-direction: column; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <strong style="font-size: 0.72rem; color: #fff;">${refName}${refCompany}</strong>
+                    <span style="font-size: 0.6rem; color: var(--text-muted);">${ref.email}</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 2px;">
+                    <span style="font-size: 0.55rem; padding: 1px 4px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.25); color: #ffd700; border-radius: 3px; font-weight: bold;">${refPlan}</span>
+                    <span style="font-size: 0.55rem; color: var(--text-muted); font-weight: bold;">${refStatus}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 
 /**
  * Gestiona los Overlays de Bloqueo Criptográficos según Plan, Rol y Estado de Pago
@@ -5375,6 +5450,9 @@ function updateSaasMetricsHUD() {
             } else {
                 if (refActiveControls) refActiveControls.classList.add('hidden');
                 if (refLockedMessage) refLockedMessage.classList.remove('hidden');
+            }
+            if (typeof renderB2bReferralsList === 'function') {
+                renderB2bReferralsList();
             }
         }
     }
