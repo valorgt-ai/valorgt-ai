@@ -207,6 +207,9 @@ if (savedB2bClient) {
             } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
                 loggedInB2bClient.plan = 'Premium';
                 loggedInB2bClient.role = 'inversionista';
+                if (!loggedInB2bClient.name || loggedInB2bClient.name.toLowerCase() === 'invitado' || loggedInB2bClient.name.toLowerCase() === 'socio') {
+                    loggedInB2bClient.name = 'Jaime Mejía';
+                }
             }
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
         }
@@ -4797,9 +4800,11 @@ function initCommercialView() {
                     } else if (emailLower === 'sofia@alianzagt.com') {
                         dbPlan = 'Básico';
                         dbRole = 'agente';
-                    } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
                         dbPlan = 'Premium';
                         dbRole = 'inversionista';
+                        if (!loggedInB2bClient.name || loggedInB2bClient.name.toLowerCase() === 'invitado' || loggedInB2bClient.name.toLowerCase() === 'socio') {
+                            loggedInB2bClient.name = 'Jaime Mejía';
+                        }
                     }
                     
                     if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole || loggedInB2bClient.billing_period !== dbBillingPeriod || loggedInB2bClient.is_founder_premium !== dbIsFounder) {
@@ -7477,16 +7482,19 @@ async function authenticateCommercialAgent(event) {
                 } else if (emailLower.includes('jaime') || emailLower === 'jmejia@valorgt.com') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
+                    if (!profile.name || profile.name.toLowerCase() === 'invitado' || profile.name.toLowerCase() === 'socio') {
+                        profile.name = 'Jaime Mejía';
+                    }
                 }
             }
 
             // Guardar credenciales en la sesión activa de la app
             loggedInB2bClient = {
                 id: profile.id,
-                name: profile.name,
-                company: profile.company,
-                nit: profile.nit,
-                phone: profile.phone,
+                name: profile.name || 'Jaime Mejía',
+                company: profile.company || 'Inversiones VGT',
+                nit: profile.nit || 'C/F',
+                phone: profile.phone || 'N/A',
                 email: profile.email,
                 plan: profile.plan,
                 status: profile.status.charAt(0).toUpperCase() + profile.status.slice(1),
