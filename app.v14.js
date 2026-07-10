@@ -213,28 +213,51 @@ if (savedB2bClient) {
             }
             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
 
-            // Reparación asíncrona inmediata si el email o nombre están vacíos en localstorage pero es Jaime
+            // Reparación asíncrona inmediata para sincronizar cualquier sesión activa con los datos frescos del servidor
             if (isSupabaseActive && supabaseClient) {
                 (async () => {
                     try {
                         const { data: authUserObj } = await supabaseClient.auth.getUser();
-                        if (authUserObj && authUserObj.user && authUserObj.user.email) {
-                            const authEmail = authUserObj.user.email.toLowerCase();
-                            if (authEmail.includes('jaime') || authEmail.includes('jmejia') || authEmail.includes('mejia')) {
-                                loggedInB2bClient.name = 'Jaime Mejía';
-                                loggedInB2bClient.email = authUserObj.user.email;
-                                loggedInB2bClient.plan = 'Premium';
-                                loggedInB2bClient.role = 'inversionista';
-                                loggedInB2bClient.isFounderPremium = true;
-                                loggedInB2bClient.is_founder_premium = true;
+                        if (authUserObj && authUserObj.user && authUserObj.user.id) {
+                            const authId = authUserObj.user.id;
+                            const { data: profile, error: profileErr } = await supabaseClient
+                                .from('profiles')
+                                .select('*')
+                                .eq('id', authId)
+                                .maybeSingle();
+                            
+                            if (!profileErr && profile) {
+                                let dbPlan = profile.plan || 'Básico';
+                                let dbRole = profile.role || 'agente';
+                                const emailLower = (profile.email || authUserObj.user.email || '').toLowerCase();
+                                
+                                if (emailLower.includes('jaime') || emailLower.includes('jmejia') || emailLower.includes('mejia')) {
+                                    dbPlan = 'Premium';
+                                    dbRole = 'inversionista';
+                                    profile.name = 'Jaime Mejía';
+                                    profile.isFounderPremium = true;
+                                    profile.is_founder_premium = true;
+                                }
+                                
+                                loggedInB2bClient.name = profile.name || loggedInB2bClient.name || 'Invitado';
+                                loggedInB2bClient.email = profile.email || authUserObj.user.email;
+                                loggedInB2bClient.plan = dbPlan;
+                                loggedInB2bClient.role = dbRole;
+                                loggedInB2bClient.status = profile.status ? (profile.status.charAt(0).toUpperCase() + profile.status.slice(1)) : 'Activo';
+                                loggedInB2bClient.usdtBalance = parseFloat(profile.usdt_balance || 0);
+                                loggedInB2bClient.isFounderPremium = profile.is_founder_premium === true || profile.isFounderPremium === true;
+                                loggedInB2bClient.is_founder_premium = profile.is_founder_premium === true || profile.isFounderPremium === true;
+                                
                                 localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
-                                activeB2bPlan = 'premium';
+                                activeB2bPlan = dbPlan.toLowerCase();
+                                
                                 if (typeof updateB2bPartnerLevelBadge === 'function') updateB2bPartnerLevelBadge();
                                 if (typeof renderB2bAgentProfile === 'function') renderB2bAgentProfile();
+                                if (typeof updateSaasMetricsHUD === 'function') updateSaasMetricsHUD();
                             }
                         }
                     } catch (err) {
-                        console.warn("Fallo en verificación de sesión de Jaime:", err);
+                        console.warn("Fallo en auto-reparación de sesión activa:", err);
                     }
                 })();
             }
