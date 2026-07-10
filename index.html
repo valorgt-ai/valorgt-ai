@@ -2127,25 +2127,41 @@
                                 </div>
                             </div>
 
-                            <!-- Columna 3: Tarjeta Dorada de Referidos (A la par del analizador, mismo tamaño) -->
+                            <!-- Columna 3: Tarjeta de Difusión Comercial (Catálogo y Referidos) -->
                             <div id="b2b-referral-card-container" class="card glassmorphism border-gold hidden" style="flex: 1; max-width: 600px; min-width: 320px; border-left: 3px solid #ffd700 !important; border-color: rgba(255, 215, 0, 0.25) !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.08) !important; display: flex; flex-direction: column;">
                                 <div class="card-header border-gold" style="border-bottom: 1px solid rgba(255, 215, 0, 0.15) !important;">
-                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="gift"></i></div>
-                                    <h2 style="color: #ffd700 !important;">Programa de Referidos Premium</h2>
+                                    <div class="header-icon gold" style="color: #ffd700 !important; border-color: rgba(255, 215, 0, 0.3) !important;"><i data-lucide="share-2"></i></div>
+                                    <h2 style="color: #ffd700 !important;">Marketing & Difusión Comercial</h2>
                                 </div>
-                                <div class="commercial-section-body" style="padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 15px; text-align: left;">
-                                    <div>
-                                        <h4 class="font-mono text-gold" style="margin: 0; font-size: 0.85rem; font-weight: bold; color: #ffd700; text-transform: uppercase;">Socios Fundadores & Premium</h4>
-                                        <p class="font-sans" style="margin: 5px 0 0 0; font-size: 0.68rem; color: var(--text-secondary); line-height: 1.4;">Comparte tu código único de referidos con otros agentes y recibe el <strong>5%</strong> del valor de su suscripción directamente en tu Cartera de Oro (XAUt) cada mes.</p>
-                                    </div>
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255, 215, 0, 0.08);">
-                                        <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,215,0,0.3); border-radius: 6px; padding: 6px 12px; display: flex; flex-direction: column; align-items: center; flex: 1;">
-                                            <span style="font-size: 0.55rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px;">CÓDIGO ÚNICO:</span>
-                                            <strong id="b2b-referral-code-val" style="font-size: 0.95rem; color: #fff; font-family: var(--font-mono); letter-spacing: 1px;">REF-VGT</strong>
-                                        </div>
-                                        <button onclick="copyB2bReferralLink()" class="btn-micro-cyber" style="height: 38px; padding: 0 15px; background: rgba(255, 215, 0, 0.08); border: 1px solid #ffd700; color: #ffd700; font-size: 0.68rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; border-radius: 4px;">
-                                            <i data-lucide="copy" style="width: 12px; height: 12px;"></i> COPIAR ENLACE
+                                <div class="commercial-section-body" style="padding: 15px; flex: 1; display: flex; flex-direction: column; gap: 15px; text-align: left;">
+                                    <!-- Sección de Catálogo Compartible (Para todos los agentes) -->
+                                    <div style="padding-bottom: 15px; border-bottom: 1px dashed rgba(255, 215, 0, 0.15);">
+                                        <h4 class="font-mono text-cyan" style="margin: 0; font-size: 0.8rem; font-weight: bold; color: var(--cyan); text-transform: uppercase; display: flex; align-items: center; gap: 6px;"><i data-lucide="layout-grid" style="width: 12px; height: 12px;"></i> Mi Catálogo Exclusivo</h4>
+                                        <p class="font-sans" style="margin: 5px 0 10px 0; font-size: 0.65rem; color: var(--text-secondary); line-height: 1.35;">Comparte este enlace para que tus clientes vean únicamente las propiedades que has listado bajo tu firma.</p>
+                                        <button onclick="copyB2bCatalogLink()" class="btn-micro-cyber" style="width: 100%; justify-content: center; height: 32px; background: rgba(0, 240, 255, 0.08); border: 1px solid var(--cyan); color: var(--cyan); font-size: 0.68rem; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                                            <i data-lucide="copy" style="width: 12px; height: 12px;"></i> COPIAR ENLACE DE CATÁLOGO
                                         </button>
+                                    </div>
+
+                                    <!-- Sección de Referidos (Condicional para Premium/VIP en JS) -->
+                                    <div id="b2b-referral-exclusive-section" style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+                                        <div>
+                                            <h4 class="font-mono text-gold" style="margin: 0; font-size: 0.8rem; font-weight: bold; color: #ffd700; text-transform: uppercase; display: flex; align-items: center; gap: 6px;"><i data-lucide="gift" style="width: 12px; height: 12px;"></i> Programa de Referidos Premium</h4>
+                                            <p class="font-sans" style="margin: 5px 0 0 0; font-size: 0.65rem; color: var(--text-secondary); line-height: 1.35;">Recibe el <strong>5%</strong> mensual del valor de suscripción de tus agentes recomendados directo en tu Cartera de Oro.</p>
+                                        </div>
+                                        <div id="b2b-referral-active-controls" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 5px;">
+                                            <div style="background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,215,0,0.3); border-radius: 6px; padding: 6px 12px; display: flex; flex-direction: column; align-items: center; flex: 1;">
+                                                <span style="font-size: 0.52rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.5px;">CÓDIGO ÚNICO:</span>
+                                                <strong id="b2b-referral-code-val" style="font-size: 0.88rem; color: #fff; font-family: var(--font-mono); letter-spacing: 1px;">REF-VGT</strong>
+                                            </div>
+                                            <button onclick="copyB2bReferralLink()" class="btn-micro-cyber" style="height: 36px; padding: 0 12px; background: rgba(255, 215, 0, 0.08); border: 1px solid #ffd700; color: #ffd700; font-size: 0.68rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; border-radius: 4px;">
+                                                <i data-lucide="copy" style="width: 12px; height: 12px;"></i> COPIAR ENLACE
+                                            </button>
+                                        </div>
+                                        <div id="b2b-referral-locked-message" class="hidden" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.08); border-radius: 6px; padding: 10px; text-align: center; margin-top: 5px;">
+                                            <span style="font-size: 0.65rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 4px; font-weight: bold;"><i data-lucide="lock" style="width: 11px; height: 11px;"></i> PROGRAMA DE REFERIDOS BLOQUEADO</span>
+                                            <span style="font-size: 0.58rem; color: var(--text-muted); display: block; margin-top: 2px;">Disponible únicamente para miembros Premium y VIP.</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -5187,6 +5203,6 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=12.0"></script>
-    <script src="app.v16.js"></script>
+    <script src="app.v17.js"></script>
 </body>
 </html>

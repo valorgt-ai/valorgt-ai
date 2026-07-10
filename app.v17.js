@@ -4543,20 +4543,25 @@ function updateB2bPartnerLevelBadge() {
         welcomeNameEl.innerText = displayName;
     }
 
-    // Mostrar u ocultar y rellenar la tarjeta del programa de referidos
+    // Mostrar y rellenar la tarjeta de difusión comercial (siempre visible para todos los agentes)
     const refContainer = document.getElementById('b2b-referral-card-container');
     const refCodeVal = document.getElementById('b2b-referral-code-val');
+    const refActiveControls = document.getElementById('b2b-referral-active-controls');
+    const refLockedMessage = document.getElementById('b2b-referral-locked-message');
     if (refContainer) {
+        refContainer.classList.remove('hidden'); // Siempre visible porque incluye el Catálogo Exclusivo
         const isPremiumOrVip = plan === 'premium' || plan === 'vip' || dbPlan === 'Premium' || dbPlan === 'VIP';
         if (isFounder || isPremiumOrVip) {
-            refContainer.classList.remove('hidden');
+            if (refActiveControls) refActiveControls.classList.remove('hidden');
+            if (refLockedMessage) refLockedMessage.classList.add('hidden');
             if (refCodeVal) {
                 let seed = client.name ? client.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '') : 'VGT';
                 let suffix = client.id ? client.id.substring(client.id.length - 4).toUpperCase() : '0000';
                 refCodeVal.innerText = `REF-${seed}${suffix}`;
             }
         } else {
-            refContainer.classList.add('hidden');
+            if (refActiveControls) refActiveControls.classList.add('hidden');
+            if (refLockedMessage) refLockedMessage.classList.remove('hidden');
         }
     }
 }
@@ -5041,15 +5046,6 @@ function renderB2bAgentProfile() {
                 </div>
             </div>
 
-            <!-- Fila 2.5: Enlace directo de catálogo para compartir -->
-            <div style="background: rgba(0,240,255,0.03); border: 1px dashed rgba(0,240,255,0.2); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
-                <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="share-2" style="width: 12px; height: 12px;"></i> TU CATÁLOGO EXCLUSIVO</span>
-                <span style="font-size: 0.65rem; color: var(--text-secondary); line-height: 1.25;">Comparte este enlace para que tus clientes vean únicamente las propiedades que has subido.</span>
-                <button onclick="copyB2bCatalogLink()" class="btn-micro-cyber" style="width: 100%; text-align: center; justify-content: center; height: 28px; font-size: 0.68rem; background: rgba(0, 240, 255, 0.08); border: 1px solid var(--cyan); color: var(--cyan); cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                    <i data-lucide="copy" style="width: 11px; height: 11px;"></i> COPIAR ENLACE DE MIS PROPIEDADES
-                </button>
-            </div>
-
             <!-- Fila 3: Ajustes de Perfil (Nombre, WhatsApp, Logo, Empresa & NIT) -->
             <div style="border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 15px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
                 <span style="font-size: 0.72rem; color: var(--cyan); font-weight: bold; display: flex; align-items: center; gap: 4px;"><i data-lucide="sliders" style="width: 12px; height: 12px;"></i> AJUSTES DE MARCA B2B</span>
@@ -5353,12 +5349,17 @@ function updateSaasMetricsHUD() {
             }
         }
 
-        // Lógica de Referidos: Mostrar tarjeta únicamente a planes Premium e Inmobiliaria VIP (Fundadores)
+        // Lógica de Referidos: Mantener tarjeta visible pero bloquear/desbloquear controles de referidos
         const refContainer = document.getElementById('b2b-referral-card-container');
         if (refContainer) {
+            refContainer.classList.remove('hidden'); // Siempre visible
             const isPremium = (loggedInB2bClient.plan === 'VIP' || loggedInB2bClient.plan === 'Premium');
+            const refActiveControls = document.getElementById('b2b-referral-active-controls');
+            const refLockedMessage = document.getElementById('b2b-referral-locked-message');
+            
             if (isPremium && !isPending) {
-                refContainer.classList.remove('hidden');
+                if (refActiveControls) refActiveControls.classList.remove('hidden');
+                if (refLockedMessage) refLockedMessage.classList.add('hidden');
                 
                 // Generar código de referidos basado en su nombre
                 let codeSeed = 'VGT';
@@ -5372,7 +5373,8 @@ function updateSaasMetricsHUD() {
                     refValEl.innerText = refCode;
                 }
             } else {
-                refContainer.classList.add('hidden');
+                if (refActiveControls) refActiveControls.classList.add('hidden');
+                if (refLockedMessage) refLockedMessage.classList.remove('hidden');
             }
         }
     }
