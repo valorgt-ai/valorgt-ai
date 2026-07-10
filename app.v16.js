@@ -4530,7 +4530,17 @@ function updateB2bPartnerLevelBadge() {
     }
 
     if (welcomeNameEl) {
-        welcomeNameEl.innerText = client.name || 'Socio';
+        let displayName = client.name;
+        if (!displayName || displayName === 'Invitado') {
+            if (client.company && client.company !== 'Inversiones VGT' && client.company !== 'Particular') {
+                displayName = client.company;
+            } else if (client.email) {
+                displayName = client.email.split('@')[0];
+            } else {
+                displayName = 'Invitado';
+            }
+        }
+        welcomeNameEl.innerText = displayName;
     }
 
     // Mostrar u ocultar y rellenar la tarjeta del programa de referidos
