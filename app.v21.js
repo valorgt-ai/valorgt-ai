@@ -12630,8 +12630,6 @@ function renderPublicPricingGrid() {
  */
 function renderB2bPricingGrid() {
     const grid = document.getElementById('b2b-pricing-grid');
-function renderB2bPricingGrid() {
-    const grid = document.getElementById('b2b-pricing-grid');
     if (!grid) return;
 
     grid.innerHTML = ''; // Limpiar
