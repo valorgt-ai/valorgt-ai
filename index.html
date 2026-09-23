@@ -1733,48 +1733,16 @@
                                 <!-- SECTOR PREMIUM DE TARJETAS DE SELECCIÓN DE PLANES -->
                                 <!-- 1. Contenedor de planes de Agente -->
                                 <div id="agent-plans-container" class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
-                                    <label style="font-size: 0.72rem; margin: 5px 0 2px 0;">Selecciona tu Plan de Membresía</label>
+                                    <label style="font-size: 0.72rem; margin: 5px 0 2px 0;">Plan de Membresía Incluido</label>
                                     
-                                    <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-                                        <div id="plan-card-signup-basico" class="signup-plan-card" onclick="selectSignupPlanCard('basico')">
-                                            <span class="plan-card-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3);">INDIVIDUAL</span>
-                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Agente Individual</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--neon-blue); margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
-                                                <span>Q140 / Mes</span>
-                                                <span style="font-size: 0.65rem; color: var(--neon-emerald); font-weight: normal;">Q119 Anual/Mes</span>
-                                            </span>
-                                        </div>
-                                        <div id="plan-card-signup-pro" class="signup-plan-card active" onclick="selectSignupPlanCard('pro')">
-                                            <div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>
-                                            <span class="plan-card-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">PRO</span>
-                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Empresa Pro</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
-                                                <span>Q240 / Mes</span>
-                                                <span style="font-size: 0.65rem; color: var(--neon-emerald); font-weight: normal;">Q204 Anual/Mes</span>
-                                            </span>
-                                        </div>
-                                        <div id="plan-card-signup-vip" class="signup-plan-card" onclick="selectSignupPlanCard('vip')">
-                                            <span class="plan-card-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3);">PREMIUM</span>
-                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Inmobiliaria VIP</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #bf5af2; margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
-                                                <span>Q640 / Mes</span>
-                                                <span style="font-size: 0.65rem; color: var(--neon-emerald); font-weight: normal;">Q544 Anual/Mes</span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 2. Contenedor de plan de Inversionista -->
-                                <div id="inversionista-plans-container" class="input-group" style="display: none; flex-direction: column; gap: 6px;">
-                                    <label style="font-size: 0.72rem;">Selecciona tu Plan de Membresía</label>
                                     <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; justify-content: center;">
-                                        <div id="plan-card-signup-premium" class="signup-plan-card active" onclick="selectSignupPlanCard('premium')" style="flex: 1; max-width: 320px;">
-                                            <div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>
-                                            <span class="plan-card-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3);">INVERSIONISTA</span>
-                                            <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">Inversionista Premium</span>
-                                            <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: #ffd700; margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
-                                                <span>Q340 / Mes</span>
-                                                <span style="font-size: 0.65rem; color: var(--neon-emerald); font-weight: normal;">Q289 Anual/Mes</span>
+                                        <div id="plan-card-signup-pro" class="signup-plan-card active" onclick="selectSignupPlanCard('pro')" style="flex: 1; max-width: 360px;">
+                                            <div class="active-ribbon" style="font-size: 0.5rem; padding: 2px 8px; top: -6px; right: 8px;">PLAN ÚNICO</div>
+                                            <span class="plan-card-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">ACCESO TOTAL</span>
+                                            <span style="font-size: 0.85rem; font-weight: bold; margin-top: 4px;">Suscripción ValorGT Pro</span>
+                                            <span class="plan-card-price" style="font-size: 0.88rem; font-weight: bold; color: var(--cyan); margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
+                                                <span>Q235 / Mes</span>
+                                                <span style="font-size: 0.65rem; color: var(--neon-emerald); font-weight: normal;">Equivalente a $30 USD / Mes</span>
                                             </span>
                                         </div>
                                     </div>
@@ -1782,10 +1750,7 @@
 
                                 <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
                                 <select id="com-signup-plan" style="display: none;">
-                                    <option value="basico">Agente Individual (Q140 / mes - $18 USD)</option>
-                                    <option value="pro" selected>Inmobiliaria Pro (Q240 / mes - $31 USD) - RECOMENDADO</option>
-                                    <option value="vip">Inmobiliaria Premium / VIP (Q640 / mes - $82 USD)</option>
-                                    <option value="premium">Inversionista Premium (Q340 / mes - $43.70 USD)</option>
+                                    <option value="pro" selected>Suscripción ValorGT Pro (Q235 / mes - $30 USD)</option>
                                 </select>
 
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">
@@ -1824,44 +1789,14 @@
                                     <span class="billing-cycle-label" id="signup-billing-cycle-anual-lbl" style="font-size: 0.72rem; opacity: 0.6; cursor: pointer; color: var(--text-muted); transition: all 0.3s;" onclick="toggleSignupBillingCycle(true)">Anual <span class="billing-cycle-badge" style="background: var(--neon-emerald); color: #000; font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;">-15%</span></span>
                                 </div>
 
-                                <div class="pricing-card" id="signup-plan-basico" data-usd="18" data-gtq="140" onclick="selectSignupPlan('basico', 18)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
+                                <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="30" data-gtq="235" onclick="selectSignupPlan('pro', 30)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
+                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.65rem; padding: 2px 8px;">ACCESO TOTAL</div>
                                     <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(10, 132, 255, 0.15); color: var(--neon-blue); border: 1px solid rgba(10, 132, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">INDIVIDUAL</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Agente Individual</span>
-                                    </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--neon-blue); font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-basico">140</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-basico" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $18 USD)</span></span>
-                                    </div>
-                                </div>
-
-                                <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="31" data-gtq="240" onclick="selectSignupPlan('pro', 31)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
-                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.65rem; padding: 2px 8px;">RECOMENDADO</div>
-                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PRO</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inmobiliaria Pro</span>
+                                        <span class="plan-badge" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PLAN ÚNICO</span>
+                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Suscripción ValorGT Pro</span>
                                     </div>
                                     <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--cyan); font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-pro">240</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-pro" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $31 USD)</span></span>
-                                    </div>
-                                </div>
-
-                                <div class="pricing-card" id="signup-plan-vip" data-usd="82" data-gtq="640" onclick="selectSignupPlan('vip', 82)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
-                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(191, 90, 242, 0.15); color: #bf5af2; border: 1px solid rgba(191, 90, 242, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PREMIUM</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inmobiliaria Premium</span>
-                                    </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: #bf5af2; font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-vip">640</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-vip" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $82 USD)</span></span>
-                                    </div>
-                                </div>
-
-                                <div class="pricing-card" id="signup-plan-premium" data-usd="43.70" data-gtq="340" onclick="selectSignupPlan('premium', 43.70)" style="display: none; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box;">
-                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">INVERSIONISTA</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Inversionista Premium</span>
-                                    </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: #ffd700; font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-premium">340</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-premium" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $43.70 USD)</span></span>
+                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-pro">235</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-pro" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $30 USD)</span></span>
                                     </div>
                                 </div>
                             </div>
@@ -3465,9 +3400,9 @@
                         <!-- Encabezado de Planes Premium Centrado -->
                         <div class="featured-header" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 25px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%;">
 
-                            <h2 class="section-title-premium" style="color: #bf5af2; text-shadow: 0 0 15px rgba(191, 90, 242, 0.4); font-family: var(--font-sans); font-size: 1.8rem; font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Planes de Suscripción Premium</h2>
+                            <h2 class="section-title-premium" style="color: #bf5af2; text-shadow: 0 0 15px rgba(191, 90, 242, 0.4); font-family: var(--font-sans); font-size: 1.8rem; font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Suscripción ValorGT Pro</h2>
                             <p class="saas-desc font-mono" style="font-size: 0.78rem; color: var(--text-secondary); max-width: 700px; line-height: 1.6; margin: 10px 0 0 0;">
-                                Maximiza tus comisiones, analiza portafolios de inversión inmobiliaria sin restricciones de tiempo y accede al radar predictivo de calor en tiempo real. Selecciona el perfil operativo que se adapte a tu nivel actual.
+                                Acceso total e ilimitado a todas las herramientas avanzadas de inteligencia inmobiliaria, autotasación IA, radar predictivo de calor, CRM y red comercial.
                             </p>
                         </div>
 
@@ -5004,8 +4939,8 @@
             </div>
         </div>
 
-        <!-- MODAL DE PROMOCIÓN POR LANZAMIENTO -->
-        <div id="promo-launch-modal" class="payment-modal-overlay" onclick="if(event.target === this) closePromoLaunchModal();" style="z-index: 10005;">
+        <!-- MODAL DE PROMOCIÓN POR LANZAMIENTO (DESACTIVADO) -->
+        <div id="promo-launch-modal" class="payment-modal-overlay" onclick="if(event.target === this) closePromoLaunchModal();" style="display: none !important; z-index: 10005;">
             <div class="payment-modal-card glassmorphism" style="width: 530px; max-width: 95vw; border: 1px solid var(--border-cyan-bright); box-shadow: 0 0 35px rgba(0, 240, 255, 0.3); background: rgba(5, 6, 8, 0.98); padding: 25px; overflow: hidden; display: flex; flex-direction: column; gap: 20px; border-radius: 12px; margin: auto; position: relative;">
                 <div class="modal-card-glow" style="background: radial-gradient(circle, rgba(0, 240, 255, 0.12) 0%, transparent 70%);"></div>
                 <button class="modal-close-btn" onclick="closePromoLaunchModal()" style="font-size: 1.8rem; top: 12px; right: 15px; background: none; border: none; color: var(--text-muted); cursor: pointer;">&times;</button>

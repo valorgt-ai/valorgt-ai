@@ -675,56 +675,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupPlanSelect = document.getElementById('com-signup-plan');
     if (signupTypeSelect && signupPlanSelect) {
         signupTypeSelect.addEventListener('change', () => {
-            const role = signupTypeSelect.value;
             signupPlanSelect.innerHTML = ''; // Limpiar
-            if (role === 'inversionista') {
-                const opt = document.createElement('option');
-                opt.value = 'premium';
-                opt.innerText = 'Inversionista Premium (Q340 / mes - $43.70 USD) - RECOMENDADO';
-                opt.selected = true;
-                signupPlanSelect.appendChild(opt);
-                
-                // Mostrar solo tarjeta premium si existe la pasarela de pago del registro
-                const cardBasico = document.getElementById('signup-plan-basico');
-                const cardPro = document.getElementById('signup-plan-pro');
-                const cardVip = document.getElementById('signup-plan-vip');
-                const cardPremium = document.getElementById('signup-plan-premium');
-                if (cardBasico) cardBasico.style.display = 'none';
-                if (cardPro) cardPro.style.display = 'none';
-                if (cardVip) cardVip.style.display = 'none';
-                if (cardPremium) {
-                    cardPremium.style.display = 'flex';
-                    selectSignupPlan('premium', 43.70);
-                }
-            } else {
-                const opt1 = document.createElement('option');
-                opt1.value = 'basico';
-                opt1.innerText = 'Agente Individual (Q140 / mes - $18 USD)';
-                signupPlanSelect.appendChild(opt1);
-                
-                const opt2 = document.createElement('option');
-                opt2.value = 'pro';
-                opt2.innerText = 'Inmobiliaria Pro (Q240 / mes - $31 USD) - RECOMENDADO';
-                opt2.selected = true;
-                signupPlanSelect.appendChild(opt2);
-                
-                const opt3 = document.createElement('option');
-                opt3.value = 'vip';
-                opt3.innerText = 'Inmobiliaria Premium / VIP (Q640 / mes - $82 USD)';
-                signupPlanSelect.appendChild(opt3);
-                
-                // Mostrar tarjetas de agentes y ocultar premium
-                const cardBasico = document.getElementById('signup-plan-basico');
-                const cardPro = document.getElementById('signup-plan-pro');
-                const cardVip = document.getElementById('signup-plan-vip');
-                const cardPremium = document.getElementById('signup-plan-premium');
-                if (cardBasico) cardBasico.style.display = 'flex';
-                if (cardPro) cardPro.style.display = 'flex';
-                if (cardVip) cardVip.style.display = 'flex';
-                if (cardPremium) cardPremium.style.display = 'none';
-                
-                selectSignupPlan('pro', 31);
-            }
+            const opt = document.createElement('option');
+            opt.value = 'pro';
+            opt.innerText = 'Suscripción ValorGT Pro (Q235 / mes - $30 USD)';
+            opt.selected = true;
+            signupPlanSelect.appendChild(opt);
+            
+            const cardPro = document.getElementById('signup-plan-pro');
+            if (cardPro) cardPro.style.display = 'flex';
+            
+            selectSignupPlan('pro', 30);
         });
     }
 });
@@ -7822,7 +7783,7 @@ async function authenticateCommercialAgent(event) {
 
 let pendingSignupUser = null;
 let selectedSignupPlanKey = 'pro';
-let selectedSignupPlanPrice = 31;
+let selectedSignupPlanPrice = 30;
 
 /**
  * Alterna entre las pestañas de Login y Registro
@@ -8098,17 +8059,11 @@ function selectSignupPlan(planKey, priceUSD) {
         planSelect.value = planKey;
     }
     
-    let priceGTQ = 240; // Default Pro
-    priceUSD = 31;
-    if (planKey === 'basico') {
-        priceGTQ = 140;
-        priceUSD = 18;
-    } else if (planKey === 'vip') {
-        priceGTQ = 640;
-        priceUSD = 82;
-    } else if (planKey === 'premium') {
-        priceGTQ = 340;
-        priceUSD = 43.70;
+    let priceGTQ = 235; // Plan Único Pro
+    priceUSD = 30;
+    if (planKey === 'basico' || planKey === 'vip' || planKey === 'premium') {
+        priceGTQ = 235;
+        priceUSD = 30;
     }
     
     if (signupBillingPeriod === 'anual') {
@@ -12552,108 +12507,38 @@ function renderPublicPricingGrid() {
     if (!grid) return;
 
     grid.innerHTML = ''; // Limpiar
+    grid.style.display = 'flex';
+    grid.style.justifyContent = 'center';
+    grid.style.alignItems = 'stretch';
 
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
-    let plans = [];
-    if (activePlansProfile === 'agente') {
-        plans = [
-            {
-                key: 'basico',
-                badge: 'INDIVIDUAL',
-                badgeColor: 'var(--neon-blue)',
-                badgeBg: 'rgba(10, 132, 255, 0.15)',
-                badgeBorder: 'rgba(10, 132, 255, 0.3)',
-                title: 'Agente Individual',
-                subtitle: 'Ideal para agentes pequeños y tasadores autónomos.',
-                priceUSD: 18,
-                priceGTQ: 140,
-                features: [
-                    { text: '20 Propiedades en Catálogo', active: true },
-                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
-                    { text: 'Redes Neuronales Predictivas', active: true },
-                    { text: 'Sello de Verificación Básica', active: true },
-                    { text: 'Acceso a Radar de Calor', active: true },
-                    { text: 'Terminal de Inversión (Demo)', active: false },
-                    { text: 'Portafolio Patrimonial IA (Demo)', active: false },
-                    { text: 'Descuento en Pautas Publicitarias', active: false }
-                ]
-            },
-            {
-                key: 'pro',
-                badge: 'PRO',
-                badgeColor: 'var(--cyan)',
-                badgeBg: 'rgba(0, 240, 255, 0.1)',
-                badgeBorder: 'rgba(0, 240, 255, 0.3)',
-                title: 'Inmobiliaria Pro',
-                subtitle: 'Perfecto para agencias en expansión y brokers activos.',
-                priceUSD: 31,
-                priceGTQ: 240,
-                recommended: true,
-                features: [
-                    { text: '100 Propiedades en Catálogo', active: true },
-                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
-                    { text: 'Redes Neuronales Predictivas', active: true },
-                    { text: 'Logo Propio en Inmuebles', active: true },
-                    { text: 'Acceso Completo a Radar de Calor', active: true },
-                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
-                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
-                    { text: '15% Descuento en Pautas Publicitarias', active: true }
-                ]
-            },
-            {
-                key: 'vip',
-                badge: 'PREMIUM',
-                badgeColor: '#bf5af2',
-                badgeBg: 'rgba(191, 90, 242, 0.15)',
-                badgeBorder: 'rgba(191, 90, 242, 0.3)',
-                title: 'Inmobiliaria Premium',
-                subtitle: 'Operativa ilimitada con carteras de oro digital.',
-                priceUSD: 82,
-                priceGTQ: 640,
-                features: [
-                    { text: 'Propiedades Ilimitadas en Catálogo', active: true },
-                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
-                    { text: 'Redes Neuronales Predictivas', active: true },
-                    { text: 'Logo Propio y Destacados Premium', active: true },
-                    { text: 'Acceso Completo a Radar de Calor', active: true },
-                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
-                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
-                    { text: '30% Descuento en Pautas Publicitarias', active: true },
-                    { text: 'Cartera de ORO Digital Habilitada', active: true, color: '#ffd700' }
-                ]
-            }
-        ];
-    } else {
-        plans = [
-            {
-                key: 'premium',
-                badge: 'INVERSIONISTA PREMIUM',
-                badgeColor: '#ffd700',
-                badgeBg: 'rgba(255, 215, 0, 0.15)',
-                badgeBorder: 'rgba(255, 215, 0, 0.4)',
-                title: 'Inversionista Premium',
-                subtitle: 'Inteligencia inmobiliaria para detectar oportunidades antes del mercado.',
-                priceUSD: 43.70,
-                priceGTQ: 340,
-                recommended: true,
-                features: [
-                    { text: 'Acceso Tasa Inteligente & Radar de Calor', active: true, color: '#00f0ff' },
-                    { text: 'Terminal de Inversión & Portafolio IA', active: true },
-                    { text: 'Telemetría del Sector - Ciudad de Guatemala', active: true },
-                    { text: 'Comparativa de Rendimiento por Zonas (ROI vs Plusvalía)', active: true },
-                    { text: 'Noticias en Vivo del Mercado en Guatemala', active: true },
-                    { text: 'Portafolio Patrimonial & Asesor IA', active: true },
-                    { text: 'Gestor de Activos Inmobiliarios Avanzado', active: true },
-                    { text: 'Proyector de Riqueza y Amortización', active: true },
-                    { text: 'Cartera de Oro Digital & Participación Directa', active: true, color: '#ffd700' },
-                    { text: 'Módulo de Transferencias, Retiros y Depósitos', active: true },
-                    { text: 'Distribuciones de Oro Digital Habilitadas', active: true }
-                ]
-            }
-        ];
-    }
+    let plans = [
+        {
+            key: 'pro',
+            badge: 'PLAN ÚNICO',
+            badgeColor: 'var(--cyan)',
+            badgeBg: 'rgba(0, 240, 255, 0.12)',
+            badgeBorder: 'rgba(0, 240, 255, 0.4)',
+            title: activePlansProfile === 'agente' ? 'Suscripción ValorGT Pro' : 'Inversionista Pro',
+            subtitle: 'Acceso total e ilimitado a todas las herramientas avanzadas de inteligencia inmobiliaria.',
+            priceUSD: 30,
+            priceGTQ: 235,
+            recommended: true,
+            features: [
+                { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                { text: 'Tasa Inteligente (Autotasación IA)', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Radar de Calor Completo por Zonas', active: true },
+                { text: 'Terminal de Inversión & Portafolio IA', active: true },
+                { text: 'Red de Agentes Referidos & Comisiones', active: true, color: '#00f0ff' },
+                { text: 'Logo Propio & Sello de Verificación', active: true },
+                { text: '15% Descuento en Pautas Publicitarias', active: true },
+                { text: 'Soporte Prioritario VIP', active: true, color: '#bf5af2' }
+            ]
+        }
+    ];
 
     plans.forEach(plan => {
         const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
@@ -12669,7 +12554,7 @@ function renderPublicPricingGrid() {
             discountBadgeHtml = `
                 <div class="plan-discount-badge">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
-                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00</span>
+                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00/año</span>
                 </div>
             `;
         }
@@ -12682,9 +12567,11 @@ function renderPublicPricingGrid() {
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
         card.style.justifyContent = 'space-between';
-        card.style.padding = '20px';
+        card.style.padding = '24px';
         card.style.boxSizing = 'border-box';
         card.style.height = '100%';
+        card.style.maxWidth = '520px';
+        card.style.width = '100%';
 
         let featuresHtml = '';
         plan.features.forEach(f => {
@@ -12701,21 +12588,21 @@ function renderPublicPricingGrid() {
             if (isUserActivePlan) {
                 actionButtonHtml = `<button class="btn-plan-action active-btn" style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled>Tu Plan Activo</button>`;
             } else {
-                actionButtonHtml = `<button class="btn-plan-action" onclick="openPlanPayment('${plan.key}')">Cambiar Plan</button>`;
+                actionButtonHtml = `<button class="btn-plan-action" onclick="openPlanPayment('${plan.key}')">Adquirir Plan</button>`;
             }
         } else {
             actionButtonHtml = `<button class="btn-plan-action" onclick="selectPublicPlanForSignup('${plan.key}')">Adquirir Plan</button>`;
         }
 
         card.innerHTML = `
-            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">RECOMENDADO</div>` : ''}
+            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">ACCESO TOTAL</div>` : ''}
             <div>
                 <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
                     <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
-                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.55rem; font-weight: bold; color: #fff;">${plan.title}</h3>
                     <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 8px;">
+                <div class="plan-price font-mono" style="font-size: 2.4rem; font-weight: bold; color: var(--cyan); margin-bottom: 8px;">
                     <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
                     <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
                     <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
@@ -12743,115 +12630,45 @@ function renderPublicPricingGrid() {
  */
 function renderB2bPricingGrid() {
     const grid = document.getElementById('b2b-pricing-grid');
+function renderB2bPricingGrid() {
+    const grid = document.getElementById('b2b-pricing-grid');
     if (!grid) return;
 
     grid.innerHTML = ''; // Limpiar
+    grid.style.display = 'flex';
+    grid.style.justifyContent = 'center';
+    grid.style.alignItems = 'stretch';
 
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
     
-    // Determinar perfil de planes a mostrar basado en el rol del usuario logueado
     const isInvestor = loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
-    const profileType = isInvestor ? 'inversionista' : 'agente';
 
-    let plans = [];
-    if (profileType === 'agente') {
-        plans = [
-            {
-                key: 'basico',
-                badge: 'INDIVIDUAL',
-                badgeColor: 'var(--neon-blue)',
-                badgeBg: 'rgba(10, 132, 255, 0.15)',
-                badgeBorder: 'rgba(10, 132, 255, 0.3)',
-                title: 'Agente Individual',
-                subtitle: 'Ideal para agentes pequeños y tasadores autónomos.',
-                priceUSD: 18,
-                priceGTQ: 140,
-                features: [
-                    { text: '20 Propiedades en Catálogo', active: true },
-                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
-                    { text: 'Redes Neuronales Predictivas', active: true },
-                    { text: 'Sello de Verificación Básica', active: true },
-                    { text: 'Acceso a Radar de Calor', active: true },
-                    { text: 'Terminal de Inversión (Demo)', active: false },
-                    { text: 'Portafolio Patrimonial IA (Demo)', active: false },
-                    { text: 'Descuento en Pautas Publicitarias', active: false }
-                ]
-            },
-            {
-                key: 'pro',
-                badge: 'PRO',
-                badgeColor: 'var(--cyan)',
-                badgeBg: 'rgba(0, 240, 255, 0.1)',
-                badgeBorder: 'rgba(0, 240, 255, 0.3)',
-                title: 'Inmobiliaria Pro',
-                subtitle: 'Perfecto para agencias en expansión y brokers activos.',
-                priceUSD: 31,
-                priceGTQ: 240,
-                recommended: true,
-                features: [
-                    { text: '100 Propiedades en Catálogo', active: true },
-                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
-                    { text: 'Redes Neuronales Predictivas', active: true },
-                    { text: 'Logo Propio en Inmuebles', active: true },
-                    { text: 'Acceso Completo a Radar de Calor', active: true },
-                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
-                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
-                    { text: '15% Descuento en Pautas Publicitarias', active: true }
-                ]
-            },
-            {
-                key: 'vip',
-                badge: 'PREMIUM',
-                badgeColor: '#bf5af2',
-                badgeBg: 'rgba(191, 90, 242, 0.15)',
-                badgeBorder: 'rgba(191, 90, 242, 0.3)',
-                title: 'Inmobiliaria Premium',
-                subtitle: 'Operativa ilimitada con carteras de oro digital.',
-                priceUSD: 82,
-                priceGTQ: 640,
-                features: [
-                    { text: 'Propiedades Ilimitadas en Catálogo', active: true },
-                    { text: 'Tasa Inteligente (Autotasación IA)', active: true },
-                    { text: 'Redes Neuronales Predictivas', active: true },
-                    { text: 'Logo Propio y Destacados Premium', active: true },
-                    { text: 'Acceso Completo a Radar de Calor', active: true },
-                    { text: 'Acceso Ilimitado a Terminal de Inversión', active: true },
-                    { text: 'Acceso Ilimitado a Portafolio IA', active: true },
-                    { text: '30% Descuento en Pautas Publicitarias', active: true },
-                    { text: 'Cartera de ORO Digital Habilitada', active: true, color: '#ffd700' }
-                ]
-            }
-        ];
-    } else {
-        plans = [
-            {
-                key: 'premium',
-                badge: 'INVERSIONISTA PREMIUM',
-                badgeColor: '#ffd700',
-                badgeBg: 'rgba(255, 215, 0, 0.15)',
-                badgeBorder: 'rgba(255, 215, 0, 0.4)',
-                title: 'Inversionista Premium',
-                subtitle: 'Inteligencia inmobiliaria para detectar oportunidades antes del mercado.',
-                priceUSD: 43.70,
-                priceGTQ: 340,
-                recommended: true,
-                features: [
-                    { text: 'Acceso Tasa Inteligente & Radar de Calor', active: true, color: '#00f0ff' },
-                    { text: 'Terminal de Inversión & Portafolio IA', active: true },
-                    { text: 'Telemetría del Sector - Ciudad de Guatemala', active: true },
-                    { text: 'Comparativa de Rendimiento por Zonas (ROI vs Plusvalía)', active: true },
-                    { text: 'Noticias en Vivo del Mercado en Guatemala', active: true },
-                    { text: 'Portafolio Patrimonial & Asesor IA', active: true },
-                    { text: 'Gestor de Activos Inmobiliarios Avanzado', active: true },
-                    { text: 'Proyector de Riqueza y Amortización', active: true },
-                    { text: 'Cartera de Oro Digital & Participación Directa', active: true, color: '#ffd700' },
-                    { text: 'Módulo de Transferencias, Retiros y Depósitos', active: true },
-                    { text: 'Distribuciones de Oro Digital Habilitadas', active: true }
-                ]
-            }
-        ];
-    }
+    let plans = [
+        {
+            key: 'pro',
+            badge: 'PLAN ÚNICO',
+            badgeColor: 'var(--cyan)',
+            badgeBg: 'rgba(0, 240, 255, 0.12)',
+            badgeBorder: 'rgba(0, 240, 255, 0.4)',
+            title: isInvestor ? 'Inversionista Pro' : 'Suscripción ValorGT Pro',
+            subtitle: 'Acceso total e ilimitado a la plataforma de inteligencia inmobiliaria.',
+            priceUSD: 30,
+            priceGTQ: 235,
+            recommended: true,
+            features: [
+                { text: 'Propiedades Ilimitadas en Catálogo', active: true },
+                { text: 'Tasa Inteligente (Autotasación IA)', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Radar de Calor Completo por Zonas', active: true },
+                { text: 'Terminal de Inversión & Portafolio IA', active: true },
+                { text: 'Red de Agentes Referidos & Comisiones', active: true, color: '#00f0ff' },
+                { text: 'Logo Propio & Sello de Verificación', active: true },
+                { text: '15% Descuento en Pautas Publicitarias', active: true },
+                { text: 'Soporte Prioritario VIP', active: true, color: '#bf5af2' }
+            ]
+        }
+    ];
 
     plans.forEach(plan => {
         const email = loggedInB2bClient ? (loggedInB2bClient.email || '').toLowerCase() : '';
@@ -12864,9 +12681,9 @@ function renderB2bPricingGrid() {
         
         let priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
         if (isFounder && plan.key === 'vip') {
-            priceNum = activeCurrency === 'GTQ' ? 250 : 32.05;
+            priceNum = activeCurrency === 'GTQ' ? 235 : 30;
             plan.title = 'Miembro Fundador';
-            plan.subtitle = 'Suscripción de por vida con tarifa premium especial VGT-0626.';
+            plan.subtitle = 'Suscripción especial VGT con tarifa preferencial.';
             plan.badge = 'FUNDADOR VIP';
             plan.badgeColor = '#00ff80';
             plan.badgeBg = 'rgba(0, 255, 128, 0.15)';
@@ -12883,7 +12700,7 @@ function renderB2bPricingGrid() {
             discountBadgeHtml = `
                 <div class="plan-discount-badge">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
-                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00</span>
+                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00/año</span>
                 </div>
             `;
         }
@@ -12896,9 +12713,11 @@ function renderB2bPricingGrid() {
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
         card.style.justifyContent = 'space-between';
-        card.style.padding = '20px';
+        card.style.padding = '24px';
         card.style.boxSizing = 'border-box';
         card.style.height = '100%';
+        card.style.maxWidth = '520px';
+        card.style.width = '100%';
 
         let featuresHtml = '';
         plan.features.forEach(f => {
@@ -12910,22 +12729,24 @@ function renderB2bPricingGrid() {
             }
         });
 
-        let buttonText = 'Cambiar Plan';
+        let actionButtonHtml = '';
         if (isUserActivePlan) {
-            buttonText = 'Plan Activo';
+            actionButtonHtml = `<button class="btn-plan-action active-btn" style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled>Tu Plan Activo</button>`;
+        } else {
+            actionButtonHtml = `<button class="btn-plan-action" onclick="openPlanPayment('${plan.key}')">Renovar / Pagar Plan</button>`;
         }
 
         card.innerHTML = `
-            ${plan.recommended ? '<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">RECOMENDADO</div>' : ''}
+            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">ACCESO TOTAL</div>` : ''}
             <div>
                 <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
                     <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
-                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.55rem; font-weight: bold; color: #fff;">${plan.title}</h3>
                     <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 2.3rem; font-weight: bold; color: ${plan.recommended ? 'var(--cyan)' : '#fff'}; margin-bottom: 8px;">
+                <div class="plan-price font-mono" style="font-size: 2.4rem; font-weight: bold; color: var(--cyan); margin-bottom: 8px;">
                     <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
-                    <span class="plan-price-num">${formatNumber(priceNum % 1 === 0 ? priceNum.toFixed(0) : priceNum.toFixed(2))}</span>
+                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
                     <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
                 </div>
                 <div style="margin-bottom: 22px; min-height: 32px;">
@@ -12935,8 +12756,9 @@ function renderB2bPricingGrid() {
                     ${featuresHtml}
                 </ul>
             </div>
-            <button class="btn-plan-action ${isUserActivePlan ? 'active-btn' : ''}" id="btn-plan-${plan.key}" onclick="openPlanPayment('${plan.key}')" ${isUserActivePlan ? 'style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled' : ''}>${buttonText}</button>
+            ${actionButtonHtml}
         `;
+
         grid.appendChild(card);
     });
 
@@ -13073,23 +12895,8 @@ function selectPublicPlanForSignup(planKey) {
     if (!isCommercialAuthenticated) {
         switchLoginTab('signup');
         
-        let priceUSD = 31; // Default Pro
-        if (planKey === 'basico') priceUSD = 18;
-        else if (planKey === 'vip') priceUSD = 82;
-        else if (planKey === 'premium') priceUSD = 43.70;
-        
-        // Sincronizar select de rol y gatillar evento de actualización
-        const roleSelect = document.getElementById('com-signup-type');
-        if (roleSelect) {
-            if (planKey === 'premium') {
-                roleSelect.value = 'inversionista';
-            } else {
-                roleSelect.value = 'agente';
-            }
-            roleSelect.dispatchEvent(new Event('change'));
-        }
-        
-        selectSignupPlan(planKey, priceUSD);
+        let priceUSD = 30; // Plan Único Pro
+        selectSignupPlan('pro', 30);
         
         // Desplazamiento visual suave
         setTimeout(() => {
@@ -13173,67 +12980,8 @@ function closeWelcomeVideoModal() {
 let promoInterval = null;
 
 function openPromoLaunchModal() {
-    // Si el usuario ya inició sesión o está registrado, no mostrar la promo
-    if (isCommercialAuthenticated) return;
-
-    // Si está en medio del flujo de registro de la promoción, no interrumpir
-    if (localStorage.getItem('valorgt_promo_signup_active') === 'true') return;
-
-    // No verificar si el modal fue cerrado previamente para que aparezca en cada recarga
-    // const isDismissed = localStorage.getItem('valorgt_promo_launch_dismissed') === 'true';
-    // if (isDismissed) return;
-
-    const modal = document.getElementById('promo-launch-modal');
-    if (modal) {
-        modal.classList.add('active');
-        
-        // 1. Iniciar Temporizador Regresivo (30 de Julio 2026 00:00:00)
-        const targetDate = new Date("July 30, 2026 00:00:00").getTime();
-        
-        if (promoInterval) clearInterval(promoInterval);
-        
-        promoInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const difference = targetDate - now;
-            
-            if (difference < 0) {
-                clearInterval(promoInterval);
-                document.getElementById('promo-days').innerText = "00";
-                document.getElementById('promo-hours').innerText = "00";
-                document.getElementById('promo-minutes').innerText = "00";
-                document.getElementById('promo-seconds').innerText = "00";
-                return;
-            }
-            
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-            
-            document.getElementById('promo-days').innerText = String(days).padStart(2, '0');
-            document.getElementById('promo-hours').innerText = String(hours).padStart(2, '0');
-            document.getElementById('promo-minutes').innerText = String(minutes).padStart(2, '0');
-            document.getElementById('promo-seconds').innerText = String(seconds).padStart(2, '0');
-        }, 1000);
-
-        // 2. Simular/Obtener cupos vendidos dinámicos (Empieza en 22)
-        let savedCupos = parseInt(localStorage.getItem('valorgt_promo_cupos_sold')) || 22;
-        // Pequeño factor aleatorio para simular urgencia de compra fintech en tiempo real
-        if (Math.random() > 0.7 && savedCupos < 98) {
-            savedCupos += Math.floor(Math.random() * 2) + 1;
-            localStorage.setItem('valorgt_promo_cupos_sold', savedCupos);
-        }
-        
-        const counterVal = document.getElementById('promo-counter-val');
-        const progressBar = document.getElementById('promo-progress-bar');
-        
-        if (counterVal && progressBar) {
-            counterVal.innerText = savedCupos;
-            setTimeout(() => {
-                progressBar.style.width = `${savedCupos}%`;
-            }, 300);
-        }
-    }
+    // Deshabilitado: El modal de la promoción por lanzamiento ha sido retirado.
+    return;
 }
 
 // Lógica de Códigos de Descuento de Pasarela
