@@ -4621,19 +4621,14 @@ function updateLockOverlaysState() {
     
     const isFounder = checkIfClientIsFounder(client);
 
-    // La cartera de Tether Gold (Gold Wallet) y la promo se desbloquean completamente para Fundadores (acceso a todo)
+    // La cartera de Tether Gold (Gold Wallet) y la promo se desbloquean completamente para el Plan Único Pro y Fundadores
     const unlockGold = isFounder || (!isPending && (
-        (plan === 'vip' && !isInvestor) || 
-        (plan === 'premium' && isInvestor)
+        plan === 'pro' || plan === 'vip' || plan === 'premium' || plan === 'activo' || plan === 'plan único'
     ));
-    const unlockPromo = isFounder || ((plan === 'vip' || plan === 'premium') && !isPending);
+    const unlockPromo = isFounder || (!isPending && (plan === 'pro' || plan === 'vip' || plan === 'premium' || plan === 'activo' || plan === 'plan único'));
 
     if (goldLockMessage) {
-        if (isInvestor) {
-            goldLockMessage.innerText = "El XAUt Ledger y la consola contable de retiros bancarios de Tether Gold son privilegios exclusivos del plan Inversionista Premium. Realiza un upgrade para desbloquear tu Cartera de Oro.";
-        } else {
-            goldLockMessage.innerText = "El XAUt Ledger y la consola contable de retiros bancarios de Tether Gold son privilegios exclusivos del plan Inmobiliaria Premium. Realiza un upgrade para desbloquear tu Cartera de Oro.";
-        }
+        goldLockMessage.innerText = "La Cartera de Oro Digital (XAUt Ledger) y la consola de retiros son privilegios incluidos en la Suscripción ValorGT Pro. Activa tu membresía para desbloquear tu Cartera de Oro.";
     }
 
     if (unlockGold) {
@@ -12533,6 +12528,8 @@ function renderPublicPricingGrid() {
                 { text: 'Radar de Calor Completo por Zonas', active: true },
                 { text: 'Terminal de Inversión & Portafolio IA', active: true },
                 { text: 'Red de Agentes Referidos & Comisiones', active: true, color: '#00f0ff' },
+                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: true, color: '#ffd700' },
+                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: true, color: '#ffd700' },
                 { text: 'Logo Propio & Sello de Verificación', active: true },
                 { text: '15% Descuento en Pautas Publicitarias', active: true },
                 { text: 'Soporte Prioritario VIP', active: true, color: '#bf5af2' }
@@ -12661,6 +12658,8 @@ function renderB2bPricingGrid() {
                 { text: 'Radar de Calor Completo por Zonas', active: true },
                 { text: 'Terminal de Inversión & Portafolio IA', active: true },
                 { text: 'Red de Agentes Referidos & Comisiones', active: true, color: '#00f0ff' },
+                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: true, color: '#ffd700' },
+                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: true, color: '#ffd700' },
                 { text: 'Logo Propio & Sello de Verificación', active: true },
                 { text: '15% Descuento en Pautas Publicitarias', active: true },
                 { text: 'Soporte Prioritario VIP', active: true, color: '#bf5af2' }
