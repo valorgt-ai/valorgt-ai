@@ -7533,7 +7533,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
     }
 }
 
+/* ==========================================================================
+   TÁCTICO CYBER DARK MAPAS - CERO API KEY
+   ========================================================================== */
+.cyber-dark-tiles {
+    filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(120%) saturate(65%) !important;
+}
 
-
-
-
+.leaflet-container {
+    background: #050608 !important;
+}

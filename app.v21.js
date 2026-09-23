@@ -3831,10 +3831,10 @@ function initPortfolioMap() {
         attributionControl: false
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20,
-        subdomains: 'abcd',
-        timeout: 5000
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        className: 'cyber-dark-tiles',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" style="color: #5a6270; text-decoration: none;">OpenStreetMap</a>'
     }).addTo(portfolioMapInstance);
 
     updatePortfolioMapMarkers();
