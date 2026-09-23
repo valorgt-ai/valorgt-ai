@@ -2,20 +2,22 @@
   "name": "ValorGT AI - Inteligencia Inmobiliaria",
   "short_name": "ValorGT",
   "description": "Plataforma de Inteligencia Inmobiliaria, tasación con Inteligencia Artificial, mapas de calor y análisis hipotecario.",
-  "start_url": "./index.html",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#07090e",
   "theme_color": "#07090e",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
