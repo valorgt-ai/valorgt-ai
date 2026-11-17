@@ -142,57 +142,41 @@
                 <!-- VISTA 0: HOME PRINCIPAL DE INTELIGENCIA INMOBILIARIA -->
                 <section id="view-home" class="app-view active">
                     
-                    <!-- ANFITRIÓN CONVERSACIONAL IA DE BIENVENIDA EN HOME (ARRIBA DEL PRIMER ANUNCIO) -->
-                    <div id="home-ai-concierge-card" class="card glassmorphism" style="padding: 22px 24px; margin-bottom: 26px; border: 1px solid rgba(0, 240, 255, 0.35); background: rgba(8, 6, 14, 0.84); box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45), 0 0 22px rgba(0, 240, 255, 0.12); border-radius: 14px; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--cyan), #bf5af2, #ffd700, var(--neon-emerald));"></div>
+                    <!-- CHAT MINIMALISTA DE BIENVENIDA CON VALORGT IA (ESTILO CHAT AI LIMPIO) -->
+                    <div id="home-ai-concierge-card" class="glassmorphism" style="padding: 18px 22px; margin-bottom: 26px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(10, 12, 18, 0.72); border-radius: 16px; max-width: 920px; margin-left: auto; margin-right: auto; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);">
                         
-                        <!-- Cabecera del Anfitrión IA -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1.5px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0, 240, 255, 0.35);">
-                                    <i data-lucide="bot" style="width: 20px; height: 20px; color: var(--cyan);"></i>
-                                </div>
-                                <div>
-                                    <div class="font-mono" style="font-size: 0.78rem; color: var(--cyan); font-weight: bold; letter-spacing: 0.8px;">ANFITRIÓN INTELIGENTE VALORGT IA • ONLINE</div>
-                                    <div style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff;">¡Bienvenido a ValorGT AI! ¿En qué te guío hoy?</div>
+                        <!-- Flujo de conversación limpio estilo Chat IA -->
+                        <div id="home-ai-chat-stream" style="display: flex; flex-direction: column; gap: 14px; max-height: 320px; overflow-y: auto; padding-right: 6px; margin-bottom: 14px; font-family: 'Inter', sans-serif;">
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1px solid rgba(0, 240, 255, 0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--cyan); font-size: 0.85rem;">✦</div>
+                                <div style="font-size: 0.96rem; color: #ebebf5; line-height: 1.6; padding-top: 2px;">
+                                    ¡Hola! 👋 Bienvenido a <strong style="color: #fff;">ValorGT AI</strong>. ¿Eres nuevo en la plataforma? Escríbeme abajo o toca una sugerencia para contarte por qué somos innovadores, la diferencia entre el <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD)</strong> y el <strong style="color: #ffd700;">Plan Premium (Q505 / $65 USD)</strong>, o cómo crear tu perfil.
                                 </div>
                             </div>
-                            <span class="font-mono" style="font-size: 0.72rem; background: rgba(255, 215, 0, 0.12); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.35); padding: 4px 10px; border-radius: 20px; font-weight: bold;">🤖 ASISTENTE INTERACTIVO</span>
                         </div>
 
-                        <!-- Burbuja inicial del Asistente IA -->
-                        <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px;">
-                            <div style="background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.22); border-radius: 0 12px 12px 12px; padding: 14px 18px; font-size: 0.96rem; color: var(--text-secondary); line-height: 1.55; width: 100%;">
-                                Hola 👋, soy la <strong style="color: #fff;">IA de ValorGT</strong>. Si eres <strong style="color: var(--cyan);">nuevo en la plataforma</strong>, selecciona abajo qué te gustaría descubrir primero (por qué somos innovadores, nuestros planes <strong style="color: var(--cyan);">Pro</strong> y <strong style="color: #ffd700;">Premium con Billetera XAUt</strong>, o cómo registrarte y pagar en <strong style="color: var(--neon-emerald);">GTQ / USD</strong>):
-                            </div>
-                        </div>
-
-                        <!-- Botones de Preguntas / Temas para la IA -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px;">
-                            <button type="button" id="home-ai-btn-innovacion" onclick="askHomeAiConcierge('innovacion')" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.35); background: rgba(0, 240, 255, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(0, 240, 255, 0.18)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.borderColor='rgba(0, 240, 255, 0.35)';">
-                                <span>🚀 <strong>Soy nuevo:</strong> ¿Por qué es innovadora la plataforma?</span>
-                                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--cyan); flex-shrink: 0;"></i>
+                        <!-- Sugerencias rápidas minimalistas (Chips tipo Chat) -->
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                            <button type="button" onclick="askHomeAiConcierge('innovacion')" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.82rem; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.color='#fff'; this.style.background='rgba(0,240,255,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.04)';">
+                                ✨ ¿Por qué es innovadora?
                             </button>
-
-                            <button type="button" id="home-ai-btn-planes" onclick="askHomeAiConcierge('planes')" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.4); background: rgba(255, 215, 0, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(255, 215, 0, 0.18)'; this.style.borderColor='#ffd700';" onmouseout="this.style.background='rgba(255, 215, 0, 0.08)'; this.style.borderColor='rgba(255, 215, 0, 0.4)';">
-                                <span>💎 <strong>Planes:</strong> Pro (Q235 / $30) vs. Premium (Q505 / $65)</span>
-                                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #ffd700; flex-shrink: 0;"></i>
+                            <button type="button" onclick="askHomeAiConcierge('planes')" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.82rem; transition: all 0.2s;" onmouseover="this.style.borderColor='#ffd700'; this.style.color='#fff'; this.style.background='rgba(255,215,0,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.04)';">
+                                💎 Plan Pro vs. Plan Premium
                             </button>
-
-                            <button type="button" id="home-ai-btn-pagos" onclick="askHomeAiConcierge('pagos')" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(0, 255, 128, 0.35); background: rgba(0, 255, 128, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(0, 255, 128, 0.18)'; this.style.borderColor='var(--neon-emerald)';" onmouseout="this.style.background='rgba(0, 255, 128, 0.08)'; this.style.borderColor='rgba(0, 255, 128, 0.35)';">
-                                <span>⚡ <strong>Suscripción y Pagos:</strong> ¿Cómo me registro y activo?</span>
-                                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--neon-emerald); flex-shrink: 0;"></i>
+                            <button type="button" onclick="askHomeAiConcierge('pagos')" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.82rem; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--neon-emerald)'; this.style.color='#fff'; this.style.background='rgba(0,255,128,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.04)';">
+                                ⚡ ¿Cómo me registro y pago?
                             </button>
-
-                            <button type="button" onclick="switchView('commercial'); switchLoginTab('signin');" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(191, 90, 242, 0.35); background: rgba(191, 90, 242, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(191, 90, 242, 0.18)'; this.style.borderColor='#bf5af2';" onmouseout="this.style.background='rgba(191, 90, 242, 0.08)'; this.style.borderColor='rgba(191, 90, 242, 0.35)';">
-                                <span>🔑 <strong>Ya soy miembro:</strong> Iniciar sesión en mi cuenta</span>
-                                <i data-lucide="log-in" style="width: 16px; height: 16px; color: #bf5af2; flex-shrink: 0;"></i>
+                            <button type="button" onclick="switchView('commercial'); switchLoginTab('signin');" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.82rem; transition: all 0.2s;" onmouseover="this.style.borderColor='#bf5af2'; this.style.color='#fff'; this.style.background='rgba(191,90,242,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.04)';">
+                                🔑 Ya tengo cuenta
                             </button>
                         </div>
 
-                        <!-- Área donde la IA despliega su respuesta interactiva al hacer clic -->
-                        <div id="home-ai-concierge-response" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed rgba(255, 255, 255, 0.15);">
-                            <!-- Respuesta dinámica inyectada por askHomeAiConcierge(topic) -->
+                        <!-- Barra de entrada estilo Chat IA -->
+                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 28px; padding: 6px 8px 6px 18px; transition: border-color 0.2s;">
+                            <input type="text" id="home-ai-chat-input" placeholder="Pregúntale a ValorGT AI... (ej. ¿Qué diferencia hay entre los planes?, ¿Cómo me suscribo?)" style="flex: 1; background: transparent; border: none; color: #fff; font-family: 'Inter', sans-serif; font-size: 0.92rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); sendHomeAiCustomMessage();}">
+                            <button type="button" onclick="sendHomeAiCustomMessage()" style="width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--cyan); color: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                                <i data-lucide="arrow-up" style="width: 18px; height: 18px; stroke-width: 2.5;"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -5214,7 +5198,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=21.8"></script>
+    <script src="app.v21.js?v=21.9"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
