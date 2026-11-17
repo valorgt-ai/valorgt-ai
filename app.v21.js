@@ -13978,33 +13978,33 @@ function openHomeInfoModal(type) {
         card.style.boxShadow = '0 0 40px rgba(0, 255, 128, 0.2)';
         body.innerHTML = `
             <div style="border-bottom: 1px dashed rgba(0, 255, 128, 0.3); padding-bottom: 16px; margin-bottom: 22px;">
-                <span class="font-mono" style="font-size: 0.76rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ PASARELA & ACTIVACIÓN DE SUSCRIPCIÓN ]</span>
-                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; color: #fff; margin: 12px 0 6px 0; font-weight: 800;">Suscripción y Pagos en GTQ / USD</h2>
-                <p style="font-size: 0.96rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">Activa tu cuenta corporativa de Agente o Inversionista en 3 simples pasos con transparencia total en Quetzales y Dólares.</p>
+                <span class="font-mono" style="font-size: 0.76rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ REGISTRO DE PERFIL, SUSCRIPCIÓN & PAGOS ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; color: #fff; margin: 12px 0 6px 0; font-weight: 800;">¿Cómo Registrarte y Activar tu Suscripción?</h2>
+                <p style="font-size: 0.96rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">Primero creas tu perfil profesional (Agente o Inversionista) y de inmediato el sistema habilita tu pasarela de pago en Quetzales (Q) y Dólares ($ USD).</p>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 22px;">
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px;">
-                    <span class="font-mono" style="color: var(--cyan); font-size: 0.8rem; font-weight: bold;">PASO 01</span>
-                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Elige Plan y Ciclo</h4>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 10px; padding: 18px;">
+                    <span class="font-mono" style="color: var(--cyan); font-size: 0.8rem; font-weight: bold;">PASO 01 — REGISTRO</span>
+                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Crea tu Perfil y Elige Plan</h4>
                     <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                        Selecciona <strong>Plan Pro (Q235 / $30 USD)</strong> o <strong>Plan Premium (Q505 / $65 USD)</strong>. Si eliges ciclo <strong>Anual ahorras 15%</strong> automático.
+                        Haz clic en <strong>Registrarme</strong>, elige tu perfil (<strong>Agente</strong> o <strong>Inversionista</strong>), ingresa tus datos y selecciona <strong>Plan Pro (Q235 / $30 USD)</strong> o <strong>Plan Premium (Q505 / $65 USD)</strong>.
                     </p>
                 </div>
 
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px;">
-                    <span class="font-mono" style="color: #ffd700; font-size: 0.8rem; font-weight: bold;">PASO 02</span>
-                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Transferencia o Tarjeta</h4>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 10px; padding: 18px;">
+                    <span class="font-mono" style="color: #ffd700; font-size: 0.8rem; font-weight: bold;">PASO 02 — PAGO (GTQ / USD)</span>
+                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Realiza tu Transferencia</h4>
                     <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                        Realiza tu pago vía transferencia bancaria a <strong>Banco Industrial (Monetaria GTQ: 2700030709 - ValorGT)</strong> o mediante pasarela corporativa.
+                        Al crear tu perfil se abre automáticamente la ventana de pago con los datos de <strong>Banco Industrial (Monetaria GTQ: 2700030709 - ValorGT)</strong> y la opción de ciclo mensual o anual (<strong>-15%</strong>).
                     </p>
                 </div>
 
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px;">
-                    <span class="font-mono" style="color: var(--neon-emerald); font-size: 0.8rem; font-weight: bold;">PASO 03</span>
-                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Activación de Nodo</h4>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(0, 255, 128, 0.25); border-radius: 10px; padding: 18px;">
+                    <span class="font-mono" style="color: var(--neon-emerald); font-size: 0.8rem; font-weight: bold;">PASO 03 — ACTIVACIÓN</span>
+                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Sube tu Boleta y Activa</h4>
                     <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                        Sube tu comprobante desde tu consola comercial y recibe la activación de tu membresía y firma criptográfica de socio.
+                        Adjunta la foto de tu comprobante en esa misma ventana para activar tu cuenta, tu catálogo exclusivo y, si elegiste Premium, tu <strong>Billetera de Oro Digital (XAUt)</strong>.
                     </p>
                 </div>
             </div>
