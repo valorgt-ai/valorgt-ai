@@ -17598,5 +17598,152 @@ async function executeAiPropertyPublish() {
     initPublishAiAssistant(true);
 }
 
+/* ==========================================================================
+   ANFITRIÓN CONVERSACIONAL IA EN LA PORTADA (HOME CONCIERGE)
+   ========================================================================== */
+
+function askHomeAiConcierge(topic) {
+    const respBox = document.getElementById('home-ai-concierge-response');
+    if (!respBox) return;
+
+    respBox.classList.remove('hidden');
+
+    if (topic === 'innovacion') {
+        respBox.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 14px; animation: fadeIn 0.25s ease;">
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="background: linear-gradient(135deg, rgba(0, 240, 255, 0.22), rgba(191, 90, 242, 0.2)); border: 1px solid var(--cyan); border-radius: 12px 0 12px 12px; padding: 9px 16px; font-size: 0.9rem; color: #fff; font-weight: 600;">
+                        🚀 Soy nuevo: ¿Por qué ValorGT es una plataforma innovadora?
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(0, 240, 255, 0.14); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;">🤖</div>
+                    <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.28); border-radius: 0 12px 12px 12px; padding: 16px 18px; font-size: 0.95rem; color: #fff; line-height: 1.55; width: 100%;">
+                        <div style="margin-bottom: 12px;">
+                            ¡Te explico! <strong>ValorGT AI</strong> es el primer ecosistema inmobiliario que une <strong>4 tecnologías de vanguardia</strong> en un solo lugar:
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.22); border-radius: 8px; padding: 12px;">
+                                <strong style="color: var(--cyan); font-size: 0.95rem;">🧠 1. Tasador Neuronal IA</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Calcula el valor comercial y renta estimada en segundos con datos reales por sector.</p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(191,90,242,0.25); border-radius: 8px; padding: 12px;">
+                                <strong style="color: #bf5af2; font-size: 0.95rem;">🗺️ 2. Radar de Calor & Terminal</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Telemetría en vivo de plusvalías, ROI de alquiler, absorción y liquidez por zonas.</p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0,255,128,0.22); border-radius: 8px; padding: 12px;">
+                                <strong style="color: var(--neon-emerald); font-size: 0.95rem;">📈 3. Portafolio Patrimonial IA</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Simulación de riqueza a 20 años, cuotas bancarias/FHA y asesor estratégico IA.</p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 12px;">
+                                <strong style="color: #ffd700; font-size: 0.95rem;">🪙 4. Bóveda de Oro Digital (XAUt)</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Resguardo de comisiones y patrimonio en Tether Gold (1:1 con oro físico), P2P y retiros bancarios.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                            <button type="button" onclick="switchView('dashboard')" class="btn-commercial btn-commercial-cyan" style="padding: 9px 16px; font-size: 0.8rem; font-weight: bold;">🧠 PROBAR TASADOR IA</button>
+                            <button type="button" onclick="askHomeAiConcierge('planes')" class="btn-commercial btn-commercial-gold" style="padding: 9px 18px; font-size: 0.8rem; font-weight: bold; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000;">💎 VER PLANES PRO & PREMIUM →</button>
+                            <button type="button" onclick="closeHomeAiConciergeResponse()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 6px; padding: 8px 12px; font-size: 0.75rem; cursor: pointer;">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (topic === 'planes') {
+        respBox.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 14px; animation: fadeIn 0.25s ease;">
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.22), rgba(191, 90, 242, 0.2)); border: 1px solid #ffd700; border-radius: 12px 0 12px 12px; padding: 9px 16px; font-size: 0.9rem; color: #fff; font-weight: 600;">
+                        💎 Quiero conocer la diferencia entre el Plan Pro y el Plan Premium
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 215, 0, 0.15); border: 1px solid #ffd700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;">🤖</div>
+                    <div style="background: rgba(255, 215, 0, 0.04); border: 1px solid rgba(255, 215, 0, 0.32); border-radius: 0 12px 12px 12px; padding: 16px 18px; font-size: 0.95rem; color: #fff; line-height: 1.55; width: 100%;">
+                        <div style="margin-bottom: 12px;">
+                            Contamos con <strong>dos membresías</strong> (en ambas tienes acceso ilimitado al motor inmobiliario IA; la diferencia es la <strong style="color: #ffd700;">Billetera de Oro Digital XAUt</strong>):
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 14px;">
+                            <div style="background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <span class="font-mono" style="font-size: 0.72rem; color: var(--cyan); font-weight: bold;">🟦 PLAN PRO (SIN BILLETERA XAUT)</span>
+                                    <div class="font-mono" style="font-size: 1.55rem; font-weight: 800; color: var(--cyan); margin: 6px 0 2px 0;">Q235/mes <span style="font-size: 0.95rem; color: var(--neon-emerald);">($30 USD/mes)</span></div>
+                                    <div class="font-mono" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Anual (-15%): Q200/mes ($25.50 USD)</div>
+                                    <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.45;">✅ Catálogo Ilimitado + Autotasación IA + Radar de Calor + Terminal & Portafolio IA.<br>🔒 <em>No incluye Billetera de Oro XAUt ni beneficios Gold.</em></p>
+                                </div>
+                                <button type="button" onclick="selectPublicPlanForSignup('pro')" class="btn-commercial btn-commercial-cyan" style="width: 100%; padding: 10px; font-weight: bold; font-size: 0.8rem;">ELEGIR PLAN PRO (Q235 / $30 USD)</button>
+                            </div>
+
+                            <div style="background: rgba(255, 215, 0, 0.06); border: 1.5px solid #ffd700; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <span class="font-mono" style="font-size: 0.72rem; color: #ffd700; font-weight: bold;">🟨 PLAN PREMIUM GOLD (CON BILLETERA XAUT)</span>
+                                    <div class="font-mono" style="font-size: 1.55rem; font-weight: 800; color: #ffd700; margin: 6px 0 2px 0;">Q505/mes <span style="font-size: 0.95rem; color: var(--neon-emerald);">($65 USD/mes)</span></div>
+                                    <div class="font-mono" style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 10px;">Anual (-15%): Q429/mes ($55.25 USD)</div>
+                                    <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.45;">✅ Todo el Plan Pro + <strong style="color: #ffd700;">Billetera de Oro Digital XAUt activa</strong>, Retiros a Bancos Nacionales, Transferencias P2P en Oro, Airdrops mensuales XAUt, Red de Referidos y 15% desc. en pautas.</p>
+                                </div>
+                                <button type="button" onclick="selectPublicPlanForSignup('premium')" class="btn-commercial btn-commercial-gold" style="width: 100%; padding: 10px; font-weight: 800; font-size: 0.8rem; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000;">ELEGIR PLAN PREMIUM (Q505 / $65 USD)</button>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                            <button type="button" onclick="openHomeInfoModal('planes')" style="background: rgba(255,215,0,0.12); border: 1px solid #ffd700; color: #ffd700; border-radius: 6px; padding: 8px 14px; font-family: var(--font-mono); font-size: 0.78rem; font-weight: bold; cursor: pointer;">🔍 VER TABLA COMPARATIVA COMPLETA</button>
+                            <button type="button" onclick="askHomeAiConcierge('pagos')" style="background: rgba(0,255,128,0.12); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); border-radius: 6px; padding: 8px 14px; font-family: var(--font-mono); font-size: 0.78rem; font-weight: bold; cursor: pointer;">⚡ ¿CÓMO ME REGISTRO Y PAGO? →</button>
+                            <button type="button" onclick="closeHomeAiConciergeResponse()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 6px; padding: 8px 12px; font-size: 0.75rem; cursor: pointer;">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (topic === 'pagos') {
+        respBox.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 14px; animation: fadeIn 0.25s ease;">
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="background: linear-gradient(135deg, rgba(0, 255, 128, 0.22), rgba(0, 240, 255, 0.2)); border: 1px solid var(--neon-emerald); border-radius: 12px 0 12px 12px; padding: 9px 16px; font-size: 0.9rem; color: #fff; font-weight: 600;">
+                        ⚡ ¿Cómo me registro y realizo el pago de mi suscripción?
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(0, 255, 128, 0.14); border: 1px solid var(--neon-emerald); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;">🤖</div>
+                    <div style="background: rgba(0, 255, 128, 0.04); border: 1px solid rgba(0, 255, 128, 0.3); border-radius: 0 12px 12px 12px; padding: 16px 18px; font-size: 0.95rem; color: #fff; line-height: 1.55; width: 100%;">
+                        <div style="margin-bottom: 12px;">
+                            ¡Es súper rápido! Yo mismo te guío paso a paso:
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px;">
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.25); border-radius: 8px; padding: 12px;">
+                                <strong style="color: var(--cyan); font-size: 0.92rem;">1️⃣ PASO 1: Crea tu Perfil con IA</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Si eres nuevo, nuestro Asistente IA te pide tu nombre, correo, teléfono y si eliges <strong>Plan Pro (Q235 / $30 USD)</strong> o <strong>Plan Premium (Q505 / $65 USD)</strong>.</p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,215,0,0.28); border-radius: 8px; padding: 12px;">
+                                <strong style="color: #ffd700; font-size: 0.92rem;">2️⃣ PASO 2: Pago en GTQ o USD</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Al crear tu perfil se abre la pasarela con los datos de transferencia (<strong>Banco Industrial Monetaria: 2700030709 - ValorGT</strong>) con opción mensual o anual (<strong>-15%</strong>).</p>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(0,255,128,0.28); border-radius: 8px; padding: 12px;">
+                                <strong style="color: var(--neon-emerald); font-size: 0.92rem;">3️⃣ PASO 3: Sube tu Boleta y Activa</strong>
+                                <p style="font-size: 0.86rem; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.45;">Adjuntas tu comprobante en esa misma ventana y queda activado tu nodo y tu Cartera Gold.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+                            <button type="button" onclick="selectPublicPlanForSignup('premium')" class="btn-commercial btn-commercial-purple" style="padding: 10px 20px; font-size: 0.84rem; font-weight: 800; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); border: none; color: #000;">🤖 INICIAR MI REGISTRO GUIADO POR IA AHORA</button>
+                            <button type="button" onclick="closeHomeAiConciergeResponse()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); border-radius: 6px; padding: 8px 12px; font-size: 0.75rem; cursor: pointer;">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function closeHomeAiConciergeResponse() {
+    const respBox = document.getElementById('home-ai-concierge-response');
+    if (respBox) {
+        respBox.classList.add('hidden');
+        respBox.innerHTML = '';
+    }
+}
+
+
 
 

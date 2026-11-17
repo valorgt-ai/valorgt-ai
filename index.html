@@ -142,78 +142,58 @@
                 <!-- VISTA 0: HOME PRINCIPAL DE INTELIGENCIA INMOBILIARIA -->
                 <section id="view-home" class="app-view active">
                     
-                    <!-- TRES TARJETAS INTERACTIVAS DE INFORMACIÓN Y CONVERSIÓN EN HOME (ARRIBA DEL PRIMER ANUNCIO) -->
-                    <div class="home-info-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; margin-bottom: 28px; width: 100%;">
+                    <!-- ANFITRIÓN CONVERSACIONAL IA DE BIENVENIDA EN HOME (ARRIBA DEL PRIMER ANUNCIO) -->
+                    <div id="home-ai-concierge-card" class="card glassmorphism" style="padding: 22px 24px; margin-bottom: 26px; border: 1px solid rgba(0, 240, 255, 0.35); background: rgba(8, 6, 14, 0.84); box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45), 0 0 22px rgba(0, 240, 255, 0.12); border-radius: 14px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--cyan), #bf5af2, #ffd700, var(--neon-emerald));"></div>
                         
-                        <!-- TARJETA 1: POR QUÉ ES INNOVADORA LA PLATAFORMA -->
-                        <div class="card glassmorphism home-interactive-card" onclick="openHomeInfoModal('innovacion')" style="cursor: pointer; padding: 24px; border: 1px solid rgba(0, 240, 255, 0.25); background: rgba(8, 6, 12, 0.78); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 240, 255, 0.1); border-radius: 12px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 240, 255, 0.28)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 240, 255, 0.1)'; this.style.borderColor='rgba(0, 240, 255, 0.25)';">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--cyan), #bf5af2);"></div>
-                            <div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                                    <span class="font-mono" style="font-size: 0.72rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">[ TECNOLOGÍA & ECOSISTEMA ]</span>
-                                    <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.35); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);">
-                                        <i data-lucide="cpu" style="width: 19px; height: 19px; color: var(--cyan);"></i>
-                                    </div>
+                        <!-- Cabecera del Anfitrión IA -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1.5px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(0, 240, 255, 0.35);">
+                                    <i data-lucide="bot" style="width: 20px; height: 20px; color: var(--cyan);"></i>
                                 </div>
-                                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0 0 10px 0; letter-spacing: 0.3px;">¿Por qué ValorGT es Innovadora?</h3>
-                                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.55; margin: 0 0 18px 0;">
-                                    El primer nodo inmobiliario que fusiona <strong>Redes Neuronales de Tasación IA</strong>, Radar Geoespacial de Plusvalías y resguardo patrimonial en <strong>Oro Digital (XAUt)</strong>.
-                                </p>
+                                <div>
+                                    <div class="font-mono" style="font-size: 0.78rem; color: var(--cyan); font-weight: bold; letter-spacing: 0.8px;">ANFITRIÓN INTELIGENTE VALORGT IA • ONLINE</div>
+                                    <div style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff;">¡Bienvenido a ValorGT AI! ¿En qué te guío hoy?</div>
+                                </div>
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(0, 240, 255, 0.2); padding-top: 12px; margin-top: auto;">
-                                <span class="font-mono" style="font-size: 0.78rem; color: var(--cyan); font-weight: bold; letter-spacing: 0.5px;">DESCUBRIR ARQUITECTURA IA</span>
-                                <span style="width: 28px; height: 28px; border-radius: 6px; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; color: var(--cyan);">
-                                    <i data-lucide="arrow-up-right" style="width: 16px; height: 16px;"></i>
-                                </span>
+                            <span class="font-mono" style="font-size: 0.72rem; background: rgba(255, 215, 0, 0.12); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.35); padding: 4px 10px; border-radius: 20px; font-weight: bold;">🤖 ASISTENTE INTERACTIVO</span>
+                        </div>
+
+                        <!-- Burbuja inicial del Asistente IA -->
+                        <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px;">
+                            <div style="background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.22); border-radius: 0 12px 12px 12px; padding: 14px 18px; font-size: 0.96rem; color: var(--text-secondary); line-height: 1.55; width: 100%;">
+                                Hola 👋, soy la <strong style="color: #fff;">IA de ValorGT</strong>. Si eres <strong style="color: var(--cyan);">nuevo en la plataforma</strong>, selecciona abajo qué te gustaría descubrir primero (por qué somos innovadores, nuestros planes <strong style="color: var(--cyan);">Pro</strong> y <strong style="color: #ffd700;">Premium con Billetera XAUt</strong>, o cómo registrarte y pagar en <strong style="color: var(--neon-emerald);">GTQ / USD</strong>):
                             </div>
                         </div>
 
-                        <!-- TARJETA 2: PLAN PRO & PLAN PREMIUM (BILLETERA XAUT) -->
-                        <div class="card glassmorphism home-interactive-card" onclick="openHomeInfoModal('planes')" style="cursor: pointer; padding: 24px; border: 1px solid rgba(255, 215, 0, 0.35); background: rgba(8, 6, 12, 0.78); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.12); border-radius: 12px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 35px rgba(0, 0, 0, 0.5), 0 0 28px rgba(255, 215, 0, 0.3)'; this.style.borderColor='#ffd700';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.12)'; this.style.borderColor='rgba(255, 215, 0, 0.35)';">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--cyan), #ffd700);"></div>
-                            <div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                                    <span class="font-mono" style="font-size: 0.72rem; background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">[ MEMBRESÍAS PRO & PREMIUM ]</span>
-                                    <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 215, 0, 0.12); border: 1px solid rgba(255, 215, 0, 0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);">
-                                        <i data-lucide="coins" style="width: 19px; height: 19px; color: #ffd700;"></i>
-                                    </div>
-                                </div>
-                                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0 0 10px 0; letter-spacing: 0.3px;">Nuestros Planes: Pro & Premium</h3>
-                                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.55; margin: 0 0 18px 0;">
-                                    Opera con el motor IA en el <strong>Plan Pro (Q235 / $30 USD)</strong> o desbloquea la <strong>Billetera de Oro Digital XAUt</strong> y beneficios Gold con el <strong>Plan Premium (Q505 / $65 USD)</strong>.
-                                </p>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(255, 215, 0, 0.25); padding-top: 12px; margin-top: auto;">
-                                <span class="font-mono" style="font-size: 0.78rem; color: #ffd700; font-weight: bold; letter-spacing: 0.5px;">COMPARAR PLANES Y BENEFICIOS</span>
-                                <span style="width: 28px; height: 28px; border-radius: 6px; background: rgba(255, 215, 0, 0.15); border: 1px solid #ffd700; display: flex; align-items: center; justify-content: center; color: #ffd700;">
-                                    <i data-lucide="arrow-up-right" style="width: 16px; height: 16px;"></i>
-                                </span>
-                            </div>
+                        <!-- Botones de Preguntas / Temas para la IA -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px;">
+                            <button type="button" id="home-ai-btn-innovacion" onclick="askHomeAiConcierge('innovacion')" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.35); background: rgba(0, 240, 255, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(0, 240, 255, 0.18)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.borderColor='rgba(0, 240, 255, 0.35)';">
+                                <span>🚀 <strong>Soy nuevo:</strong> ¿Por qué es innovadora la plataforma?</span>
+                                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--cyan); flex-shrink: 0;"></i>
+                            </button>
+
+                            <button type="button" id="home-ai-btn-planes" onclick="askHomeAiConcierge('planes')" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.4); background: rgba(255, 215, 0, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(255, 215, 0, 0.18)'; this.style.borderColor='#ffd700';" onmouseout="this.style.background='rgba(255, 215, 0, 0.08)'; this.style.borderColor='rgba(255, 215, 0, 0.4)';">
+                                <span>💎 <strong>Planes:</strong> Pro (Q235 / $30) vs. Premium (Q505 / $65)</span>
+                                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: #ffd700; flex-shrink: 0;"></i>
+                            </button>
+
+                            <button type="button" id="home-ai-btn-pagos" onclick="askHomeAiConcierge('pagos')" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(0, 255, 128, 0.35); background: rgba(0, 255, 128, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(0, 255, 128, 0.18)'; this.style.borderColor='var(--neon-emerald)';" onmouseout="this.style.background='rgba(0, 255, 128, 0.08)'; this.style.borderColor='rgba(0, 255, 128, 0.35)';">
+                                <span>⚡ <strong>Suscripción y Pagos:</strong> ¿Cómo me registro y activo?</span>
+                                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--neon-emerald); flex-shrink: 0;"></i>
+                            </button>
+
+                            <button type="button" onclick="switchView('commercial'); switchLoginTab('signin');" style="cursor: pointer; padding: 13px 16px; border-radius: 10px; border: 1px solid rgba(191, 90, 242, 0.35); background: rgba(191, 90, 242, 0.08); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.25s;" onmouseover="this.style.background='rgba(191, 90, 242, 0.18)'; this.style.borderColor='#bf5af2';" onmouseout="this.style.background='rgba(191, 90, 242, 0.08)'; this.style.borderColor='rgba(191, 90, 242, 0.35)';">
+                                <span>🔑 <strong>Ya soy miembro:</strong> Iniciar sesión en mi cuenta</span>
+                                <i data-lucide="log-in" style="width: 16px; height: 16px; color: #bf5af2; flex-shrink: 0;"></i>
+                            </button>
                         </div>
 
-                        <!-- TARJETA 3: SUSCRIPCIÓN Y PAGOS -->
-                        <div class="card glassmorphism home-interactive-card" onclick="openHomeInfoModal('pagos')" style="cursor: pointer; padding: 24px; border: 1px solid rgba(0, 255, 128, 0.25); background: rgba(8, 6, 12, 0.78); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 255, 128, 0.1); border-radius: 12px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 255, 128, 0.28)'; this.style.borderColor='var(--neon-emerald)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 255, 128, 0.1)'; this.style.borderColor='rgba(0, 255, 128, 0.25)';">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--neon-emerald), var(--cyan));"></div>
-                            <div>
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                                    <span class="font-mono" style="font-size: 0.72rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">[ ACTIVACIÓN RÁPIDA GTQ / USD ]</span>
-                                    <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 255, 128, 0.1); border: 1px solid rgba(0, 255, 128, 0.35); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(0, 255, 128, 0.25);">
-                                        <i data-lucide="shield-check" style="width: 19px; height: 19px; color: var(--neon-emerald);"></i>
-                                    </div>
-                                </div>
-                                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0 0 10px 0; letter-spacing: 0.3px;">Suscripción y Pagos</h3>
-                                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.55; margin: 0 0 18px 0;">
-                                    Crea tu perfil de Agente o Inversionista, elige tu plan en <strong>Quetzales (Q) o Dólares ($ USD)</strong> (mensual o anual <strong>-15%</strong>) y activa tu cuenta en minutos.
-                                </p>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(0, 255, 128, 0.2); padding-top: 12px; margin-top: auto;">
-                                <span class="font-mono" style="font-size: 0.78rem; color: var(--neon-emerald); font-weight: bold; letter-spacing: 0.5px;">VER PASOS Y MÉTODOS DE PAGO</span>
-                                <span style="width: 28px; height: 28px; border-radius: 6px; background: rgba(0, 255, 128, 0.12); border: 1px solid var(--neon-emerald); display: flex; align-items: center; justify-content: center; color: var(--neon-emerald);">
-                                    <i data-lucide="arrow-up-right" style="width: 16px; height: 16px;"></i>
-                                </span>
-                            </div>
+                        <!-- Área donde la IA despliega su respuesta interactiva al hacer clic -->
+                        <div id="home-ai-concierge-response" class="hidden" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed rgba(255, 255, 255, 0.15);">
+                            <!-- Respuesta dinámica inyectada por askHomeAiConcierge(topic) -->
                         </div>
-
                     </div>
 
                     <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
@@ -5017,123 +4997,6 @@
                         </div>
                         <div style="display: flex; justify-content: space-between;"><span class="b-lbl">Banco Emisor:</span><span class="b-val" style="color: #fff; font-weight: bold;">Banco Industrial (BI)</span></div>
                         <div style="display: flex; justify-content: space-between;"><span class="b-lbl">Tipo de Cuenta:</span><span class="b-val" style="color: #fff;">Monetaria Quetzales</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span class="b-lbl">Número de Cuenta:</span><span class="b-val" style="color: var(--cyan); font-weight: bold; letter-spacing: 1px;">2700030709</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span class="b-lbl">Nombre del Beneficiario:</span><span class="b-val" style="color: #fff;">ValorGT</span></div>
-                    </div>
-
-                    <!-- Desglose de Precios y Descuentos -->
-                    <div class="payment-summary font-mono" style="padding: 10px; border-radius: 6px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); font-size: 0.68rem; display: flex; flex-direction: column; gap: 4px;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Valor Base de Pauta:</span>
-                            <span id="pauta-base-price-lbl" style="color: #fff;">Q5,000.00</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Subtotal Campaña:</span>
-                            <span id="pauta-subtotal-lbl" style="color: #fff;">Q5,000.00</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; color: var(--green);">
-                            <span>Descuento de Plazo:</span>
-                            <span id="pauta-duration-discount-lbl">Q0.00 (0%)</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; color: var(--cyan);">
-                            <span>Descuento de Membresía:</span>
-                            <span id="pauta-membership-discount-lbl">Q0.00 (0%)</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 5px; margin-top: 3px; font-size: 0.75rem; color: var(--cyan);">
-                            <span>Total Neto a Transferir:</span>
-                            <span id="pauta-total-gtq-lbl">Q5,000.00</span>
-                        </div>
-                    </div>
-
-                    <!-- Cargador de Archivos de Comprobante -->
-                    <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
-                        <label for="pauta-receipt-file" style="font-size: 0.68rem; color: var(--text-secondary);">Subir Comprobante de Transferencia (Obligatorio)</label>
-                        <input type="file" id="pauta-receipt-file" accept="image/*" required style="font-size: 0.72rem; padding: 6px; background: rgba(0,0,0,0.4); border: 1px dashed var(--cyan); color: #fff; border-radius: 6px; cursor: pointer; width: 100%;">
-                    </div>
-
-                    <!-- Botones de Acción -->
-                    <div style="display: flex; gap: 10px; margin-top: 5px;">
-                        <button type="button" class="btn btn-outline" onclick="closeAdPaymentModal()" style="flex: 1; padding: 8px; font-size: 0.7rem; font-weight: bold; border-color: rgba(255,255,255,0.1); color: var(--text-secondary);">
-                            CANCELAR
-                        </button>
-                        <button type="submit" class="btn-commercial btn-commercial-cyan" style="flex: 2; padding: 8px; font-size: 0.75rem; font-weight: bold;">
-                            CONFIRMAR PAGO
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Pantalla de Cargando Transacción -->
-            <div id="pauta-payment-loading-view" class="payment-state-view hidden" style="text-align: center; padding: 25px 0;">
-                <div class="processing-spinner-wrap" style="position: relative; width: 50px; height: 50px; margin: 0 auto;">
-                    <div class="neon-spinner" style="filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.4)); border: 2px solid rgba(0, 240, 255, 0.1); border-top-color: var(--cyan); border-radius: 50%; width: 100%; height: 100%; animation: spin 1s linear infinite;"></div>
-                </div>
-                <h4 style="margin-top: 20px; font-size: 0.82rem; font-weight: bold; color: var(--cyan);">PROCESANDO PAUTA PUBLICITARIA</h4>
-                <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 5px;">Conectando con Secure Ledger...</p>
-            </div>
-
-            <!-- Pantalla de Éxito del Pago -->
-            <div id="pauta-payment-success-view" class="payment-state-view hidden" style="text-align: center; padding: 15px 5px;">
-                <div class="success-icon-badge" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 240, 255, 0.35); margin: 0 auto 15px auto;">
-                    <i data-lucide="check-circle-2" class="text-cyan" style="width: 28px; height: 28px; color: var(--cyan);"></i>
-                </div>
-                <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.25);">SOLICITUD REGISTRADA</h4>
-                <p style="font-size: 0.65rem; color: var(--text-secondary); text-align: center; margin-top: 5px; max-width: 320px;">Tu comprobante de pago ha sido enviado al canal de auditoría admin. Al aprobarse, tu propiedad brillará en la portada.</p>
-                
-                <div class="receipt-card font-mono" style="width: 100%; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; padding: 10px; background: rgba(0,0,0,0.2); font-size: 0.6rem; margin-top: 15px; box-sizing: border-box; text-align: left;">
-                    <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                        <span class="r-lbl">Referencia de Pauta:</span>
-                        <span class="r-val" id="pauta-receipt-auth-code" style="color: var(--cyan); font-weight: bold;">#PAUTA-8492</span>
-                    </div>
-                    <div class="receipt-row" style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px;">
-                        <span class="r-lbl">Total Depositado:</span>
-                        <span class="r-val text-cyan" id="pauta-receipt-amount-val">Q5,000.00</span>
-                    </div>
-                </div>
-
-                <button class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 20px; font-weight: bold;" onclick="closeAdPaymentModal()">
-                    ENTENDIDO
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- LIGHTBOX DE COMPROBANTE PARA EL ADMINISTRADOR -->
-    <div id="admin-receipt-lightbox" class="receipt-lightbox-overlay hidden" onclick="if(event.target === this) closeReceiptLightbox()">
-        <div class="receipt-lightbox-card glassmorphism">
-            <div class="modal-card-glow" style="background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.15), transparent 60%);"></div>
-            <button class="receipt-lightbox-close" onclick="closeReceiptLightbox()">&times;</button>
-            <div class="receipt-lightbox-header font-mono" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px; margin-bottom: 15px; text-align: left;">
-                <span class="hud-label-small" style="color: var(--cyan);">COMPROBANTE BANCARIO</span>
-                <h4 id="receipt-lightbox-title" style="margin: 4px 0 0 0; color: #fff; font-size: 0.95rem;">Auditoría de Transferencia</h4>
-            </div>
-            <div class="receipt-lightbox-body" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; max-height: 480px;">
-                <img id="receipt-lightbox-img" src="" alt="Comprobante Bancario" style="max-width: 100%; max-height: 450px; object-fit: contain;">
-            </div>
-            <div class="receipt-lightbox-footer font-mono" style="margin-top: 15px; text-align: right;">
-                <button class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; font-size: 0.7rem; cursor: pointer;" onclick="closeReceiptLightbox()">CERRAR VISTA</button>
-            </div>
-        </div>
-    </div>
-
-        <!-- MODAL MULTIMEDIA DE BIENVENIDA (LIGHTBOX VIDEO) -->
-        <div id="welcome-video-modal" class="payment-modal-overlay" onclick="if(event.target === this) closeWelcomeVideoModal();">
-            <div class="payment-modal-card glassmorphism" style="width: 800px; max-width: 95vw; border: 1px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 35px rgba(0, 240, 255, 0.25); background: rgba(5, 6, 8, 0.96); padding: 20px; overflow: hidden; display: flex; flex-direction: column; gap: 15px; border-radius: 12px; margin: auto;">
-                <div class="modal-card-glow" style="background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, transparent 70%);"></div>
-                <button class="modal-close-btn" onclick="closeWelcomeVideoModal()" style="font-size: 1.8rem; top: 12px; right: 15px;">&times;</button>
-                
-                <div class="modal-header-payment" style="margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 12px; text-align: left; display: flex; align-items: center; gap: 10px;">
-                    <i data-lucide="play-circle" class="text-cyan" style="width: 24px; height: 24px; filter: drop-shadow(0 0 5px rgba(0,240,255,0.5));"></i>
-                    <div>
-                        <h3 class="font-mono" style="margin: 0; font-size: 1rem; color: #fff; text-transform: uppercase;">Presentación Oficial ValorGT AI</h3>
-                        <p class="font-mono text-muted" style="font-size: 0.65rem; margin: 2px 0 0 0; text-transform: uppercase; letter-spacing: 0.5px;">Descubre el ecosistema de inteligencia artificial en 2 minutos</p>
-                    </div>
-                </div>
-
-                <!-- Iframe del video con aspecto 16:9 -->
-                <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: #000;">
-                    <iframe id="welcome-youtube-iframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                     <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);">⚡ INTELIGENCIA INMOBILIARIA DE VANGUARDIA</span>
@@ -5351,7 +5214,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=21.7"></script>
+    <script src="app.v21.js?v=21.8"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
