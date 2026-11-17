@@ -7,7 +7,7 @@
 // 1. Regístrate gratis en supabase.com y crea tu base de datos
 // 2. Ejecuta el script SQL incluido en tu plan de implementación en el "SQL Editor"
 // 3. Pega aquí tu URL y Anon Key públicas
-const SUPABASE_URL = "https://kcwfiruutezheudqxesv.supabase.co"; 
+const SUPABASE_URL = "https://kcwfiruutezheudqxesv.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_mparhlydfWVr_CuSPk0nHQ_-3qNaTgO";
 
 let supabaseClient = null;
@@ -226,12 +226,12 @@ if (savedB2bClient) {
                                 .select('*')
                                 .eq('id', authId)
                                 .maybeSingle();
-                            
+
                             if (!profileErr && profile) {
                                 let dbPlan = profile.plan || 'Básico';
                                 let dbRole = profile.role || 'agente';
                                 const emailLower = (profile.email || authUserObj.user.email || '').toLowerCase();
-                                
+
                                 if (emailLower.includes('jaime') || emailLower.includes('jmejia') || emailLower.includes('mejia')) {
                                     dbPlan = 'Premium';
                                     dbRole = 'inversionista';
@@ -239,7 +239,7 @@ if (savedB2bClient) {
                                     profile.isFounderPremium = true;
                                     profile.is_founder_premium = true;
                                 }
-                                
+
                                 loggedInB2bClient.name = profile.name || loggedInB2bClient.name || 'Invitado';
                                 loggedInB2bClient.email = profile.email || authUserObj.user.email;
                                 loggedInB2bClient.plan = dbPlan;
@@ -248,10 +248,10 @@ if (savedB2bClient) {
                                 loggedInB2bClient.usdtBalance = parseFloat(profile.usdt_balance || 0);
                                 loggedInB2bClient.isFounderPremium = profile.is_founder_premium === true || profile.isFounderPremium === true;
                                 loggedInB2bClient.is_founder_premium = profile.is_founder_premium === true || profile.isFounderPremium === true;
-                                
+
                                 localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
                                 activeB2bPlan = dbPlan.toLowerCase();
-                                
+
                                 if (typeof updateB2bPartnerLevelBadge === 'function') updateB2bPartnerLevelBadge();
                                 if (typeof renderB2bAgentProfile === 'function') renderB2bAgentProfile();
                                 if (typeof updateSaasMetricsHUD === 'function') updateSaasMetricsHUD();
@@ -342,8 +342,8 @@ function filterAgentProperties() {
     if (saved) {
         try {
             const localProps = JSON.parse(saved);
-            agentUploadedProperties = localProps.filter(p => 
-                p.agent_id === loggedInB2bClient.id || 
+            agentUploadedProperties = localProps.filter(p =>
+                p.agent_id === loggedInB2bClient.id ||
                 (p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) ||
                 (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
             );
@@ -374,8 +374,8 @@ function saveLocalPropertiesToStorage() {
         }
 
         // Remover del listado global las propiedades del agente actual para re-insertarlas actualizadas
-        allLocalProps = allLocalProps.filter(p => 
-            p.agent_id !== loggedInB2bClient.id && 
+        allLocalProps = allLocalProps.filter(p =>
+            p.agent_id !== loggedInB2bClient.id &&
             !(p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) &&
             !(p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
         );
@@ -396,7 +396,7 @@ function loadUserWithdrawals(email) {
         return;
     }
     const emailLower = email.toLowerCase();
-    
+
     // Auto-limpieza de única vez para la cuenta de Maria Bedoya para iniciar de cero
     if (emailLower === 'laura.m.94@hotmail.com' && !localStorage.getItem('valorgt_maria_reset_v2')) {
         localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
@@ -533,11 +533,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
-    
+
     // Iniciar Reloj del Sistema (Reloj Cyber)
     updateClock();
     setInterval(updateClock, 1000);
-    
+
     // Rellenar datos por defecto en formularios e inicializar portafolio con Zona 14 por defecto
     const locationSelect = document.getElementById('prop-location');
     const defaultZone = locationSelect.value || 'zona14';
@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pubLocationSelect = document.getElementById('pub-location');
     const pubLatInput = document.getElementById('pub-lat');
     const pubLngInput = document.getElementById('pub-lng');
-    
+
     if (pubLocationSelect && pubLatInput && pubLngInput) {
         const updateGpsCoords = () => {
             const val = pubLocationSelect.value;
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
         pubLocationSelect.addEventListener('change', updateGpsCoords);
-        
+
         // Ejecutar inicialmente si ya tiene valor y los campos están vacíos
         if (pubLocationSelect.value && !pubLatInput.value && !pubLngInput.value) {
             updateGpsCoords();
@@ -623,20 +623,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pubFileInput) {
         pubFileInput.addEventListener('change', async (e) => {
             const selectedFiles = Array.from(e.target.files);
-            
+
             if (selectedFiles.length === 0) return;
-            
+
             // Si ya se alcanzó el límite máximo de 10 fotos, denegar
             if (uploadedBase64Images.length >= 10) {
                 alert("⚠️ LÍMITE DE IMÁGENES ALCANZADO: Ya has cargado el máximo permitido de 10 fotos locales por propiedad.");
                 pubFileInput.value = ''; // Resetear input
                 return;
             }
-            
+
             // Calcular espacios restantes
             const remainingSlots = 10 - uploadedBase64Images.length;
             const filesToProcess = selectedFiles.slice(0, remainingSlots);
-            
+
             const readPromises = filesToProcess.map(file => {
                 return new Promise((resolve) => {
                     const reader = new FileReader();
@@ -646,16 +646,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     reader.readAsDataURL(file);
                 });
             });
-            
+
             const newBase64Images = await Promise.all(readPromises);
-            
+
             // Concatenar en fila (en cola) en vez de sobreescribir
             uploadedBase64Images = uploadedBase64Images.concat(newBase64Images);
             console.log(`⚡ [ValorGT AI] ${newBase64Images.length} fotos locales agregadas a la cola. Total: ${uploadedBase64Images.length}`);
-            
+
             // Renderizar miniaturas
             renderThumbnailsPreview();
-            
+
             // Actualización estética interactiva premium (feedback en el label e input)
             const label = document.querySelector('label[for="pub-file-input"]');
             if (label) {
@@ -666,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pubFileInput.value = ''; // Resetear el valor para permitir volver a seleccionar el mismo archivo
         });
     }
-    
+
     // Cargar grilla pública de precios de planes
     renderPublicPricingGrid();
 
@@ -675,17 +675,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupPlanSelect = document.getElementById('com-signup-plan');
     if (signupTypeSelect && signupPlanSelect) {
         signupTypeSelect.addEventListener('change', () => {
-            signupPlanSelect.innerHTML = ''; // Limpiar
-            const opt = document.createElement('option');
-            opt.value = 'pro';
-            opt.innerText = 'Suscripción ValorGT Pro (Q235 / mes - $30 USD)';
-            opt.selected = true;
-            signupPlanSelect.appendChild(opt);
-            
-            const cardPro = document.getElementById('signup-plan-pro');
-            if (cardPro) cardPro.style.display = 'flex';
-            
-            selectSignupPlan('pro', 30);
+            const currentPlan = signupPlanSelect.value || 'pro';
+            signupPlanSelect.innerHTML = `
+                <option value="pro" ${currentPlan === 'pro' ? 'selected' : ''}>Plan Pro (Q235 / mes - $30 USD / mes)</option>
+                <option value="premium" ${currentPlan === 'premium' ? 'selected' : ''}>Plan Premium con Billetera XAUt (Q505 / mes - $65 USD / mes)</option>
+            `;
+            selectSignupPlan(currentPlan, currentPlan === 'premium' ? 65 : 30);
         });
     }
 });
@@ -696,20 +691,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderThumbnailsPreview() {
     const previewContainer = document.getElementById('pub-thumbnails-preview');
     if (!previewContainer) return;
-    
+
     if (uploadedBase64Images.length === 0) {
         previewContainer.classList.add('hidden');
         previewContainer.innerHTML = '';
         coverImageIndex = 0;
         return;
     }
-    
+
     previewContainer.classList.remove('hidden');
     previewContainer.innerHTML = '';
-    
+
     uploadedBase64Images.forEach((imgBase64, index) => {
         const isCover = index === coverImageIndex;
-        
+
         const card = document.createElement('div');
         card.style.position = 'relative';
         card.style.width = '75px';
@@ -721,7 +716,7 @@ function renderThumbnailsPreview() {
         card.style.transition = 'all 0.3s ease';
         card.style.background = 'rgba(0,0,0,0.5)';
         card.style.flexShrink = '0';
-        
+
         card.innerHTML = `
             <img src="${imgBase64}" style="width: 100%; height: 100%; object-fit: cover;">
             
@@ -741,7 +736,7 @@ function renderThumbnailsPreview() {
                 </div>
             `}
         `;
-        
+
         // Efecto hover para el botón de Portada
         card.addEventListener('mouseenter', () => {
             const btn = card.querySelector('.hover-cover-btn');
@@ -751,7 +746,7 @@ function renderThumbnailsPreview() {
             const btn = card.querySelector('.hover-cover-btn');
             if (btn) btn.style.opacity = '0';
         });
-        
+
         previewContainer.appendChild(card);
     });
 }
@@ -770,16 +765,16 @@ function setAsCoverImage(index) {
  */
 function removePreviewImage(index) {
     uploadedBase64Images.splice(index, 1);
-    
+
     // Ajustar el índice de portada
     if (coverImageIndex === index) {
         coverImageIndex = 0; // Resetear al primero
     } else if (coverImageIndex > index) {
         coverImageIndex--; // Desplazar hacia atrás
     }
-    
+
     renderThumbnailsPreview();
-    
+
     // Actualizar la etiqueta del input
     const fileInput = document.getElementById('pub-file-input');
     const label = document.querySelector('label[for="pub-file-input"]');
@@ -843,7 +838,7 @@ function switchView(viewId) {
         const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
         const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
         const hasAccess = clientPlan === 'vip' || clientPlan === 'pro' || clientPlan === 'premium' || clientRole === 'inversionista';
-        
+
         if (isCommercialAuthenticated) {
             if (!hasAccess) {
                 // Redirigir a comercial -> suscripción
@@ -852,7 +847,7 @@ function switchView(viewId) {
                 alert("💼 El simulador de Portafolio IA requiere una membresía Pro, VIP o Inversionista Premium. Por favor, selecciona un plan para activarlo.");
                 return;
             }
-            
+
             // Ocultar todas las vistas y mostrar la seleccionada (contenedor commercial)
             document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
             const activeView = document.getElementById(`view-${targetViewId}`);
@@ -860,12 +855,12 @@ function switchView(viewId) {
 
             initCommercialView();
             switchCommercialTab('portfolio');
-            
+
             // Actualizar highlights del menú
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.getElementById(`nav-btn-${highlightId}`);
             if (activeBtn) activeBtn.classList.add('active');
-            
+
             document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
             const activeMobileBtn = document.getElementById(`mobile-nav-btn-${highlightId}`);
             if (activeMobileBtn) activeMobileBtn.classList.add('active');
@@ -875,7 +870,7 @@ function switchView(viewId) {
             const subtitleEl = document.getElementById('page-subtitle');
             if (titleEl) titleEl.innerText = "Portafolio Patrimonial IA";
             if (subtitleEl) subtitleEl.innerText = "Simulación y optimización de carteras de inversión inmobiliaria";
-            
+
             return;
         } else {
             // Visitante en vista previa de portafolio
@@ -887,19 +882,19 @@ function switchView(viewId) {
             // 2. Configurar la pestaña portafolio en modo preview
             const tabsNav = document.querySelector('.commercial-tabs-nav');
             if (tabsNav) tabsNav.style.display = 'none';
-            
+
             document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('comm-tab-content-portfolio')?.classList.remove('hidden');
             const b2bHeader = document.getElementById('commercial-header-hud');
             if (b2bHeader) b2bHeader.style.display = 'none';
-            
+
             initPortfolioView();
-            
+
             // 3. Highlight en la barra
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.getElementById(`nav-btn-${highlightId}`);
             if (activeBtn) activeBtn.classList.add('active');
-            
+
             document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
             const activeMobileBtn = document.getElementById(`mobile-nav-btn-${highlightId}`);
             if (activeMobileBtn) activeMobileBtn.classList.add('active');
@@ -914,12 +909,12 @@ function switchView(viewId) {
             const activeBlocker = document.getElementById('portfolio-trial-blocker');
             const activeBadge = document.getElementById('portfolio-trial-badge');
             const activeTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
-            
+
             if (isPortfolioBlocked || portfolioTrialTimeLeft <= 0) {
                 if (activeBlocker) activeBlocker.classList.remove('hidden');
                 isPortfolioBlocked = true;
                 alert("⚠️ VISTA PREVIA EXPIRADA: Tu demostración gratuita de Portafolio IA ha finalizado. Por favor suscríbete para continuar.");
-                
+
                 const loginGate = document.getElementById('commercial-login-gate');
                 const dashboardArea = document.getElementById('commercial-dashboard-area');
                 if (loginGate) loginGate.classList.remove('hidden');
@@ -931,29 +926,29 @@ function switchView(viewId) {
                     activeBadge.classList.remove('hidden');
                     if (activeTimerLbl) activeTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
                 }
-                
+
                 const loginGate = document.getElementById('commercial-login-gate');
                 const dashboardArea = document.getElementById('commercial-dashboard-area');
                 if (loginGate) loginGate.classList.add('hidden');
                 if (dashboardArea) dashboardArea.classList.remove('hidden');
-                
+
                 portfolioTrialTimer = setInterval(() => {
                     portfolioTrialTimeLeft--;
                     const currentTimerLbl = document.getElementById('portfolio-trial-timer-lbl');
                     if (currentTimerLbl) currentTimerLbl.innerText = `${portfolioTrialTimeLeft}s`;
-                    
+
                     if (portfolioTrialTimeLeft <= 0) {
                         clearInterval(portfolioTrialTimer);
                         portfolioTrialTimer = null;
                         isPortfolioBlocked = true;
-                        
+
                         if (activeBlocker) activeBlocker.classList.remove('hidden');
                         if (activeBadge) {
                             activeBadge.classList.add('hidden');
                         }
-                        
+
                         alert("⏱️ VISTA PREVIA EXPIRADA: Tus 2 minutos de demostración gratuita de Portafolio IA han finalizado. Por favor suscríbete para continuar.");
-                        
+
                         if (loginGate) loginGate.classList.remove('hidden');
                         if (dashboardArea) dashboardArea.classList.add('hidden');
                         if (tabsNav) tabsNav.style.display = 'flex';
@@ -972,7 +967,7 @@ function switchView(viewId) {
         const clientEmail = (loggedInB2bClient && loggedInB2bClient.email) ? loggedInB2bClient.email.toLowerCase() : '';
         const clientPlan = (loggedInB2bClient && loggedInB2bClient.plan) ? loggedInB2bClient.plan.toLowerCase() : '';
         const clientRole = (loggedInB2bClient && loggedInB2bClient.role) ? loggedInB2bClient.role.toLowerCase() : '';
-        
+
         let hasUnlimitedAccess = isCommercialAuthenticated && (
             clientEmail.includes('admin') ||
             clientEmail.includes('sgalindo') ||
@@ -1054,7 +1049,7 @@ function switchView(viewId) {
 
     // Quitar clase activa de todos los botones de navegación y agregar a la seleccionada
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-    
+
     // Si la vista es comercial, solo resaltamos portfolio si realmente se está mostrando la pestaña portfolio
     if (viewId === 'commercial') {
         const portfolioContent = document.getElementById('comm-tab-content-portfolio');
@@ -1062,7 +1057,7 @@ function switchView(viewId) {
             highlightId = 'portfolio';
         }
     }
-    
+
     const activeBtn = document.getElementById(`nav-btn-${highlightId}`);
     if (activeBtn) activeBtn.classList.add('active');
 
@@ -1075,7 +1070,7 @@ function switchView(viewId) {
     document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
     const activeView = document.getElementById(`view-${targetViewId}`);
     if (activeView) activeView.classList.add('active');
-    
+
     if (viewId === 'commercial') {
         initCommercialView();
     }
@@ -1093,7 +1088,7 @@ function switchView(viewId) {
         subtitleEl.innerText = "Análisis predictivo de propiedades con redes neuronales";
         // Descargar configuración fresca en segundo plano al regresar al Dashboard
         fetchSystemSettingsFromSupabase();
-        
+
         // Rerenderizar propiedades destacadas para reflejar permisos actualizados (ej. botón de borrar si es admin)
         const locationSelect = document.getElementById('prop-location');
         const activeZone = locationSelect ? locationSelect.value : 'zona14';
@@ -1134,13 +1129,13 @@ function switchView(viewId) {
     } else if (viewId === 'catalog') {
         titleEl.innerText = "Catálogo General de Activos";
         subtitleEl.innerText = "Buscador masivo y catálogo de propiedades en Ciudad de Guatemala";
-        
+
         const grid = document.getElementById('catalog-properties-grid');
         const counter = document.getElementById('catalog-results-counter');
-        
+
         // Contar el número total de propiedades cacheadas en memoria
         const totalLocalProps = Object.values(PORTFOLIO_DATABASE || {}).flat().length;
-        
+
         // Carga instantánea: Priorizar caché local en memoria e iniciar actualización en segundo plano
         renderCatalogProperties();
 
@@ -1149,7 +1144,7 @@ function switchView(viewId) {
             if (counter) {
                 counter.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><span class="neon-spinner" style="width: 10px; height: 10px; border-width: 1.5px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO...</span>`;
             }
-            
+
             // Inyectar un indicador de carga holográfico no bloqueante en el fondo de la grilla
             const existingLoader = document.getElementById('catalog-live-sync-loader');
             if (grid && !existingLoader) {
@@ -1204,9 +1199,9 @@ function toggleMapFullscreen() {
     const wrapper = document.querySelector('.map-wrapper');
     const btn = document.getElementById('btn-toggle-fullscreen');
     if (!wrapper) return;
-    
+
     const isFullscreen = wrapper.classList.toggle('map-fullscreen');
-    
+
     if (btn) {
         if (isFullscreen) {
             btn.innerHTML = '<i data-lucide="minimize-2" style="width:12px; height:12px;"></i> Minimizar';
@@ -1215,7 +1210,7 @@ function toggleMapFullscreen() {
         }
         lucide.createIcons();
     }
-    
+
     // Invalidar el tamaño del mapa de Leaflet para re-centrar y cargar las celdas
     if (typeof leafletMapInstance !== 'undefined' && leafletMapInstance) {
         setTimeout(() => {
@@ -1230,25 +1225,25 @@ function toggleMapFullscreen() {
 function toggleSidebar() {
     const container = document.querySelector('.app-container');
     if (!container) return;
-    
+
     container.classList.toggle('sidebar-collapsed');
     const isCollapsed = container.classList.contains('sidebar-collapsed');
-    
+
     // Cambiar el icono del botón
     const toggleBtn = document.getElementById('sidebar-toggle');
     if (toggleBtn) {
-        toggleBtn.innerHTML = isCollapsed 
-            ? '<i data-lucide="chevron-right"></i>' 
+        toggleBtn.innerHTML = isCollapsed
+            ? '<i data-lucide="chevron-right"></i>'
             : '<i data-lucide="chevron-left"></i>';
-        
+
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
     }
-    
+
     // Guardar preferencia en localStorage
     localStorage.setItem('sidebarCollapsed', isCollapsed);
-    
+
     // Forzar el resize de Leaflet y Chart.js para que sus elementos se recalculen al nuevo tamaño del grid
     setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
@@ -1264,14 +1259,14 @@ function toggleAccordion(itemId) {
     if (!content) return;
     const item = content.closest('.accordion-item');
     if (!item) return;
-    
+
     const isActive = item.classList.contains('active');
-    
+
     // Cerramos el resto de secciones para mantener el panel ordenado (opcional y premium)
     document.querySelectorAll('.accordion-item').forEach(el => {
         el.classList.remove('active');
     });
-    
+
     if (!isActive) {
         item.classList.add('active');
     }
@@ -1282,24 +1277,24 @@ function toggleAccordion(itemId) {
  */
 function toggleCurrency() {
     const toCurrency = activeCurrency === 'GTQ' ? 'USD' : 'GTQ';
-    
+
     // Convertir los valores numéricos actuales de los inputs del formulario del portafolio al cambiar de moneda
     convertPortfolioFormInputs(toCurrency);
-    
+
     activeCurrency = toCurrency;
 
     // Registrar cambio de moneda en consola
     if (typeof appendAdminLog === 'function') {
         appendAdminLog("SYSTEM", `core_config: Moneda de visualización cambiada a ${activeCurrency}.`, false);
     }
-    
+
     // Sincronizar todas las unidades e insignias de moneda de la app de forma inmediata
     updateFormUnits();
-    
+
     // Actualizar interruptor visual
     const currGtq = document.getElementById('curr-gtq');
     const currUsd = document.getElementById('curr-usd');
-    
+
     if (activeCurrency === 'GTQ') {
         currGtq.classList.add('active');
         currUsd.classList.remove('active');
@@ -1320,7 +1315,7 @@ function toggleCurrency() {
     }
 
     // No llamamos a updateSuggestedValues() aquí para no sobreescribir los parámetros ya ingresados en el tasador
-    
+
     // Si hay una tasación activa, recalcular y actualizar visualización
     if (activeValuation) {
         updateValuationUI();
@@ -1331,7 +1326,7 @@ function toggleCurrency() {
         // Ajustar el slider de propiedad según la moneda seleccionada
         const slider = document.getElementById('mval-prop-slider');
         const currentVal = parseFloat(slider.value);
-        
+
         if (activeCurrency === 'GTQ') {
             slider.min = 150000 * exchangeRate;
             slider.max = 8000000 * exchangeRate;
@@ -1573,18 +1568,18 @@ function getPropertyCategoryAndType(prop) {
  */
 function filterB2cCategory(category) {
     activeB2cCategory = category;
-    
+
     // Actualizar clases activas en los botones de categoría
     document.querySelectorAll('#b2c-category-filters .btn-b2c-filter').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Buscar y activar el botón correcto
     const activeBtn = Array.from(document.querySelectorAll('#b2c-category-filters .btn-b2c-filter')).find(btn => {
         return btn.getAttribute('onclick').includes(`'${category}'`);
     });
     if (activeBtn) activeBtn.classList.add('active');
-    
+
     // Re-renderizar la vista correspondiente
     const catalogView = document.getElementById('view-catalog');
     if (catalogView && catalogView.classList.contains('active')) {
@@ -1601,18 +1596,18 @@ function filterB2cCategory(category) {
  */
 function filterB2cType(type) {
     activeB2cType = type;
-    
+
     // Actualizar clases activas en los botones de tipo
     document.querySelectorAll('#b2c-type-filters .btn-b2c-filter').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Buscar y activar el botón correcto
     const activeBtn = Array.from(document.querySelectorAll('#b2c-type-filters .btn-b2c-filter')).find(btn => {
         return btn.getAttribute('onclick').includes(`'${type}'`);
     });
     if (activeBtn) activeBtn.classList.add('active');
-    
+
     // Re-renderizar la vista correspondiente
     const catalogView = document.getElementById('view-catalog');
     if (catalogView && catalogView.classList.contains('active')) {
@@ -1675,7 +1670,7 @@ function renderFeaturedProperties(zoneKey) {
         const prop = item.prop;
         if (prop.isAgentUpload !== true) return false;
         if (prop.isReferenceData === true) return false;
-        
+
         const titleLower = (prop.title || '').toLowerCase();
         if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
             return false;
@@ -1696,7 +1691,7 @@ function renderFeaturedProperties(zoneKey) {
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
-        loggedInB2bClient.email.toLowerCase().includes('admin') || 
+        loggedInB2bClient.email.toLowerCase().includes('admin') ||
         loggedInB2bClient.email.toLowerCase().includes('sgalindo')
     )) || (!loggedInB2bClient && isCommercialAuthenticated);
 
@@ -1716,7 +1711,7 @@ function renderFeaturedProperties(zoneKey) {
         }
 
         renderedCount++;
-        
+
         const zoneData = ZONES_DATABASE[zk] || { name: zk, color: 'blue' };
         const zoneName = zoneData.name.split(' (')[0];
         const zoneColor = zoneData.color;
@@ -1725,10 +1720,10 @@ function renderFeaturedProperties(zoneKey) {
         const absoluteIndex = PORTFOLIO_DATABASE[zk].indexOf(prop);
         const convertedPrice = prop.priceUSD * conversion;
         const sponsoredClass = 'sponsored';
-        
+
         const { type } = getPropertyCategoryAndType(prop);
         const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
-        
+
         const deleteButtonHTML = (isAdmin && prop.id) ? `
             <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
                 <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
@@ -1746,26 +1741,26 @@ function renderFeaturedProperties(zoneKey) {
                         <i data-lucide="map-pin" class="tiny-icon"></i> ${zoneName}
                     </div>
                     ${(() => {
-                        let advancedTagsHTML = '';
-                        const tags = [];
-                        if (prop.hasMasterSuite) tags.push("Suite Principal");
-                        if (prop.hasVisitorBath) tags.push("Baño Visitas");
-                        if (prop.study) tags.push("Estudio");
-                        if (prop.familyRoom) tags.push("Sala Fam.");
-                        if (prop.amenities && prop.amenities.length > 0) {
-                            prop.amenities.forEach(am => {
-                                if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
-                            });
-                        }
-                        if (tags.length > 0) {
-                            advancedTagsHTML = `
+                let advancedTagsHTML = '';
+                const tags = [];
+                if (prop.hasMasterSuite) tags.push("Suite Principal");
+                if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                if (prop.study) tags.push("Estudio");
+                if (prop.familyRoom) tags.push("Sala Fam.");
+                if (prop.amenities && prop.amenities.length > 0) {
+                    prop.amenities.forEach(am => {
+                        if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                    });
+                }
+                if (tags.length > 0) {
+                    advancedTagsHTML = `
                                 <div class="advanced-tags-row" style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
                                     ${tags.map(tag => `<span class="adv-tag" style="font-size: 0.52rem; background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 2px; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); font-family: var(--font-mono);">${tag}</span>`).join('')}
                                 </div>
                             `;
-                        }
-                        return advancedTagsHTML;
-                    })()}
+                }
+                return advancedTagsHTML;
+            })()}
                     <div class="property-specs">
                         <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
                         <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
@@ -1829,7 +1824,7 @@ function renderCatalogProperties() {
     const grid = document.getElementById('catalog-properties-grid');
     const counter = document.getElementById('catalog-results-counter');
     const zoneSelect = document.getElementById('catalog-zone-select');
-    
+
     if (!grid || !zoneSelect) return;
 
     grid.innerHTML = ''; // Limpiar
@@ -1847,7 +1842,7 @@ function renderCatalogProperties() {
 
     // Ocultar incondicionalmente las propiedades de referencia (de prueba) en el catálogo público
     const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
-        loggedInB2bClient.email.toLowerCase().includes('admin') || 
+        loggedInB2bClient.email.toLowerCase().includes('admin') ||
         loggedInB2bClient.email.toLowerCase().includes('sgalindo')
     )) || (!loggedInB2bClient && isCommercialAuthenticated);
 
@@ -1870,7 +1865,7 @@ function renderCatalogProperties() {
         if (prop.isAgentUpload !== true) {
             return false;
         }
-        
+
         // Ocultar las de referencia (reservadas para la IA)
         if (prop.isReferenceData === true) {
             return false;
@@ -1879,12 +1874,12 @@ function renderCatalogProperties() {
         // Validar que la propiedad pertenezca a un agente suscrito activo o a nosotros
         const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
         const propEmail = (prop.agentEmail || '').toLowerCase();
-        
+
         const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
         if (!hasValidAgent) {
             return false;
         }
-        
+
         const titleLower = (prop.title || '').toLowerCase();
         if (titleLower.includes('test') || titleLower.includes('prueba') || titleLower.includes('demo') || titleLower.includes('mock')) {
             return false;
@@ -1950,12 +1945,12 @@ function renderCatalogProperties() {
             const prop = properties[i];
             // Parse category and type (scheme) using helper
             const { category, type } = getPropertyCategoryAndType(prop);
-            
+
             // Filter by category
             if (activeB2cCategory !== 'todos' && category.toLowerCase() !== activeB2cCategory) {
                 continue;
             }
-            
+
             // Filter by type (scheme)
             if (activeB2cType !== 'todos' && type.toLowerCase() !== activeB2cType) {
                 continue;
@@ -1972,7 +1967,7 @@ function renderCatalogProperties() {
             }
 
             renderedCount++;
-            
+
             const propZoneKey = prop.location || zoneKey;
             const absoluteIndex = PORTFOLIO_DATABASE[propZoneKey] ? PORTFOLIO_DATABASE[propZoneKey].indexOf(prop) : -1;
             const propZoneData = ZONES_DATABASE[propZoneKey];
@@ -1983,11 +1978,11 @@ function renderCatalogProperties() {
             const isSponsored = prop.sponsored === true;
             const sponsoredClass = isSponsored ? 'sponsored' : '';
             const badgeColorClass = isSponsored ? 'green' : propZoneColor;
-            
+
             const priceLabel = type.toLowerCase() === 'renta' ? ' / Mes' : '';
-            
+
             const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
-                loggedInB2bClient.email.toLowerCase().includes('admin') || 
+                loggedInB2bClient.email.toLowerCase().includes('admin') ||
                 loggedInB2bClient.email.toLowerCase().includes('sgalindo')
             )) || (!loggedInB2bClient && isCommercialAuthenticated);
             const deleteButtonHTML = (isAdmin && prop.id) ? `
@@ -2007,30 +2002,30 @@ function renderCatalogProperties() {
                             <i data-lucide="map-pin" class="tiny-icon"></i> ${propZoneName}
                         </div>
                         ${(() => {
-                            let advancedTagsHTML = '';
-                            const tags = [];
-                            if (prop.hasMasterSuite) tags.push("Suite Principal");
-                            if (prop.hasVisitorBath) tags.push("Baño Visitas");
-                            if (prop.study) tags.push("Estudio");
-                            if (prop.familyRoom) tags.push("Sala Fam.");
-                            if (prop.amenities && prop.amenities.length > 0) {
-                                prop.amenities.forEach(am => {
-                                    if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
-                                    if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
-                                    if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
-                                    if (am === "amenity-view" || am === "view") tags.push("Vista");
-                                });
-                            }
-                            if (tags.length > 0) {
-                                advancedTagsHTML = `
+                    let advancedTagsHTML = '';
+                    const tags = [];
+                    if (prop.hasMasterSuite) tags.push("Suite Principal");
+                    if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                    if (prop.study) tags.push("Estudio");
+                    if (prop.familyRoom) tags.push("Sala Fam.");
+                    if (prop.amenities && prop.amenities.length > 0) {
+                        prop.amenities.forEach(am => {
+                            if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                            if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
+                            if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
+                            if (am === "amenity-view" || am === "view") tags.push("Vista");
+                        });
+                    }
+                    if (tags.length > 0) {
+                        advancedTagsHTML = `
                                     <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
                                         ${tags.slice(0, 3).map(t => `<span style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 2px 6px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
                                         ${tags.length > 3 ? `<span style="font-size: 0.65rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 2px 6px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
                                     </div>
                                 `;
-                            }
-                            return advancedTagsHTML;
-                        })()}
+                    }
+                    return advancedTagsHTML;
+                })()}
                         <div class="property-specs">
                             <span><i data-lucide="maximize-2" class="tiny-icon"></i> ${prop.size} ${(prop.category || '').toLowerCase() === 'terreno' ? 'vr²' : 'm²'}</span>
                             <span><i data-lucide="bed" class="tiny-icon"></i> ${prop.rooms} Hab</span>
@@ -2105,54 +2100,54 @@ function autofillValuationForm(zoneKey, index) {
     // Llenar formulario de forma segura
     const locEl = document.getElementById("prop-location");
     if (locEl) locEl.value = zoneKey;
-    
+
     const typeEl = document.getElementById("prop-type");
     if (typeEl) typeEl.value = typeValue;
-    
+
     const finishesEl = document.getElementById("prop-finishes");
     if (finishesEl) finishesEl.value = finishesValue;
-    
+
     const sizeEl = document.getElementById("prop-size");
     if (sizeEl) sizeEl.value = prop.size;
-    
+
     const roomsEl = document.getElementById("prop-rooms");
     if (roomsEl) roomsEl.value = prop.rooms;
-    
+
     const bathEl = document.getElementById("prop-bathrooms");
     if (bathEl) bathEl.value = prop.bathrooms;
-    
+
     const parkEl = document.getElementById("prop-parkings");
     if (parkEl) parkEl.value = prop.parkings;
-    
+
     const gardenEl = document.getElementById("prop-garden");
     if (gardenEl) gardenEl.value = prop.garden || 0;
-    
+
     const studyEl = document.getElementById("prop-study");
     if (studyEl) studyEl.checked = prop.study || false;
-    
+
     const familyEl = document.getElementById("prop-family-room");
     if (familyEl) familyEl.checked = prop.familyRoom || false;
 
     // Configurar amenidades de forma segura
     const poolEl = document.getElementById("amenity-pool");
     if (poolEl) poolEl.checked = prop.amenities.includes("amenity-pool") || prop.amenities.includes("pool");
-    
+
     const gymEl = document.getElementById("amenity-gym");
     if (gymEl) gymEl.checked = prop.amenities.includes("amenity-gym") || prop.amenities.includes("gym");
-    
+
     const securityEl = document.getElementById("amenity-security");
     if (securityEl) securityEl.checked = prop.amenities.includes("amenity-security") || prop.amenities.includes("security");
-    
+
     const rooftopEl = document.getElementById("amenity-rooftop");
     if (rooftopEl) rooftopEl.checked = prop.amenities.includes("amenity-rooftop") || prop.amenities.includes("rooftop");
-    
+
     const smartEl = document.getElementById("amenity-smart");
     if (smartEl) smartEl.checked = prop.amenities.includes("amenity-smart") || prop.amenities.includes("smart");
 
     // Configurar foto de previsualización
     const previewImg = document.getElementById('uploaded-img-preview');
     previewImg.src = prop.photo;
-    
+
     const prompt = document.getElementById('upload-prompt');
     const previewContainer = document.getElementById('upload-preview-container');
     const scanText = document.getElementById('scan-status-text');
@@ -2162,7 +2157,7 @@ function autofillValuationForm(zoneKey, index) {
     document.getElementById('laser-scanner').classList.remove('hidden');
 
     scanText.innerText = "CARGANDO MUESTRA DEL PORTAFOLIO...";
-    
+
     // Generar materiales detectados
     generateDetectedMaterials();
 
@@ -2170,9 +2165,9 @@ function autofillValuationForm(zoneKey, index) {
     setTimeout(() => {
         scanText.innerText = "TELEMETRÍA CARGADA CON ÉXITO";
         document.getElementById('laser-scanner').classList.add('hidden');
-        
+
         // Ejecutar valuación
-        const mockEvent = { preventDefault: () => {} };
+        const mockEvent = { preventDefault: () => { } };
         calculateValuation(mockEvent);
 
         // Desplazar la pantalla suavemente hacia la sección de resultados
@@ -2188,11 +2183,11 @@ function handlePhotoUpload(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         // Mostrar preview y activar contenedor de escaneo
         const previewImg = document.getElementById('uploaded-img-preview');
         previewImg.src = e.target.result;
-        
+
         const dropzone = document.getElementById('photo-dropzone');
         const prompt = document.getElementById('upload-prompt');
         const previewContainer = document.getElementById('upload-preview-container');
@@ -2200,7 +2195,7 @@ function handlePhotoUpload(event) {
 
         prompt.classList.add('hidden');
         previewContainer.classList.remove('hidden');
-        
+
         // Simular escaneo de 3 segundos
         let steps = ["ANALIZANDO TEXTURAS Y ACABADOS...", "DETECTANDO MATERIALES DE LUJO...", "CALIBRANDO ILUMINACIÓN NATURAL...", "ANÁLISIS COMPLETO"];
         let stepIdx = 0;
@@ -2218,7 +2213,7 @@ function handlePhotoUpload(event) {
             scanText.innerText = "COMPLETADO (+12.5% VALOR EST.)";
             // Desvanecer el overlay de escaneo
             document.getElementById('laser-scanner').classList.add('hidden');
-            
+
             // Generar y activar la telemetría de materiales detectados
             generateDetectedMaterials();
         }, 3200);
@@ -2309,11 +2304,11 @@ function calculateValuation(event) {
     const roomsInput = document.getElementById('prop-rooms');
     const secondaryRoomsInput = document.getElementById('room-secondary-count');
     const masterSuiteCheck = document.getElementById('room-master-suite');
-    
+
     const bathroomsInput = document.getElementById('prop-bathrooms');
     const fullBathroomsInput = document.getElementById('bath-full-count');
     const visitorBathCheck = document.getElementById('bath-visitor');
-    
+
     const parkingsInput = document.getElementById('prop-parkings');
     const parkingTypeSelect = document.getElementById('parking-type');
     const gardenInput = document.getElementById('prop-garden');
@@ -2321,11 +2316,11 @@ function calculateValuation(event) {
     const rooms = parseInt(roomsInput.value) || 0;
     const secondaryRooms = parseInt(secondaryRoomsInput ? secondaryRoomsInput.value : '0') || 0;
     const hasMasterSuite = masterSuiteCheck ? masterSuiteCheck.checked : false;
-    
+
     const bathrooms = parseFloat(bathroomsInput.value) || 0;
     const fullBathrooms = parseInt(fullBathroomsInput ? fullBathroomsInput.value : '0') || 0;
     const hasVisitorBath = visitorBathCheck ? visitorBathCheck.checked : false;
-    
+
     const parkings = parseInt(parkingsInput.value) || 0;
     const parkingType = parkingTypeSelect ? parkingTypeSelect.value : 'techados';
     const garden = parseFloat(gardenInput ? gardenInput.value : '0') || 0;
@@ -2391,10 +2386,10 @@ function calculateValuation(event) {
     const zoneData = ZONES_DATABASE[zoneKey];
 
     // --- ALGORITMO COMPLEJO DE VALUACIÓN INMOBILIARIA IA (VERSIÓN PRO MULTIVARIABLE) ---
-    
+
     // 1. Regresión de tamaño (no aplica a terrenos ya que no poseen edificación)
     let sizeRegression = type === 'terreno' ? 1.0 : Math.pow(120 / size, 0.11);
-    
+
     // 2. Determinar precio m² base según acabados generales (con soporte para calibraciones del administrador)
     const adminPriceEconomy = parseFloat(document.getElementById('admin-price-economy')?.value);
     const adminPriceStandard = parseFloat(document.getElementById('admin-price-standard')?.value);
@@ -2407,7 +2402,7 @@ function calculateValuation(event) {
     if (finishes === 'economy') {
         baseFinishesPriceM2 = !isNaN(adminPriceEconomy) ? adminPriceEconomy : 707; // Q5,500
     }
-    
+
     // Extraer precio m² de categoría específico del sector (Apartamentos, Casas, Oficinas, Locales, Terrenos, Bodegas)
     let categoryKey = 'apartamentos';
     if (type === 'apartamento') categoryKey = 'apartamentos';
@@ -2417,7 +2412,7 @@ function calculateValuation(event) {
     else if (type === 'terreno') categoryKey = 'terrenos';
     else if (type === 'bodega') categoryKey = 'bodegas';
     else if (type === 'finca') categoryKey = 'casas'; // fallback
-    
+
     let targetPriceM2 = zoneData.basePriceM2;
     if (zoneData.categories && zoneData.categories[categoryKey]) {
         targetPriceM2 = zoneData.categories[categoryKey].priceM2;
@@ -2425,7 +2420,7 @@ function calculateValuation(event) {
 
     let locationMultiplier = targetPriceM2 / 1100;
     let priceM2 = baseFinishesPriceM2 * locationMultiplier * sizeRegression;
-    
+
     // Valor Base por Construcción
     let baseValue = size * priceM2;
 
@@ -2435,7 +2430,7 @@ function calculateValuation(event) {
     if (['casa', 'finca'].includes(type)) {
         landValue = landAreaM2 * (priceM2 * 0.18);
     }
-    
+
     // Para Terrenos puros, el valor principal es el suelo y el tamaño de construcción es irrelevante
     if (type === 'terreno') {
         let landTypeFactor = 1.0;
@@ -2459,7 +2454,7 @@ function calculateValuation(event) {
     if (type === 'casa') typeFactor = 0.82; // Ajuste realista de edificación horizontal
     if (type === 'terreno') typeFactor = 1.0; // Ya calibrado en baseValue
     if (type === 'comercial') typeFactor = 1.30; // Rentabilidad comercial
-    if (type === 'oficina') typeFactor = 1.20; 
+    if (type === 'oficina') typeFactor = 1.20;
     if (type === 'bodega') typeFactor = 0.70; // Costo constructivo de bodega es menor por m²
     if (type === 'finca') typeFactor = 0.60;
 
@@ -2477,7 +2472,7 @@ function calculateValuation(event) {
 
     // 6. Ajuste por Distribución Interna
     let distributionFactor = 0;
-    
+
     // Áreas principales incorporadas
     if (areaLiving) distributionFactor += 0.015;
     if (areaDining) distributionFactor += 0.015;
@@ -2585,7 +2580,7 @@ function updateValuationUI() {
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     const finalVal = activeValuation * conversion;
-    
+
     // Calcular precio unitario dinámico (por m² de construcción o por v²/m² de terreno)
     const typeSelect = document.getElementById('prop-type');
     const type = typeSelect ? typeSelect.value : 'casa';
@@ -2594,7 +2589,7 @@ function updateValuationUI() {
 
     let priceM2Val = 0;
     let unitLabel = 'm²';
-    
+
     if (type === 'terreno') {
         const landAreaInput = document.getElementById('prop-land-area');
         const landArea = parseFloat(landAreaInput ? landAreaInput.value : '0') || 1;
@@ -2615,7 +2610,7 @@ function updateValuationUI() {
     const highRange = finalVal * 1.07;
     document.getElementById('val-range-low').innerText = `${currencySym}${formatNumber(lowRange.toFixed(0))}`;
     document.getElementById('val-range-high').innerText = `${currencySym}${formatNumber(highRange.toFixed(0))}`;
-    
+
     // Posicionar el puntero de la barra de rango de confianza de forma aleatoria premium (entre 40% y 60%)
     const pointerPercent = 40 + Math.random() * 20;
     document.getElementById('range-pointer').style.left = `${pointerPercent}%`;
@@ -2623,13 +2618,13 @@ function updateValuationUI() {
 
     // Actualizar micro-stats
     document.getElementById('val-curr-symbol').innerText = currencySym;
-    
+
     // Actualizar etiqueta del precio unitario dinámicamente
     const labelEl = document.getElementById('val-price-m2-label');
     if (labelEl) {
         labelEl.innerText = type === 'terreno' ? `Precio por ${unitLabel}` : 'Precio por m²';
     }
-    
+
     document.getElementById('val-price-m2').innerText = `${currencySym}${formatNumber(priceM2Val.toFixed(0))} / ${unitLabel}`;
     document.getElementById('val-plusvalia-pct').innerText = `+${(zoneData.growth5Y / 5).toFixed(1)}%`;
     document.getElementById('val-demand-score').innerText = zoneData.demandScore;
@@ -2645,7 +2640,7 @@ function updateValuationUI() {
 function switchAiTab(tabName) {
     if (!activeZoneKey) return;
     const zoneData = ZONES_DATABASE[activeZoneKey];
-    
+
     // Quitar clases activas de los botones de pestañas
     document.querySelectorAll('.ai-tab').forEach(tab => tab.classList.remove('active'));
     document.getElementById(`tab-${tabName === 'decision' ? 'decision' : tabName}`).classList.add('active');
@@ -2689,11 +2684,11 @@ function selectBank(bankId, rate) {
     event.currentTarget.classList.add('active');
 
     currentBankRate = rate;
-    
+
     // Sincronizar el slider e iniciar recálculo
     const rateSlider = document.getElementById('mval-rate-slider');
     rateSlider.value = rate;
-    
+
     updateMortgageValues();
 }
 
@@ -2713,9 +2708,9 @@ function updateMortgageValues() {
 
     // Ajustar labels de los sliders
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-    
+
     document.getElementById('mval-prop-display').innerText = `${currencySym}${formatNumber(propVal.toFixed(0))}`;
-    
+
     const downVal = propVal * downPct;
     document.getElementById('mval-down-display').innerText = `${currencySym}${formatNumber(downVal.toFixed(0))} (${(downPct * 100).toFixed(0)}%)`;
     document.getElementById('mval-term-display').innerText = `${termYears} Años`;
@@ -2748,7 +2743,7 @@ function updateMortgageValues() {
     // Evaluar Viabilidad Hipotecaria
     const viabilityBadge = document.getElementById('m-viability-badge');
     const recText = document.getElementById('m-ia-recommendation-text');
-    
+
     // Relación cuota/ingreso simulada en base a ingresos típicos de clase media-alta en Guatemala (Q25,000 / $3,200)
     const simulatedIncome = activeCurrency === 'GTQ' ? 30000 : 3800;
     const ratio = (monthlyPayment / simulatedIncome) * 100;
@@ -2792,7 +2787,7 @@ let activeTerminalCategory = 'apartamentos';
  */
 function switchTerminalCategory(category) {
     activeTerminalCategory = category;
-    
+
     // Actualizar estilos visuales de los botones term-tab
     document.querySelectorAll('.term-tab').forEach(btn => {
         btn.classList.remove('active');
@@ -2801,7 +2796,7 @@ function switchTerminalCategory(category) {
         btn.style.textShadow = 'none';
         btn.style.background = 'transparent';
     });
-    
+
     const activeBtn = document.getElementById(`term-tab-${category}`);
     if (activeBtn) {
         activeBtn.classList.add('active');
@@ -2809,7 +2804,7 @@ function switchTerminalCategory(category) {
         activeBtn.style.color = 'var(--cyan)';
         activeBtn.style.textShadow = '0 0 5px rgba(0,240,255,0.3)';
     }
-    
+
     renderInvestorTable();
 }
 
@@ -2826,17 +2821,17 @@ function renderInvestorTable() {
 
     Object.keys(ZONES_DATABASE).forEach(key => {
         const zone = ZONES_DATABASE[key];
-        
+
         // Mapeo defensivo de categorías con fallback plano retrocompatible
         let priceM2Raw = zone.basePriceM2;
         let roiVal = zone.roi;
         let plusvaliaVal = (zone.growth5Y / 5).toFixed(1);
         let liquidityVal = zone.liquidityIndex;
         let recLabel = 'COMPRAR';
-        
+
         if (key === 'carretera') recLabel = 'VENDER';
         if (key === 'zona14' || key === 'zona10') recLabel = 'MANTENER';
-        
+
         if (zone.categories && zone.categories[activeTerminalCategory]) {
             const cat = zone.categories[activeTerminalCategory];
             priceM2Raw = cat.priceM2;
@@ -2888,28 +2883,28 @@ async function fetchGuatemalaLiveNews() {
         console.log("🛰️ [ValorGT Live] Iniciando enlace de noticias en vivo con Prensa Libre (Economía)...");
         const feedUrl = 'https://www.prensalibre.com/seccion/economia/feed/';
         const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`);
-        
+
         if (!response.ok) throw new Error("Fallo en la respuesta del proxy CORS");
-        
+
         const data = await response.json();
         const xmlText = data.contents;
-        
+
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, "text/xml");
         const items = xmlDoc.getElementsByTagName("item");
-        
+
         for (let i = 0; i < Math.min(items.length, 12); i++) {
             const item = items[i];
             const title = item.getElementsByTagName("title")[0]?.textContent || "";
             if (title) {
                 const cleanTitle = title.trim();
-                const isAlert = cleanTitle.toLowerCase().includes("alerta") || 
-                                cleanTitle.toLowerCase().includes("urgente") || 
-                                cleanTitle.toLowerCase().includes("cae") || 
-                                cleanTitle.toLowerCase().includes("inflación") ||
-                                cleanTitle.toLowerCase().includes("petróleo") ||
-                                cleanTitle.toLowerCase().includes("combustible");
-                
+                const isAlert = cleanTitle.toLowerCase().includes("alerta") ||
+                    cleanTitle.toLowerCase().includes("urgente") ||
+                    cleanTitle.toLowerCase().includes("cae") ||
+                    cleanTitle.toLowerCase().includes("inflación") ||
+                    cleanTitle.toLowerCase().includes("petróleo") ||
+                    cleanTitle.toLowerCase().includes("combustible");
+
                 liveNews.push({
                     tag: isAlert ? 'ALERTA' : 'MERCADO',
                     message: cleanTitle,
@@ -2917,7 +2912,7 @@ async function fetchGuatemalaLiveNews() {
                 });
             }
         }
-        
+
         // Auto-sincronizar noticias frescas en Supabase de forma transparente para nutrir el feed central
         if (liveNews.length > 0 && isSupabaseActive && supabaseClient) {
             for (const news of liveNews) {
@@ -2928,7 +2923,7 @@ async function fetchGuatemalaLiveNews() {
                         .select('id')
                         .eq('message', news.message)
                         .limit(1);
-                        
+
                     if (!exists || exists.length === 0) {
                         await supabaseClient.from('market_news').insert([
                             {
@@ -2958,9 +2953,9 @@ async function initNewsFeed() {
 
     // Agregar primera noticia de sistema por defecto
     appendNewsLog("SYSTEM", "CORE ACTIVE V4.12. Puerto de telemetría de Guatemala ONLINE.", false);
-    
+
     let activeNewsList = [];
-    
+
     // 1. Intentar descargar noticias directamente desde el feed RSS en vivo de Guatemala
     try {
         const liveNews = await fetchGuatemalaLiveNews();
@@ -2971,7 +2966,7 @@ async function initNewsFeed() {
     } catch (liveErr) {
         console.warn("Fallo al obtener noticias RSS directas, intentando desde Supabase...", liveErr);
     }
-    
+
     // 2. Si falló el RSS, intentar descargar noticias de contingencia remota desde Supabase
     if (activeNewsList.length === 0 && isSupabaseActive && supabaseClient) {
         try {
@@ -2980,11 +2975,11 @@ async function initNewsFeed() {
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(20);
-                
+
             if (!error && data && data.length > 0) {
                 console.log(`⚡ [ValorGT AI] Sincronizadas ${data.length} noticias desde Supabase.`);
                 appendNewsLog("SYSTEM", "Enlace satelital de noticias en vivo sincronizado con éxito con la nube de ValorGT.", false);
-                
+
                 activeNewsList = data.map(item => ({
                     tag: item.tag || 'MERCADO',
                     message: item.message,
@@ -2995,13 +2990,13 @@ async function initNewsFeed() {
             console.warn("Fallo al descargar noticias desde Supabase profiles:", dbErr);
         }
     }
-    
+
     // 3. Fallback absoluto de seguridad si ambas fuentes fallaron (sin internet/sin DB)
     if (activeNewsList.length === 0) {
         activeNewsList = [...SIMULATED_NEWS];
         appendNewsLog("SYSTEM", "Corriendo en modo de contingencia local. Cargadas noticias pre-tasadas de ValorGT Labs.", false);
     }
-    
+
     // Función auxiliar para obtener el objeto de noticia de forma estructurada
     const getNewsObject = (idx) => {
         const item = activeNewsList[idx];
@@ -3021,7 +3016,7 @@ async function initNewsFeed() {
         const firstNews = getNewsObject(0);
         appendNewsLog(firstNews.tag, firstNews.message, firstNews.isAlert);
     }
-    
+
     // Loop de noticias dinámico en bucle continuo cada 8 segundos
     let newsIdx = 1 % activeNewsList.length;
     setInterval(() => {
@@ -3045,7 +3040,7 @@ function appendNewsLog(tag, message, isAlert) {
 
     const log = document.createElement('div');
     log.className = 'news-log';
-    
+
     let tagClass = 'log-tag';
     if (tag === 'ALERTA' || isAlert) tagClass += ' alert';
     if (tag === 'SYSTEM' || tag === 'INTEGRIDAD') tagClass += ' system';
@@ -3057,7 +3052,7 @@ function appendNewsLog(tag, message, isAlert) {
     `;
 
     consoleEl.appendChild(log);
-    
+
     // Auto scroll al fondo de la terminal
     consoleEl.scrollTop = consoleEl.scrollHeight;
 }
@@ -3082,7 +3077,7 @@ function formatNumber(num) {
 function animateNumber(id, start, end, duration, prefix = '') {
     const obj = document.getElementById(id);
     if (!obj) return;
-    
+
     const range = end - start;
     let current = start;
     const increment = end > start ? Math.ceil(range / (duration / 10)) : Math.floor(range / (duration / 10));
@@ -3109,7 +3104,7 @@ function updateClock() {
     const mins = String(now.getMinutes()).padStart(2, '0');
     const secs = String(now.getSeconds()).padStart(2, '0');
 
-    timeEl.innerText = `${hrs}:${mins}:${secs} UTC-${Math.abs(now.getTimezoneOffset()/60)}`;
+    timeEl.innerText = `${hrs}:${mins}:${secs} UTC-${Math.abs(now.getTimezoneOffset() / 60)}`;
 }
 
 /* ==========================================================================
@@ -3129,10 +3124,10 @@ let portfolioCircles = [];
 function initPortfolioView() {
     // Sincronizar unidades del formulario con la moneda activa
     updateFormUnits();
-    
+
     // Ejecutar cálculos del portafolio en tiempo real
     updatePortfolioCalculations();
-    
+
     // Iniciar el mapa de Leaflet del portafolio
     setTimeout(initPortfolioMap, 50);
 }
@@ -3142,11 +3137,11 @@ function initPortfolioView() {
  */
 function updateFormUnits() {
     const unitSymbol = activeCurrency === 'GTQ' ? 'Q' : '$';
-    
+
     const buyValueUnit = document.getElementById('p-add-buyvalue-unit');
     const rentUnit = document.getElementById('p-add-rent-unit');
     const freedomBudgetUnit = document.getElementById('p-freedom-budget-unit');
-    
+
     const debtUnit = document.getElementById('p-add-mortgagedebt-unit');
     const paymentUnit = document.getElementById('p-add-mortgagepayment-unit');
     const maintenanceUnit = document.getElementById('p-add-maintenance-unit');
@@ -3155,7 +3150,7 @@ function updateFormUnits() {
     if (buyValueUnit) buyValueUnit.innerText = unitSymbol;
     if (rentUnit) rentUnit.innerText = unitSymbol;
     if (freedomBudgetUnit) freedomBudgetUnit.innerText = unitSymbol;
-    
+
     if (debtUnit) debtUnit.innerText = unitSymbol;
     if (paymentUnit) paymentUnit.innerText = unitSymbol;
     if (maintenanceUnit) maintenanceUnit.innerText = unitSymbol;
@@ -3167,23 +3162,23 @@ function updateFormUnits() {
     document.querySelectorAll('.plan-currency-sym').forEach(el => el.innerText = unitSymbol);
     document.querySelectorAll('.commercial-currency-unit').forEach(el => el.innerText = unitSymbol);
     document.querySelectorAll('.commercial-currency-symbol').forEach(el => el.innerText = unitSymbol);
-    
+
     // Sincronizar números de precios de planes y sus equivalentes
     ['basico', 'pro', 'vip', 'premium'].forEach(plan => {
         const numEl = document.getElementById(`price-num-${plan}`);
         if (numEl) {
-            numEl.innerText = activeCurrency === 'GTQ' 
-                ? formatNumber(numEl.getAttribute('data-gtq')) 
+            numEl.innerText = activeCurrency === 'GTQ'
+                ? formatNumber(numEl.getAttribute('data-gtq'))
                 : formatNumber(numEl.getAttribute('data-usd'));
         }
-        
+
         const equivEl = document.getElementById(`price-equiv-${plan}`);
         if (equivEl && numEl) {
             equivEl.innerText = activeCurrency === 'GTQ'
                 ? `(equiv. $${numEl.getAttribute('data-usd')} USD)`
                 : `(equiv. Q${numEl.getAttribute('data-gtq')})`;
         }
-        
+
         const signupNumEl = document.getElementById(`signup-price-${plan}`);
         const signupCardEl = document.getElementById(`signup-plan-${plan}`);
         if (signupNumEl && signupCardEl) {
@@ -3216,7 +3211,7 @@ function updateFormUnits() {
  */
 function convertPortfolioFormInputs(toCurrency) {
     const factor = toCurrency === 'GTQ' ? exchangeRate : (1 / exchangeRate);
-    
+
     const inputs = [
         'p-add-buyvalue',
         'p-add-rent',
@@ -3227,7 +3222,7 @@ function convertPortfolioFormInputs(toCurrency) {
         'p-freedom-budget',
         'pub-price'
     ];
-    
+
     inputs.forEach(id => {
         const input = document.getElementById(id);
         if (input && input.value) {
@@ -3245,7 +3240,7 @@ function convertPortfolioFormInputs(toCurrency) {
 function toggleMortgageInputs(checked) {
     const container = document.getElementById('mortgage-fields-container');
     if (!container) return;
-    
+
     if (checked) {
         container.classList.remove('hidden');
     } else {
@@ -3317,7 +3312,7 @@ function updatePortfolioCalculations() {
     // --- CÁLCULOS PROYECTADOS SEGÚN EL PLAZO SELECCIONADO (TIME TRAVEL SIMULATOR) ---
     const years = activePortfolioProjYears;
     const isProjected = years > 0;
-    
+
     let displayValueUSD = totalValueUSD;
     let displayDebtUSD = totalDebtUSD;
     let displayEquityUSD = totalEquityUSD;
@@ -3331,13 +3326,13 @@ function updatePortfolioCalculations() {
         displayValueUSD = totalValueUSD * Math.pow(1 + growthRate, years);
         displayDebtUSD = Math.max(totalDebtUSD * Math.pow(1 - 0.065, years), 0);
         displayEquityUSD = displayValueUSD - displayDebtUSD;
-        
+
         // Renta y gastos suben con la inflación (ej. 2.5% anual)
         displayRentUSD = totalRentUSD * Math.pow(1 + 0.025, years);
         displayExpensesUSD = totalExpensesUSD * Math.pow(1 + 0.025, years);
         // Si la deuda proyectada es extremadamente baja, asumimos que se canceló y cuota cae a 0
         displayPaymentsUSD = displayDebtUSD > 1000 ? totalPaymentsUSD : 0;
-        
+
         displayNetCashflowUSD = displayRentUSD - displayPaymentsUSD;
     }
 
@@ -3349,10 +3344,10 @@ function updatePortfolioCalculations() {
     animateNumber('pkpi-total-value', 0, displayValueUSD * conversion, 600, currencySym);
     animateNumber('pkpi-total-debt', 0, displayDebtUSD * conversion, 600, currencySym);
     animateNumber('pkpi-total-equity', 0, displayEquityUSD * conversion, 600, currencySym);
-    
+
     document.getElementById('pkpi-total-rent').innerText = `${currencySym}${formatNumber((displayRentUSD * conversion).toFixed(0))}/m`;
     document.getElementById('pkpi-total-payments').innerText = `${currencySym}${formatNumber((displayPaymentsUSD * conversion).toFixed(0))}/m`;
-    
+
     const cashflowEl = document.getElementById('pkpi-net-cashflow');
     const netCashflowVal = displayNetCashflowUSD * conversion;
     cashflowEl.innerText = `${currencySym}${formatNumber(netCashflowVal.toFixed(0))}/m`;
@@ -3430,7 +3425,7 @@ function updateInvestorRank(totalValueUSD) {
     if (!rankEl || !badgeEl) return;
 
     badgeEl.className = 'investor-rank-badge font-mono'; // Reset classes
-    
+
     if (totalValueUSD < 250000) {
         rankEl.innerText = "Inversionista Inicial";
         rankEl.className = "badge-val text-cyan";
@@ -3459,7 +3454,7 @@ function renderPortfolioList() {
     if (!container) return;
 
     container.innerHTML = ''; // Limpiar
-    
+
     // Ordenar activos por valor actual de forma descendente (los más premium primero)
     userPortfolio.sort((a, b) => {
         let valA = a.currentValue * (a.isRemodeled ? 1.10 : 1);
@@ -3491,7 +3486,7 @@ function renderPortfolioList() {
 
         const card = document.createElement('div');
         card.className = `asset-card`;
-        
+
         card.innerHTML = `
             <div class="asset-header">
                 <div class="asset-title-area">
@@ -3586,12 +3581,12 @@ function addAssetToPortfolio(event) {
     let buyValue = parseFloat(document.getElementById('p-add-buyvalue').value);
     let rent = parseFloat(document.getElementById('p-add-rent').value);
     const hasMortgage = document.getElementById('p-add-has-mortgage').checked;
-    
+
     let mortgageDebt = parseFloat(document.getElementById('p-add-mortgagedebt').value) || 0;
     let mortgagePayment = parseFloat(document.getElementById('p-add-mortgagepayment').value) || 0;
     let interestRate = parseFloat(document.getElementById('p-add-mortgagerate').value) || 0;
     let termYears = parseInt(document.getElementById('p-add-mortgageterm').value) || 0;
-    
+
     let maintenance = parseFloat(document.getElementById('p-add-maintenance').value) || 0;
     let taxes = parseFloat(document.getElementById('p-add-taxes').value) || 0;
 
@@ -3681,7 +3676,7 @@ function updateFinancialFreedomStatus(netCashflowUSD, totalEquityUSD) {
     if (!budgetInput) return;
 
     let desiredBudget = parseFloat(budgetInput.value) || 4000;
-    
+
     // Si la moneda activa es GTQ, deseado está en quetzales, convertimos a USD para procesar internamente
     if (activeCurrency === 'GTQ') {
         desiredBudget /= exchangeRate;
@@ -3709,12 +3704,12 @@ function updateFinancialFreedomStatus(netCashflowUSD, totalEquityUSD) {
     }
 
     document.getElementById('freedom-pct-val').innerText = `${freedomPct.toFixed(0)}%`;
-    
+
     // Actualizar stats financieras de libertad
     document.getElementById('freedom-cashflow-val').innerText = `${currencySym}${formatNumber((cashflow * conversion).toFixed(0))}`;
-    
+
     // Meta patrimonial recomendada: 120 meses (10 años) de tu presupuesto de vida deseado libre de deuda
-    const targetEquityUSD = desiredBudget * 120; 
+    const targetEquityUSD = desiredBudget * 120;
     document.getElementById('freedom-target-equity').innerText = `${currencySym}${formatNumber((targetEquityUSD * conversion).toFixed(0))}`;
 }
 
@@ -3736,7 +3731,7 @@ function runAiStrategyAdvisor(totalValueUSD, totalDebtUSD, netCashflowUSD, avgRo
     consoleEl.innerHTML = ''; // Limpiar anterior
 
     const debtRatio = totalValueUSD > 0 ? (totalDebtUSD / totalValueUSD) * 100 : 0;
-    
+
     let adviceHtml = '';
 
     // Diagnóstico del Nivel de Apalancamiento
@@ -3823,7 +3818,7 @@ function initPortfolioMap() {
     }
 
     const guatemalaCityCenter = [14.5956, -90.4851];
-    
+
     portfolioMapInstance = L.map('portfolio-map', {
         center: guatemalaCityCenter,
         zoom: 12,
@@ -3937,7 +3932,7 @@ function updatePortfolioMapMarkers() {
             signalItem.className = 'signal-item';
             signalItem.style.borderLeft = '3px solid var(--neon-purple)';
             signalItem.style.cursor = 'pointer';
-            
+
             signalItem.innerHTML = `
                 <span class="signal-badge" style="background-color: rgba(191, 90, 242, 0.15); color: var(--neon-purple); border: 1px solid rgba(191, 90, 242, 0.3);">ACTIVO ACTIVO</span>
                 <span class="signal-name">${asset.title}</span>
@@ -3947,7 +3942,7 @@ function updatePortfolioMapMarkers() {
                     • Plusvalía Proy: +${plusvaliaAnual.toFixed(1)}% / año
                 </span>
             `;
-            
+
             signalItem.onclick = () => {
                 if (asset.lat && asset.lng && marker) {
                     marker.openPopup();
@@ -3956,7 +3951,7 @@ function updatePortfolioMapMarkers() {
                     alert("Este activo no tiene coordenadas GPS válidas cargadas (registrado con 0,0).");
                 }
             };
-            
+
             signalListEl.appendChild(signalItem);
         }
     });
@@ -3978,7 +3973,7 @@ function saveActiveValuationToPortfolio() {
     }
 
     const hasUnlimitedAccess = isCommercialAuthenticated && loggedInB2bClient && (
-        ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') || 
+        ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') ||
         (loggedInB2bClient.role === 'agente' && (activeB2bPlan === 'vip' || activeB2bPlan === 'pro'))
     );
 
@@ -4108,7 +4103,7 @@ function autofillPublishFormFromValuation() {
         const locVal = document.getElementById('pub-location').value;
         const pubCategory = document.getElementById('pub-category')?.value || 'Apartamento';
         const zoneData = ZONES_DATABASE[locVal];
-        
+
         if (zoneData) {
             let categoryKey = 'apartamentos';
             if (pubCategory === 'Apartamento') categoryKey = 'apartamentos';
@@ -4116,12 +4111,12 @@ function autofillPublishFormFromValuation() {
             else if (pubCategory === 'Local') categoryKey = 'locales';
             else if (pubCategory === 'Bodega') categoryKey = 'bodegas';
             else if (pubCategory === 'Terreno') categoryKey = 'terrenos';
-            
+
             let targetPriceM2 = zoneData.basePriceM2;
             if (zoneData.categories && zoneData.categories[categoryKey]) {
                 targetPriceM2 = zoneData.categories[categoryKey].priceM2;
             }
-            
+
             const basePrice = targetPriceM2 * sizeVal;
             const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
             document.getElementById('pub-price').value = Math.round(basePrice * conversion);
@@ -4158,7 +4153,7 @@ function autofillPublishFormFromValuation() {
         { from: 'near-roads', to: 'pub-near-roads', type: 'checked' },
         { from: 'room-master-suite', to: 'pub-room-master-suite', type: 'checked' },
         { from: 'bath-visitor', to: 'pub-bath-visitor', type: 'checked' },
-        
+
         { from: 'area-living', to: 'pub-area-living', type: 'checked' },
         { from: 'area-dining', to: 'pub-area-dining', type: 'checked' },
         { from: 'area-kitchen', to: 'pub-area-kitchen', type: 'checked' },
@@ -4208,7 +4203,7 @@ function autofillPublishFormFromValuation() {
     let newTitle = `${cat} Premium en `;
     if (res) newTitle += `${res}, ${locName}`;
     else newTitle += locName;
-    
+
     const sizeVal = document.getElementById('pub-size').value;
     newTitle += ` (${sizeVal}m²)`;
     document.getElementById('pub-title').value = newTitle;
@@ -4248,7 +4243,7 @@ function sendPortfolioAiChatMessage() {
     // Calcular métricas actuales del portafolio del inversionista para personalización inteligente
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
     const totalAssets = userPortfolio.length;
-    
+
     let totalValUSD = 0;
     let totalRentUSD = 0;
     let totalDebtUSD = 0;
@@ -4329,14 +4324,14 @@ function sendPortfolioAiChatMessage() {
             • <strong>Estabilidad y Plazos Contractuales:</strong> Los contratos comerciales con marcas o empresas corporativas se pactan a plazos mínimos de 3 a 5 años (con incrementos anuales de renta indexados de entre 3% y 5% en dólares), en comparación con el estándar de 1 año residencial. Esto reduce significativamente la vacancia y la rotación.<br><br>
             • <strong>Menores Costes de Rotación y Remodelación:</strong> Típicamente los locales se entregan en obra gris. El inquilino invierte su propio capital en equipar y adecuar el local a sus necesidades de marca, lo que genera un alto costo de salida para él, blindando su permanencia.<br><br>
             • <strong>Recomendación IA para tu portafolio:</strong> Cuentas con una capacidad de apalancamiento crediticio robusta de hasta <strong>${currencySym}${formatNumber((totalRent * 0.45).toFixed(0))}</strong> mensuales. Te aconsejo apalancar la compra de un local comercial en preventa en el sector de <em>Zona 16 Cayalá</em> para maximizar tu flujo pasivo neto.`;
-        } 
+        }
         else if (cleanMsg.includes('apartamento') || cleanMsg.includes('apartamentos') || cleanMsg.includes('casa') || cleanMsg.includes('casas') || cleanMsg.includes('residencial') || cleanMsg.includes('vivienda') || cleanMsg.includes('habitación') || cleanMsg.includes('condominio')) {
             reply = `🏠 <strong>Análisis del Sector Residencial (Casas y Apartamentos):</strong><br><br>
             • <strong>Rendimiento de Renta vs Plusvalía:</strong> Los apartamentos residenciales en zonas de alta demanda vertical como Zona 14, Zona 15 y Zona 10 ofrecen rendimientos por renta tradicional de entre <strong>5.5% y 6.5% anual</strong>. Sin embargo, su mayor fortaleza es la **plusvalía constante (+7.0% a +9.5% anual)** en proyectos sobre planos de desarrolladores consolidados en Guatemala.<br><br>
             • <strong>La Revolución de Airbnb / Renta Corta:</strong> Si tu apartamento está ubicado en áreas turísticas o corporativas vibrantes (como Zona 4 Cuatro Grados Norte, Zona 10 o Zona 16 Cayalá), rentarlo en formato vacacional (Airbnb) puede incrementar tu rendimiento neto al <strong>9.0% - 11.0% anual</strong>, asumiendo una tasa de ocupación del 70%-75%. Requiere una gestión operativa más activa y gastos de lavandería/limpieza.<br><br>
             • <strong>Liquidez y Salida:</strong> El mercado residencial es el más líquido del país. Si necesitas vender para obtener liquidez, un apartamento residencial se venderá hasta 3 veces más rápido que un local comercial o una bodega industrial.<br><br>
             • <strong>Consejo IA:</strong> Utiliza apartamentos residenciales en planos para capturar plusvalía y "acumular riqueza especulativa". Para "generar flujo neto inmediato para vivir", los **locales comerciales** son una opción superior en este momento en Guatemala.`;
-        } 
+        }
         else if (cleanMsg.includes('bodega') || cleanMsg.includes('bodegas') || cleanMsg.includes('industrial') || cleanMsg.includes('industria') || cleanMsg.includes('almacen')) {
             reply = `🏭 <strong>Análisis de Bodegas e Infraestructura Industrial:</strong><br><br>
             • <strong>Yields del Sector Logístico:</strong> Las bodegas en la periferia industrial de Guatemala (Mixco, Villa Nueva, Amatitlán y Palín) ofrecen rendimientos de renta sumamente sólidos de entre <strong>8.0% y 9.5% anual</strong>.<br><br>
@@ -4348,7 +4343,7 @@ function sendPortfolioAiChatMessage() {
             • <strong>Plusvalía Especulativa Pura:</strong> Los terrenos en áreas de alta expansión de condominios como Fraijanes, San José Pinula, San Lucas Sacatepéquez y CAES (Km 18 al 28) reportan crecimientos de valor de hasta el **12% anual** en fases tempranas de urbanización.<br><br>
             • <strong>Advertencia Crítica de Flujo:</strong> Un terreno es un activo de **flujo de caja libre nulo o negativo** (tienes que pagar IUSI y mantenimiento de condominio sin recibir ingresos mensuales), a menos que lo arriendes comercialmente para parqueos o antenas de telecomunicación. Esto penaliza tu capacidad de crédito y liquidez en el portafolio.<br><br>
             • <strong>Consejo IA:</strong> Invierte en tierras únicamente si ya cuentas con un flujo robusto y excedentes mensuales que provengan de locales comerciales arriendados u oficinas. Los terrenos son excelentes vehículos de preservación de riqueza generacional, pero pésimos generadores de estilo de vida en el corto plazo.`;
-        } 
+        }
         else if (cleanMsg.includes('tasa') || cleanMsg.includes('interés') || cleanMsg.includes('interes') || cleanMsg.includes('crédito') || cleanMsg.includes('credito') || cleanMsg.includes('préstamo') || cleanMsg.includes('prestamo') || cleanMsg.includes('hipoteca') || cleanMsg.includes('banco') || cleanMsg.includes('bancario') || cleanMsg.includes('financiar') || cleanMsg.includes('fha')) {
             reply = `🏦 <strong>Análisis de Financiamiento y Tasas en Guatemala (2026):</strong><br><br>
             • <strong>Créditos de Vivienda FHA:</strong> Las tasas activas FHA en Quetzales para vivienda propia o inversión residencial se encuentran actualmente entre el <strong>7.0% y el 8.25% anual</strong>, con plazos de hasta 25 o 30 años y enganches desde el 5% en bancos autorizados (e.g. Banco Industrial, BANRURAL, BAC, G&T Continental). Es el financiamiento más barato y seguro del país.<br><br>
@@ -4359,7 +4354,7 @@ function sendPortfolioAiChatMessage() {
             reply = `🟢 <strong>Optimización de Renta Inmobiliaria:</strong> Con base en tus ${totalAssets} activos, generas un flujo de renta bruta mensual de <strong>${currencySym}${formatNumber(totalRent.toFixed(0))}</strong>. <br><br>Para maximizar tu cashflow neto, recomiendo:<br>
             • Incrementar la renta un <strong>5%</strong> en tu activo <em>Oficina Plaza República Z10</em> para capturar la plusvalía del sector comercial corporativo.<br>
             • Amortizar capital de forma acelerada sobre la hipoteca de Cayalá Z16 para disminuir los cargos por intereses y liberar flujo de caja neto.`;
-        } 
+        }
         else if (cleanMsg.includes('zona') || cleanMsg.includes('zonas') || cleanMsg.includes('cayala') || cleanMsg.includes('naranjo') || cleanMsg.includes('salvador') || cleanMsg.includes('fraijanes') || cleanMsg.includes('san cristobal') || cleanMsg.includes('zona 10') || cleanMsg.includes('zona 14') || cleanMsg.includes('zona 15') || cleanMsg.includes('zona 4') || cleanMsg.includes('carretera')) {
             reply = `🌐 <strong>Análisis Geográfico de Inversión en Guatemala:</strong><br><br>
             • <strong>Zona 16 (Cayalá, Lomas, Cardales):</strong> Máxima plusvalía del mercado residencial (+8.4% anualizado) y alta absorción en preventas. Atrae perfiles familiares de altos ingresos.<br><br>
@@ -4427,14 +4422,14 @@ function checkIfClientIsFounder(client) {
         return true;
     }
     const plan = (client.plan || '').toLowerCase();
-    return client.isFounderPremium === true || 
-           plan === 'founder' || 
-           (plan === 'vip' && (
-               client.isFounderPremium === true || 
-               localStorage.getItem(`valorgt_is_founder_${email}`) === 'true' ||
-               (client.company && client.company.includes('Promo VGT-0626')) ||
-               client.is_founder_premium === true
-           ));
+    return client.isFounderPremium === true ||
+        plan === 'founder' ||
+        (plan === 'vip' && (
+            client.isFounderPremium === true ||
+            localStorage.getItem(`valorgt_is_founder_${email}`) === 'true' ||
+            (client.company && client.company.includes('Promo VGT-0626')) ||
+            client.is_founder_premium === true
+        ));
 }
 
 /**
@@ -4460,7 +4455,7 @@ function updateB2bPartnerLevelBadge() {
 
     const dbPlan = client.plan || 'Pro';
     const plan = dbPlan.toLowerCase();
-    
+
     const isFounder = checkIfClientIsFounder(client);
 
     if (isFounder) {
@@ -4476,11 +4471,11 @@ function updateB2bPartnerLevelBadge() {
         const isPremium = (dbPlan === 'VIP' || dbPlan === 'Premium' || plan === 'premium' || plan === 'vip');
         const isPro = (dbPlan === 'Pro' || plan === 'pro');
         const isInvestor = (client.role || '').toLowerCase() === 'inversionista';
-        
-        partnerLevelEl.innerText = isPremium ? 
-            (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") : 
+
+        partnerLevelEl.innerText = isPremium ?
+            (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") :
             (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
-            
+
         partnerLevelEl.style.color = "var(--cyan)";
         partnerLevelEl.style.textShadow = "0 0 10px rgba(0, 240, 255, 0.35)";
         if (badgeEl) {
@@ -4585,7 +4580,7 @@ async function renderB2bReferralsList() {
         const refCompany = ref.company && ref.company !== 'Inversiones VGT' && ref.company !== 'Particular' ? ` (${ref.company})` : '';
         const refPlan = (ref.plan || 'Pro').toUpperCase();
         const refStatus = (ref.status || 'activo').toLowerCase() === 'activo' ? '🟢 Activo' : '🔴 Inactivo';
-        
+
         return `
             <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 4px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); gap: 10px; width: 100%; box-sizing: border-box;">
                 <div style="display: flex; flex-direction: column; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -4608,7 +4603,7 @@ async function renderB2bReferralsList() {
 function updateLockOverlaysState() {
     const isInvestor = loggedInB2bClient && ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista');
     const isPending = loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente');
-    
+
     const goldLock = document.getElementById('commercial-gold-overlay-lock');
     const promoLock = document.getElementById('commercial-promo-overlay-lock');
     const btnPromote = document.getElementById('btn-promote-property');
@@ -4618,17 +4613,17 @@ function updateLockOverlaysState() {
     const email = client ? (client.email || '').toLowerCase() : '';
     const dbPlan = client ? (client.plan || 'Pro') : 'Pro';
     const plan = dbPlan.toLowerCase();
-    
+
     const isFounder = checkIfClientIsFounder(client);
 
-    // La cartera de Tether Gold (Gold Wallet) y la promo se desbloquean completamente para el Plan Único Pro y Fundadores
+    // La cartera de Tether Gold (Gold Wallet) es exclusiva del Plan Premium (y Fundadores/VIP)
     const unlockGold = isFounder || (!isPending && (
-        plan === 'pro' || plan === 'vip' || plan === 'premium' || plan === 'activo' || plan === 'plan único'
+        plan === 'vip' || plan === 'premium'
     ));
     const unlockPromo = isFounder || (!isPending && (plan === 'pro' || plan === 'vip' || plan === 'premium' || plan === 'activo' || plan === 'plan único'));
 
     if (goldLockMessage) {
-        goldLockMessage.innerText = "La Cartera de Oro Digital (XAUt Ledger) y la consola de retiros son privilegios incluidos en la Suscripción ValorGT Pro. Activa tu membresía para desbloquear tu Cartera de Oro.";
+        goldLockMessage.innerText = "La Cartera de Oro Digital (XAUt Ledger), retiros bancarios, transferencias P2P y airdrops en oro son beneficios exclusivos del Plan Premium (Q505 / $65 USD al mes). Actualiza tu membresía a Plan Premium para desbloquear tu Cartera de Oro.";
     }
 
     if (unlockGold) {
@@ -4652,7 +4647,7 @@ function updateLockOverlaysState() {
 function initCommercialView() {
     const loginGate = document.getElementById('commercial-login-gate');
     const dashboardArea = document.getElementById('commercial-dashboard-area');
-    
+
     if (!isCommercialAuthenticated) {
         if (loginGate) loginGate.classList.remove('hidden');
         if (dashboardArea) dashboardArea.classList.add('hidden');
@@ -4661,27 +4656,27 @@ function initCommercialView() {
     } else {
         if (loginGate) loginGate.classList.add('hidden');
         if (dashboardArea) dashboardArea.classList.remove('hidden');
-        
+
         // Asegurar que la vista comercial esté activa en las clases del DOM
         document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
         const commView = document.getElementById('view-commercial');
         if (commView) commView.classList.add('active');
-        
+
         document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
         const commBtn = document.getElementById('nav-btn-commercial');
         if (commBtn) commBtn.classList.add('active');
     }
-    
+
     // Cargar el portafolio del usuario activo (o vacío si es la primera vez)
     loadUserPortfolio();
-    
+
     // Cargar historial de retiros bancarios del usuario activo
     if (loggedInB2bClient) {
         loadUserWithdrawals(loggedInB2bClient.email);
     } else {
         b2bWithdrawals = [];
     }
-    
+
     const b2bHeader = document.getElementById('commercial-header-hud');
     if (b2bHeader) b2bHeader.style.display = 'flex';
 
@@ -4706,12 +4701,12 @@ function initCommercialView() {
     const isInvestor = loggedInB2bClient && ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista');
     const clientPlan = loggedInB2bClient && loggedInB2bClient.plan ? loggedInB2bClient.plan.toLowerCase() : '';
     const isFounder = loggedInB2bClient && checkIfClientIsFounder(loggedInB2bClient);
-    
+
     const btnPropiedades = document.getElementById('comm-tab-btn-propiedades');
     const btnPropiedadesList = document.getElementById('comm-tab-btn-propiedades-list');
     const btnPortfolio = document.getElementById('comm-tab-btn-portfolio') || document.getElementById('comm-tab-btn-portfolio-redirect');
     const btnOro = document.getElementById('comm-tab-btn-oro');
-    
+
     if (isFounder) {
         if (btnOro) {
             btnOro.style.display = 'flex';
@@ -4729,7 +4724,7 @@ function initCommercialView() {
         // Agente
         if (btnPropiedades) btnPropiedades.style.display = 'flex';
         if (btnPropiedadesList) btnPropiedadesList.style.display = 'flex';
-        
+
         // Mostrar "Portafolio IA" para agentes Pro o VIP
         if (clientPlan === 'pro' || clientPlan === 'vip' || clientPlan === 'vip premium') {
             if (btnPortfolio) btnPortfolio.style.display = 'flex';
@@ -4783,7 +4778,7 @@ function initCommercialView() {
                     syncBadge.style.alignItems = 'center';
                     syncBadge.style.gap = '4px';
                     syncBadge.innerHTML = `<span class="neon-spinner" style="width: 8px; height: 8px; border-width: 1px; animation: spin 0.8s linear infinite; display: inline-block;"></span> SINCRONIZANDO...`;
-                    
+
                     const h2 = titleContainer.querySelector('h2');
                     if (h2) h2.appendChild(syncBadge);
                 }
@@ -4816,7 +4811,7 @@ function initCommercialView() {
                 if (!reqErr && approvedReqs && approvedReqs.length > 0) {
                     const req = approvedReqs[0];
                     console.log("⚡ [ValorGT Sync] ¡Detectado comprobante aprobado por el admin en la nube! Auto-activando perfil...");
-                    
+
                     const isSub = req.concept && req.concept.startsWith('Suscripción');
                     let dbPlan = 'Pro';
                     if (req.planKey === 'basico') dbPlan = 'Basico';
@@ -4843,7 +4838,7 @@ function initCommercialView() {
                         .then(({ error: profErr }) => {
                             if (!profErr) {
                                 console.log("✔️ Perfil activado con éxito por el propio cliente.");
-                                
+
                                 // Eliminar la solicitud de pago aprobada para limpiar la tabla
                                 supabaseClient
                                     .from('payment_requests')
@@ -4862,7 +4857,7 @@ function initCommercialView() {
                                 localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
 
                                 alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales.");
-                                
+
                                 renderB2bAgentProfile();
                                 updateSaasMetricsHUD();
                                 updateB2bSubscriptionPendingBanner();
@@ -4890,7 +4885,7 @@ function initCommercialView() {
                     let dbRole = data.role || 'agente';
                     const dbBillingPeriod = data.billing_period || 'mensual';
                     const dbIsFounder = data.is_founder_premium === true;
-                    
+
                     // Sanitizar cuentas demo e inversionistas en Supabase sync
                     const emailLower = (loggedInB2bClient.email || '').toLowerCase();
                     const roleLower = dbRole.toLowerCase();
@@ -4899,8 +4894,8 @@ function initCommercialView() {
                         // Auto-correct DB plan for investor if it is wrong (using authenticated client RLS bypass)
                         if (data.plan !== 'Premium') {
                             supabaseClient.from('profiles').update({ plan: 'Premium' }).eq('id', loggedInB2bClient.id)
-                            .then(() => console.log("⚡ [Auto-Heal] Updated investor plan to Premium in remote database."))
-                            .catch(err => console.error("⚠️ [Auto-Heal] Failed to update investor plan in remote database:", err));
+                                .then(() => console.log("⚡ [Auto-Heal] Updated investor plan to Premium in remote database."))
+                                .catch(err => console.error("⚠️ [Auto-Heal] Failed to update investor plan in remote database:", err));
                         }
                     } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                         dbPlan = 'VIP';
@@ -4918,10 +4913,10 @@ function initCommercialView() {
                             loggedInB2bClient.name = 'Jaime Mejía';
                         }
                     }
-                    
+
                     if (loggedInB2bClient.status !== dbStatus || loggedInB2bClient.plan !== dbPlan || loggedInB2bClient.usdtBalance !== dbBalance || loggedInB2bClient.role !== dbRole || loggedInB2bClient.billing_period !== dbBillingPeriod || loggedInB2bClient.is_founder_premium !== dbIsFounder) {
                         const oldStatus = loggedInB2bClient.status;
-                        
+
                         loggedInB2bClient.status = dbStatus;
                         loggedInB2bClient.plan = dbPlan;
                         loggedInB2bClient.usdtBalance = dbBalance;
@@ -4930,18 +4925,18 @@ function initCommercialView() {
                         loggedInB2bClient.is_founder_premium = dbIsFounder;
                         loggedInB2bClient.isFounderPremium = dbIsFounder;
                         activeB2bPlan = (dbPlan || 'pro').toLowerCase();
-                        
+
                         localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
-                        
+
                         console.log(`[B2B Sync] Perfil actualizado automáticamente: Status ${oldStatus} -> ${dbStatus}, Plan -> ${dbPlan}, Rol -> ${dbRole}, Periodo -> ${dbBillingPeriod}`);
-                        
+
                         // Si pasó de Pendiente a Activo, lanzar alerta al usuario
                         if ((oldStatus === 'Pendiente' || (oldStatus || '').toLowerCase() === 'pendiente') && dbStatus === 'Activo') {
                             alert("🎉 ¡EXCELENTE NOTICIA!\n\nTu suscripción ha sido verificada y aprobada por la administración de ValorGT®.\nAhora tienes acceso completo a todas las herramientas profesionales.");
                         }
-                        
+
                     }
-                    
+
                     // Actualizar siempre la UI local para reflejar los datos actualizados y el saludo de Jaime
                     updateB2bPartnerLevelBadge();
                     renderB2bAgentProfile();
@@ -4959,7 +4954,7 @@ function initCommercialView() {
             })
             .catch(err => console.warn("Error en sincronización en segundo plano de perfil:", err));
     }
-    
+
     renderPublicPricingGrid();
     if (typeof updateAssistantVisibility === 'function') {
         updateAssistantVisibility();
@@ -5176,7 +5171,7 @@ function registerB2bClient(event) {
 
     // Limpiar formulario
     document.getElementById('b2b-client-form').reset();
-    
+
     // Alerta de éxito
     alert(`Cliente comercial "${name}" registrado con éxito en la base de datos B2B SaaS.`);
 }
@@ -5194,12 +5189,6 @@ function updateSaasMetricsHUD() {
     let planFriendlyName = 'Ninguno';
 
     if (loggedInB2bClient) {
-        // Enforce Premium plan for all inversionistas
-        if ((loggedInB2bClient.role || '').toLowerCase() === 'inversionista') {
-            loggedInB2bClient.plan = 'Premium';
-            activeB2bPlan = 'premium';
-        }
-
         const email = (loggedInB2bClient.email || '').toLowerCase();
         const isPending = loggedInB2bClient.status && (loggedInB2bClient.status.toLowerCase() === 'pendiente');
         const isInvestor = (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
@@ -5220,25 +5209,21 @@ function updateSaasMetricsHUD() {
                 billingUSD = billingGTQ / exchangeRate;
                 planFriendlyName = 'Miembro Fundador';
             } else if (plan === 'básico' || plan === 'basico') {
-                billingGTQ = 140;
-                billingUSD = 18;
-                planFriendlyName = 'Agente Individual';
+                billingGTQ = 235;
+                billingUSD = 30;
+                planFriendlyName = 'Plan Pro';
             } else if (plan === 'pro') {
-                billingGTQ = 240;
-                billingUSD = 31;
-                planFriendlyName = 'Inmobiliaria Pro';
-            } else if (plan === 'premium') {
-                billingGTQ = 340;
-                billingUSD = 43.70;
-                planFriendlyName = 'Inversionista Premium';
-            } else if (plan === 'vip') {
-                billingGTQ = 640;
-                billingUSD = 82;
-                planFriendlyName = 'Inmobiliaria Premium';
+                billingGTQ = 235;
+                billingUSD = 30;
+                planFriendlyName = 'Plan Pro';
+            } else if (plan === 'premium' || plan === 'vip') {
+                billingGTQ = 505;
+                billingUSD = 65;
+                planFriendlyName = 'Plan Premium';
             } else {
-                billingGTQ = 0;
-                billingUSD = 0;
-                planFriendlyName = 'Plan Personalizado';
+                billingGTQ = 235;
+                billingUSD = 30;
+                planFriendlyName = 'Plan Pro';
             }
         } else {
             billingGTQ = 0;
@@ -5269,7 +5254,7 @@ function updateSaasMetricsHUD() {
 
         impressions += (standardProperties * 180) + (sponsoredProperties * 2200);
         clicks += (standardProperties * 8) + (sponsoredProperties * 110);
-        
+
         // Sincronizar clicks con variable de estado por si se incrementa externamente
         saasClientClicks = clicks;
         saasImpressionsCount = impressions;
@@ -5282,18 +5267,17 @@ function updateSaasMetricsHUD() {
             } else {
                 const period = (loggedInB2bClient.billing_period || loggedInB2bClient.billingPeriod || localStorage.getItem(`valorgt_billing_period_${email}`) || 'mensual').toLowerCase();
                 const isAnnual = period === 'anual';
-                
+
                 if (isFounder) {
                     const monthlyStyle = !isAnnual ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); font-weight: bold;' : 'color: var(--text-muted); opacity: 0.7;';
                     const annualStyle = isAnnual ? 'color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); font-weight: bold;' : 'color: var(--text-muted); opacity: 0.7;';
                     const monthlyText = activeCurrency === 'GTQ' ? 'Q250.00/mes' : '$32.00/mes';
                     const annualText = activeCurrency === 'GTQ' ? 'Q2,550.00/año' : '$326.40/año';
-                    
+
                     billingSubEl.innerHTML = `💳 PLAN: MIEMBRO FUNDADOR (<span style="${monthlyStyle}">${monthlyText}</span> | <span style="${annualStyle}">${annualText}</span>)`;
                 } else {
                     const periodLabel = isAnnual ? 'Anual' : 'Mensual';
-                    const formattedPrice = activeCurrency === 'GTQ' ? `Q${formatNumber(billingGTQ.toFixed(2))}` : `$${formatNumber(billingUSD.toFixed(2))}`;
-                    billingSubEl.innerText = `💳 PLAN: ${planFriendlyName.toUpperCase()} (${periodLabel} - ${formattedPrice})`;
+                    billingSubEl.innerText = `💳 ${planFriendlyName.toUpperCase()} (${periodLabel}: Q${formatNumber(billingGTQ.toFixed(0))} / $${formatNumber(billingUSD.toFixed(0))} USD)`;
                 }
             }
         }
@@ -5361,14 +5345,14 @@ function updateSaasMetricsHUD() {
         if (usdtCard) {
             usdtCard.innerText = `${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt`;
         }
-        
+
         // Actualizar tarjeta de cotización de XAUt en vivo
         const priceCard = document.getElementById('saas-xaut-price-card');
         const priceSubCard = document.getElementById('saas-xaut-price-sub-card');
         if (priceCard) {
             const xautPrice = currentAirdropXautPrice || 2380.00;
             priceCard.innerText = `$${formatNumber(xautPrice.toFixed(2))} USD`;
-            
+
             if (priceSubCard) {
                 if (activeCurrency === 'GTQ') {
                     const priceInGTQ = xautPrice * exchangeRate;
@@ -5388,18 +5372,18 @@ function updateSaasMetricsHUD() {
             const isPremium = (loggedInB2bClient.plan === 'VIP' || loggedInB2bClient.plan === 'Premium');
             const refActiveControls = document.getElementById('b2b-referral-active-controls');
             const refLockedMessage = document.getElementById('b2b-referral-locked-message');
-            
+
             if (isPremium && !isPending) {
                 if (refActiveControls) refActiveControls.classList.remove('hidden');
                 if (refLockedMessage) refLockedMessage.classList.add('hidden');
-                
+
                 // Generar código de referidos basado en su nombre
                 let codeSeed = 'VGT';
                 if (loggedInB2bClient.name) {
                     codeSeed = loggedInB2bClient.name.trim().split(' ')[0].toUpperCase().replace(/[^A-Z]/g, '');
                 }
                 const refCode = `REF-${codeSeed}${loggedInB2bClient.id.substring(loggedInB2bClient.id.length - 4).toUpperCase()}`;
-                
+
                 const refValEl = document.getElementById('b2b-referral-code-val');
                 if (refValEl) {
                     refValEl.innerText = refCode;
@@ -5460,7 +5444,7 @@ async function executeB2bUsdtTransfer(event) {
         return;
     }
 
-    const txHash = "0x" + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+    const txHash = "0x" + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 
     // SI SUPABASE ESTÁ ACTIVO, HACER LA TRANSFERENCIA PERSISTENTE
     if (isSupabaseActive) {
@@ -5547,7 +5531,7 @@ async function executeB2bUsdtTransfer(event) {
         }
 
         const finalRecipient = recipient || b2bClients.find(c => c.email.toLowerCase() === 'roberto@inversionesrv.com') || b2bClients[0];
-        
+
         loggedInB2bClient.usdtBalance -= amount;
         finalRecipient.usdtBalance += amount;
 
@@ -5660,7 +5644,7 @@ async function publishAgentProperty(event) {
         planLabel = "Inmobiliaria Premium";
     }
 
-    const myPropertiesCount = agentUploadedProperties.filter(p => 
+    const myPropertiesCount = agentUploadedProperties.filter(p =>
         loggedInB2bClient && (p.agent_id === loggedInB2bClient.id || p.agentName === loggedInB2bClient.name)
     ).length;
 
@@ -5697,11 +5681,11 @@ async function publishAgentProperty(event) {
     } else if (customPhoto) {
         photos = customPhoto.split(',').map(u => u.trim()).filter(Boolean);
     }
-    
+
     if (photos.length === 0) {
         photos = [document.getElementById('pub-photo').value];
     }
-    
+
     const photo = photos[0];
     const youtubeUrl = document.getElementById('pub-youtube') ? document.getElementById('pub-youtube').value.trim() : '';
     const latVal = document.getElementById('pub-lat').value.trim();
@@ -5821,7 +5805,7 @@ async function publishAgentProperty(event) {
         errors.push("Metros Cuadrados (debe ser mayor a 0)");
         if (sizeEl) sizeEl.classList.add('input-error');
     }
-    
+
     // Para terrenos y bodegas las habitaciones/baños/parqueos son opcionales
     if (category !== 'Terreno' && category !== 'Bodega') {
         if (isNaN(rooms) || rooms < 0) {
@@ -5872,308 +5856,308 @@ async function publishAgentProperty(event) {
 
     try {
 
-    // Convertir precio a USD como estándar interno de base de datos
-    const priceUSD = activeCurrency === 'GTQ' ? (priceRaw / exchangeRate) : priceRaw;
+        // Convertir precio a USD como estándar interno de base de datos
+        const priceUSD = activeCurrency === 'GTQ' ? (priceRaw / exchangeRate) : priceRaw;
 
-    const zoneData = ZONES_DATABASE[locationKey];
-    const locationName = zoneData ? zoneData.name.split(' (')[0] : "Guatemala";
+        const zoneData = ZONES_DATABASE[locationKey];
+        const locationName = zoneData ? zoneData.name.split(' (')[0] : "Guatemala";
 
-    // Estructurar propiedad que combine perfectamente con PORTFOLIO_DATABASE y soporte la tasación multivariable
-    let newProperty = null;
+        // Estructurar propiedad que combine perfectamente con PORTFOLIO_DATABASE y soporte la tasación multivariable
+        let newProperty = null;
 
-    if (editingPropertyId) {
-        // Modo Edición: Encontrar y actualizar propiedad existente
-        newProperty = agentUploadedProperties.find(p => String(p.id) === String(editingPropertyId));
-        if (newProperty) {
-            const oldLocationKey = newProperty.location;
+        if (editingPropertyId) {
+            // Modo Edición: Encontrar y actualizar propiedad existente
+            newProperty = agentUploadedProperties.find(p => String(p.id) === String(editingPropertyId));
+            if (newProperty) {
+                const oldLocationKey = newProperty.location;
 
-            newProperty.title = title;
-            newProperty.category = category;
-            newProperty.type = type;
-            newProperty.tag = `${category.toUpperCase()} EN ${type.toUpperCase()}`;
-            newProperty.priceUSD = priceUSD;
-            newProperty.size = size;
-            newProperty.rooms = rooms;
-            newProperty.bathrooms = bathrooms;
-            newProperty.parkings = parkings;
-            newProperty.city = city;
-            newProperty.residential = residential;
-            newProperty.landArea = landArea;
-            newProperty.landUnit = landUnit;
-            newProperty.secondaryRooms = secondaryRooms;
-            newProperty.fullBathrooms = fullBathrooms;
-            newProperty.parkingType = parkingType;
-            newProperty.garden = garden;
-            newProperty.finishes = finishes;
-            newProperty.conservation = conservation;
-            newProperty.hasMasterSuite = hasMasterSuite;
-            newProperty.hasVisitorBath = hasVisitorBath;
-            newProperty.study = study;
-            newProperty.familyRoom = familyRoom;
-            newProperty.areas = areas;
-            newProperty.materials = materials;
-            newProperty.near = near;
-            newProperty.amenities = amenities.length > 0 ? amenities : ["amenity-security"];
-            newProperty.photo = photo;
-            newProperty.photos = photos;
-            newProperty.description = description;
-            newProperty.youtubeUrl = youtubeUrl;
-            newProperty.location = locationKey;
-            newProperty.lat = lat;
-            newProperty.lng = lng;
+                newProperty.title = title;
+                newProperty.category = category;
+                newProperty.type = type;
+                newProperty.tag = `${category.toUpperCase()} EN ${type.toUpperCase()}`;
+                newProperty.priceUSD = priceUSD;
+                newProperty.size = size;
+                newProperty.rooms = rooms;
+                newProperty.bathrooms = bathrooms;
+                newProperty.parkings = parkings;
+                newProperty.city = city;
+                newProperty.residential = residential;
+                newProperty.landArea = landArea;
+                newProperty.landUnit = landUnit;
+                newProperty.secondaryRooms = secondaryRooms;
+                newProperty.fullBathrooms = fullBathrooms;
+                newProperty.parkingType = parkingType;
+                newProperty.garden = garden;
+                newProperty.finishes = finishes;
+                newProperty.conservation = conservation;
+                newProperty.hasMasterSuite = hasMasterSuite;
+                newProperty.hasVisitorBath = hasVisitorBath;
+                newProperty.study = study;
+                newProperty.familyRoom = familyRoom;
+                newProperty.areas = areas;
+                newProperty.materials = materials;
+                newProperty.near = near;
+                newProperty.amenities = amenities.length > 0 ? amenities : ["amenity-security"];
+                newProperty.photo = photo;
+                newProperty.photos = photos;
+                newProperty.description = description;
+                newProperty.youtubeUrl = youtubeUrl;
+                newProperty.location = locationKey;
+                newProperty.lat = lat;
+                newProperty.lng = lng;
 
-            // Sincronizar en PORTFOLIO_DATABASE
-            if (oldLocationKey && PORTFOLIO_DATABASE[oldLocationKey]) {
-                if (oldLocationKey !== locationKey) {
-                    PORTFOLIO_DATABASE[oldLocationKey] = PORTFOLIO_DATABASE[oldLocationKey].filter(p => String(p.id) !== String(editingPropertyId));
+                // Sincronizar en PORTFOLIO_DATABASE
+                if (oldLocationKey && PORTFOLIO_DATABASE[oldLocationKey]) {
+                    if (oldLocationKey !== locationKey) {
+                        PORTFOLIO_DATABASE[oldLocationKey] = PORTFOLIO_DATABASE[oldLocationKey].filter(p => String(p.id) !== String(editingPropertyId));
+                    }
+                }
+                if (!PORTFOLIO_DATABASE[locationKey]) {
+                    PORTFOLIO_DATABASE[locationKey] = [];
+                }
+                const dbIndex = PORTFOLIO_DATABASE[locationKey].findIndex(p => String(p.id) === String(editingPropertyId));
+                if (dbIndex >= 0) {
+                    PORTFOLIO_DATABASE[locationKey][dbIndex] = newProperty;
+                } else {
+                    PORTFOLIO_DATABASE[locationKey].push(newProperty);
+                }
+
+                // Supabase
+                if (isSupabaseActive) {
+                    try {
+                        const { data, error } = await supabaseClient.from('properties').update({
+                            title: title,
+                            category: category,
+                            type: type,
+                            tag: newProperty.tag,
+                            price_usd: priceUSD,
+                            size_m2: size,
+                            rooms: rooms,
+                            bathrooms: bathrooms,
+                            parkings: parkings,
+                            photo_url: photo,
+                            location_key: locationKey,
+                            latitude: lat,
+                            longitude: lng,
+                            metadata: {
+                                city: city,
+                                residential: residential,
+                                landArea: landArea,
+                                landUnit: landUnit,
+                                secondaryRooms: secondaryRooms,
+                                fullBathrooms: fullBathrooms,
+                                parkingType: parkingType,
+                                garden: garden,
+                                finishes: finishes,
+                                conservation: conservation,
+                                hasMasterSuite: hasMasterSuite,
+                                hasVisitorBath: hasVisitorBath,
+                                study: study,
+                                familyRoom: familyRoom,
+                                areas: areas,
+                                materials: materials,
+                                near: near,
+                                amenities: amenities,
+                                youtubeUrl: youtubeUrl,
+                                photos: photos,
+                                description: description,
+                                agentName: newProperty.agentName,
+                                agentCompany: newProperty.agentCompany,
+                                agentPhone: newProperty.agentPhone,
+                                agentLogo: newProperty.agentLogo,
+                                agentPlan: newProperty.agentPlan
+                            }
+                        }).eq('id', editingPropertyId).select();
+
+                        if (error) {
+                            console.error("Error al actualizar propiedad en Supabase:", error);
+                            alert("Hubo un error al actualizar la propiedad en la base de datos remota. Los cambios no se guardaron en la nube.");
+                        } else if (!data || data.length === 0) {
+                            console.warn("La actualización no afectó a ninguna fila en Supabase. Posible restricción de políticas RLS.");
+                            alert("⚠️ ERROR DE SEGURIDAD (RLS): No tienes permisos para modificar este listado en la base de datos de Supabase, o la propiedad no existe en la nube.");
+                        }
+                    } catch (err) {
+                        console.error("Error al actualizar propiedad en Supabase:", err);
+                    }
                 }
             }
+
+            editingPropertyId = null;
+            const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i data-lucide="plus-circle"></i> Publicar Listado en Inventario';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        } else {
+            // Modo Creación: Nueva propiedad
+            newProperty = {
+                id: 'agent-' + Date.now(),
+                title: title,
+                category: category,
+                type: type,
+                tag: `${category.toUpperCase()} EN ${type.toUpperCase()}`,
+                priceUSD: priceUSD,
+                size: size,
+                rooms: rooms,
+                bathrooms: bathrooms,
+                parkings: parkings,
+                city: city,
+                residential: residential,
+                landArea: landArea,
+                landUnit: landUnit,
+                secondaryRooms: secondaryRooms,
+                fullBathrooms: fullBathrooms,
+                parkingType: parkingType,
+                garden: garden,
+                finishes: finishes,
+                conservation: conservation,
+                hasMasterSuite: hasMasterSuite,
+                hasVisitorBath: hasVisitorBath,
+                study: study,
+                familyRoom: familyRoom,
+                areas: areas,
+                materials: materials,
+                near: near,
+                amenities: amenities.length > 0 ? amenities : ["amenity-security"],
+                photo: photo,
+                photos: photos,
+                description: description,
+                agentName: agentName,
+                agentCompany: agentCompany,
+                agentPhone: agentPhone,
+                agentLogo: agentLogo,
+                agentPlan: agentPlan,
+                youtubeUrl: youtubeUrl,
+                badge: "NUEVO LISTADO",
+                location: locationKey,
+                isAgentUpload: true,
+                sponsored: false,
+                lat: lat,
+                lng: lng,
+                agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
+                agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
+            };
+
+            if (isSupabaseActive) {
+                try {
+                    const { data, error } = await supabaseClient.from('properties').insert([
+                        {
+                            title: title,
+                            category: category,
+                            type: type,
+                            tag: newProperty.tag,
+                            price_usd: priceUSD,
+                            size_m2: size,
+                            rooms: rooms,
+                            bathrooms: bathrooms,
+                            parkings: parkings,
+                            photo_url: photo,
+                            location_key: locationKey,
+                            sponsored: false,
+                            latitude: lat,
+                            longitude: lng,
+                            agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
+                            metadata: {
+                                city: city,
+                                residential: residential,
+                                landArea: landArea,
+                                landUnit: landUnit,
+                                secondaryRooms: secondaryRooms,
+                                fullBathrooms: fullBathrooms,
+                                parkingType: parkingType,
+                                garden: garden,
+                                finishes: finishes,
+                                conservation: conservation,
+                                hasMasterSuite: hasMasterSuite,
+                                hasVisitorBath: hasVisitorBath,
+                                study: study,
+                                familyRoom: familyRoom,
+                                areas: areas,
+                                materials: materials,
+                                near: near,
+                                amenities: amenities,
+                                youtubeUrl: youtubeUrl,
+                                photos: photos,
+                                description: description,
+                                agentName: agentName,
+                                agentCompany: agentCompany,
+                                agentPhone: agentPhone,
+                                agentLogo: agentLogo,
+                                agentPlan: agentPlan,
+                                agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
+                            }
+                        }
+                    ]).select();
+
+                    if (error) {
+                        console.error("Error al registrar propiedad en Supabase:", error);
+                        alert(`⚠️ ERROR DE SEGURIDAD (RLS) O BASE DE DATOS:\nNo se pudo registrar la propiedad en Supabase.\n\nDetalle: ${error.message || 'El usuario podría no tener permisos de inserción (INSERT) configurados.'}`);
+                        return;
+                    } else if (data && data[0]) {
+                        newProperty.id = data[0].id;
+                    }
+                } catch (err) {
+                    console.error("Fallo de red al registrar propiedad en Supabase:", err);
+                }
+            }
+
+            // Agregar al portafolio local del B2B
+            agentUploadedProperties.push(newProperty);
+
+            // Inyectar en el inventario real del sistema
             if (!PORTFOLIO_DATABASE[locationKey]) {
                 PORTFOLIO_DATABASE[locationKey] = [];
             }
-            const dbIndex = PORTFOLIO_DATABASE[locationKey].findIndex(p => String(p.id) === String(editingPropertyId));
-            if (dbIndex >= 0) {
-                PORTFOLIO_DATABASE[locationKey][dbIndex] = newProperty;
-            } else {
-                PORTFOLIO_DATABASE[locationKey].push(newProperty);
-            }
-
-            // Supabase
-            if (isSupabaseActive) {
-                try {
-                    const { data, error } = await supabaseClient.from('properties').update({
-                        title: title,
-                        category: category,
-                        type: type,
-                        tag: newProperty.tag,
-                        price_usd: priceUSD,
-                        size_m2: size,
-                        rooms: rooms,
-                        bathrooms: bathrooms,
-                        parkings: parkings,
-                        photo_url: photo,
-                        location_key: locationKey,
-                        latitude: lat,
-                        longitude: lng,
-                        metadata: {
-                            city: city,
-                            residential: residential,
-                            landArea: landArea,
-                            landUnit: landUnit,
-                            secondaryRooms: secondaryRooms,
-                            fullBathrooms: fullBathrooms,
-                            parkingType: parkingType,
-                            garden: garden,
-                            finishes: finishes,
-                            conservation: conservation,
-                            hasMasterSuite: hasMasterSuite,
-                            hasVisitorBath: hasVisitorBath,
-                            study: study,
-                            familyRoom: familyRoom,
-                            areas: areas,
-                            materials: materials,
-                            near: near,
-                            amenities: amenities,
-                            youtubeUrl: youtubeUrl,
-                            photos: photos,
-                            description: description,
-                            agentName: newProperty.agentName,
-                            agentCompany: newProperty.agentCompany,
-                            agentPhone: newProperty.agentPhone,
-                            agentLogo: newProperty.agentLogo,
-                            agentPlan: newProperty.agentPlan
-                        }
-                    }).eq('id', editingPropertyId).select();
-
-                    if (error) {
-                        console.error("Error al actualizar propiedad en Supabase:", error);
-                        alert("Hubo un error al actualizar la propiedad en la base de datos remota. Los cambios no se guardaron en la nube.");
-                    } else if (!data || data.length === 0) {
-                        console.warn("La actualización no afectó a ninguna fila en Supabase. Posible restricción de políticas RLS.");
-                        alert("⚠️ ERROR DE SEGURIDAD (RLS): No tienes permisos para modificar este listado en la base de datos de Supabase, o la propiedad no existe en la nube.");
-                    }
-                } catch (err) {
-                    console.error("Error al actualizar propiedad en Supabase:", err);
-                }
-            }
+            PORTFOLIO_DATABASE[locationKey].push(newProperty);
         }
 
-        editingPropertyId = null;
-        const submitBtn = document.querySelector('#publish-property-form button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.innerHTML = '<i data-lucide="plus-circle"></i> Publicar Listado en Inventario';
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+        // Guardar en localStorage de contingencia local
+        saveLocalPropertiesToStorage();
+
+        // Limpiar formulario y restablecer valores del acordeón
+        document.getElementById('publish-property-form').reset();
+
+        // Desmarcar todos los checkboxes de parámetros avanzados por defecto
+        const checkboxesToReset = [
+            'pub-room-master-suite', 'pub-bath-visitor',
+            'pub-near-malls', 'pub-near-schools', 'pub-near-supers', 'pub-near-roads',
+            'pub-area-living', 'pub-area-dining', 'pub-area-kitchen', 'pub-area-breakfast',
+            'pub-prop-family-room', 'pub-prop-study', 'pub-area-maid', 'pub-area-laundry',
+            'pub-area-storage', 'pub-area-terrace', 'pub-area-balcony', 'pub-area-patio',
+            'pub-mat-porcelain', 'pub-mat-marble', 'pub-mat-wood', 'pub-mat-pvc', 'pub-mat-kitchen-luxe',
+            'pub-amenity-pool', 'pub-amenity-gym', 'pub-amenity-security', 'pub-amenity-clubhouse',
+            'pub-amenity-view', 'pub-amenity-smart', 'pub-amenity-solar', 'pub-amenity-cistern', 'pub-amenity-elevator'
+        ];
+        checkboxesToReset.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.checked = false;
+        });
+
+        // Resetear imágenes cargadas localmente y feedback visual
+        uploadedBase64Image = '';
+        uploadedBase64Images = [];
+        coverImageIndex = 0;
+        renderThumbnailsPreview();
+        const fileInput = document.getElementById('pub-file-input');
+        if (fileInput) {
+            fileInput.value = '';
+            fileInput.style.border = '1px dashed var(--cyan)';
+            fileInput.style.background = 'rgba(0,0,0,0.4)';
         }
-    } else {
-        // Modo Creación: Nueva propiedad
-        newProperty = {
-            id: 'agent-' + Date.now(),
-            title: title,
-            category: category,
-            type: type,
-            tag: `${category.toUpperCase()} EN ${type.toUpperCase()}`,
-            priceUSD: priceUSD,
-            size: size,
-            rooms: rooms,
-            bathrooms: bathrooms,
-            parkings: parkings,
-            city: city,
-            residential: residential,
-            landArea: landArea,
-            landUnit: landUnit,
-            secondaryRooms: secondaryRooms,
-            fullBathrooms: fullBathrooms,
-            parkingType: parkingType,
-            garden: garden,
-            finishes: finishes,
-            conservation: conservation,
-            hasMasterSuite: hasMasterSuite,
-            hasVisitorBath: hasVisitorBath,
-            study: study,
-            familyRoom: familyRoom,
-            areas: areas,
-            materials: materials,
-            near: near,
-            amenities: amenities.length > 0 ? amenities : ["amenity-security"],
-            photo: photo,
-            photos: photos,
-            description: description,
-            agentName: agentName,
-            agentCompany: agentCompany,
-            agentPhone: agentPhone,
-            agentLogo: agentLogo,
-            agentPlan: agentPlan,
-            youtubeUrl: youtubeUrl,
-            badge: "NUEVO LISTADO",
-            location: locationKey,
-            isAgentUpload: true,
-            sponsored: false,
-            lat: lat,
-            lng: lng,
-            agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
-            agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
-        };
-
-        if (isSupabaseActive) {
-            try {
-                const { data, error } = await supabaseClient.from('properties').insert([
-                    {
-                        title: title,
-                        category: category,
-                        type: type,
-                        tag: newProperty.tag,
-                        price_usd: priceUSD,
-                        size_m2: size,
-                        rooms: rooms,
-                        bathrooms: bathrooms,
-                        parkings: parkings,
-                        photo_url: photo,
-                        location_key: locationKey,
-                        sponsored: false,
-                        latitude: lat,
-                        longitude: lng,
-                        agent_id: loggedInB2bClient ? loggedInB2bClient.id : null,
-                        metadata: {
-                            city: city,
-                            residential: residential,
-                            landArea: landArea,
-                            landUnit: landUnit,
-                            secondaryRooms: secondaryRooms,
-                            fullBathrooms: fullBathrooms,
-                            parkingType: parkingType,
-                            garden: garden,
-                            finishes: finishes,
-                            conservation: conservation,
-                            hasMasterSuite: hasMasterSuite,
-                            hasVisitorBath: hasVisitorBath,
-                            study: study,
-                            familyRoom: familyRoom,
-                            areas: areas,
-                            materials: materials,
-                            near: near,
-                            amenities: amenities,
-                            youtubeUrl: youtubeUrl,
-                            photos: photos,
-                            description: description,
-                            agentName: agentName,
-                            agentCompany: agentCompany,
-                            agentPhone: agentPhone,
-                            agentLogo: agentLogo,
-                            agentPlan: agentPlan,
-                            agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
-                        }
-                    }
-                ]).select();
-
-                if (error) {
-                    console.error("Error al registrar propiedad en Supabase:", error);
-                    alert(`⚠️ ERROR DE SEGURIDAD (RLS) O BASE DE DATOS:\nNo se pudo registrar la propiedad en Supabase.\n\nDetalle: ${error.message || 'El usuario podría no tener permisos de inserción (INSERT) configurados.'}`);
-                    return;
-                } else if (data && data[0]) {
-                    newProperty.id = data[0].id;
-                }
-            } catch (err) {
-                console.error("Fallo de red al registrar propiedad en Supabase:", err);
-            }
+        const label = document.querySelector('label[for="pub-file-input"]');
+        if (label) {
+            label.innerText = 'O Subir Fotos Locales (Hasta 10 desde tu PC)';
+        }
+        const descInput = document.getElementById('pub-description');
+        if (descInput) {
+            descInput.value = '';
         }
 
-        // Agregar al portafolio local del B2B
-        agentUploadedProperties.push(newProperty);
-
-        // Inyectar en el inventario real del sistema
-        if (!PORTFOLIO_DATABASE[locationKey]) {
-            PORTFOLIO_DATABASE[locationKey] = [];
-        }
-        PORTFOLIO_DATABASE[locationKey].push(newProperty);
-    }
-
-    // Guardar en localStorage de contingencia local
-    saveLocalPropertiesToStorage();
-
-    // Limpiar formulario y restablecer valores del acordeón
-    document.getElementById('publish-property-form').reset();
-    
-    // Desmarcar todos los checkboxes de parámetros avanzados por defecto
-    const checkboxesToReset = [
-        'pub-room-master-suite', 'pub-bath-visitor', 
-        'pub-near-malls', 'pub-near-schools', 'pub-near-supers', 'pub-near-roads',
-        'pub-area-living', 'pub-area-dining', 'pub-area-kitchen', 'pub-area-breakfast',
-        'pub-prop-family-room', 'pub-prop-study', 'pub-area-maid', 'pub-area-laundry',
-        'pub-area-storage', 'pub-area-terrace', 'pub-area-balcony', 'pub-area-patio',
-        'pub-mat-porcelain', 'pub-mat-marble', 'pub-mat-wood', 'pub-mat-pvc', 'pub-mat-kitchen-luxe',
-        'pub-amenity-pool', 'pub-amenity-gym', 'pub-amenity-security', 'pub-amenity-clubhouse',
-        'pub-amenity-view', 'pub-amenity-smart', 'pub-amenity-solar', 'pub-amenity-cistern', 'pub-amenity-elevator'
-    ];
-    checkboxesToReset.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.checked = false;
-    });
-
-    // Resetear imágenes cargadas localmente y feedback visual
-    uploadedBase64Image = '';
-    uploadedBase64Images = [];
-    coverImageIndex = 0;
-    renderThumbnailsPreview();
-    const fileInput = document.getElementById('pub-file-input');
-    if (fileInput) {
-        fileInput.value = '';
-        fileInput.style.border = '1px dashed var(--cyan)';
-        fileInput.style.background = 'rgba(0,0,0,0.4)';
-    }
-    const label = document.querySelector('label[for="pub-file-input"]');
-    if (label) {
-        label.innerText = 'O Subir Fotos Locales (Hasta 10 desde tu PC)';
-    }
-    const descInput = document.getElementById('pub-description');
-    if (descInput) {
-        descInput.value = '';
-    }
-
-    // Actualizar selectores, HUD, inventario comercial y sincronizar monedas
-    updatePromoPropertySelect();
-    updateSaasMetricsHUD();
-    renderB2bInventory();
-    updateFormUnits();
+        // Actualizar selectores, HUD, inventario comercial y sincronizar monedas
+        updatePromoPropertySelect();
+        updateSaasMetricsHUD();
+        renderB2bInventory();
+        updateFormUnits();
 
         // Alerta interactiva de éxito
         alert(`Listado "${title}" publicado exitosamente como ${category}. Se inyectó en el inventario activo de ${locationName} con sus 35+ parámetros de tasación IA y ahora está disponible para contratar pauta publicitaria.`);
@@ -6237,14 +6221,10 @@ function openPlanPayment(planKey) {
     resetReceiptUploadUI();
 
     let planName = "";
-    if (planKey === 'basico') {
-        planName = "Suscripción Agente Individual";
-    } else if (planKey === 'pro') {
-        planName = "Suscripción Inmobiliaria Pro";
-    } else if (planKey === 'vip') {
-        planName = "Suscripción Inmobiliaria Premium";
-    } else if (planKey === 'premium') {
-        planName = "Suscripción Inversionista Premium";
+    if (planKey === 'basico' || planKey === 'pro') {
+        planName = "Suscripción Plan Pro (Q235 / $30 USD)";
+    } else if (planKey === 'vip' || planKey === 'premium') {
+        planName = "Suscripción Plan Premium + Billetera XAUt (Q505 / $65 USD)";
     }
 
     // Actualizar interfaz del modal
@@ -6416,7 +6396,7 @@ function completeB2bTransaction() {
         const propIndex = agentUploadedProperties.findIndex(p => p.id === propertyId);
         if (propIndex !== -1) {
             const prop = agentUploadedProperties[propIndex];
-            
+
             // Clona la propiedad y la inyecta al inicio con badge de patrocinio
             const sponsoredProp = {
                 ...prop,
@@ -6508,15 +6488,15 @@ function savePendingPaymentsLocally() {
 function handleReceiptFileChange(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         uploadedReceiptBase64 = e.target.result;
-        
+
         const wrapper = document.getElementById('receipt-upload-wrapper');
         const icon = document.getElementById('receipt-upload-icon');
         const text = document.getElementById('receipt-upload-text');
-        
+
         if (wrapper) {
             wrapper.style.borderColor = 'var(--neon-emerald)';
             wrapper.style.background = 'rgba(52, 199, 89, 0.05)';
@@ -6539,11 +6519,11 @@ function resetReceiptUploadUI() {
     uploadedReceiptBase64 = '';
     const fileInput = document.getElementById('payment-receipt-file');
     if (fileInput) fileInput.value = '';
-    
+
     const wrapper = document.getElementById('receipt-upload-wrapper');
     const icon = document.getElementById('receipt-upload-icon');
     const text = document.getElementById('receipt-upload-text');
-    
+
     if (wrapper) {
         wrapper.style.borderColor = 'rgba(255, 255, 255, 0.15)';
         wrapper.style.background = 'rgba(0,0,0,0.3)';
@@ -6563,7 +6543,7 @@ function resetReceiptUploadUI() {
 function updateB2bSubscriptionPendingBanner() {
     const banner = document.getElementById('b2b-subscription-pending-banner');
     if (!banner) return;
-    
+
     if (loggedInB2bClient && (loggedInB2bClient.status === 'Pendiente' || loggedInB2bClient.status?.toLowerCase() === 'pendiente')) {
         banner.className = "glassmorphism font-mono";
         banner.style.padding = "15px";
@@ -6572,10 +6552,10 @@ function updateB2bSubscriptionPendingBanner() {
         banner.style.borderRadius = "8px";
         banner.style.textAlign = "left";
         banner.style.boxShadow = "0 0 10px rgba(255, 149, 0, 0.05)";
-        
+
         // Verificar si el cliente ya subió algún comprobante de pago
-        const hasReceiptRequest = pendingPaymentRequests && pendingPaymentRequests.some(r => 
-            (r.clientId && r.clientId === loggedInB2bClient.id) || 
+        const hasReceiptRequest = pendingPaymentRequests && pendingPaymentRequests.some(r =>
+            (r.clientId && r.clientId === loggedInB2bClient.id) ||
             (r.clientEmail && r.clientEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
         );
 
@@ -6628,7 +6608,7 @@ function updateB2bSubscriptionPendingBanner() {
 function updateDynamicB2bPaymentTotals() {
     const durationSelect = document.getElementById('payment-duration-select');
     if (!durationSelect) return;
-    
+
     // Permitir selección manual en la pasarela de pagos, no forzar su valor
     if (pendingPaymentType !== 'ad') {
         durationSelect.disabled = false;
@@ -6637,36 +6617,36 @@ function updateDynamicB2bPaymentTotals() {
     const months = parseInt(durationSelect.value);
     let discount = 0;
     if (months === 12) discount = 0.15; // 15% descuento para Anual (12 Meses)
-    
+
     let baseGTQ = 0;
-    if (pendingPaymentTarget === 'basico') baseGTQ = 140;
-    else if (pendingPaymentTarget === 'pro') baseGTQ = 240;
-    else if (pendingPaymentTarget === 'vip') {
-        if (b2bPromoDiscountApplied) {
+    let baseUSD = 0;
+    if (pendingPaymentTarget === 'basico' || pendingPaymentTarget === 'pro') {
+        baseGTQ = 235;
+        baseUSD = 30;
+    } else if (pendingPaymentTarget === 'vip' || pendingPaymentTarget === 'premium') {
+        if (b2bPromoDiscountApplied && pendingPaymentTarget === 'vip') {
             baseGTQ = 250;
-            // Permitir el descuento del 15% si es anual
+            baseUSD = 32;
         } else {
-            baseGTQ = 640;
+            baseGTQ = 505;
+            baseUSD = 65;
         }
-    }
-    else if (pendingPaymentTarget === 'premium') baseGTQ = 340;
-    else if (pendingPaymentType === 'ad') {
+    } else if (pendingPaymentType === 'ad') {
         baseGTQ = 450;
+        baseUSD = 58;
         durationSelect.disabled = true;
     }
-    
+
     // Actualizar dinámicamente el concepto con el indicador de promo si corresponde
     let planName = "";
-    if (pendingPaymentTarget === 'basico') planName = "Suscripción Agente Individual";
-    else if (pendingPaymentTarget === 'pro') planName = "Suscripción Inmobiliaria Pro";
-    else if (pendingPaymentTarget === 'vip') {
-        planName = "Suscripción Inmobiliaria Premium";
-        if (b2bPromoDiscountApplied) {
+    if (pendingPaymentTarget === 'basico' || pendingPaymentTarget === 'pro') {
+        planName = "Suscripción Plan Pro (Sin Billetera XAUt)";
+    } else if (pendingPaymentTarget === 'vip' || pendingPaymentTarget === 'premium') {
+        planName = "Suscripción Plan Premium + Billetera XAUt";
+        if (b2bPromoDiscountApplied && pendingPaymentTarget === 'vip') {
             planName += " (Promo VGT-0626)";
         }
-    }
-    else if (pendingPaymentTarget === 'premium') planName = "Suscripción Inversionista Premium";
-    else if (pendingPaymentType === 'ad') {
+    } else if (pendingPaymentType === 'ad') {
         planName = "Pauta Publicitaria";
     }
 
@@ -6674,16 +6654,17 @@ function updateDynamicB2bPaymentTotals() {
     if (conceptEl) {
         conceptEl.innerText = planName;
     }
-    
+
     const subtotalGTQ = baseGTQ * months;
+    const subtotalUSD = baseUSD * months;
     const totalGTQ = subtotalGTQ * (1 - discount);
-    const totalUSD = totalGTQ / exchangeRate;
-    
+    const totalUSD = subtotalUSD * (1 - discount);
+
     const durationLabel = document.getElementById('payment-duration-label');
     const discountLabel = document.getElementById('payment-discount-label');
     const totalLabel = document.getElementById('payment-total-label');
     const totalUsdLabel = document.getElementById('payment-total-usd-label');
-    
+
     if (durationLabel) {
         durationLabel.innerText = months === 12 ? '1 Año (12 Meses)' : `${months} Mes${months > 1 ? 'es' : ''}`;
     }
@@ -6708,59 +6689,65 @@ function updateDynamicB2bPaymentTotals() {
  */
 async function processB2bTransferPayment(event) {
     if (event) event.preventDefault();
-    
+
     const acceptDisclaimerCheckbox = document.getElementById('payment-accept-disclaimer');
     if (acceptDisclaimerCheckbox && !acceptDisclaimerCheckbox.checked) {
         alert("⚠️ ADVERTENCIA LEGAL: Para continuar, debes aceptar el Disclaimer Legal y Metodológico de la plataforma ValorGT® marcando la casilla de aceptación.");
         return;
     }
-    
+
     if (!uploadedReceiptBase64) {
         alert("⚠️ ERROR DE VALIDACIÓN BANCARIA: Debes subir una foto o captura de tu comprobante de transferencia bancaria.");
         return;
     }
-    
+
     document.getElementById('payment-view-form').classList.add('hidden');
     document.getElementById('payment-view-loading').classList.remove('hidden');
-    
+
     const logsEl = document.getElementById('payment-status-logs');
     if (logsEl) {
         logsEl.innerHTML = '<p class="text-muted">> Leyendo archivo del comprobante bancario (Base64)...</p>';
     }
-    
+
     setTimeout(async () => {
         try {
             if (logsEl) logsEl.innerHTML += '<p class="text-muted">> Conectando con el Ledger transaccional y Supabase...</p>';
-            
+
             const durationSelect = document.getElementById('payment-duration-select');
             const months = durationSelect ? parseInt(durationSelect.value) || 1 : 1;
             let discount = 0;
             if (months === 12) discount = 0.15;
-            
+
             const pTarget = pendingPaymentTarget || 'basico';
             const pType = pendingPaymentType || 'subscription';
-            
+
             let baseGTQ = 0;
-            if (pTarget === 'basico') baseGTQ = 140;
-            else if (pTarget === 'pro') baseGTQ = 240;
-            else if (pTarget === 'vip') {
-                if (b2bPromoDiscountApplied) {
+            let baseUSD = 0;
+            if (pTarget === 'basico' || pTarget === 'pro') {
+                baseGTQ = 235;
+                baseUSD = 30;
+            } else if (pTarget === 'vip' || pTarget === 'premium') {
+                if (b2bPromoDiscountApplied && pTarget === 'vip') {
                     baseGTQ = 250;
-                    // Permitir el descuento del 15% si es anual
+                    baseUSD = 32;
                 } else {
-                    baseGTQ = 640;
+                    baseGTQ = 505;
+                    baseUSD = 65;
                 }
+            } else if (pType === 'ad') {
+                baseGTQ = 450;
+                baseUSD = 58;
+            } else {
+                baseGTQ = 235;
+                baseUSD = 30;
             }
-            else if (pTarget === 'premium') baseGTQ = 340;
-            else if (pType === 'ad') baseGTQ = 450;
-            else baseGTQ = 240; // fallback (Pro)
-            
+
             const totalGTQ = (baseGTQ * months) * (1 - discount);
-            const totalUSD = totalGTQ / exchangeRate;
+            const totalUSD = (baseUSD * months) * (1 - discount);
             const txnId = pType === 'ad'
                 ? "PAUTA-" + Math.floor(100000 + Math.random() * 900000)
                 : "TXN-" + Math.floor(100000 + Math.random() * 900000);
-            
+
             let conceptText = "";
             let planKeyVal = "";
             if (pType === 'subscription') {
@@ -6777,7 +6764,7 @@ async function processB2bTransferPayment(event) {
                 conceptText = `Pauta: ${propTitle} [ID: ${propId}]`;
                 planKeyVal = 'ad';
             }
-            
+
             const request = {
                 id: txnId,
                 clientId: loggedInB2bClient ? loggedInB2bClient.id : 'demo-client-id',
@@ -6792,11 +6779,11 @@ async function processB2bTransferPayment(event) {
                 status: 'pendiente',
                 timestamp: new Date().toISOString()
             };
-            
+
             // 1. Guardar localmente
             pendingPaymentRequests.unshift(request);
             savePendingPaymentsLocally();
-            
+
             // 2. Intentar guardar en Supabase 'payment_requests'
             if (isSupabaseActive && supabaseClient) {
                 try {
@@ -6825,78 +6812,78 @@ async function processB2bTransferPayment(event) {
                     console.error("Fallo de red al insertar en Supabase payment_requests:", supabaseErr);
                 }
             }
-            
+
             // 3. Cambiar estado del perfil del cliente actual a 'Pendiente'
             if (loggedInB2bClient) {
                 loggedInB2bClient.status = 'Pendiente';
-                
+
                 // Actualizar localmente en el arreglo de clientes
                 const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
                 if (clientIdx !== -1) {
                     b2bClients[clientIdx].status = 'Pendiente';
                 }
-                
+
                 // Intentar actualizar en Supabase
                 if (isSupabaseActive && supabaseClient) {
                     try {
                         supabaseClient.from('profiles').update({ status: 'pendiente' }).eq('id', loggedInB2bClient.id)
-                        .then(() => {
-                            console.log("Estado de perfil actualizado a pendiente en Supabase.");
-                        }).catch(profErr => {
-                            console.warn("Fallo al actualizar status en perfiles de Supabase:", profErr);
-                        });
+                            .then(() => {
+                                console.log("Estado de perfil actualizado a pendiente en Supabase.");
+                            }).catch(profErr => {
+                                console.warn("Fallo al actualizar status en perfiles de Supabase:", profErr);
+                            });
                     } catch (supabaseProfErr) {
                         console.error("Fallo sincrónico al actualizar perfil en Supabase:", supabaseProfErr);
                     }
                 }
             }
-            
+
             // 4. Configurar el modal de éxito con los datos
             const authCodeEl = document.getElementById('receipt-auth-code');
             if (authCodeEl) authCodeEl.innerText = `#${txnId}`;
-            
+
             const refCodeEl = document.getElementById('receipt-ref-code');
             if (refCodeEl) refCodeEl.innerText = request.concept;
-            
+
             const amountValEl = document.getElementById('receipt-amount-val');
             if (amountValEl) amountValEl.innerText = `Q${formatNumber(totalGTQ.toFixed(2))}`;
-            
+
             // 5. Configurar el enlace de notificación de WhatsApp al admin
             const whatsappMsg = `Hola ValorGT, acabo de subir mi comprobante de transferencia bancaria en ValorGT AI.\n\nDetalles de mi cuenta:\n- Asesor: ${request.clientName}\n- Correo: ${request.clientEmail}\n- Concepto: ${request.concept}\n- Plazo: ${months} Mes(es)\n- Total Transferido: Q${totalGTQ.toFixed(2)} (Ref: ${txnId}).\n\nPor favor verificar mi transferencia.`;
             const whatsappUrl = `https://wa.me/50247996413?text=${encodeURIComponent(whatsappMsg)}`;
-            
+
             const waBtn = document.getElementById('success-whatsapp-admin-btn');
             if (waBtn) {
                 waBtn.href = whatsappUrl;
             }
-            
+
             // 6. Notificación de logs
             if (typeof appendAdminLog === 'function') {
                 appendAdminLog("SAAS", `pago_transferencia: Solicitud ${txnId} de ${request.clientName} registrada. [EMAIL DESPACHADO] Alerta enviada a valorgt.ai@gmail.com. [WHATSAPP LISTO] Enlace directo de comprobante configurado para el admin (+502 4041-6471).`, false);
             }
-            
+
             // 7. Recargar vistas
             updateB2bSubscriptionPendingBanner();
             renderAdminPendingPaymentsTable();
             renderAdminDashboard();
-            
+
             // Cambiar a la vista de éxito
             const loadingView = document.getElementById('payment-view-loading');
             if (loadingView) loadingView.classList.add('hidden');
-            
+
             const successView = document.getElementById('payment-view-success');
             if (successView) successView.classList.remove('hidden');
-            
+
         } catch (err) {
             console.error("Error crítico procesando pago de transferencia B2B:", err);
-            
+
             // Fallback de emergencia ante cualquier error de Javascript para asegurar que la UI no se quede colgada
             alert("⚠️ PROCESADOR TRANSACCIONAL: Se registró un fallo en el Ledger de Supabase, pero tu solicitud ha sido guardada localmente y está en proceso. Por favor, procede con la notificación de WhatsApp. (Detalle técnico: " + (err.message || err) + ")");
-            
+
             // Forzar mostrar pantalla de éxito
             const loadingView = document.getElementById('payment-view-loading');
             if (loadingView) loadingView.classList.add('hidden');
-            
+
             const successView = document.getElementById('payment-view-success');
             if (successView) successView.classList.remove('hidden');
         }
@@ -6910,9 +6897,9 @@ function renderAdminPendingPaymentsTable() {
     const tableBody = document.getElementById('admin-pending-payments-table-body');
     const counter = document.getElementById('admin-pending-payments-count');
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = '';
-    
+
     if (pendingPaymentRequests.length === 0) {
         tableBody.innerHTML = `
             <tr>
@@ -6926,20 +6913,20 @@ function renderAdminPendingPaymentsTable() {
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
-    
+
     if (counter) {
         counter.innerText = `${pendingPaymentRequests.length} PENDIENTE${pendingPaymentRequests.length > 1 ? 'S' : ''}`;
     }
-    
+
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-    
+
     pendingPaymentRequests.forEach((req, idx) => {
         const row = document.createElement('tr');
-        
+
         const amt = req.totalGTQ / exchangeRate * conversion;
         const totalFormatted = `${currencySym}${formatNumber(amt.toFixed(2))}`;
-        
+
         row.innerHTML = `
             <td style="text-align: left; padding: 10px; vertical-align: middle;">
                 <strong class="text-white">${req.clientName}</strong><br>
@@ -6972,7 +6959,7 @@ function renderAdminPendingPaymentsTable() {
         `;
         tableBody.appendChild(row);
     });
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -6984,11 +6971,11 @@ function renderAdminPendingPaymentsTable() {
 function showReceiptLightbox(reqId) {
     const req = pendingPaymentRequests.find(r => r.id === reqId);
     if (!req) return;
-    
+
     const lightbox = document.getElementById('admin-receipt-lightbox');
     const img = document.getElementById('receipt-lightbox-img');
     const title = document.getElementById('receipt-lightbox-title');
-    
+
     if (lightbox && img && title) {
         img.src = req.receipt;
         title.innerText = `Comprobante de ${req.clientName} (${req.concept})`;
@@ -7020,23 +7007,23 @@ function openAdPaymentModal(propertyId) {
         alert("No se encontró la propiedad seleccionada.");
         return;
     }
-    
+
     pendingPaymentType = 'ad';
     pendingPaymentTarget = { propertyId: propertyId, zone: prop.location || 'zona14' };
-    
+
     // Desactivar y resetear duración para pauta publicitaria (es de 1 mes fijo)
     const durationSelect = document.getElementById('payment-duration-select');
     if (durationSelect) {
         durationSelect.value = "1";
         durationSelect.setAttribute('disabled', 'true');
     }
-    
+
     resetReceiptUploadUI();
-    
+
     // Actualizar interfaz del modal
     document.getElementById('payment-concept-label').innerText = `Pauta Destacada: ${prop.title} [ID: ${prop.id}]`;
     updateDynamicB2bPaymentTotals();
-    
+
     // Mostrar modal
     const modal = document.getElementById('commercial-payment-modal');
     if (modal) {
@@ -7060,18 +7047,18 @@ function closeAdPaymentModal() {
 function updatePautaPaymentCalculations() {
     const durationSelect = document.getElementById('pauta-duration-select');
     if (!durationSelect) return;
-    
+
     const months = parseInt(durationSelect.value) || 1;
-    
+
     // 1. Tarifa base estándar administrable
     const basePrice = baseAdPriceGTQ;
     const subtotal = basePrice * months;
-    
+
     // 2. Descuento de plazo (10% si son 3 meses)
     const durationDiscountRate = months === 3 ? 0.10 : 0;
     const durationDiscount = subtotal * durationDiscountRate;
     const subtotalAfterDuration = subtotal - durationDiscount;
-    
+
     // 3. Descuento dinámico por membresía contratada (Pro: 15%, Premium: 30%, Básico: 0%)
     let planDiscountRate = 0;
     const planKey = activeB2bPlan || 'pro';
@@ -7082,7 +7069,7 @@ function updatePautaPaymentCalculations() {
     }
     const membershipDiscount = subtotalAfterDuration * planDiscountRate;
     const totalNeto = subtotalAfterDuration - membershipDiscount;
-    
+
     // Inyectar en etiquetas de la pasarela
     document.getElementById('pauta-base-price-lbl').innerText = `Q${formatNumber(basePrice.toFixed(2))}`;
     document.getElementById('pauta-subtotal-lbl').innerText = `Q${formatNumber(subtotal.toFixed(2))}`;
@@ -7096,39 +7083,39 @@ function updatePautaPaymentCalculations() {
  */
 async function processB2bPautaPayment(event) {
     if (event) event.preventDefault();
-    
+
     if (!uploadedPautaReceiptBase64) {
         alert("Por favor carga una imagen de la transferencia realizada como comprobante de pago.");
         return;
     }
-    
+
     const prop = agentUploadedProperties.find(p => p.id === selectedAdPropertyId);
     if (!prop) {
         alert("Error de sesión: No hay una propiedad seleccionada.");
         return;
     }
-    
+
     // Cambiar a la vista de cargando
     document.getElementById('pauta-payment-form-view').classList.add('hidden');
     document.getElementById('pauta-payment-loading-view').classList.remove('hidden');
-    
+
     setTimeout(async () => {
         const durationSelect = document.getElementById('pauta-duration-select');
         const months = parseInt(durationSelect.value) || 1;
-        
+
         const basePrice = baseAdPriceGTQ;
         const subtotal = basePrice * months;
         const durationDiscountRate = months === 3 ? 0.10 : 0;
         const subtotalAfterDuration = subtotal - (subtotal * durationDiscountRate);
-        
+
         let planDiscountRate = 0;
         const planKey = activeB2bPlan || 'pro';
         if (planKey === 'pro') planDiscountRate = 0.15;
         else if (planKey === 'vip' || planKey === 'premium') planDiscountRate = 0.30;
-        
+
         const totalNeto = subtotalAfterDuration - (subtotalAfterDuration * planDiscountRate);
         const refCode = `PAUTA-${Math.floor(1000 + Math.random() * 9000)}`;
-        
+
         const newRequest = {
             id: refCode,
             clientId: loggedInB2bClient ? loggedInB2bClient.id : 'unknown',
@@ -7143,7 +7130,7 @@ async function processB2bPautaPayment(event) {
             status: 'Pendiente',
             timestamp: new Date().toISOString()
         };
-        
+
         try {
             if (isSupabaseActive) {
                 const { error } = await supabaseClient.from('payment_requests').insert([
@@ -7166,13 +7153,13 @@ async function processB2bPautaPayment(event) {
         } catch (e) {
             console.error("Fallo de red al registrar pauta en Supabase, usando localStorage de contingencia:", e);
         }
-        
+
         pendingPaymentRequests.push(newRequest);
         savePendingPaymentsLocally();
-        
+
         // Sincronizar UI de administración
         renderAdminPendingPaymentsTable();
-        
+
         // Cambiar a la vista de éxito
         document.getElementById('pauta-payment-loading-view').classList.add('hidden');
         const successView = document.getElementById('pauta-payment-success-view');
@@ -7181,9 +7168,9 @@ async function processB2bPautaPayment(event) {
             document.getElementById('pauta-receipt-amount-val').innerText = `Q${formatNumber(totalNeto.toFixed(2))}`;
             successView.classList.remove('hidden');
         }
-        
+
         logAdminSecurityActivity(`Solicitud de Pauta: Asesor ${newRequest.clientName} envió comprobante para destacar propiedad [${prop.title}] por Q${totalNeto}`);
-        
+
     }, 1500);
 }
 
@@ -7217,14 +7204,14 @@ async function syncPendingPaymentRequests() {
             console.error("Error al decodificar pagos pendientes de localstorage:", e);
         }
     }
-    
+
     if (isSupabaseActive && supabaseClient) {
         try {
             const { data, error } = await supabaseClient
                 .from('payment_requests')
                 .select('*')
                 .order('timestamp', { ascending: false });
-            
+
             if (!error && data) {
                 pendingPaymentRequests = data.map(row => ({
                     id: row.id,
@@ -7246,7 +7233,7 @@ async function syncPendingPaymentRequests() {
             console.error("Error al sincronizar payment_requests desde Supabase:", err);
         }
     }
-    
+
     renderAdminPendingPaymentsTable();
 }
 
@@ -7256,15 +7243,15 @@ async function syncPendingPaymentRequests() {
 async function approvePendingPayment(reqId) {
     const reqIndex = pendingPaymentRequests.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
-    
+
     const req = pendingPaymentRequests[reqIndex];
-    
+
     if (confirm(`¿Estás seguro de que deseas APROBAR el pago transaccional #${req.id} de ${req.clientName} por un monto de Q${req.totalGTQ.toFixed(2)} (${req.concept})?`)) {
-        
+
         // 1. Eliminar solicitud de local
         pendingPaymentRequests.splice(reqIndex, 1);
         savePendingPaymentsLocally();
-        
+
         // 2. En lugar de borrar la solicitud, la marcamos como aprobada para que el propio cliente pueda auto-activarse (bypass RLS)
         if (isSupabaseActive && supabaseClient) {
             try {
@@ -7273,22 +7260,22 @@ async function approvePendingPayment(reqId) {
                 console.warn("Error al marcar pago como aprobado en Supabase payment_requests:", dbErr);
             }
         }
-        
+
         // 3. Actualizar balance de ingresos SaaS del admin
         adminMonthlyRevenueUSD += req.totalUSD;
-        
+
         // 4. Si el concepto es suscripción, actualizar el plan del cliente.
         const isSub = req.concept.startsWith('Suscripción');
         const planKey = req.planKey;
-        
+
         let dbPlan = 'Pro';
         if (planKey === 'basico') dbPlan = 'Basico';
         else if (planKey === 'pro') dbPlan = 'Pro';
         else if (planKey === 'vip') dbPlan = 'VIP';
         else if (planKey === 'premium') dbPlan = 'Premium';
-        
+
         const client = b2bClients.find(c => c.email.toLowerCase() === req.clientEmail.toLowerCase() || c.id === req.clientId);
-        
+
         if (client) {
             client.status = 'Activo';
             if (isSub) {
@@ -7297,17 +7284,17 @@ async function approvePendingPayment(reqId) {
                 } else {
                     client.plan = dbPlan;
                 }
-                
+
                 if (loggedInB2bClient && loggedInB2bClient.id === client.id) {
                     activeB2bPlan = client.plan.toLowerCase();
                     loggedInB2bClient.plan = client.plan;
                     loggedInB2bClient.status = 'Activo';
-                    
+
                     const partnerLevelEl = document.getElementById('commercial-partner-level');
                     if (partnerLevelEl) {
                         partnerLevelEl.innerText = (client.plan === 'VIP' || client.plan === 'Premium') ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (client.plan === 'Pro' ? (((client.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
                     }
-                    
+
                     updateLockOverlaysState();
                     localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
                     syncCommercialPricingGridUI();
@@ -7316,7 +7303,7 @@ async function approvePendingPayment(reqId) {
             }
             localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
         }
-        
+
         // Actualizar en Supabase
         if (isSupabaseActive && supabaseClient) {
             try {
@@ -7324,43 +7311,43 @@ async function approvePendingPayment(reqId) {
                 if (isSub) {
                     updatePayload.plan = (client && (client.role || '').toLowerCase() === 'inversionista') ? 'Premium' : dbPlan;
                 }
-                
+
                 supabaseClient.from('profiles').update(updatePayload).eq('id', req.clientId)
-                .then(async ({ error }) => {
-                    if (error) {
-                        console.warn("La actualización directa de perfil falló (bloqueado por políticas RLS). Se utilizará la auto-activación por el cliente:", error.message);
-                    } else {
-                        console.log("Perfil actualizado exitosamente a activo en Supabase.");
-                        
-                        // ACREDITAR COMISIÓN AL REFERENTE
-                        if (isSub) {
-                            try {
-                                const { data: profData } = await supabaseClient.from('profiles').select('referred_by').eq('id', req.clientId).maybeSingle();
-                                if (profData && profData.referred_by) {
-                                    const referrerId = profData.referred_by;
-                                    const xautPrice = currentAirdropXautPrice || 2380.00;
-                                    const commissionUSD = req.totalUSD * 0.05;
-                                    const commissionXAUt = commissionUSD / xautPrice;
-                                    
-                                    const { data: refProfile } = await supabaseClient.from('profiles').select('usdt_balance').eq('id', referrerId).maybeSingle();
-                                    if (refProfile) {
-                                        const currentBalance = parseFloat(refProfile.usdt_balance || 0);
-                                        const newBalance = currentBalance + commissionXAUt;
-                                        await supabaseClient.from('profiles').update({ usdt_balance: newBalance }).eq('id', referrerId);
-                                        console.log(`🪙 [Referidos Admin] Acreditado 5% de comisión (${commissionXAUt.toFixed(6)} XAUt) al patrocinador ${referrerId}`);
+                    .then(async ({ error }) => {
+                        if (error) {
+                            console.warn("La actualización directa de perfil falló (bloqueado por políticas RLS). Se utilizará la auto-activación por el cliente:", error.message);
+                        } else {
+                            console.log("Perfil actualizado exitosamente a activo en Supabase.");
+
+                            // ACREDITAR COMISIÓN AL REFERENTE
+                            if (isSub) {
+                                try {
+                                    const { data: profData } = await supabaseClient.from('profiles').select('referred_by').eq('id', req.clientId).maybeSingle();
+                                    if (profData && profData.referred_by) {
+                                        const referrerId = profData.referred_by;
+                                        const xautPrice = currentAirdropXautPrice || 2380.00;
+                                        const commissionUSD = req.totalUSD * 0.05;
+                                        const commissionXAUt = commissionUSD / xautPrice;
+
+                                        const { data: refProfile } = await supabaseClient.from('profiles').select('usdt_balance').eq('id', referrerId).maybeSingle();
+                                        if (refProfile) {
+                                            const currentBalance = parseFloat(refProfile.usdt_balance || 0);
+                                            const newBalance = currentBalance + commissionXAUt;
+                                            await supabaseClient.from('profiles').update({ usdt_balance: newBalance }).eq('id', referrerId);
+                                            console.log(`🪙 [Referidos Admin] Acreditado 5% de comisión (${commissionXAUt.toFixed(6)} XAUt) al patrocinador ${referrerId}`);
+                                        }
                                     }
+                                } catch (commissionErr) {
+                                    console.error("Error al acreditar comisión en aprobación bancaria:", commissionErr);
                                 }
-                            } catch (commissionErr) {
-                                console.error("Error al acreditar comisión en aprobación bancaria:", commissionErr);
                             }
                         }
-                    }
-                });
+                    });
             } catch (dbErr) {
                 console.warn("Fallo al actualizar el perfil en Supabase profiles:", dbErr);
             }
         }
-        
+
         // Si el concepto es pauta, inyectar propiedad patrocinada identificada por ID
         const isPauta = req.id.startsWith('PAUTA-') || req.concept.startsWith('Pauta:');
         if (isPauta) {
@@ -7369,7 +7356,7 @@ async function approvePendingPayment(reqId) {
             if (match) {
                 propertyId = match[1];
             }
-            
+
             if (propertyId) {
                 // 1. Marcar como pautada/sponsored en agentUploadedProperties
                 const prop = agentUploadedProperties.find(p => String(p.id) === String(propertyId));
@@ -7378,7 +7365,7 @@ async function approvePendingPayment(reqId) {
                     prop.badge = "PATROCINADO";
                     console.log(`✔️ [ValorGT AI] Propiedad local B2B #${propertyId} marcada como sponsored.`);
                 }
-                
+
                 // 2. Marcar como pautada/sponsored en PORTFOLIO_DATABASE
                 Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
                     PORTFOLIO_DATABASE[zone].forEach(p => {
@@ -7389,30 +7376,30 @@ async function approvePendingPayment(reqId) {
                         }
                     });
                 });
-                
+
                 // Persistir en Supabase
                 if (isSupabaseActive && supabaseClient) {
                     try {
                         supabaseClient.from('properties').update({ sponsored: true, tag: 'PATROCINADO' }).eq('id', propertyId)
-                        .then(({ error }) => {
-                            if (error) console.error("Error al persistir pauta en Supabase:", error);
-                            else console.log(`✔️ [Supabase] Propiedad #${propertyId} marcada como sponsored en base de datos.`);
-                        });
+                            .then(({ error }) => {
+                                if (error) console.error("Error al persistir pauta en Supabase:", error);
+                                else console.log(`✔️ [Supabase] Propiedad #${propertyId} marcada como sponsored en base de datos.`);
+                            });
                     } catch (dbErr) {
                         console.error("Fallo sincrónico al marcar pauta en Supabase:", dbErr);
                     }
                 }
-                
+
                 // Guardar en localStorage de contingencia local
                 saveLocalPropertiesToStorage();
-                
+
                 // 3. Sincronizar e incrementar impresiones
                 saasImpressionsCount += 4500;
                 saasClientClicks += 180;
-                
+
                 // 4. Rerenderizar
                 renderB2bInventory();
-                
+
                 // 5. Rerenderizar catálogo si estamos en la zona correspondiente
                 if (prop) {
                     const zone = prop.location;
@@ -7427,16 +7414,16 @@ async function approvePendingPayment(reqId) {
                 }
             }
         }
-        
+
         if (typeof appendAdminLog === 'function') {
             appendAdminLog("SAAS", `aprobación_pago: Aprobada transferencia bancaria transaccional #${req.id} de ${req.clientName}. Acreditado $${req.totalUSD.toFixed(2)} USD a ingresos SaaS.`, false);
         }
-        
+
         alert(`¡PAGO APROBADO EXITOSAMENTE!\n\n` +
-              `El comprobante bancario #${req.id} de ${req.clientName} ha sido auditado y aprobado.\n` +
-              `Activamos la membresía "${isSub ? dbPlan.toUpperCase() : 'PAUTA PUBLICITARIA'}" con éxito.\n` +
-              `Los ingresos globales de la plataforma SaaS han sido actualizados.`);
-        
+            `El comprobante bancario #${req.id} de ${req.clientName} ha sido auditado y aprobado.\n` +
+            `Activamos la membresía "${isSub ? dbPlan.toUpperCase() : 'PAUTA PUBLICITARIA'}" con éxito.\n` +
+            `Los ingresos globales de la plataforma SaaS han sido actualizados.`);
+
         updateB2bSubscriptionPendingBanner();
         renderAdminPendingPaymentsTable();
         renderAdminDashboard();
@@ -7452,7 +7439,7 @@ function formatCardNumber(input) {
     let value = input.value.replace(/\D/g, '');
     let formatted = value.match(/.{1,4}/g)?.join(' ') || '';
     input.value = formatted;
-    
+
     const preview = document.getElementById('card-num-preview');
     if (preview) {
         preview.innerText = formatted || '•••• •••• •••• ••••';
@@ -7472,7 +7459,7 @@ function formatExpiry(input) {
         value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
     input.value = value;
-    
+
     const preview = document.getElementById('card-expiry-preview');
     if (preview) {
         preview.innerText = value || 'MM/AA';
@@ -7515,13 +7502,13 @@ async function authenticateCommercialAgent(event) {
             if (scanOverlay) {
                 scanOverlay.classList.add('hidden');
             }
-            
+
             // Permitir navegación
             isCommercialAuthenticated = true;
-            
+
             // Redirigir a la vista de administrador de forma inmediata
             switchView('admin');
-            
+
             // Registrar en los logs de administración global de forma inmediata
             if (typeof appendAdminLog === 'function') {
                 appendAdminLog("SECURITY", `auth_node: Consola de Administración Central desbloqueada para cuenta ROOT/ADMIN.`, false);
@@ -7582,7 +7569,7 @@ async function authenticateCommercialAgent(event) {
                     status: 'activo',
                     usdt_balance: 0.00
                 };
-                
+
                 try {
                     const { error: insertErr } = await supabaseClient.from('profiles').insert([fallbackProfile]);
                     if (insertErr) throw insertErr;
@@ -7618,12 +7605,12 @@ async function authenticateCommercialAgent(event) {
                 } else if (roleLower === 'inversionista') {
                     profile.plan = 'Premium';
                     profile.role = 'inversionista';
-                    
+
                     // Auto-healing update on login using authenticated user RLS bypass
                     if (isSupabaseActive && supabaseClient && profileData.plan !== 'Premium') {
                         supabaseClient.from('profiles').update({ plan: 'Premium' }).eq('id', profile.id)
-                        .then(() => console.log("⚡ [Auto-Heal] Corrected investor plan in database to Premium"))
-                        .catch(err => console.warn("⚠️ [Auto-Heal] Failed to correct investor plan in database:", err));
+                            .then(() => console.log("⚡ [Auto-Heal] Corrected investor plan in database to Premium"))
+                            .catch(err => console.warn("⚠️ [Auto-Heal] Failed to correct investor plan in database:", err));
                     }
                 } else if (emailLower === 'ana@estevezinmobiliaria.com' || emailLower === 'ana@gmail.com') {
                     profile.plan = 'VIP';
@@ -7672,10 +7659,10 @@ async function authenticateCommercialAgent(event) {
                 if (scanOverlay) {
                     scanOverlay.classList.add('hidden');
                 }
-                
+
                 isCommercialAuthenticated = true;
                 initCommercialView();
-                
+
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
@@ -7752,12 +7739,12 @@ async function authenticateCommercialAgent(event) {
             if (scanOverlay) {
                 scanOverlay.classList.add('hidden');
             }
-            
+
             isCommercialAuthenticated = true;
-            
+
             // Inicializar la vista comercial para abrir el panel
             initCommercialView();
-            
+
             // Re-inicializar iconos Lucide generados dinámicamente
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
@@ -7795,22 +7782,22 @@ function switchLoginTab(tabName) {
         tabSignin.classList.add('active');
         tabSignin.style.color = 'var(--cyan)';
         tabSignin.style.borderBottom = '2px solid var(--cyan)';
-        
+
         tabSignup.classList.remove('active');
         tabSignup.style.color = 'var(--text-secondary)';
         tabSignup.style.borderBottom = '2px solid transparent';
-        
+
         formSignin.classList.remove('hidden');
         formSignup.classList.add('hidden');
     } else {
         tabSignup.classList.add('active');
         tabSignup.style.color = 'var(--cyan)';
         tabSignup.style.borderBottom = '2px solid var(--cyan)';
-        
+
         tabSignin.classList.remove('active');
         tabSignin.style.color = 'var(--text-secondary)';
         tabSignin.style.borderBottom = '2px solid transparent';
-        
+
         formSignup.classList.remove('hidden');
         formSignin.classList.add('hidden');
     }
@@ -7828,7 +7815,7 @@ async function handleRegistrationFormSubmit(event) {
 
     const companyRaw = document.getElementById('com-signup-company') ? document.getElementById('com-signup-company').value.trim() : '';
     const nitRaw = document.getElementById('com-signup-nit') ? document.getElementById('com-signup-nit').value.trim() : '';
-    
+
     const company = role === 'inversionista' ? 'Inversionista Particular' : (companyRaw || 'Inmobiliaria Personal');
     const nit = role === 'inversionista' ? 'C/F' : (nitRaw || 'C/F');
 
@@ -7860,14 +7847,11 @@ async function handleRegistrationFormSubmit(event) {
 
     const isPromoActive = localStorage.getItem('valorgt_promo_signup_active') === 'true';
     const planSelect = document.getElementById('com-signup-plan');
-    let selectedPlanKey = planSelect ? planSelect.value : 'pro'; // basico | pro | vip
-    if (role === 'inversionista') {
-        selectedPlanKey = 'premium';
-    }
+    let selectedPlanKey = planSelect ? planSelect.value : 'pro'; // pro | premium
     if (isPromoActive) {
         selectedPlanKey = 'vip';
     }
-    const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'pro' ? 'Pro' : (selectedPlanKey === 'premium' ? 'Premium' : 'Básico'));
+    const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'premium' ? 'Premium' : 'Pro');
 
     const finalCompany = isPromoActive ? (company ? `${company} (Promo VGT-0626)` : 'Promo VGT-0626') : company;
 
@@ -7924,13 +7908,13 @@ async function handleRegistrationFormSubmit(event) {
                         billing_period: signupBillingPeriod
                     }
                 ]);
-                
+
                 if (dbErr) {
                     if (scanOverlay) scanOverlay.classList.add('hidden');
                     alert(`⚠️ ERROR EN BASE DE DATOS: ${dbErr.message}`);
                     return;
                 }
-                
+
                 newClient.id = authData.user.id;
             }
         } catch (err) {
@@ -7953,8 +7937,8 @@ async function handleRegistrationFormSubmit(event) {
     // Auto-login al usuario
     isCommercialAuthenticated = true;
     loggedInB2bClient = newClient;
-    activeB2bPlan = selectedPlanKey; 
-    localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(newClient)); 
+    activeB2bPlan = selectedPlanKey;
+    localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(newClient));
 
     const partnerLevelEl = document.getElementById('commercial-partner-level');
     if (partnerLevelEl) {
@@ -7967,7 +7951,7 @@ async function handleRegistrationFormSubmit(event) {
 
     // Iniciar dashboard
     initCommercialView();
-    
+
     // Inmediatamente disparar la pasarela de pagos por transferencia bancaria para el plan elegido
     setTimeout(() => {
         openPlanPayment(selectedPlanKey);
@@ -7978,12 +7962,12 @@ let signupBillingPeriod = 'mensual';
 
 function toggleSignupBillingCycle(isAnnual) {
     signupBillingPeriod = isAnnual ? 'anual' : 'mensual';
-    
+
     const checkbox = document.getElementById('signup-billing-cycle-checkbox');
     if (checkbox) {
         checkbox.checked = isAnnual;
     }
-    
+
     const mensualLbl = document.getElementById('signup-billing-cycle-mensual-lbl');
     const anualLbl = document.getElementById('signup-billing-cycle-anual-lbl');
     if (mensualLbl && anualLbl) {
@@ -7992,7 +7976,7 @@ function toggleSignupBillingCycle(isAnnual) {
             mensualLbl.style.color = 'var(--text-muted)';
             mensualLbl.style.opacity = '0.6';
             mensualLbl.style.fontWeight = 'normal';
-            
+
             anualLbl.classList.add('active');
             anualLbl.style.color = 'var(--cyan)';
             anualLbl.style.opacity = '0.9';
@@ -8002,37 +7986,37 @@ function toggleSignupBillingCycle(isAnnual) {
             mensualLbl.style.color = 'var(--cyan)';
             mensualLbl.style.opacity = '0.9';
             mensualLbl.style.fontWeight = 'bold';
-            
+
             anualLbl.classList.remove('active');
             anualLbl.style.color = 'var(--text-muted)';
             anualLbl.style.opacity = '0.6';
             anualLbl.style.fontWeight = 'normal';
         }
     }
-    
+
     // Actualizar visualmente los precios de las tarjetas de registro
     const plansInfo = {
-        basico: { gtq: 140, usd: 18 },
-        pro: { gtq: 240, usd: 31 },
-        vip: { gtq: 640, usd: 82 },
-        premium: { gtq: 340, usd: 43.70 }
+        basico: { gtq: 235, usd: 30 },
+        pro: { gtq: 235, usd: 30 },
+        vip: { gtq: 505, usd: 65 },
+        premium: { gtq: 505, usd: 65 }
     };
-    
+
     Object.keys(plansInfo).forEach(key => {
         let baseGtq = plansInfo[key].gtq;
         let baseUsd = plansInfo[key].usd;
         if (signupBillingPeriod === 'anual') {
             baseGtq = Math.round(baseGtq * 0.85);
-            baseUsd = Math.round(baseUsd * 0.85);
+            baseUsd = Number((baseUsd * 0.85).toFixed(2));
         }
-        
+
         const priceEl = document.getElementById(`signup-price-${key}`);
         if (priceEl) {
             priceEl.innerText = baseGtq;
         }
         const equivEl = document.getElementById(`signup-equiv-${key}`);
         if (equivEl) {
-            equivEl.innerText = `(equiv. $${baseUsd} USD)`;
+            equivEl.innerText = `$${baseUsd} USD / mes`;
         }
     });
 
@@ -8047,25 +8031,25 @@ function toggleSignupBillingCycle(isAnnual) {
  */
 function selectSignupPlan(planKey, priceUSD) {
     selectedSignupPlanKey = planKey;
-    
+
     // Sincronizar select oculto de registro
     const planSelect = document.getElementById('com-signup-plan');
     if (planSelect) {
         planSelect.value = planKey;
     }
-    
-    let priceGTQ = 235; // Plan Único Pro
+
+    let priceGTQ = 235;
     priceUSD = 30;
-    if (planKey === 'basico' || planKey === 'vip' || planKey === 'premium') {
-        priceGTQ = 235;
-        priceUSD = 30;
+    if (planKey === 'vip' || planKey === 'premium') {
+        priceGTQ = 505;
+        priceUSD = 65;
     }
-    
+
     if (signupBillingPeriod === 'anual') {
         priceGTQ = priceGTQ * 0.85;
         priceUSD = priceUSD * 0.85;
     }
-    
+
     selectedSignupPlanPrice = priceUSD;
 
     // Actualizar clases activas en las tarjetas de plan
@@ -8075,7 +8059,7 @@ function selectSignupPlan(planKey, priceUSD) {
             if (p === planKey) {
                 card.classList.add('active-plan');
                 card.style.borderColor = p === 'premium' ? '#ffd700' : 'var(--cyan)';
-                card.style.background = p === 'premium' ? 'rgba(255, 215, 0, 0.03)' : 'rgba(0, 240, 255, 0.03)';
+                card.style.background = p === 'premium' ? 'rgba(255, 215, 0, 0.06)' : 'rgba(0, 240, 255, 0.05)';
             } else {
                 card.classList.remove('active-plan');
                 card.style.borderColor = 'rgba(255,255,255,0.08)';
@@ -8084,36 +8068,23 @@ function selectSignupPlan(planKey, priceUSD) {
         }
     });
 
-    let planName = "Suscripción Inmobiliaria Pro";
-    if (planKey === 'basico') planName = "Suscripción Agente Individual";
-    if (planKey === 'vip') planName = "Suscripción Inmobiliaria Premium";
-    if (planKey === 'premium') planName = "Suscripción Inversionista Premium";
+    let planName = "Plan Pro (Sin Billetera XAUt)";
+    if (planKey === 'vip' || planKey === 'premium') planName = "Plan Premium + Billetera XAUt";
 
     // Actualizar labels
     let finalGTQ = priceGTQ;
     let finalUSD = priceUSD;
     let discountNotice = "";
-    
+
     // Si tiene descuento por código promocional VGT-0626
     if (planKey === 'vip' && appliedPromoDiscount > 0) {
-        // La promo es de Q250.00 exactos
         finalGTQ = 250;
         finalUSD = 32.00;
         discountNotice = " (Promo VGT-0626 Aplicada)";
     }
-    
-    let priceConverted = 0;
-    let currencySym = '';
-    if (activeCurrency === 'GTQ') {
-        priceConverted = finalGTQ;
-        currencySym = 'Q';
-    } else {
-        priceConverted = finalUSD;
-        currencySym = '$';
-    }
 
     document.getElementById('signup-payment-concept-lbl').innerText = planName + discountNotice;
-    document.getElementById('signup-payment-total-lbl').innerText = `${currencySym}${formatNumber(priceConverted.toFixed(2))}`;
+    document.getElementById('signup-payment-total-lbl').innerText = `Q${formatNumber(finalGTQ.toFixed(2))} ($${formatNumber(finalUSD.toFixed(2))} USD)`;
 }
 
 /**
@@ -8180,7 +8151,7 @@ async function completeSignupSubscriptionTransaction() {
     // Generar recibo
     const authCode = "AUT-" + Math.floor(100000 + Math.random() * 900000);
     const refCode = "REF-" + Math.floor(10000000 + Math.random() * 90000000);
-    
+
     // Si la promo está activa y es el plan VIP
     let amountVal = selectedSignupPlanPrice * conversion;
     if (selectedSignupPlanKey === 'vip' && appliedPromoDiscount > 0) {
@@ -8197,8 +8168,8 @@ async function completeSignupSubscriptionTransaction() {
 
     const isPromoActive = localStorage.getItem('valorgt_promo_signup_active') === 'true';
     const isFounder = (selectedSignupPlanKey === 'vip' && (isPromoActive || appliedPromoDiscount > 0)) ||
-                      (pendingSignupUser.company && pendingSignupUser.company.includes('Promo VGT-0626')) ||
-                      (pendingSignupUser.email && pendingSignupUser.email.toLowerCase() === 'ana@gmail.com');
+        (pendingSignupUser.company && pendingSignupUser.company.includes('Promo VGT-0626')) ||
+        (pendingSignupUser.email && pendingSignupUser.email.toLowerCase() === 'ana@gmail.com');
 
     // 1. Agregar nuevo cliente a la lista b2bClients
     const isInvestorRole = (pendingSignupUser.role || '').toLowerCase() === 'inversionista';
@@ -8226,7 +8197,7 @@ async function completeSignupSubscriptionTransaction() {
     // Lógica de comisiones por referido (5% de cashback)
     const referrerId = localStorage.getItem('valorgt_pending_referrer_id');
     const referrerName = localStorage.getItem('valorgt_pending_referrer_name');
-    
+
     if (isSupabaseActive) {
         try {
             // A. Registrar el usuario en Supabase Auth
@@ -8267,7 +8238,7 @@ async function completeSignupSubscriptionTransaction() {
                     console.error("Error al registrar perfil B2B en base de datos:", dbErr);
                 } else {
                     newClient.id = authData.user.id;
-                    
+
                     // Si fue referido, acreditar el 5% de comisión al balance de Oro Digital (XAUt) del patrocinador
                     if (referrerId) {
                         try {
@@ -8277,13 +8248,13 @@ async function completeSignupSubscriptionTransaction() {
                             const amountUSD = selectedSignupPlanPrice;
                             const commissionUSD = amountUSD * 0.05;
                             const commissionXAUt = commissionUSD / xautPrice;
-                            
+
                             // 1. Obtener balance actual del patrocinador
                             const { data: refProfile } = await supabaseClient.from('profiles').select('usdt_balance').eq('id', referrerId).maybeSingle();
                             if (refProfile) {
                                 const currentBalance = parseFloat(refProfile.usdt_balance || 0);
                                 const newBalance = currentBalance + commissionXAUt;
-                                
+
                                 // 2. Actualizar balance en Supabase
                                 await supabaseClient.from('profiles').update({ usdt_balance: newBalance }).eq('id', referrerId);
                                 console.log(`🪙 [Referidos] Acreditado 5% de comisión (${commissionXAUt.toFixed(6)} XAUt) a ${referrerName}`);
@@ -8307,7 +8278,7 @@ async function completeSignupSubscriptionTransaction() {
             }
         }
     }
-    
+
     // Limpiar referidos pendientes
     localStorage.removeItem('valorgt_pending_referrer_id');
     localStorage.removeItem('valorgt_pending_referrer_name');
@@ -8362,18 +8333,18 @@ async function completeSignupSubscriptionTransaction() {
 function enterPersonalDashboardAfterPayment() {
     // Cerrar pasarela y restablecer
     document.getElementById('commercial-signup-payment-gate').classList.add('hidden');
-    
+
     // Restablecer vistas internas de pago
     document.getElementById('signup-payment-form-view').classList.remove('hidden');
     document.getElementById('signup-payment-loading-view').classList.add('hidden');
     document.getElementById('signup-payment-success-view').classList.add('hidden');
     document.getElementById('signup-cc-form').reset();
     document.getElementById('commercial-signup-form').reset();
-    
+
     document.getElementById('signup-card-num-preview').innerText = '•••• •••• •••• ••••';
     document.getElementById('signup-card-name-preview').innerText = 'NOMBRE APELLIDO';
     document.getElementById('signup-card-expiry-preview').innerText = 'MM/AA';
-    
+
     // Iniciar dashboard
     initCommercialView();
 }
@@ -8385,7 +8356,7 @@ function formatSignupCardNumber(input) {
     let value = input.value.replace(/\D/g, '');
     let formatted = value.match(/.{1,4}/g)?.join(' ') || '';
     input.value = formatted;
-    
+
     const preview = document.getElementById('signup-card-num-preview');
     if (preview) {
         preview.innerText = formatted || '•••• •••• •••• ••••';
@@ -8405,7 +8376,7 @@ function formatSignupExpiry(input) {
         value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
     input.value = value;
-    
+
     const preview = document.getElementById('signup-card-expiry-preview');
     if (preview) {
         preview.innerText = value || 'MM/AA';
@@ -8421,17 +8392,17 @@ function logoutCommercialAgent() {
     agentUploadedProperties = [];
     localStorage.removeItem('valorgt_active_b2b_client');
     saveLocalPropertiesToStorage();
-    
+
     // Resetear portafolio a modo demo/visitante
     loadUserPortfolio();
-    
+
     // Resetear formulario
     const loginForm = document.getElementById('commercial-login-form');
     if (loginForm) loginForm.reset();
-    
+
     // Bloquear de nuevo la vista
     initCommercialView();
-    
+
     alert("Sesión Cerrada con éxito. Consola comercial bloqueada de forma segura.");
 }
 
@@ -8490,7 +8461,7 @@ function renderB2bInventory(filter = 'todos') {
     filteredList.forEach(prop => {
         const convertedPrice = prop.priceUSD * conversion;
         const catClass = prop.category.toLowerCase();
-        
+
         // Buscar el índice real en PORTFOLIO_DATABASE para poder autotasar
         const dbIndex = PORTFOLIO_DATABASE[prop.location]?.findIndex(p => p.title === prop.title) ?? 0;
         const isSponsored = prop.sponsored === true;
@@ -8510,30 +8481,30 @@ function renderB2bInventory(filter = 'todos') {
                         <span>${prop.rooms} H • ${prop.bathrooms} B</span>
                     </div>
                     ${(() => {
-                        let advancedTagsHTML = '';
-                        const tags = [];
-                        if (prop.hasMasterSuite) tags.push("Suite Principal");
-                        if (prop.hasVisitorBath) tags.push("Baño Visitas");
-                        if (prop.study) tags.push("Estudio");
-                        if (prop.familyRoom) tags.push("Sala Fam.");
-                        if (prop.amenities && prop.amenities.length > 0) {
-                            prop.amenities.forEach(am => {
-                                if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
-                                if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
-                                if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
-                                if (am === "amenity-view" || am === "view") tags.push("Vista");
-                            });
-                        }
-                        if (tags.length > 0) {
-                            advancedTagsHTML = `
+                let advancedTagsHTML = '';
+                const tags = [];
+                if (prop.hasMasterSuite) tags.push("Suite Principal");
+                if (prop.hasVisitorBath) tags.push("Baño Visitas");
+                if (prop.study) tags.push("Estudio");
+                if (prop.familyRoom) tags.push("Sala Fam.");
+                if (prop.amenities && prop.amenities.length > 0) {
+                    prop.amenities.forEach(am => {
+                        if (am === "amenity-pool" || am === "pool") tags.push("Piscina");
+                        if (am === "amenity-gym" || am === "gym") tags.push("Gimnasio");
+                        if (am === "amenity-smart" || am === "smart") tags.push("Smart Home");
+                        if (am === "amenity-view" || am === "view") tags.push("Vista");
+                    });
+                }
+                if (tags.length > 0) {
+                    advancedTagsHTML = `
                                 <div class="card-advanced-tags" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 2px;">
                                     ${tags.slice(0, 3).map(t => `<span style="font-size: 0.52rem; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); padding: 1px 4px; border-radius: 3px; font-weight: 500;">${t}</span>`).join('')}
                                     ${tags.length > 3 ? `<span style="font-size: 0.52rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 1px 4px; border-radius: 3px;">+${tags.length - 3}</span>` : ''}
                                 </div>
                             `;
-                        }
-                        return advancedTagsHTML;
-                    })()}
+                }
+                return advancedTagsHTML;
+            })()}
                     <div class="inv-specs" style="margin-top: 5px; display: flex; gap: 6px; font-size: 0.55rem; color: var(--text-muted);">
                         <span>📐 ${(prop.category || '').toLowerCase() === 'terreno' ? 'VR²' : 'M²'}: ${prop.size}</span>
                         <span>🚗 Pq: ${prop.parkings}</span>
@@ -8613,28 +8584,28 @@ function editAgentProperty(propId) {
     document.getElementById('pub-category').value = prop.category || 'Apartamento';
     document.getElementById('pub-type').value = prop.type || 'Venta';
     document.getElementById('pub-location').value = prop.location || '';
-    
+
     // Convertir precio de vuelta a la moneda activa si fue guardado en USD
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     document.getElementById('pub-price').value = Math.round(prop.priceUSD * conversion);
-    
+
     document.getElementById('pub-size').value = prop.size || '';
     document.getElementById('pub-beds').value = prop.rooms || 0;
     document.getElementById('pub-baths').value = prop.bathrooms || 0;
     document.getElementById('pub-parks').value = prop.parkings || 0;
     document.getElementById('pub-lat').value = prop.lat || '';
     document.getElementById('pub-lng').value = prop.lng || '';
-    
+
     const descInput = document.getElementById('pub-description');
     if (descInput) {
         descInput.value = prop.description || '';
     }
-    
+
     const youtubeInput = document.getElementById('pub-youtube');
     if (youtubeInput) {
         youtubeInput.value = prop.youtubeUrl || '';
     }
-    
+
     // Manejo de fotos locales cargadas
     if (prop.photos && prop.photos.length > 0) {
         uploadedBase64Images = [...prop.photos];
@@ -8701,7 +8672,7 @@ function editAgentProperty(propId) {
         'pub-bath-visitor': prop.hasVisitorBath,
         'pub-prop-family-room': prop.familyRoom,
         'pub-prop-study': prop.study,
-        
+
         'pub-amenity-pool': prop.amenities?.includes('amenity-pool') || prop.amenities?.includes('pool'),
         'pub-amenity-gym': prop.amenities?.includes('amenity-gym') || prop.amenities?.includes('gym'),
         'pub-amenity-security': prop.amenities?.includes('amenity-security') || prop.amenities?.includes('security'),
@@ -8711,13 +8682,13 @@ function editAgentProperty(propId) {
         'pub-amenity-solar': prop.amenities?.includes('amenity-solar') || prop.amenities?.includes('solar'),
         'pub-amenity-cistern': prop.amenities?.includes('amenity-cistern') || prop.amenities?.includes('cistern'),
         'pub-amenity-elevator': prop.amenities?.includes('amenity-elevator') || prop.amenities?.includes('elevator'),
-        
+
         'pub-mat-porcelain': prop.materials?.includes('mat-porcelain'),
         'pub-mat-marble': prop.materials?.includes('mat-marble'),
         'pub-mat-wood': prop.materials?.includes('mat-wood'),
         'pub-mat-pvc': prop.materials?.includes('mat-pvc'),
         'pub-mat-kitchen-luxe': prop.materials?.includes('mat-kitchen-luxe'),
-        
+
         'pub-near-malls': prop.near?.includes('near-malls'),
         'pub-near-schools': prop.near?.includes('near-schools'),
         'pub-near-supers': prop.near?.includes('near-supers'),
@@ -8766,7 +8737,7 @@ function editAgentProperty(propId) {
 async function deleteAgentProperty(propId) {
     let prop = agentUploadedProperties.find(p => String(p.id) === String(propId));
     const isAdmin = (loggedInB2bClient && (
-        loggedInB2bClient.email.toLowerCase().includes('admin') || 
+        loggedInB2bClient.email.toLowerCase().includes('admin') ||
         loggedInB2bClient.email.toLowerCase().includes('sgalindo')
     )) || (!loggedInB2bClient && isCommercialAuthenticated);
     if (!prop && isAdmin) {
@@ -8871,10 +8842,10 @@ async function deleteAgentProperty(propId) {
 function autoValuateFromInventory(locationKey, indexInDb) {
     // 1. Ir a Tasa Inteligente
     switchView('dashboard');
-    
+
     // 2. Cargar la propiedad en el formulario y ejecutar valuación
     autofillValuationForm(locationKey, indexInDb);
-    
+
     // 3. Scroll suave al tope para ver la ficha tasada
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -8892,7 +8863,7 @@ let adminSyncIntervalId = null;
  */
 function initAdminView() {
     renderAdminDashboard();
-    
+
     // Si los logs del admin están vacíos, agregar logs iniciales
     if (adminLogs.length === 0) {
         appendAdminLog("SYSTEM", "root_node: Acceso root autorizado al kernel de ValorGT AI.", false);
@@ -8907,10 +8878,10 @@ function initAdminView() {
     } else {
         syncPendingPaymentRequests();
     }
-    
+
     // Inicializar visualmente la lista de destinatarios del airdrop
     renderAdminAirdropComponents();
-    
+
     // Cargar precio de Tether Gold (XAUt) en segundo plano una sola vez al inicializar la vista de administración
     fetchXautPriceForAirdrop().then(() => {
         calculateAdminAirdropPreview();
@@ -9035,12 +9006,12 @@ function renderAdminReferenceDatabase() {
                 const avgSize = data.totalSize / data.count;
                 const avgPriceM2 = data.totalSize > 0 ? data.totalPrice / data.totalSize : 0;
 
-                const formattedPrice = activeCurrency === 'GTQ' 
-                    ? `Q${(avgPrice * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                const formattedPrice = activeCurrency === 'GTQ'
+                    ? `Q${(avgPrice * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}`
                     : `$${avgPrice.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
-                const formattedM2 = activeCurrency === 'GTQ' 
-                    ? `Q${(avgPriceM2 * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}/m²` 
+                const formattedM2 = activeCurrency === 'GTQ'
+                    ? `Q${(avgPriceM2 * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}/m²`
                     : `$${avgPriceM2.toLocaleString('en-US', { maximumFractionDigits: 0 })}/m²`;
 
                 statsHtml += `
@@ -9092,16 +9063,16 @@ function renderAdminReferenceDatabase() {
                 const priceStd = baseStd * locMult * typeFactor;
                 const priceLux = baseLux * locMult * typeFactor;
 
-                const fEcon = activeCurrency === 'GTQ' 
-                    ? `Q${(priceEcon * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                const fEcon = activeCurrency === 'GTQ'
+                    ? `Q${(priceEcon * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}`
                     : `$${priceEcon.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
-                const fStd = activeCurrency === 'GTQ' 
-                    ? `Q${(priceStd * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                const fStd = activeCurrency === 'GTQ'
+                    ? `Q${(priceStd * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}`
                     : `$${priceStd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
-                const fLux = activeCurrency === 'GTQ' 
-                    ? `Q${(priceLux * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}` 
+                const fLux = activeCurrency === 'GTQ'
+                    ? `Q${(priceLux * exchangeRate).toLocaleString('es-GT', { maximumFractionDigits: 0 })}`
                     : `$${priceLux.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
                 statsHtml += `
@@ -9143,7 +9114,7 @@ function renderAdminReferenceDatabase() {
         tr.style.transition = 'background-color 0.2s ease';
         tr.onmouseover = () => { tr.style.backgroundColor = 'rgba(0, 240, 255, 0.04)'; };
         tr.onmouseout = () => { tr.style.backgroundColor = 'transparent'; };
-        
+
         // Al hacer clic en la fila se abre el modal para visualizar/editar
         tr.onclick = (e) => {
             if (e.target.closest('button')) return; // No abrir si se hace clic en ELIMINAR
@@ -9151,8 +9122,8 @@ function renderAdminReferenceDatabase() {
         };
 
         const priceGTQ = prop.priceUSD * exchangeRate;
-        const formattedPrice = activeCurrency === 'GTQ' 
-            ? `Q${priceGTQ.toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` 
+        const formattedPrice = activeCurrency === 'GTQ'
+            ? `Q${priceGTQ.toLocaleString('es-GT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
             : `$${prop.priceUSD.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
         tr.innerHTML = `
@@ -9253,7 +9224,7 @@ function updateAdminRefPhotoPreview(url) {
         if (url && url.trim() !== '') {
             img.src = url;
             container.style.display = 'block';
-            img.onload = function() {
+            img.onload = function () {
                 if (dims) dims.innerText = `${img.naturalWidth} x ${img.naturalHeight} px`;
             };
         } else {
@@ -9270,9 +9241,9 @@ function handleAdminRefPhotoUpload(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         adminRefCustomPhotoBase64 = e.target.result;
-        
+
         // Cargar opción personalizada y seleccionarla
         const select = document.getElementById('admin-ref-photo');
         let customOpt = document.getElementById('option-custom-ref-photo');
@@ -9285,7 +9256,7 @@ function handleAdminRefPhotoUpload(event) {
             }
             customOpt.value = adminRefCustomPhotoBase64;
             select.value = adminRefCustomPhotoBase64;
-            
+
             // Actualizar vista previa
             updateAdminRefPhotoPreview(adminRefCustomPhotoBase64);
         }
@@ -9315,13 +9286,13 @@ function openAdminReferencePropertyModal() {
     const modal = document.getElementById('admin-reference-property-modal');
     if (modal) {
         modal.classList.add('active');
-        
+
         const select = document.getElementById('admin-ref-photo');
         if (select) {
             // Restablecer opción custom si existe
             const customOpt = document.getElementById('option-custom-ref-photo');
             if (customOpt) customOpt.value = "custom";
-            
+
             // Mostrar primera opción por defecto
             updateAdminRefPhotoPreview(select.value);
         }
@@ -9586,7 +9557,7 @@ function renderAdminDashboard() {
 
     b2bClients.forEach((client, idx) => {
         totalSubscribers++;
-        
+
         const plan = (client.plan || 'Pro').toLowerCase();
         const status = (client.status || 'Pendiente').toLowerCase();
         const email = client.email || '';
@@ -9611,7 +9582,7 @@ function renderAdminDashboard() {
             planPriceGTQ = 140;
             planPriceUSD = 18;
         }
-        
+
         // Sumar facturaciones por pauta publicitaria (si las tiene)
         let totalClientAdBillingUSD = 0;
         if (email === 'agente@valorgt.com') {
@@ -9622,21 +9593,21 @@ function renderAdminDashboard() {
         const clientTotalUSD = planPriceUSD + totalClientAdBillingUSD;
         totalRevenueUSD += clientTotalUSD;
 
-        const convertedTotal = (activeCurrency === 'GTQ') 
-            ? (planPriceGTQ + (totalClientAdBillingUSD * exchangeRate)) 
+        const convertedTotal = (activeCurrency === 'GTQ')
+            ? (planPriceGTQ + (totalClientAdBillingUSD * exchangeRate))
             : (planPriceUSD + totalClientAdBillingUSD);
         const planClass = (plan === 'básico' || plan === 'basico') ? 'basico' : plan;
-        
+
         const isSuspended = status === 'suspendido';
         const isPending = status === 'pendiente';
-        
+
         let statusColorClass = 'text-green';
         if (isSuspended) statusColorClass = 'text-red';
         else if (isPending) statusColorClass = 'text-warning-glow'; // orange-yellow for pending!
-        
+
         let actionBtnText = '🚫 SUSPENDER';
         let actionBtnColor = 'color: var(--red); border-color: var(--red);';
-        
+
         if (isSuspended) {
             actionBtnText = '⚡ REACTIVAR';
             actionBtnColor = 'color: var(--green); border-color: var(--green);';
@@ -9680,7 +9651,7 @@ function renderAdminDashboard() {
     // Actualizar KPIs de administración
     animateNumber('admin-total-revenue', 0, totalRevenueUSD * conversion, 600, currencySym);
     document.getElementById('admin-total-subscribers').innerText = `${totalSubscribers} Activos`;
-    
+
     // Campañas de pauta activas: contamos cuántos anuncios sponsored hay en PORTFOLIO_DATABASE
     let sponsoredCount = 0;
     Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
@@ -9709,11 +9680,11 @@ async function toggleAgentStatus(clientIdx) {
 
     const isPending = client.status === 'Pendiente' || client.status === 'pendiente';
     const currentlySuspended = client.status === 'Suspendido' || client.status === 'suspendido';
-    
+
     let newStatus = 'Activo';
     let logMsg = '';
     let alertMsg = '';
-    
+
     if (isPending) {
         newStatus = 'Activo';
         logMsg = `agent_audit: Cuenta de ${client.name} (${client.company}) APROBADA y activada por administrador root.`;
@@ -9727,12 +9698,12 @@ async function toggleAgentStatus(clientIdx) {
         logMsg = `agent_audit: Cuenta de ${client.name} (${client.company}) SUSPENDIDA por administrador root.`;
         alertMsg = `¡Socio ${client.name} suspendido de forma inmediata! Acceso SaaS bloqueado de forma temporal.`;
     }
-    
+
     client.status = newStatus;
-    
+
     // Guardar localmente
     localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
-    
+
     // Guardar en Supabase profiles en la nube
     if (isSupabaseActive && supabaseClient && client.id) {
         try {
@@ -9743,11 +9714,11 @@ async function toggleAgentStatus(clientIdx) {
             console.warn("Fallo de conexión al actualizar estado en Supabase profiles:", dbErr);
         }
     }
-    
+
     if (typeof appendAdminLog === 'function') {
         appendAdminLog("SECURITY", logMsg, true);
     }
-    
+
     alert(alertMsg);
     renderAdminDashboard();
 }
@@ -9804,7 +9775,7 @@ function appendAdminLog(tag, message, isAlert) {
 
     const log = document.createElement('div');
     log.className = 'news-log';
-    
+
     let tagClass = 'log-tag system';
     if (tag === 'SECURITY') tagClass += ' alert';
     if (tag === 'SAAS') tagClass += ' network';
@@ -9858,9 +9829,9 @@ function toggleAdminPCIDSS(checked) {
 function toggleAdminSpeculation(checked) {
     isSpeculationCalibrated = checked;
     appendAdminLog("SYSTEM", `ia_calibrate: Calibración especulativa de plusvalía global ${checked ? 'Habilitada (+1.5% premium)' : 'Deshabilitada (suelo puro)'}.`, false);
-    
+
     // Si hay tasación activa, recalcular valuación
-    const eventMock = { preventDefault: () => {} };
+    const eventMock = { preventDefault: () => { } };
     if (document.getElementById('valuation-form') && activeZoneKey) {
         calculateValuation(eventMock);
     }
@@ -9895,12 +9866,12 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
     const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
     const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     const recipientsList = document.getElementById('admin-airdrop-recipients-list');
-    
+
     if (!recipientsList) return;
-    
+
     // Obtener los clientes premium (VIP o Pro) activos de b2bClients de forma case-insensitive
     const eligibleClients = b2bClients.filter(c => c.plan && c.status && ['vip', 'pro', 'premium'].includes(c.plan.toLowerCase()) && c.status.toLowerCase() === 'activo');
-    
+
     // 1. Poblar el selector de usuario único de forma dinámica
     if (singleUserSelect) {
         const prevValue = singleUserSelect.value;
@@ -9915,12 +9886,12 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
             singleUserSelect.value = prevValue;
         }
     }
-    
+
     const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
-    
+
     // 2. Renderizar visualmente el listado de destinatarios
     recipientsList.innerHTML = '';
-    
+
     if (isSingle) {
         if (singleUserSelect && singleUserSelect.value) {
             const selectedEmail = singleUserSelect.value;
@@ -9934,7 +9905,7 @@ function renderAdminAirdropComponents(pendingAirdrop = 0) {
             recipientsList.appendChild(createRecipientBadgeHTML(client, true, pendingAirdrop));
         });
     }
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -9952,11 +9923,11 @@ function createRecipientBadgeHTML(client, selected = true, pendingAirdrop = 0) {
     el.style.borderRadius = '6px';
     el.style.color = '#fff';
     el.style.transition = 'all 0.3s ease';
-    
-    const airdropText = pendingAirdrop > 0 
-        ? `<span style="color: #34c759; font-weight: 800; margin-left: 6px; font-size: 0.6rem; filter: drop-shadow(0 0 4px rgba(52, 199, 89, 0.45));">+${pendingAirdrop.toFixed(4)} XAUt</span>` 
+
+    const airdropText = pendingAirdrop > 0
+        ? `<span style="color: #34c759; font-weight: 800; margin-left: 6px; font-size: 0.6rem; filter: drop-shadow(0 0 4px rgba(52, 199, 89, 0.45));">+${pendingAirdrop.toFixed(4)} XAUt</span>`
         : '';
-        
+
     el.innerHTML = `
         <div style="display: flex; align-items: center; gap: 6px;">
             <i data-lucide="user" style="width: 12px; height: 12px; color: #ffd700;"></i>
@@ -9976,7 +9947,7 @@ function handleAirdropTargetTypeChange() {
     const singleUserWrapper = document.getElementById('admin-airdrop-single-user-wrapper');
     const revenueInput = document.getElementById('admin-airdrop-revenue');
     const revenueLabel = document.getElementById('admin-airdrop-revenue-label');
-    
+
     if (targetTypeSelect) {
         const isSingle = targetTypeSelect.value === 'single';
         if (singleUserWrapper) {
@@ -9996,7 +9967,7 @@ function handleAirdropTargetTypeChange() {
             }
         }
     }
-    
+
     renderAdminAirdropComponents();
     calculateAdminAirdropPreview();
 }
@@ -10009,11 +9980,11 @@ function handleAirdropSingleUserChange() {
 function calculateAdminAirdropPreview() {
     const revenueInput = document.getElementById('admin-airdrop-revenue');
     if (!revenueInput) return;
-    
+
     const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
     const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     const operationTypeSelect = document.getElementById('admin-airdrop-operation-type');
-    
+
     const priceEl = document.getElementById('airdrop-preview-xaut-price');
     const poolEl = document.getElementById('airdrop-preview-pool');
     const eligibleEl = document.getElementById('airdrop-preview-eligible');
@@ -10024,7 +9995,7 @@ function calculateAdminAirdropPreview() {
     const revenueLabel = document.getElementById('admin-airdrop-revenue-label');
     const remnantLabel = document.getElementById('airdrop-preview-remnant-label');
     const individualLabel = document.getElementById('airdrop-preview-individual-label');
-    
+
     const xautPrice = currentAirdropXautPrice;
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
@@ -10048,12 +10019,12 @@ function calculateAdminAirdropPreview() {
     }
 
     if (priceEl) priceEl.innerText = `$${xautPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD`;
-    
+
     // Filtrar clientes Premium (VIP o Pro) activos de forma case-insensitive
     const eligibleClients = b2bClients.filter(c => c.plan && c.status && ['vip', 'pro', 'premium'].includes(c.plan.toLowerCase()) && c.status.toLowerCase() === 'activo');
-    
+
     let selectedClients = [];
-    
+
     if (isSingle) {
         if (singleUserSelect && singleUserSelect.value) {
             const selectedEmail = singleUserSelect.value;
@@ -10063,12 +10034,12 @@ function calculateAdminAirdropPreview() {
     } else {
         selectedClients = eligibleClients;
     }
-    
+
     const selectedCount = selectedClients.length;
-    
+
     if (eligibleEl) {
-        eligibleEl.innerText = isSingle 
-            ? `1 Destinatario (Premium)` 
+        eligibleEl.innerText = isSingle
+            ? `1 Destinatario (Premium)`
             : `${selectedCount} Premium (VIP/Pro)`;
     }
 
@@ -10084,9 +10055,9 @@ function calculateAdminAirdropPreview() {
     } else if (isSingle && revenueInput) {
         revenueInput.removeAttribute('disabled');
     }
-    
+
     const revenueVal = parseFloat(revenueInput.value);
-    
+
     if (isNaN(revenueVal) || revenueVal <= 0 || selectedCount === 0) {
         if (poolEl) poolEl.innerText = `${currencySym}0.00`;
         if (individualEl) individualEl.innerText = `${currencySym}0.00 (${(0).toFixed(6)} XAUt)`;
@@ -10103,16 +10074,16 @@ function calculateAdminAirdropPreview() {
         renderAdminAirdropComponents(0);
         return;
     }
-    
+
     let poolUSD = 0;
     let individualUSD = 0;
     let remnantUSD = 0;
-    
+
     if (isSingle) {
         poolUSD = revenueVal;
         individualUSD = revenueVal;
         remnantUSD = isDebit ? adminMonthlyRevenueUSD + poolUSD : adminMonthlyRevenueUSD - poolUSD;
-        
+
         // Validación de límites
         const individualXAUtVal = individualUSD / xautPrice;
         let overLimit = false;
@@ -10158,7 +10129,7 @@ function calculateAdminAirdropPreview() {
             poolUSD = revenueVal;
             individualUSD = poolUSD / selectedCount;
             remnantUSD = adminMonthlyRevenueUSD + poolUSD;
-            
+
             // Validar que TODOS los premium tengan suficiente saldo
             const individualXAUtVal = individualUSD / xautPrice;
             let oneInsufficient = false;
@@ -10191,7 +10162,7 @@ function calculateAdminAirdropPreview() {
             poolUSD = adminMonthlyRevenueUSD * 0.05;
             individualUSD = poolUSD / selectedCount;
             remnantUSD = 0; // Se reinicia a 0 después de distribuir a todos
-            
+
             if (warningEl) warningEl.style.display = 'none';
             if (executeBtn) {
                 executeBtn.removeAttribute('disabled');
@@ -10200,9 +10171,9 @@ function calculateAdminAirdropPreview() {
             }
         }
     }
-    
+
     const individualXAUt = individualUSD / xautPrice;
-    
+
     if (poolEl) {
         const poolConv = poolUSD * conversion;
         poolEl.innerText = `${currencySym}${formatNumber(poolConv.toFixed(2))}`;
@@ -10215,7 +10186,7 @@ function calculateAdminAirdropPreview() {
         const remConv = remnantUSD * conversion;
         remnantEl.innerText = `${currencySym}${formatNumber(remConv.toFixed(2))}`;
     }
-    
+
     // Re-renderizar componentes pasando el airdrop individual para la vista previa
     renderAdminAirdropComponents(isDebit ? -individualXAUt : individualXAUt);
 }
@@ -10223,15 +10194,15 @@ function calculateAdminAirdropPreview() {
 async function executeAdminGoldAirdrop() {
     const revenueInput = document.getElementById('admin-airdrop-revenue');
     if (!revenueInput) return;
-    
+
     const targetTypeSelect = document.getElementById('admin-airdrop-target-type');
     const singleUserSelect = document.getElementById('admin-airdrop-single-user');
     const operationTypeSelect = document.getElementById('admin-airdrop-operation-type');
-    
+
     const inputVal = parseFloat(revenueInput.value);
     const isDebit = operationTypeSelect ? operationTypeSelect.value === 'debit' : false;
     const isSingle = targetTypeSelect ? targetTypeSelect.value === 'single' : false;
-    
+
     if (isNaN(inputVal) || inputVal <= 0) {
         alert("Por favor ingresa un monto válido en USD.");
         return;
@@ -10248,10 +10219,10 @@ async function executeAdminGoldAirdrop() {
             return;
         }
     }
-    
+
     const xautPrice = await fetchXautPriceForAirdrop();
     const eligibleClients = b2bClients.filter(c => c.plan && c.status && ['vip', 'pro', 'premium'].includes(c.plan.toLowerCase()) && c.status.toLowerCase() === 'activo');
-    
+
     let selectedClients = [];
     if (isSingle) {
         if (singleUserSelect && singleUserSelect.value) {
@@ -10262,16 +10233,16 @@ async function executeAdminGoldAirdrop() {
     } else {
         selectedClients = eligibleClients;
     }
-    
+
     const selectedCount = selectedClients.length;
     if (selectedCount === 0) {
         alert("No hay agentes Premium activos seleccionados para esta operación.");
         return;
     }
-    
+
     let poolUSD = 0;
     let individualUSD = 0;
-    
+
     if (isSingle) {
         poolUSD = inputVal;
         individualUSD = inputVal;
@@ -10284,9 +10255,9 @@ async function executeAdminGoldAirdrop() {
             individualUSD = poolUSD / selectedCount;
         }
     }
-    
+
     const individualXAUt = individualUSD / xautPrice;
-    
+
     // Validar saldos locales si es débito
     if (isDebit) {
         const insufficientClient = selectedClients.find(c => c.usdtBalance < individualXAUt);
@@ -10297,19 +10268,19 @@ async function executeAdminGoldAirdrop() {
     }
 
     const confirmTx = confirm(
-      `🔒 CONFIRMACIÓN TRANSACCIONAL CORE:\n\n` +
-      `¿Deseas autorizar la ${isDebit ? "extracción (débito)" : "dispersión (crédito)"} de oro digital indexado Tether Gold (XAUt)?\n` +
-      `• Tipo de Operación: ${isDebit ? "Extracción de Fondos (Débito)" : (isSingle ? "Destinatario Único (Crédito)" : "Dispersión General (Crédito)")}\n` +
-      `• Total a Procesar: $${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD\n` +
-      `• Destinatario(s): ${isSingle ? selectedClients[0].name : `${selectedCount} Premium Activos`}\n` +
-      `• Afectación Individual: ${isDebit ? "-" : "+"}${individualXAUt.toFixed(6)} XAUt\n\n` +
-      `Esta acción modificará los libros contables y los saldos de cartera en tiempo real.`
+        `🔒 CONFIRMACIÓN TRANSACCIONAL CORE:\n\n` +
+        `¿Deseas autorizar la ${isDebit ? "extracción (débito)" : "dispersión (crédito)"} de oro digital indexado Tether Gold (XAUt)?\n` +
+        `• Tipo de Operación: ${isDebit ? "Extracción de Fondos (Débito)" : (isSingle ? "Destinatario Único (Crédito)" : "Dispersión General (Crédito)")}\n` +
+        `• Total a Procesar: $${poolUSD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD\n` +
+        `• Destinatario(s): ${isSingle ? selectedClients[0].name : `${selectedCount} Premium Activos`}\n` +
+        `• Afectación Individual: ${isDebit ? "-" : "+"}${individualXAUt.toFixed(6)} XAUt\n\n` +
+        `Esta acción modificará los libros contables y los saldos de cartera en tiempo real.`
     );
-    
+
     if (!confirmTx) return;
-    
-    const txHash = "0x" + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
-    
+
+    const txHash = "0x" + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+
     // SI SUPABASE ESTÁ ACTIVO, REGISTRAR EN DB REMOTA
     if (isSupabaseActive) {
         try {
@@ -10318,13 +10289,13 @@ async function executeAdminGoldAirdrop() {
                 .from('profiles')
                 .select('*')
                 .in('email', emails);
- 
+
             if (fetchErr) {
                 console.error("Error al consultar perfiles premium en Supabase:", fetchErr);
                 alert("Error de conexión al consultar base de datos Supabase.");
                 return;
-            } 
-            
+            }
+
             const foundEmails = (remoteProfiles || []).map(p => p.email.toLowerCase());
             const missingClients = selectedClients.filter(c => !foundEmails.includes(c.email.toLowerCase()));
 
@@ -10363,13 +10334,13 @@ async function executeAdminGoldAirdrop() {
                         p_monto_xaut_por_usuario: individualXAUt,
                         p_precio_pivote: xautPrice
                     });
-     
+
                     if (rpcErr) {
                         console.error("Error al ejecutar el RPC de Airdrop en Supabase:", rpcErr);
                         alert(`⚠️ FALLO EN BASE DE DATOS: El airdrop falló. Detalles: ${rpcErr.message}`);
                         return;
-                    } 
-                    
+                    }
+
                     if (typeof appendAdminLog === 'function') {
                         appendAdminLog("SECURITY", `ledger_node: Airdrop registrado en Supabase para ${remoteProfiles.length} perfiles.`, false);
                     }
@@ -10379,8 +10350,8 @@ async function executeAdminGoldAirdrop() {
                 for (const profile of remoteProfiles) {
                     const localClient = b2bClients.find(c => c.email.toLowerCase() === profile.email.toLowerCase());
                     if (localClient) {
-                        const newBal = isDebit 
-                            ? Math.max(0, parseFloat(profile.usdt_balance || 0) - individualXAUt) 
+                        const newBal = isDebit
+                            ? Math.max(0, parseFloat(profile.usdt_balance || 0) - individualXAUt)
                             : parseFloat(profile.usdt_balance || 0) + individualXAUt;
                         localClient.usdtBalance = newBal;
                     }
@@ -10407,14 +10378,14 @@ async function executeAdminGoldAirdrop() {
             }
         });
     }
-    
+
     if (loggedInB2bClient) {
         const matchingClient = selectedClients.find(c => c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
         if (matchingClient) {
             loggedInB2bClient.usdtBalance = matchingClient.usdtBalance;
         }
     }
-    
+
     // Débito / Crédito contable en el pool del admin
     const oldRevenue = adminMonthlyRevenueUSD;
     if (isDebit) {
@@ -10436,7 +10407,7 @@ async function executeAdminGoldAirdrop() {
             }
         }
     }
-    
+
     // Sincronizar balances reales actualizados desde Supabase
     if (isSupabaseActive) {
         await syncB2bClientsFromSupabase();
@@ -10446,13 +10417,13 @@ async function executeAdminGoldAirdrop() {
     if (typeof renderAdminDashboard === 'function') {
         renderAdminDashboard();
     }
- 
+
     // Re-renderizar lista de destinatarios
     renderAdminAirdropComponents();
- 
+
     // Actualizar HUDs
     updateSaasMetricsHUD();
-    
+
     alert(`🎉 ¡OPERACIÓN Y REGISTRO DE ORO EXITOSO!
     
     ✅ Tipo de Operación: ${isDebit ? "Extracción de Fondos (Débito)" : "Envío de Oro (Acrédito)"}
@@ -10463,7 +10434,7 @@ async function executeAdminGoldAirdrop() {
     ✅ Hash de Auditoría: ${txHash.substring(0, 18)}...
     
     Los saldos y la consola comercial se han sincronizado con éxito.`);
-    
+
     // Resetear formulario
     revenueInput.value = '';
     calculateAdminAirdropPreview();
@@ -10541,7 +10512,7 @@ async function _syncSupabaseDataInternal() {
                             .select('*')
                             .eq('id', loggedInB2bClient.id)
                             .maybeSingle();
-                        
+
                         if (!profileErr && latestProfile) {
                             // Actualizar datos de sesión local con lo que hay en la nube en tiempo real
                             let dbPlan = latestProfile.plan || 'Básico';
@@ -10581,7 +10552,7 @@ async function _syncSupabaseDataInternal() {
                             if (typeof updateB2bPartnerLevelBadge === 'function') {
                                 updateB2bPartnerLevelBadge();
                             }
-                            
+
                             // Actualizar en el listado local de clientes para mantener consistencia
                             const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
                             if (clientIdx !== -1) {
@@ -10592,13 +10563,13 @@ async function _syncSupabaseDataInternal() {
                             }
                             localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
                             localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
-                            
+
                             // Actualizar interfaces
                             updateSaasMetricsHUD();
                             updateB2bSubscriptionPendingBanner();
                             syncCommercialPricingGridUI();
                             renderB2bAgentProfile();
-                            
+
                             // Gestionar Overlays de Bloqueo dinámicamente si cambió el estado
                             updateLockOverlaysState();
                         } else if (profileErr || !latestProfile) {
@@ -10616,7 +10587,7 @@ async function _syncSupabaseDataInternal() {
                                 usdt_balance: loggedInB2bClient.usdtBalance,
                                 role: loggedInB2bClient.role || 'agente'
                             };
-                            
+
                             const { error: insertErr } = await supabaseClient.from('profiles').insert([fallbackProfile]);
                             if (insertErr) {
                                 console.warn("Fallo de auto-creación en Supabase profiles:", insertErr);
@@ -10635,128 +10606,128 @@ async function _syncSupabaseDataInternal() {
                 .from('properties')
                 .select('id, title, category, type, price_usd, size_m2, rooms, bathrooms, parkings, photo_url, location_key, latitude, longitude, agent_id, sponsored');
 
-                if (error) {
-                    console.error("Error al sincronizar propiedades desde Supabase:", error);
-                    return;
-                }
+            if (error) {
+                console.error("Error al sincronizar propiedades desde Supabase:", error);
+                return;
+            }
 
-                if (remoteProperties) {
-                    const remoteIds = new Set(remoteProperties.map(p => p.id));
-                    
-                    // Limpiar de agentUploadedProperties las propiedades que ya no están en Supabase
-                    agentUploadedProperties = agentUploadedProperties.filter(p => !p.id || remoteIds.has(p.id));
+            if (remoteProperties) {
+                const remoteIds = new Set(remoteProperties.map(p => p.id));
 
-                    // Limpiar de PORTFOLIO_DATABASE las propiedades que ya no están en Supabase (dejando las de mockData con ID 'ref-' o 'ref_local_')
-                    Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
-                        PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p => 
-                            !p.id || 
-                            String(p.id).startsWith('ref-') || 
-                            String(p.id).startsWith('ref_local_') || 
-                            remoteIds.has(p.id)
-                        );
+                // Limpiar de agentUploadedProperties las propiedades que ya no están en Supabase
+                agentUploadedProperties = agentUploadedProperties.filter(p => !p.id || remoteIds.has(p.id));
+
+                // Limpiar de PORTFOLIO_DATABASE las propiedades que ya no están en Supabase (dejando las de mockData con ID 'ref-' o 'ref_local_')
+                Object.keys(PORTFOLIO_DATABASE).forEach(zone => {
+                    PORTFOLIO_DATABASE[zone] = PORTFOLIO_DATABASE[zone].filter(p =>
+                        !p.id ||
+                        String(p.id).startsWith('ref-') ||
+                        String(p.id).startsWith('ref_local_') ||
+                        remoteIds.has(p.id)
+                    );
+                });
+
+                if (remoteProperties.length > 0) {
+                    const allRemoteFormatted = [];
+                    remoteProperties.forEach(prop => {
+                        const zoneKey = prop.location_key;
+                        const isRef = false; // Forzar a que todos los registros de Supabase sean reales en el cliente
+
+                        // Estructurar al formato interno compatible con mockData.js
+                        const formattedProp = {
+                            id: prop.id,
+                            title: prop.title,
+                            category: prop.category,
+                            type: prop.type,
+                            tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
+                            priceUSD: parseFloat(prop.price_usd),
+                            size: parseFloat(prop.size_m2),
+                            rooms: parseInt(prop.rooms),
+                            bathrooms: parseFloat(prop.bathrooms),
+                            parkings: parseInt(prop.parkings),
+                            garden: 0,
+                            study: false,
+                            familyRoom: false,
+                            hasMasterSuite: false,
+                            hasVisitorBath: false,
+                            amenities: [],
+                            photo: prop.photo_url,
+                            photos: [prop.photo_url],
+                            description: 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
+                            agentName: 'Socio Inmobiliario',
+                            agentCompany: 'ValorGT Premium Partner',
+                            agentPhone: '50250129482',
+                            agentLogo: '',
+                            agentPlan: 'Básico',
+                            youtubeUrl: '',
+                            badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
+                            location: zoneKey,
+                            isAgentUpload: !isRef,
+                            isReferenceData: isRef,
+                            sponsored: prop.sponsored,
+                            lat: parseFloat(prop.latitude),
+                            lng: parseFloat(prop.longitude),
+                            agent_id: prop.agent_id,
+                            agentEmail: 'admin@valorgt.com'
+                        };
+
+                        allRemoteFormatted.push(formattedProp);
+
+                        // Evitar duplicación de listados
+                        if (!PORTFOLIO_DATABASE[zoneKey]) {
+                            PORTFOLIO_DATABASE[zoneKey] = [];
+                        }
+
+                        const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
+                        if (!exists) {
+                            if (formattedProp.sponsored) {
+                                PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
+                            } else {
+                                PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
+                            }
+                        }
+
+                        // Cargar al inventario de pauta si le pertenece al usuario logueado
+                        if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
+                            const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
+                            if (!agentExists) {
+                                agentUploadedProperties.push(formattedProp);
+                            }
+                        }
                     });
 
-                    if (remoteProperties.length > 0) {
-                        const allRemoteFormatted = [];
-                        remoteProperties.forEach(prop => {
-                            const zoneKey = prop.location_key;
-                            const isRef = false; // Forzar a que todos los registros de Supabase sean reales en el cliente
-                            
-                            // Estructurar al formato interno compatible con mockData.js
-                            const formattedProp = {
-                                id: prop.id,
-                                title: prop.title,
-                                category: prop.category,
-                                type: prop.type,
-                                tag: prop.tag || `${(prop.category || "Propiedad").toUpperCase()} EN ${(prop.type || "Venta").toUpperCase()}`,
-                                priceUSD: parseFloat(prop.price_usd),
-                                size: parseFloat(prop.size_m2),
-                                rooms: parseInt(prop.rooms),
-                                bathrooms: parseFloat(prop.bathrooms),
-                                parkings: parseInt(prop.parkings),
-                                garden: 0,
-                                study: false,
-                                familyRoom: false,
-                                hasMasterSuite: false,
-                                hasVisitorBath: false,
-                                amenities: [],
-                                photo: prop.photo_url,
-                                photos: [prop.photo_url],
-                                description: 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
-                                agentName: 'Socio Inmobiliario',
-                                agentCompany: 'ValorGT Premium Partner',
-                                agentPhone: '50250129482',
-                                agentLogo: '',
-                                agentPlan: 'Básico',
-                                youtubeUrl: '',
-                                badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
-                                location: zoneKey,
-                                isAgentUpload: !isRef,
-                                isReferenceData: isRef,
-                                sponsored: prop.sponsored,
-                                lat: parseFloat(prop.latitude),
-                                lng: parseFloat(prop.longitude),
-                                agent_id: prop.agent_id,
-                                agentEmail: 'admin@valorgt.com'
-                            };
-
-                            allRemoteFormatted.push(formattedProp);
-
-                            // Evitar duplicación de listados
-                            if (!PORTFOLIO_DATABASE[zoneKey]) {
-                                PORTFOLIO_DATABASE[zoneKey] = [];
-                            }
-
-                            const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
-                            if (!exists) {
-                                if (formattedProp.sponsored) {
-                                    PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
-                                } else {
-                                    PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
-                                }
-                            }
-
-                            // Cargar al inventario de pauta si le pertenece al usuario logueado
-                            if (loggedInB2bClient && prop.agent_id === loggedInB2bClient.id) {
-                                const agentExists = agentUploadedProperties.some(p => p.id === formattedProp.id);
-                                if (!agentExists) {
-                                    agentUploadedProperties.push(formattedProp);
-                                }
-                            }
-                        });
-                        
-                        // Guardar en localStorage las propiedades sincronizadas
-                        saveLocalPropertiesToStorage();
-                        try {
-                            localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
-                        } catch (storageErr) {
-                            console.warn("⚠️ [Cache] No se pudo guardar la caché de propiedades en localStorage (límite de cuota excedido):", storageErr);
-                        }
+                    // Guardar en localStorage las propiedades sincronizadas
+                    saveLocalPropertiesToStorage();
+                    try {
+                        localStorage.setItem('valorgt_remote_properties_cache', JSON.stringify(allRemoteFormatted));
+                    } catch (storageErr) {
+                        console.warn("⚠️ [Cache] No se pudo guardar la caché de propiedades en localStorage (límite de cuota excedido):", storageErr);
                     }
+                }
 
-                    // Actualizar la interfaz de forma reactiva según la sección visible
-                    const activeViewEl = document.querySelector('.app-view.active');
-                    if (activeViewEl) {
-                        const activeId = activeViewEl.id;
-                        if (activeId === 'view-home') {
-                            renderHomeCatalog();
-                            calculateHomeMacroKPIs();
-                        } else if (activeId === 'view-catalog') {
-                            renderCatalogProperties();
-                        } else if (activeId === 'view-heatmap') {
-                            if (typeof initHeatmap === 'function') initHeatmap();
-                            if (typeof drawAgentProperties === 'function') drawAgentProperties();
-                        } else if (activeId === 'view-commercial') {
-                            renderB2bInventory();
-                            updatePromoPropertySelect();
-                            updateSaasMetricsHUD();
-                        }
+                // Actualizar la interfaz de forma reactiva según la sección visible
+                const activeViewEl = document.querySelector('.app-view.active');
+                if (activeViewEl) {
+                    const activeId = activeViewEl.id;
+                    if (activeId === 'view-home') {
+                        renderHomeCatalog();
+                        calculateHomeMacroKPIs();
+                    } else if (activeId === 'view-catalog') {
+                        renderCatalogProperties();
+                    } else if (activeId === 'view-heatmap') {
+                        if (typeof initHeatmap === 'function') initHeatmap();
+                        if (typeof drawAgentProperties === 'function') drawAgentProperties();
+                    } else if (activeId === 'view-commercial') {
+                        renderB2bInventory();
+                        updatePromoPropertySelect();
+                        updateSaasMetricsHUD();
                     }
+                }
             }
         } catch (err) {
             console.error("Fallo al descargar propiedades remota:", err);
         }
-        
+
         // Sincronizar solicitudes de pago pendientes en tiempo real (no bloqueante)
         syncPendingPaymentRequests().catch(err => console.warn("Fallo al obtener solicitudes de pago pendientes:", err));
     } catch (err) {
@@ -10783,7 +10754,7 @@ async function syncB2bClientsFromSupabase() {
                 let role = profile.role || 'agente';
                 const emailLower = (profile.email || '').toLowerCase();
                 const roleLower = role.toLowerCase();
-                
+
                 if (emailLower.includes('jaime') || emailLower.includes('jmejia') || (profile.name && (profile.name.toLowerCase().includes('jaime') || profile.name.toLowerCase().includes('mejia')))) {
                     plan = 'Premium';
                     role = 'inversionista';
@@ -10801,7 +10772,7 @@ async function syncB2bClientsFromSupabase() {
                     plan = 'Básico';
                     role = 'agente';
                 }
-                
+
                 return {
                     id: profile.id,
                     name: profile.name,
@@ -10818,10 +10789,10 @@ async function syncB2bClientsFromSupabase() {
                     is_founder_premium: profile.isFounderPremium || profile.is_founder_premium || false
                 };
             });
-            
+
             // Persistir localmente para mantener la caché del navegador actualizada
             localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
-            
+
             // Re-renderizar de inmediato
             renderAdminDashboard();
             renderAdminAirdropComponents();
@@ -10857,11 +10828,11 @@ function switchCommercialTab(tabId) {
 
     // Ocultar todos los contenidos de pestañas
     document.querySelectorAll('.comm-tab-content').forEach(el => el.classList.add('hidden'));
-    
+
     // Sincronizar el highlight del menú lateral principal según la subpestaña comercial
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
-    
+
     if (tabId === 'portfolio') {
         const portfolioBtn = document.getElementById('nav-btn-portfolio');
         if (portfolioBtn) portfolioBtn.classList.add('active');
@@ -10873,7 +10844,7 @@ function switchCommercialTab(tabId) {
         const mobileCommercialBtn = document.getElementById('mobile-nav-btn-commercial');
         if (mobileCommercialBtn) mobileCommercialBtn.classList.add('active');
     }
-    
+
     // Remover clase active de todos los botones y restablecer estilos base
     document.querySelectorAll('.comm-tab-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -10886,7 +10857,7 @@ function switchCommercialTab(tabId) {
     // Activar pestaña actual
     const activeContent = document.getElementById(`comm-tab-content-${tabId}`);
     const activeBtn = document.getElementById(`comm-tab-btn-${tabId}`);
-    
+
     if (activeContent) {
         activeContent.classList.remove('hidden');
     }
@@ -10921,7 +10892,7 @@ function switchCommercialTab(tabId) {
             subtitleEl.innerText = "Incrementa la exposición de tus activos con inyecciones destacadas en portada";
         }
     }
-    
+
     if (activeBtn) {
         activeBtn.classList.add('active');
         if (tabId === 'home') {
@@ -11014,7 +10985,7 @@ function switchAdminTab(tabId) {
         activeBtn.style.borderColor = 'rgba(0,240,255,0.4)';
         activeBtn.style.color = 'var(--cyan)';
         activeBtn.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.12)';
-        
+
         // Si el administrador entra a la pestaña de pautas, podemos recalcular/quitar flash si ya no quedan
         if (tabId === 'pautas') {
             updateAdminPautasTabNotification();
@@ -11091,7 +11062,7 @@ function renderAdminBannersTab() {
         opt3.value = 'general_slide_3';
         opt3.innerText = '⭐ [Slider General] Casa Lujo Slide 3';
         zoneSelect.appendChild(opt3);
-        
+
         // Seleccionar Fraijanes por defecto si existe
         if (ZONES_DATABASE['fraijanes']) {
             zoneSelect.value = 'fraijanes';
@@ -11109,7 +11080,7 @@ function loadAdminBannerForSelectedZone() {
     if (!zoneSelect) return;
 
     const zoneKey = zoneSelect.value;
-    
+
     // Cargar banners de localStorage
     let banners = {};
     try {
@@ -11133,12 +11104,12 @@ function loadAdminBannerForSelectedZone() {
     document.getElementById('admin-banner-subtitle').value = banner.subtitle || '';
     document.getElementById('admin-banner-cta-text').value = banner.ctaText || 'MÁS INFORMACIÓN';
     document.getElementById('admin-banner-link').value = banner.link || '';
-    
+
     // Determinar origen de la foto
     const presetSelect = document.getElementById('admin-banner-photo-preset');
     const customUrlInput = document.getElementById('admin-banner-custom-url');
     const fileWrapper = document.getElementById('admin-banner-file-wrapper');
-    
+
     if (presetSelect) {
         const standardPresets = ['propiedad_demo.png', 'prop_zona10.png', 'prop_zona14.png', 'prop_zona16.png', 'prop_antigua.png'];
         if (standardPresets.includes(banner.photo)) {
@@ -11151,7 +11122,7 @@ function loadAdminBannerForSelectedZone() {
             adminBannerCustomPhotoBase64 = banner.photo;
             if (customUrlInput) customUrlInput.style.display = 'none';
             if (fileWrapper) fileWrapper.style.display = 'block';
-            
+
             // Retroalimentación visual en la etiqueta del uploader premium
             const uploadLbl = document.getElementById('admin-banner-upload-lbl');
             if (uploadLbl) {
@@ -11208,9 +11179,9 @@ function handleAdminBannerCustomUrlInput() {
 function compressImage(file, maxWidth = 1200, maxHeight = 750, quality = 0.75) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const img = new Image();
-            img.onload = function() {
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
@@ -11237,12 +11208,12 @@ function compressImage(file, maxWidth = 1200, maxHeight = 750, quality = 0.75) {
                 const dataUrl = canvas.toDataURL('image/jpeg', quality);
                 resolve(dataUrl);
             };
-            img.onerror = function(err) {
+            img.onerror = function (err) {
                 reject(err);
             };
             img.src = e.target.result;
         };
-        reader.onerror = function(err) {
+        reader.onerror = function (err) {
             reject(err);
         };
         reader.readAsDataURL(file);
@@ -11276,12 +11247,12 @@ function handleAdminBannerFileUploaded(event) {
     compressImage(file, 1200, 750, 0.75)
         .then(compressedBase64 => {
             adminBannerCustomPhotoBase64 = compressedBase64;
-            
+
             if (uploadLbl) {
                 const truncatedName = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
                 uploadLbl.innerHTML = `¡Imagen cargada ✔️! <span style="color: var(--green); font-size: 0.65rem;">(${truncatedName})</span>`;
             }
-            
+
             updateAdminBannerPreview();
         })
         .catch(err => {
@@ -11304,11 +11275,11 @@ function updateAdminBannerPreview() {
     const subtitle = document.getElementById('admin-banner-subtitle').value.trim() || 'Descripción comercial del proyecto.';
     const ctaText = document.getElementById('admin-banner-cta-text').value.trim() || 'MÁS INFORMACIÓN';
     const link = document.getElementById('admin-banner-link').value.trim() || '#';
-    
+
     // Obtener imagen activa
     const presetSelect = document.getElementById('admin-banner-photo-preset');
     let photo = 'propiedad_demo.png';
-    
+
     if (presetSelect) {
         if (presetSelect.value === 'custom_url') {
             photo = document.getElementById('admin-banner-custom-url').value.trim() || 'propiedad_demo.png';
@@ -11361,17 +11332,17 @@ function saveAdminBanner() {
     const zoneKey = zoneSelect.value;
     const zoneData = ZONES_DATABASE[zoneKey];
     const zoneName = zoneData ? zoneData.name.split(' (')[0] : zoneKey;
-    
+
     const enabled = document.getElementById('admin-banner-enabled').checked;
     const title = document.getElementById('admin-banner-title').value.trim();
     const subtitle = document.getElementById('admin-banner-subtitle').value.trim();
     const ctaText = document.getElementById('admin-banner-cta-text').value.trim() || 'MÁS INFORMACIÓN';
     const link = document.getElementById('admin-banner-link').value.trim();
-    
+
     // Obtener imagen
     const presetSelect = document.getElementById('admin-banner-photo-preset');
     let photo = 'propiedad_demo.png';
-    
+
     if (presetSelect) {
         if (presetSelect.value === 'custom_url') {
             photo = document.getElementById('admin-banner-custom-url').value.trim();
@@ -11445,7 +11416,7 @@ function saveAdminBanner() {
         }
         return;
     }
-    
+
     // Si la zona de búsqueda actual en el Dashboard es esta, actualizar deck para ver el cambio inmediato
     const activeDashboardZoneSelect = document.getElementById('prop-location');
     if (activeDashboardZoneSelect && activeDashboardZoneSelect.value === zoneKey) {
@@ -11495,15 +11466,15 @@ function syncCommercialPricingGridUI() {
 function updateWithdrawalCalculations() {
     const amountInput = document.getElementById('withdrawal-amount-xaut');
     if (!amountInput) return;
-    
+
     const amount = parseFloat(amountInput.value) || 0;
     const xautPrice = currentAirdropXautPrice || 2380.00;
-    
+
     const grossUSD = amount * xautPrice;
     const grossGTQ = grossUSD * exchangeRate;
     const feeGTQ = grossGTQ * 0.04;
     const netGTQ = grossGTQ - feeGTQ;
-    
+
     document.getElementById('withdrawal-gross-gtq').innerText = `Q${formatNumber(grossGTQ.toFixed(2))}`;
     document.getElementById('withdrawal-fee-gtq').innerText = `-Q${formatNumber(feeGTQ.toFixed(2))}`;
     document.getElementById('withdrawal-net-gtq').innerText = `Q${formatNumber(netGTQ.toFixed(2))}`;
@@ -11514,48 +11485,48 @@ function updateWithdrawalCalculations() {
  */
 async function executeB2bWithdrawal(event) {
     if (event) event.preventDefault();
-    
+
     const amountInput = document.getElementById('withdrawal-amount-xaut');
     const bankSelect = document.getElementById('withdrawal-bank');
     const accountInput = document.getElementById('withdrawal-account');
     const typeSelect = document.getElementById('withdrawal-account-type');
-    
+
     if (!amountInput || !bankSelect || !accountInput || !typeSelect) return;
-    
+
     const amount = parseFloat(amountInput.value) || 0;
     const bank = bankSelect.value;
     const account = accountInput.value.trim();
     const type = typeSelect.value;
-    
+
     if (amount <= 0 || !account) {
         alert("⚠️ CAMPOS REQUERIDOS: Por favor introduce un monto de Tether Gold y datos de cuenta válidos.");
         return;
     }
-    
+
     if (!loggedInB2bClient) {
         alert("⚠️ ERROR DE SESIÓN: Debes iniciar sesión con tu cuenta de socio comercial para solicitar retiros.");
         return;
     }
-    
+
     // Validar fondos del balance comercial
     if (loggedInB2bClient.usdtBalance < amount) {
         alert(`⚠️ FONDOS INSUFICIENTES: Tu balance actual es de ${loggedInB2bClient.usdtBalance.toFixed(4)} XAUt. No cuentas con fondos suficientes para retirar ${amount.toFixed(4)} XAUt.`);
         return;
     }
-    
+
     const xautPrice = currentAirdropXautPrice || 2380.00;
     const grossUSD = amount * xautPrice;
     const grossGTQ = grossUSD * exchangeRate;
     const feeGTQ = grossGTQ * 0.04;
     const netGTQ = grossGTQ - feeGTQ;
-    
+
     // Validar mínimo neto Q100
     if (netGTQ < 100) {
         alert(`⚠️ RETIRO MÍNIMO NO ALCANZADO: El monto neto solicitado a recibir es de Q${netGTQ.toFixed(2)}. Las políticas transaccionales de ValorGT AI exigen que el monto neto a transferir en cuenta bancaria sea mayor o igual a Q100.00.`);
         return;
     }
-    
-    const confirmMessage = 
+
+    const confirmMessage =
         `¿Deseas confirmar la solicitud de retiro de Tether Gold (XAUt)?\n\n` +
         `• Débito en Cartera: -${amount.toFixed(6)} XAUt\n` +
         `• Equivalente Bruto: Q${grossGTQ.toFixed(2)}\n` +
@@ -11564,12 +11535,12 @@ async function executeB2bWithdrawal(event) {
         `• Banco Destinatario: ${bank}\n` +
         `• Cuenta: ${account} (${type})\n\n` +
         `Este retiro se debitará de tu balance y quedará pendiente de transferencia bancaria por parte de la administración.`;
-        
+
     if (!confirm(confirmMessage)) return;
-    
+
     // Deducción local de balance
     loggedInB2bClient.usdtBalance -= amount;
-    
+
     // Sincronizar en Supabase si está activo
     if (isXautPriceFetched || isSupabaseActive) {
         try {
@@ -11591,12 +11562,12 @@ async function executeB2bWithdrawal(event) {
             console.error("Fallo de red al registrar retiro en Supabase:", err);
         }
     }
-    
+
     // Registrar solicitud contable
     const refCode = "WTH-" + Math.floor(100000 + Math.random() * 900000);
     const dateStr = new Date().toISOString().slice(0, 10) + " " + new Date().toTimeString().slice(0, 5);
     const maskedAccount = "••••" + account.slice(-4);
-    
+
     const newWithdrawal = {
         ref: refCode,
         date: dateStr,
@@ -11608,33 +11579,33 @@ async function executeB2bWithdrawal(event) {
         xautPrice: xautPrice,
         status: 'Pendiente'
     };
-    
+
     b2bWithdrawals.unshift(newWithdrawal);
-    
+
     // Guardar historial de retiros local persistente para el usuario
     if (loggedInB2bClient && loggedInB2bClient.email) {
         const emailLower = loggedInB2bClient.email.toLowerCase();
         localStorage.setItem(`valorgt_withdrawals_${emailLower}`, JSON.stringify(b2bWithdrawals));
         localStorage.removeItem(`valorgt_withdrawals_cleared_${emailLower}`);
     }
-    
+
     // Registrar en logs del administrador
     if (typeof appendAdminLog === 'function') {
         appendAdminLog("SAAS", `withdrawal_node: Solicitud bancaria registrada para ${loggedInB2bClient.name} (${loggedInB2bClient.company}) - Banco: ${bank} - Neto: Q${netGTQ.toFixed(2)}.`, false);
     }
-    
+
     // Limpiar formulario
     document.getElementById('b2b-withdrawal-form').reset();
     updateWithdrawalCalculations();
-    
+
     // Refrescar UI, Cartera y Tablas
     updateSaasMetricsHUD();
     renderB2bWithdrawalsTable();
     syncB2bClientsFromSupabase(); // Refrescar en admin
-    
+
     alert(`✅ SOLICITUD DE RETIRO REGISTRADA CON ÉXITO\n\n` +
-          `Referencia: #${refCode}\n` +
-          `Hemos debitado ${amount.toFixed(4)} XAUt de tu balance. La solicitud ha sido transmitida al panel de administración para su transferencia bancaria de Q${netGTQ.toFixed(2)}.`);
+        `Referencia: #${refCode}\n` +
+        `Hemos debitado ${amount.toFixed(4)} XAUt de tu balance. La solicitud ha sido transmitida al panel de administración para su transferencia bancaria de Q${netGTQ.toFixed(2)}.`);
 }
 
 /**
@@ -11642,17 +11613,17 @@ async function executeB2bWithdrawal(event) {
  */
 async function fetchB2bTransactionsHistory() {
     if (!loggedInB2bClient) return [];
-    
+
     // Asegurar que el precio de XAUT esté actualizado en vivo antes de calcular los equivalentes netos
     await fetchXautPriceForAirdrop();
-    
+
     let list = [];
     const emailLower = loggedInB2bClient.email.toLowerCase();
-    
+
     // 1. Cargar retiros locales desde localStorage
     const localWithdrawalsKey = `valorgt_withdrawals_${emailLower}`;
     const localWithdrawals = JSON.parse(localStorage.getItem(localWithdrawalsKey)) || [];
-    
+
     localWithdrawals.forEach(w => {
         list.push({
             ref: w.ref,
@@ -11675,13 +11646,13 @@ async function fetchB2bTransactionsHistory() {
                 .from('historial_oro')
                 .select('*')
                 .eq('usuario_id', loggedInB2bClient.id);
-                
+
             if (!histErr && remoteHistory) {
                 remoteHistory.forEach(h => {
                     const dateStr = new Date(h.fecha).toISOString().slice(0, 10) + " " + new Date(h.fecha).toTimeString().slice(0, 5);
                     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
                     const valConv = parseFloat(h.monto_usd) * conversion;
-                    
+
                     if (h.tipo === 'airdrop_mensual') {
                         list.push({
                             ref: h.id.substring(0, 8).toUpperCase(),
@@ -11705,17 +11676,17 @@ async function fetchB2bTransactionsHistory() {
                 .from('transactions')
                 .select('*')
                 .eq('sender_email', emailLower);
-                
+
             if (!sentErr && sentTxs) {
                 sentTxs.forEach(t => {
-                    const dateStr = t.created_at 
+                    const dateStr = t.created_at
                         ? (new Date(t.created_at).toISOString().slice(0, 10) + " " + new Date(t.created_at).toTimeString().slice(0, 5))
                         : new Date().toISOString().slice(0, 10) + " 12:00";
                     const price = parseFloat(t.xaut_price) || currentAirdropXautPrice || 2380.00;
                     const rate = parseFloat(t.exchange_rate) || exchangeRate || 7.78;
                     const conversion = activeCurrency === 'GTQ' ? rate : 1;
                     const valConv = parseFloat(t.amount) * price * conversion;
-                    
+
                     list.push({
                         ref: (t.tx_hash || '0x').substring(0, 10),
                         date: dateStr,
@@ -11736,17 +11707,17 @@ async function fetchB2bTransactionsHistory() {
                 .from('transactions')
                 .select('*')
                 .eq('receiver_email', emailLower);
-                
+
             if (!recvErr && recvTxs) {
                 recvTxs.forEach(t => {
-                    const dateStr = t.created_at 
+                    const dateStr = t.created_at
                         ? (new Date(t.created_at).toISOString().slice(0, 10) + " " + new Date(t.created_at).toTimeString().slice(0, 5))
                         : new Date().toISOString().slice(0, 10) + " 12:00";
                     const price = parseFloat(t.xaut_price) || currentAirdropXautPrice || 2380.00;
                     const rate = parseFloat(t.exchange_rate) || exchangeRate || 7.78;
                     const conversion = activeCurrency === 'GTQ' ? rate : 1;
                     const valConv = parseFloat(t.amount) * price * conversion;
-                    
+
                     list.push({
                         ref: (t.tx_hash || '0x').substring(0, 10),
                         date: dateStr,
@@ -11787,7 +11758,7 @@ async function fetchB2bTransactionsHistory() {
                 status: 'Aprobado'
             });
         });
-        
+
         const localAirdropsKey = `valorgt_airdrops_${emailLower}`;
         const localAirdrops = JSON.parse(localStorage.getItem(localAirdropsKey)) || [];
         localAirdrops.forEach(a => {
@@ -11818,9 +11789,9 @@ async function renderB2bWithdrawalsTable() {
     const tableBody = document.getElementById('b2b-withdrawals-table-body');
     const counter = document.getElementById('b2b-withdrawals-count');
     if (!tableBody) return;
-    
+
     const historyList = await fetchB2bTransactionsHistory();
-    
+
     if (historyList.length === 0) {
         tableBody.innerHTML = `
             <tr>
@@ -11834,20 +11805,20 @@ async function renderB2bWithdrawalsTable() {
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
-    
+
     if (counter) counter.innerText = `${historyList.length} Movimientos`;
-    
+
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
     tableBody.innerHTML = '';
-    
+
     historyList.forEach(w => {
         const row = document.createElement('tr');
-        
+
         let statusClass = 'status-badge-pending';
         if (w.status === 'Aprobado' || w.status === 'Completado') {
             statusClass = 'status-badge-approved';
         }
-        
+
         let amountStyle = 'color: #fff;';
         let amountPrefix = '';
         if (w.amountXAUt > 0) {
@@ -11857,7 +11828,7 @@ async function renderB2bWithdrawalsTable() {
             amountStyle = 'color: #ff3b30;';
             amountPrefix = '';
         }
-        
+
         const feeText = w.feeGTQ > 0 ? `-${currencySym}${w.feeGTQ.toFixed(2)}` : '-';
         const typeLabel = w.type === 'withdrawal' ? 'RETIRO' : (w.type === 'airdrop' ? 'INGRESO' : (w.type === 'transfer_sent' ? 'ENVÍO P2P' : 'RECEP P2P'));
         const typeStyle = w.type === 'withdrawal' || w.type === 'transfer_sent' ? 'color: #ff9500;' : 'color: #00d2ff;';
@@ -11893,7 +11864,7 @@ async function renderB2bWithdrawalsTable() {
         `;
         tableBody.appendChild(row);
     });
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -11904,14 +11875,14 @@ async function clearLocalGoldHistory() {
     if (confirm("¿Estás seguro de que deseas limpiar el historial de movimientos de esta cuenta? Esto borrará el historial local y los registros en la base de datos de pruebas.")) {
         try {
             const emailLower = loggedInB2bClient.email.toLowerCase();
-            
+
             // 1. Limpiar arrays en memoria y localStorage
             b2bWithdrawals = [];
             localStorage.removeItem(`valorgt_withdrawals_${emailLower}`);
             localStorage.removeItem(`valorgt_transfers_${emailLower}`);
             localStorage.removeItem(`valorgt_airdrops_${emailLower}`);
             localStorage.setItem(`valorgt_withdrawals_cleared_${emailLower}`, 'true');
-            
+
             // 2. Limpiar registros en Supabase si está activo
             if (isSupabaseActive && supabaseClient) {
                 // Borrar transferencias de Supabase
@@ -11919,34 +11890,34 @@ async function clearLocalGoldHistory() {
                     .from('transactions')
                     .delete()
                     .or(`sender_email.eq.${emailLower},receiver_email.eq.${emailLower}`);
-                
+
                 if (txErr) {
                     console.error("Supabase: Error al borrar transacciones:", txErr);
                     throw new Error("No se pudieron borrar las transacciones de Supabase: " + txErr.message);
                 }
-                
+
                 // Borrar historial de oro (airdrops / canjes)
                 const { error: goldErr } = await supabaseClient
                     .from('historial_oro')
                     .delete()
                     .eq('usuario_id', loggedInB2bClient.id);
-                    
+
                 if (goldErr) {
                     console.error("Supabase: Error al borrar historial_oro:", goldErr);
                     throw new Error("No se pudo borrar el historial de oro de Supabase: " + goldErr.message);
                 }
             }
-            
+
             // 3. Renderizar y actualizar interfaz de inmediato
             await renderB2bWithdrawalsTable();
             if (typeof updateSaasMetricsHUD === 'function') {
                 updateSaasMetricsHUD();
             }
-            
+
             if (typeof appendAdminLog === 'function') {
                 appendAdminLog("SAAS", `ledger_node: Historial de movimientos y base de datos local limpiados para ${loggedInB2bClient.name}.`, false);
             }
-            
+
             alert("✅ Historial de movimientos limpiado exitosamente.");
         } catch (err) {
             console.error("Error al limpiar historial de movimientos:", err);
@@ -11967,20 +11938,20 @@ async function clearLocalGoldHistory() {
  * Incorpora marcas de agua (logo) para planes Pro y Premium.
  */
 function renderCardImageHTML(prop, wrapperClass = 'card-image-wrapper', heightStyle = '165px', isSponsored = false, badgeColorClass = '', isB2B = false) {
-    const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0) 
-        ? prop.metadata.photos 
+    const photos = (prop.metadata && prop.metadata.photos && prop.metadata.photos.length > 0)
+        ? prop.metadata.photos
         : (prop.photos && prop.photos.length > 0 ? prop.photos : [prop.photo]);
 
     const youtubeBadge = prop.youtubeUrl ? `<span class="card-youtube-badge" onclick="event.stopPropagation(); window.open('${prop.youtubeUrl}', '_blank')" style="position: absolute; bottom: 8px; right: 8px; z-index: 7; background: rgba(255, 0, 0, 0.85); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.55rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 0, 0, 0.4);"><i data-lucide="video" style="width: 10px; height: 10px;"></i> VER VIDEO</span>` : '';
     const statusBadge = (!isB2B && badgeColorClass && !isSponsored) ? `<span class="card-status-badge ${badgeColorClass}">${prop.badge || 'DESTACADO'}</span>` : '';
-    
+
     // Regla de Negocio: Cargar plan de membresía y logo del creador
     const ownerPlan = prop.agentPlan || (loggedInB2bClient ? loggedInB2bClient.plan : 'Básico');
     const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
     const ownerLogo = prop.agentLogo || (loggedInB2bClient ? loggedInB2bClient.logo : '');
-    
-    const logoWatermark = (isPremiumPartner && ownerLogo) 
-        ? `<div class="card-logo-watermark" style="position: absolute; top: 10px; right: 10px; z-index: 6; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--cyan); background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); overflow: hidden;"><img src="${ownerLogo}" style="width: 100%; height: 100%; object-fit: contain;"></div>` 
+
+    const logoWatermark = (isPremiumPartner && ownerLogo)
+        ? `<div class="card-logo-watermark" style="position: absolute; top: 10px; right: 10px; z-index: 6; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--cyan); background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(0, 240, 255, 0.4); overflow: hidden;"><img src="${ownerLogo}" style="width: 100%; height: 100%; object-fit: contain;"></div>`
         : '';
 
     // B2B Badges
@@ -12117,7 +12088,7 @@ async function lazyLoadPropertyMetadata(prop, callback) {
         if (callback) callback(prop);
         return;
     }
-    
+
     if (prop.metadataLoaded) {
         if (callback) callback(prop);
         return;
@@ -12135,7 +12106,7 @@ async function lazyLoadPropertyMetadata(prop, callback) {
             prop.metadata = data.metadata;
             prop.metadataLoaded = true;
             console.log(`✅ [Metadata] Datos cargados con éxito:`, data.metadata);
-            
+
             if (data.metadata.photos && Array.isArray(data.metadata.photos)) {
                 prop.photos = data.metadata.photos;
             }
@@ -12157,7 +12128,7 @@ async function lazyLoadPropertyMetadata(prop, callback) {
     } catch (err) {
         console.error("⚠️ Error al cargar metadatos diferidos:", err);
     }
-    
+
     if (callback) callback(prop);
 }
 
@@ -12181,7 +12152,7 @@ function openPropertyDetailModal(zoneKey, index) {
 
     document.getElementById('modal-property-tag').innerText = prop.tag;
     document.getElementById('modal-property-title').innerText = prop.title;
-    
+
     const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
     const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
     const convertedPrice = prop.priceUSD * conversion;
@@ -12200,13 +12171,13 @@ function openPropertyDetailModal(zoneKey, index) {
 
     const tagsArea = document.getElementById('modal-advanced-tags');
     tagsArea.innerHTML = '';
-    
+
     const tags = [];
     if (prop.hasMasterSuite) tags.push("Suite Principal");
     if (prop.hasVisitorBath) tags.push("Baño de Visitas");
     if (prop.study) tags.push("Estudio");
     if (prop.familyRoom) tags.push("Sala Familiar");
-    
+
     if (prop.amenities && prop.amenities.length > 0) {
         prop.amenities.forEach(am => {
             if (am === "amenity-pool" || am === "pool") tags.push("Piscina / Jacuzzi");
@@ -12231,8 +12202,8 @@ function openPropertyDetailModal(zoneKey, index) {
     // Renderizado del carrusel e información del asesor, manejado tras cargar metadatos diferidos
     const updateModalDynamicContent = (updatedProp) => {
         const galleryArea = document.getElementById('modal-property-gallery');
-        const photos = (updatedProp.metadata && updatedProp.metadata.photos && updatedProp.metadata.photos.length > 0) 
-            ? updatedProp.metadata.photos 
+        const photos = (updatedProp.metadata && updatedProp.metadata.photos && updatedProp.metadata.photos.length > 0)
+            ? updatedProp.metadata.photos
             : (updatedProp.photos && updatedProp.photos.length > 0 ? updatedProp.photos : [updatedProp.photo]);
 
         if (photos.length > 1) {
@@ -12272,7 +12243,7 @@ function openPropertyDetailModal(zoneKey, index) {
 
         const logoContainer = document.getElementById('modal-agent-logo-container');
         const isPremiumPartner = ownerPlan && ['pro', 'vip', 'premium'].includes(ownerPlan.toLowerCase());
-        
+
         if (isPremiumPartner && agentLogo) {
             logoContainer.innerHTML = `<img src="${agentLogo}" alt="Logo Inmobiliaria" style="width: 100%; height: 100%; object-fit: contain;">`;
             logoContainer.style.display = "flex";
@@ -12325,7 +12296,7 @@ function openPropertyDetailModal(zoneKey, index) {
 
     // Mostrar modal
     modal.classList.remove('hidden');
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -12408,7 +12379,7 @@ async function saveB2bAgentProfile() {
         try {
             const { error } = await supabaseClient
                 .from('profiles')
-                .update({ 
+                .update({
                     name: name,
                     phone: whatsapp,
                     company: company,
@@ -12434,7 +12405,7 @@ async function saveB2bAgentProfile() {
     }
 
     alert("🏆 ¡PERFIL ACTUALIZADO CON ÉXITO!\n\nTus datos corporativos, WhatsApp de contacto y marca de agua (Logo) han sido consolidados.");
-    
+
     // Re-renderizar perfil e inventarios
     renderB2bAgentProfile();
     renderB2bInventory();
@@ -12452,12 +12423,12 @@ async function saveB2bAgentProfile() {
  */
 function getYouTubeEmbedUrl(url) {
     if (!url || url.trim() === "") return "";
-    
+
     // Si ya es un URL de embed, retornarlo directamente
     if (url.includes("/embed/")) {
         return url;
     }
-    
+
     let videoId = "";
     try {
         if (url.includes("youtu.be/")) {
@@ -12474,7 +12445,7 @@ function getYouTubeEmbedUrl(url) {
         console.error("Error al parsear YouTube URL:", e);
         return "https://www.youtube.com/embed/dQw4w9WgXcQ";
     }
-    
+
     if (videoId && videoId.length === 11) {
         return `https://www.youtube.com/embed/${videoId}`;
     }
@@ -12489,7 +12460,7 @@ function initSubscriptionsView() {
     if (iframe) {
         iframe.src = plansVideoUrl;
     }
-    
+
     renderPublicPricingGrid();
 }
 
@@ -12503,111 +12474,150 @@ function renderPublicPricingGrid() {
 
     grid.innerHTML = ''; // Limpiar
     grid.style.display = 'flex';
+    grid.style.flexWrap = 'wrap';
+    grid.style.gap = '24px';
     grid.style.justifyContent = 'center';
     grid.style.alignItems = 'stretch';
-
-    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
 
     let plans = [
         {
             key: 'pro',
-            badge: 'PLAN ÚNICO',
+            badge: 'PLAN PRO',
             badgeColor: 'var(--cyan)',
             badgeBg: 'rgba(0, 240, 255, 0.12)',
             badgeBorder: 'rgba(0, 240, 255, 0.4)',
-            title: activePlansProfile === 'agente' ? 'Suscripción ValorGT Pro' : 'Inversionista Pro',
-            subtitle: 'Acceso total e ilimitado a todas las herramientas avanzadas de inteligencia inmobiliaria.',
+            title: activePlansProfile === 'agente' ? 'Plan Pro (Agente)' : 'Plan Pro (Inversionista)',
+            subtitle: 'Acceso completo a las herramientas de inteligencia inmobiliaria, tasación IA, radar de calor y catálogo.',
             priceUSD: 30,
             priceGTQ: 235,
-            recommended: true,
+            recommended: false,
+            accentColor: 'var(--cyan)',
             features: [
                 { text: 'Propiedades Ilimitadas en Catálogo', active: true },
                 { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                 { text: 'Redes Neuronales Predictivas', active: true },
                 { text: 'Radar de Calor Completo por Zonas', active: true },
                 { text: 'Terminal de Inversión & Portafolio IA', active: true },
-                { text: 'Red de Agentes Referidos & Comisiones', active: true, color: '#00f0ff' },
-                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: true, color: '#ffd700' },
-                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: true, color: '#ffd700' },
                 { text: 'Logo Propio & Sello de Verificación', active: true },
-                { text: '15% Descuento en Pautas Publicitarias', active: true },
-                { text: 'Soporte Prioritario VIP', active: true, color: '#bf5af2' }
+                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: false },
+                { text: 'Transferencias P2P de Oro Digital (XAUt)', active: false },
+                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: false },
+                { text: 'Red de Agentes Referidos & Comisiones Gold', active: false },
+                { text: '15% Descuento en Pautas Publicitarias & Soporte VIP', active: false }
+            ]
+        },
+        {
+            key: 'premium',
+            badge: 'PLAN PREMIUM GOLD',
+            badgeColor: '#ffd700',
+            badgeBg: 'rgba(255, 215, 0, 0.15)',
+            badgeBorder: 'rgba(255, 215, 0, 0.45)',
+            title: activePlansProfile === 'agente' ? 'Plan Premium + XAUt' : 'Inversionista Premium + XAUt',
+            subtitle: 'Todo el poder del Plan Pro más la Billetera de Oro Digital (XAUt) y todos los beneficios exclusivos de la Cartera Gold.',
+            priceUSD: 65,
+            priceGTQ: 505,
+            recommended: true,
+            accentColor: '#ffd700',
+            features: [
+                { text: 'Propiedades Ilimitadas en Catálogo + Prioridad', active: true },
+                { text: 'Tasa Inteligente (Autotasación IA)', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Radar de Calor Completo por Zonas', active: true },
+                { text: 'Terminal de Inversión & Portafolio IA', active: true },
+                { text: 'Logo Propio & Sello de Verificación Gold', active: true },
+                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: true, color: '#ffd700' },
+                { text: 'Transferencias P2P de Oro Digital (XAUt)', active: true, color: '#ffd700' },
+                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: true, color: '#ffd700' },
+                { text: 'Red de Agentes Referidos & Comisiones Gold', active: true, color: '#00f0ff' },
+                { text: '15% Descuento en Pautas Publicitarias & Soporte VIP', active: true, color: '#bf5af2' }
             ]
         }
     ];
 
     plans.forEach(plan => {
-        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && activeB2bPlan === plan.key;
-        
-        let priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
+        const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && (
+            activeB2bPlan === plan.key || (plan.key === 'premium' && activeB2bPlan === 'vip')
+        );
+
+        let priceGtq = plan.priceGTQ;
+        let priceUsd = plan.priceUSD;
         let discountBadgeHtml = '';
 
         if (billingPeriod === 'anual') {
-            const originalPrice = priceNum;
-            priceNum = originalPrice * 0.85; // 15% de descuento
-            const savings = (originalPrice - priceNum) * 12;
-            const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+            const origGtq = priceGtq;
+            const origUsd = priceUsd;
+            priceGtq = Math.round(origGtq * 0.85);
+            priceUsd = Number((origUsd * 0.85).toFixed(2));
+            const savingsGtq = Math.round((origGtq - priceGtq) * 12);
+            const savingsUsd = Math.round((origUsd - priceUsd) * 12);
             discountBadgeHtml = `
                 <div class="plan-discount-badge">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
-                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00/año</span>
+                    <span>Ahorras Q${formatNumber(savingsGtq)} ($${formatNumber(savingsUsd)} USD) / año</span>
                 </div>
             `;
         }
-        
+
         const card = document.createElement('div');
         card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
-        if (plan.recommended) {
-            card.style.position = 'relative';
-        }
+        card.style.position = 'relative';
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
         card.style.justifyContent = 'space-between';
         card.style.padding = '24px';
         card.style.boxSizing = 'border-box';
         card.style.height = '100%';
-        card.style.maxWidth = '520px';
-        card.style.width = '100%';
+        card.style.maxWidth = '460px';
+        card.style.flex = '1 1 340px';
+        if (plan.key === 'premium') {
+            card.style.borderColor = 'rgba(255, 215, 0, 0.45)';
+            card.style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.14)';
+        }
 
         let featuresHtml = '';
         plan.features.forEach(f => {
             const colorStyle = f.color ? `style="color: ${f.color};"` : '';
             if (f.active) {
-                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> ${f.text}</li>`;
+                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> <span ${colorStyle}>${f.text}</span></li>`;
             } else {
-                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.5;">${f.text}</span></li>`;
+                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.45;">${f.text}</span></li>`;
             }
         });
 
         let actionButtonHtml = '';
+        const btnStyle = plan.key === 'premium'
+            ? 'background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000; font-weight: 800; box-shadow: 0 0 15px rgba(255,215,0,0.3);'
+            : '';
         if (isCommercialAuthenticated) {
             if (isUserActivePlan) {
                 actionButtonHtml = `<button class="btn-plan-action active-btn" style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled>Tu Plan Activo</button>`;
             } else {
-                actionButtonHtml = `<button class="btn-plan-action" onclick="openPlanPayment('${plan.key}')">Adquirir Plan</button>`;
+                actionButtonHtml = `<button class="btn-plan-action" style="${btnStyle}" onclick="openPlanPayment('${plan.key}')">Adquirir ${plan.title}</button>`;
             }
         } else {
-            actionButtonHtml = `<button class="btn-plan-action" onclick="selectPublicPlanForSignup('${plan.key}')">Adquirir Plan</button>`;
+            actionButtonHtml = `<button class="btn-plan-action" style="${btnStyle}" onclick="selectPublicPlanForSignup('${plan.key}')">Elegir ${plan.key === 'premium' ? 'Plan Premium' : 'Plan Pro'}</button>`;
         }
 
         card.innerHTML = `
-            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">ACCESO TOTAL</div>` : ''}
+            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.7rem; padding: 3px 10px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-weight: 800;">CON BILLETERA XAUT</div>` : ''}
             <div>
                 <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
-                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
-                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.55rem; font-weight: bold; color: #fff;">${plan.title}</h3>
-                    <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
+                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.8rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <p class="plan-subtitle" style="font-size: 0.84rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.45;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 2.4rem; font-weight: bold; color: var(--cyan); margin-bottom: 8px;">
-                    <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
-                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
-                    <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                <div class="plan-price font-mono" style="margin-bottom: 8px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">
+                    <div style="font-size: 2.2rem; font-weight: bold; color: ${plan.accentColor};">
+                        <span style="font-size: 1.35rem; vertical-align: super;">Q</span><span>${formatNumber(priceGtq)}</span><span style="font-size: 0.82rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                    </div>
+                    <div style="font-size: 1.15rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 3px 10px; border-radius: 6px;">
+                        $${priceUsd} USD<span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: normal;">/mes</span>
+                    </div>
                 </div>
-                <div style="margin-bottom: 22px; min-height: 32px;">
+                <div style="margin-bottom: 20px; min-height: 28px;">
                     ${discountBadgeHtml}
                 </div>
-                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
+                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 26px 0;">
                     ${featuresHtml}
                 </ul>
             </div>
@@ -12631,56 +12641,83 @@ function renderB2bPricingGrid() {
 
     grid.innerHTML = ''; // Limpiar
     grid.style.display = 'flex';
+    grid.style.flexWrap = 'wrap';
+    grid.style.gap = '24px';
     grid.style.justifyContent = 'center';
     grid.style.alignItems = 'stretch';
 
-    const conversion = activeCurrency === 'GTQ' ? exchangeRate : 1;
-    const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
-    
     const isInvestor = loggedInB2bClient && (loggedInB2bClient.role || '').toLowerCase() === 'inversionista';
 
     let plans = [
         {
             key: 'pro',
-            badge: 'PLAN ÚNICO',
+            badge: 'PLAN PRO',
             badgeColor: 'var(--cyan)',
             badgeBg: 'rgba(0, 240, 255, 0.12)',
             badgeBorder: 'rgba(0, 240, 255, 0.4)',
-            title: isInvestor ? 'Inversionista Pro' : 'Suscripción ValorGT Pro',
-            subtitle: 'Acceso total e ilimitado a la plataforma de inteligencia inmobiliaria.',
+            title: isInvestor ? 'Inversionista Pro' : 'Plan Pro (Agente)',
+            subtitle: 'Acceso completo a la plataforma de inteligencia inmobiliaria (Sin Billetera XAUt).',
             priceUSD: 30,
             priceGTQ: 235,
-            recommended: true,
+            recommended: false,
+            accentColor: 'var(--cyan)',
             features: [
                 { text: 'Propiedades Ilimitadas en Catálogo', active: true },
                 { text: 'Tasa Inteligente (Autotasación IA)', active: true },
                 { text: 'Redes Neuronales Predictivas', active: true },
                 { text: 'Radar de Calor Completo por Zonas', active: true },
                 { text: 'Terminal de Inversión & Portafolio IA', active: true },
-                { text: 'Red de Agentes Referidos & Comisiones', active: true, color: '#00f0ff' },
-                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: true, color: '#ffd700' },
-                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: true, color: '#ffd700' },
                 { text: 'Logo Propio & Sello de Verificación', active: true },
-                { text: '15% Descuento en Pautas Publicitarias', active: true },
-                { text: 'Soporte Prioritario VIP', active: true, color: '#bf5af2' }
+                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: false },
+                { text: 'Transferencias P2P de Oro Digital (XAUt)', active: false },
+                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: false },
+                { text: 'Red de Agentes Referidos & Comisiones Gold', active: false },
+                { text: '15% Descuento en Pautas Publicitarias & Soporte VIP', active: false }
+            ]
+        },
+        {
+            key: 'premium',
+            badge: 'PLAN PREMIUM GOLD',
+            badgeColor: '#ffd700',
+            badgeBg: 'rgba(255, 215, 0, 0.15)',
+            badgeBorder: 'rgba(255, 215, 0, 0.45)',
+            title: isInvestor ? 'Inversionista Premium + XAUt' : 'Plan Premium + XAUt',
+            subtitle: 'Todo el Plan Pro más la Billetera de Oro Digital (XAUt) y todos los beneficios exclusivos Gold.',
+            priceUSD: 65,
+            priceGTQ: 505,
+            recommended: true,
+            accentColor: '#ffd700',
+            features: [
+                { text: 'Propiedades Ilimitadas en Catálogo + Prioridad', active: true },
+                { text: 'Tasa Inteligente (Autotasación IA)', active: true },
+                { text: 'Redes Neuronales Predictivas', active: true },
+                { text: 'Radar de Calor Completo por Zonas', active: true },
+                { text: 'Terminal de Inversión & Portafolio IA', active: true },
+                { text: 'Logo Propio & Sello de Verificación Gold', active: true },
+                { text: 'Cartera de Oro Digital XAUt & Retiros Bancarios', active: true, color: '#ffd700' },
+                { text: 'Transferencias P2P de Oro Digital (XAUt)', active: true, color: '#ffd700' },
+                { text: 'Participación en Airdrops Mensuales en Oro (XAUt)', active: true, color: '#ffd700' },
+                { text: 'Red de Agentes Referidos & Comisiones Gold', active: true, color: '#00f0ff' },
+                { text: '15% Descuento en Pautas Publicitarias & Soporte VIP', active: true, color: '#bf5af2' }
             ]
         }
     ];
 
     plans.forEach(plan => {
-        const email = loggedInB2bClient ? (loggedInB2bClient.email || '').toLowerCase() : '';
         const isFounder = loggedInB2bClient && checkIfClientIsFounder(loggedInB2bClient);
 
         const isUserActivePlan = isCommercialAuthenticated && loggedInB2bClient && (
-            activeB2bPlan === plan.key || 
-            (isFounder && plan.key === 'vip')
+            activeB2bPlan === plan.key ||
+            (plan.key === 'premium' && (activeB2bPlan === 'vip' || isFounder))
         );
-        
-        let priceNum = activeCurrency === 'GTQ' ? plan.priceGTQ : plan.priceUSD;
-        if (isFounder && plan.key === 'vip') {
-            priceNum = activeCurrency === 'GTQ' ? 235 : 30;
-            plan.title = 'Miembro Fundador';
-            plan.subtitle = 'Suscripción especial VGT con tarifa preferencial.';
+
+        let priceGtq = plan.priceGTQ;
+        let priceUsd = plan.priceUSD;
+        if (isFounder && plan.key === 'premium') {
+            priceGtq = 250;
+            priceUsd = 32;
+            plan.title = 'Miembro Fundador Premium';
+            plan.subtitle = 'Suscripción especial Fundador con Cartera XAUt y tarifa preferencial.';
             plan.badge = 'FUNDADOR VIP';
             plan.badgeColor = '#00ff80';
             plan.badgeBg = 'rgba(0, 255, 128, 0.15)';
@@ -12690,66 +12727,76 @@ function renderB2bPricingGrid() {
         let discountBadgeHtml = '';
 
         if (billingPeriod === 'anual') {
-            const originalPrice = priceNum;
-            priceNum = originalPrice * 0.85; // 15% de descuento
-            const savings = (originalPrice - priceNum) * 12;
-            const currencySym = activeCurrency === 'GTQ' ? 'Q' : '$';
+            const origGtq = priceGtq;
+            const origUsd = priceUsd;
+            priceGtq = Math.round(origGtq * 0.85);
+            priceUsd = Number((origUsd * 0.85).toFixed(2));
+            const savingsGtq = Math.round((origGtq - priceGtq) * 12);
+            const savingsUsd = Math.round((origUsd - priceUsd) * 12);
             discountBadgeHtml = `
                 <div class="plan-discount-badge">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; color: var(--neon-emerald);"></i>
-                    <span>Ahorras ${currencySym}${formatNumber(savings.toFixed(0))}.00/año</span>
+                    <span>Ahorras Q${formatNumber(savingsGtq)} ($${formatNumber(savingsUsd)} USD) / año</span>
                 </div>
             `;
         }
-        
+
         const card = document.createElement('div');
         card.className = `pricing-card ${plan.recommended ? 'active-plan' : ''}`;
-        if (plan.recommended) {
-            card.style.position = 'relative';
-        }
+        card.style.position = 'relative';
         card.style.display = 'flex';
         card.style.flexDirection = 'column';
         card.style.justifyContent = 'space-between';
         card.style.padding = '24px';
         card.style.boxSizing = 'border-box';
         card.style.height = '100%';
-        card.style.maxWidth = '520px';
-        card.style.width = '100%';
+        card.style.maxWidth = '460px';
+        card.style.flex = '1 1 340px';
+        if (plan.key === 'premium') {
+            card.style.borderColor = 'rgba(255, 215, 0, 0.45)';
+            card.style.boxShadow = '0 0 25px rgba(255, 215, 0, 0.14)';
+        }
 
         let featuresHtml = '';
         plan.features.forEach(f => {
             const colorStyle = f.color ? `style="color: ${f.color};"` : '';
             if (f.active) {
-                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> ${f.text}</li>`;
+                featuresHtml += `<li><i data-lucide="check" ${colorStyle}></i> <span ${colorStyle}>${f.text}</span></li>`;
             } else {
-                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.5;">${f.text}</span></li>`;
+                featuresHtml += `<li><i data-lucide="x" class="text-red"></i> <span style="text-decoration: line-through; opacity: 0.45;">${f.text}</span></li>`;
             }
         });
 
         let actionButtonHtml = '';
+        const btnStyle = plan.key === 'premium'
+            ? 'background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000; font-weight: 800; box-shadow: 0 0 15px rgba(255,215,0,0.3);'
+            : '';
         if (isUserActivePlan) {
             actionButtonHtml = `<button class="btn-plan-action active-btn" style="background: rgba(0,255,128,0.1); border: 1px solid var(--green); color: var(--green); cursor: default;" disabled>Tu Plan Activo</button>`;
         } else {
-            actionButtonHtml = `<button class="btn-plan-action" onclick="openPlanPayment('${plan.key}')">Renovar / Pagar Plan</button>`;
+            actionButtonHtml = `<button class="btn-plan-action" style="${btnStyle}" onclick="openPlanPayment('${plan.key}')">Cambiar / Renovar a ${plan.key === 'premium' ? 'Plan Premium' : 'Plan Pro'}</button>`;
         }
 
         card.innerHTML = `
-            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.75rem; padding: 3px 10px;">ACCESO TOTAL</div>` : ''}
+            ${plan.recommended ? `<div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.7rem; padding: 3px 10px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-weight: 800;">CON BILLETERA XAUT</div>` : ''}
             <div>
                 <div class="plan-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 18px;">
-                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
-                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.55rem; font-weight: bold; color: #fff;">${plan.title}</h3>
-                    <p class="plan-subtitle" style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.4;">${plan.subtitle}</p>
+                    <span class="plan-badge" style="background: ${plan.badgeBg}; color: ${plan.badgeColor}; border: 1px solid ${plan.badgeBorder}; font-size: 0.8rem; padding: 4px 10px; border-radius: 6px; font-weight: bold; letter-spacing: 1.2px;">${plan.badge}</span>
+                    <h3 class="plan-title" style="margin-top: 12px; font-size: 1.45rem; font-weight: bold; color: #fff;">${plan.title}</h3>
+                    <p class="plan-subtitle" style="font-size: 0.84rem; color: var(--text-muted); margin: 8px 0 0 0; line-height: 1.45;">${plan.subtitle}</p>
                 </div>
-                <div class="plan-price font-mono" style="font-size: 2.4rem; font-weight: bold; color: var(--cyan); margin-bottom: 8px;">
-                    <span class="plan-currency-sym" style="font-size: 1.5rem; vertical-align: super;">${currencySym}</span>
-                    <span class="plan-price-num">${formatNumber(priceNum.toFixed(0))}</span>
-                    <span class="plan-period" style="font-size: 0.88rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                <div class="plan-price font-mono" style="margin-bottom: 8px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;">
+                    <div style="font-size: 2.2rem; font-weight: bold; color: ${plan.accentColor};">
+                        <span style="font-size: 1.35rem; vertical-align: super;">Q</span><span>${formatNumber(priceGtq)}</span><span style="font-size: 0.82rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                    </div>
+                    <div style="font-size: 1.15rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 3px 10px; border-radius: 6px;">
+                        $${priceUsd} USD<span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: normal;">/mes</span>
+                    </div>
                 </div>
-                <div style="margin-bottom: 22px; min-height: 32px;">
+                <div style="margin-bottom: 20px; min-height: 28px;">
                     ${discountBadgeHtml}
                 </div>
-                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.92rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 28px 0;">
+                <ul class="plan-features font-mono" style="display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem; color: var(--text-secondary); list-style: none; padding: 0; margin: 0 0 26px 0;">
                     ${featuresHtml}
                 </ul>
             </div>
@@ -12772,7 +12819,7 @@ function toggleBillingCycle() {
     // Sincronizar etiquetas de estado activo/inactivo
     const mensualLbl = document.getElementById('billing-cycle-mensual-lbl');
     const anualLbl = document.getElementById('billing-cycle-anual-lbl');
-    
+
     if (mensualLbl && anualLbl) {
         if (billingPeriod === 'anual') {
             mensualLbl.classList.remove('active');
@@ -12845,10 +12892,10 @@ function toggleB2bBillingCycle() {
 
 function switchPublicPlansProfile(profile) {
     activePlansProfile = profile;
-    
+
     const btnAgente = document.getElementById('btn-profile-agente');
     const btnInversionista = document.getElementById('btn-profile-inversionista');
-    
+
     if (btnAgente && btnInversionista) {
         if (profile === 'agente') {
             btnAgente.classList.add('active');
@@ -12856,7 +12903,7 @@ function switchPublicPlansProfile(profile) {
             btnAgente.style.border = '1px solid rgba(0, 240, 255, 0.3)';
             btnAgente.style.boxShadow = '0 0 10px rgba(0, 240, 255, 0.2)';
             btnAgente.style.color = '#fff';
-            
+
             btnInversionista.classList.remove('active');
             btnInversionista.style.background = 'transparent';
             btnInversionista.style.border = 'none';
@@ -12868,7 +12915,7 @@ function switchPublicPlansProfile(profile) {
             btnInversionista.style.border = '1px solid rgba(191, 90, 242, 0.4)';
             btnInversionista.style.boxShadow = '0 0 10px rgba(191, 90, 242, 0.3)';
             btnInversionista.style.color = '#fff';
-            
+
             btnAgente.classList.remove('active');
             btnAgente.style.background = 'transparent';
             btnAgente.style.border = 'none';
@@ -12876,7 +12923,7 @@ function switchPublicPlansProfile(profile) {
             btnAgente.style.color = 'var(--text-muted)';
         }
     }
-    
+
     renderPublicPricingGrid();
 }
 
@@ -12885,16 +12932,23 @@ function switchPublicPlansProfile(profile) {
  * @param {string} planKey - Plan seleccionado ('basico' | 'pro' | 'vip' | 'premium').
  */
 function selectPublicPlanForSignup(planKey) {
+    // Cerrar modal de Home si estuviera abierto
+    if (typeof closeHomeInfoModal === 'function') {
+        closeHomeInfoModal();
+    }
+
     // 1. Redirigir a la Consola Comercial
     switchView('commercial');
-    
+
     // 2. Si no está autenticado, alternar a la pestaña de registro y pre-seleccionar el plan
     if (!isCommercialAuthenticated) {
         switchLoginTab('signup');
-        
-        let priceUSD = 30; // Plan Único Pro
-        selectSignupPlan('pro', 30);
-        
+
+        const targetKey = (planKey === 'premium' || planKey === 'vip') ? 'premium' : 'pro';
+        const priceUSD = targetKey === 'premium' ? 65 : 30;
+        selectSignupPlanCard(targetKey);
+        selectSignupPlan(targetKey, priceUSD);
+
         // Desplazamiento visual suave
         setTimeout(() => {
             const signupForm = document.getElementById('commercial-signup-form');
@@ -12902,6 +12956,9 @@ function selectPublicPlanForSignup(planKey) {
                 signupForm.scrollIntoView({ behavior: 'smooth' });
             }
         }, 100);
+    } else {
+        switchCommercialTab('suscripcion');
+        openPlanPayment(planKey);
     }
 }
 
@@ -12935,11 +12992,11 @@ function openWelcomeVideoModal() {
     if (hasWelcomeModalLaunched) return;
     const dismissed = localStorage.getItem('valorgt_welcome_video_dismissed');
     const lastUrl = localStorage.getItem('valorgt_last_welcome_video_url');
-    
+
     // Si ya fue descartado y la URL no cambió, no volver a mostrar
     if (dismissed === 'true' && lastUrl === welcomeVideoUrl) return;
     if (!welcomeVideoUrl || welcomeVideoUrl.trim() === '') return;
-    
+
     const modal = document.getElementById('welcome-video-modal');
     const iframe = document.getElementById('welcome-youtube-iframe');
     if (modal && iframe) {
@@ -12947,11 +13004,11 @@ function openWelcomeVideoModal() {
         iframe.src = `${welcomeVideoUrl}?autoplay=1`;
         modal.classList.add('active');
         hasWelcomeModalLaunched = true;
-        
+
         // Registrar última URL y marcar como activa para este video
         localStorage.setItem('valorgt_last_welcome_video_url', welcomeVideoUrl);
         localStorage.setItem('valorgt_welcome_video_dismissed', 'false');
-        
+
         // Inicializar iconos Lucide por si acaso
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
@@ -12967,7 +13024,7 @@ function closeWelcomeVideoModal() {
         modal.classList.remove('active');
         // Persistir que el usuario cerró el video de bienvenida
         localStorage.setItem('valorgt_welcome_video_dismissed', 'true');
-        
+
         // Iniciar inmediatamente el modal de la promoción por lanzamiento si corresponde
         openPromoLaunchModal();
     }
@@ -12989,13 +13046,13 @@ function applySignupPromoCode() {
     const codeInput = document.getElementById('signup-promo-code');
     const statusLbl = document.getElementById('signup-promo-status');
     if (!codeInput) return;
-    
+
     const code = codeInput.value.trim().toUpperCase();
     if (!code) {
         statusLbl.innerText = "";
         return;
     }
-    
+
     // Validar el código promocional de lanzamiento
     if (code === 'VGT-0626') {
         const now = new Date();
@@ -13008,14 +13065,14 @@ function applySignupPromoCode() {
         } else {
             statusLbl.innerText = "VÁLIDO (PROMO Q250)";
             statusLbl.style.color = "var(--green)";
-            appliedPromoDiscount = 250; 
+            appliedPromoDiscount = 250;
             showCyberToast("¡Código VGT-0626 aplicado con éxito!", "check-circle");
         }
     } else if (code.startsWith('REF-')) {
         // Validación dinámica de referidos contra base de datos o en memoria
         statusLbl.innerText = "VALIDANDO...";
         statusLbl.style.color = "#ffd700";
-        
+
         if (isSupabaseActive && supabaseClient) {
             supabaseClient.from('profiles')
                 .select('id, name, plan, is_founder_premium')
@@ -13028,7 +13085,7 @@ function applySignupPromoCode() {
                             return generated === code && (m.plan === 'VIP' || m.plan === 'Premium' || m.is_founder_premium === true);
                         });
                     }
-                    
+
                     if (referrer) {
                         statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
                         statusLbl.style.color = "#ffd700";
@@ -13054,7 +13111,7 @@ function applySignupPromoCode() {
                 let generated = `REF-${seed}${m.id.substring(m.id.length - 4).toUpperCase()}`;
                 return generated === code;
             });
-            
+
             if (referrer) {
                 statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
                 statusLbl.style.color = "#ffd700";
@@ -13077,7 +13134,7 @@ function applySignupPromoCode() {
         localStorage.removeItem('valorgt_pending_referrer_name');
         showCyberToast("Código promocional inválido o inexistente.", "alert-triangle");
     }
-    
+
     // Recalcular montos de cobro de pasarela inmediatamente
     if (typeof updateSignupPaymentTotals === 'function') {
         updateSignupPaymentTotals();
@@ -13090,17 +13147,17 @@ function applyB2bTransferPromoCode() {
     const codeInput = document.getElementById('b2b-promo-code');
     const statusLbl = document.getElementById('b2b-promo-status');
     if (!codeInput) return;
-    
+
     const code = codeInput.value.trim().toUpperCase();
     if (!code) {
         statusLbl.innerText = "";
         return;
     }
-    
+
     if (code.startsWith('REF-')) {
         statusLbl.innerText = "VALIDANDO...";
         statusLbl.style.color = "#ffd700";
-        
+
         if (isSupabaseActive && supabaseClient) {
             supabaseClient.from('profiles')
                 .select('id, name, plan, is_founder_premium')
@@ -13113,12 +13170,12 @@ function applyB2bTransferPromoCode() {
                             return generated === code && (m.plan === 'VIP' || m.plan === 'Premium' || m.is_founder_premium === true);
                         });
                     }
-                    
+
                     if (referrer) {
                         statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
                         statusLbl.style.color = "#ffd700";
                         showCyberToast(`¡Código de referido de ${referrer.name} aplicado!`, "gift");
-                        
+
                         // Guardar en la base de datos que este cliente fue referido por el patrocinador
                         if (loggedInB2bClient) {
                             try {
@@ -13146,7 +13203,7 @@ function applyB2bTransferPromoCode() {
                 let generated = `REF-${seed}${m.id.substring(m.id.length - 4).toUpperCase()}`;
                 return generated === code;
             });
-            
+
             if (referrer) {
                 statusLbl.innerText = `REFERIDO DE: ${referrer.name.split(' ')[0].toUpperCase()}`;
                 statusLbl.style.color = "#ffd700";
@@ -13193,7 +13250,7 @@ function applyB2bTransferPromoCode() {
         b2bPromoDiscountApplied = false;
         showCyberToast("Código promocional inválido.", "alert-triangle");
     }
-    
+
     updateDynamicB2bPaymentTotals();
 }
 
@@ -13210,13 +13267,13 @@ function actionPromoSignup() {
     // Cerrar el modal y redireccionar a la pantalla de registro con el plan VIP preseleccionado
     closePromoLaunchModal();
     localStorage.setItem('valorgt_promo_signup_active', 'true');
-    
+
     // Cambiar a la vista comercial de Ingreso/Registro
     switchView('commercial');
-    
+
     // Asegurar que se muestre la pestaña de Registro de Nuevo Usuario en lugar de Acceso
     switchLoginTab('signup');
-    
+
     // Seleccionar plan VIP e ir al paso de registro
     setTimeout(() => {
         selectSignupPlanCard('basico'); // Agente Individual
@@ -13225,11 +13282,11 @@ function actionPromoSignup() {
             planSelect.value = 'vip'; // Inmobiliaria VIP
             planSelect.dispatchEvent(new Event('change'));
         }
-        
+
         // Simular clic en la tarjeta VIP visual
         const cardVip = document.getElementById('plan-card-signup-vip');
         if (cardVip) cardVip.click();
-        
+
         showCyberToast("¡Aplicando Q250 de Tarifa Promo Lanzamiento!", "sparkles");
     }, 400);
 }
@@ -13342,18 +13399,18 @@ function toggleMobileMenu() {
         const isHidden = drawer.classList.contains('hidden');
         if (isHidden) {
             drawer.classList.remove('hidden');
-            
+
             // Sincronizar estado activo de las opciones del drawer con la vista actual
             const activeViewSec = document.querySelector('.app-view.active');
             const currentView = activeViewSec ? activeViewSec.id.replace('view-', '') : 'dashboard';
-            
+
             document.querySelectorAll('.drawer-item').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(currentView)) {
                     btn.classList.add('active');
                 }
             });
-            
+
             // Sincronizar los perfiles de agente activos
             if (loggedInB2bClient) {
                 const mobileNameEl = document.getElementById('mobile-agent-name');
@@ -13364,7 +13421,7 @@ function toggleMobileMenu() {
                     mobileRoleEl.innerText = (loggedPlanUpper === 'VIP' || loggedPlanUpper === 'PREMIUM') ? "Socio Premium B2B" : (loggedPlanUpper === 'PRO' ? "Socio Pro B2B" : "Agente B2B");
                 }
             }
-            
+
             // Renderizar iconos de Lucide cargados dinámicamente
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
@@ -13386,7 +13443,7 @@ function switchViewMobile(viewId) {
 
 async function initPromoBannerAndSettings() {
     syncPromoBannerUI();
-    
+
     // Ocultar o mostrar botón de video de planes preliminarmente con caché local
     const plansBtn = document.querySelector('button[onclick="playPremiumPlansVideoModal()"]');
     if (plansVideoUrl && plansVideoUrl.trim() !== '') {
@@ -13439,7 +13496,7 @@ async function fetchSystemSettingsFromSupabase() {
                     localStorage.setItem('valorgt_plans_video_url', plansVideoUrl);
                     const adminInput = document.getElementById('admin-plans-video-url');
                     if (adminInput) adminInput.value = plansVideoUrl;
-                    
+
                     const plansIframe = document.getElementById('plans-youtube-iframe');
                     if (plansIframe) plansIframe.src = plansVideoUrl;
                 }
@@ -13502,7 +13559,7 @@ async function syncBannersFromSupabase() {
             } catch (e) {
                 console.error(e);
             }
-            
+
             data.forEach(item => {
                 banners[item.zone_key] = {
                     enabled: item.enabled,
@@ -13513,10 +13570,10 @@ async function syncBannersFromSupabase() {
                     photo: item.photo
                 };
             });
-            
+
             localStorage.setItem('admin_zone_banners', JSON.stringify(banners));
             console.log(`✅ [Banners] ${data.length} portadas sincronizadas con éxito de Supabase.`);
-            
+
             // Si la zona de búsqueda actual en el Dashboard es alguna de estas, actualizar deck para ver el cambio de inmediato
             const activeDashboardZoneSelect = document.getElementById('prop-location');
             const zoneKey = activeDashboardZoneSelect ? activeDashboardZoneSelect.value : 'todos';
@@ -13537,7 +13594,7 @@ function syncPromoBannerUI() {
     const textEl = document.getElementById('promo-banner-text');
     const homeBanner = document.getElementById('home-admin-promo-banner');
     const homeTextEl = document.getElementById('home-promo-banner-text');
-    
+
     if (banner && textEl) {
         textEl.innerText = promoBannerMessage;
         if (isPromoBannerActive) {
@@ -13555,18 +13612,18 @@ function syncPromoBannerUI() {
             homeBanner.classList.add('hidden');
         }
     }
-    
+
     // Sincronizar inputs en la Consola del Admin
     const promoInput = document.getElementById('admin-promo-input');
     const promoCheckbox = document.getElementById('admin-promo-active');
-    
+
     if (promoInput && !promoInput.matches(':focus')) {
         promoInput.value = promoBannerMessage;
     }
     if (promoCheckbox) {
         promoCheckbox.checked = isPromoBannerActive;
     }
-    
+
     // Crear o recrear íconos Lucide si es necesario
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
@@ -13579,26 +13636,26 @@ function syncPromoBannerUI() {
 async function saveAdminPromoBannerSettings() {
     const promoInput = document.getElementById('admin-promo-input');
     const promoCheckbox = document.getElementById('admin-promo-active');
-    
+
     if (!promoInput) return;
-    
+
     const message = promoInput.value.trim();
     if (!message) {
         alert("⚠️ Por favor, ingresa un mensaje válido para el banner.");
         return;
     }
-    
+
     const isActive = promoCheckbox ? promoCheckbox.checked : false;
-    
+
     // Actualizar estado local
     promoBannerMessage = message;
     isPromoBannerActive = isActive;
-    
+
     localStorage.setItem('valorgt_promo_message', message);
     localStorage.setItem('valorgt_promo_active', isActive.toString());
-    
+
     syncPromoBannerUI();
-    
+
     // Persistir en Supabase
     if (isSupabaseActive) {
         try {
@@ -13610,9 +13667,9 @@ async function saveAdminPromoBannerSettings() {
                     is_active: isActive,
                     updated_at: new Date().toISOString()
                 });
-                
+
             if (error) throw error;
-            
+
             alert("✨ Configuración del banner promocional sincronizada en la nube exitosamente.");
             logAdminSecurityActivity(`Anuncio del Sistema Actualizado: "${message.substring(0, 30)}..." [Activo: ${isActive}]`);
         } catch (err) {
@@ -13633,7 +13690,7 @@ function togglePasswordVisibility(inputId) {
     const input = document.getElementById(inputId);
     const eyeIcon = document.getElementById(`${inputId}-eye`);
     if (!input) return;
-    
+
     if (input.type === 'password') {
         input.type = 'text';
         if (eyeIcon) {
@@ -13645,7 +13702,7 @@ function togglePasswordVisibility(inputId) {
             eyeIcon.setAttribute('data-lucide', 'eye');
         }
     }
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -13661,26 +13718,22 @@ function setSignupRole(role) {
         typeSelect.value = role;
         typeSelect.dispatchEvent(new Event('change'));
     }
-    
+
     const cardAgente = document.getElementById('role-card-agente');
     const cardInversionista = document.getElementById('role-card-inversionista');
     const agentPlans = document.getElementById('agent-plans-container');
     const inversionistaPlans = document.getElementById('inversionista-plans-container');
-    
+
     if (role === 'agente') {
         if (cardAgente) cardAgente.classList.add('active');
         if (cardInversionista) cardInversionista.classList.remove('active');
-        
         if (agentPlans) agentPlans.style.display = 'flex';
         if (inversionistaPlans) inversionistaPlans.style.display = 'none';
-        selectSignupPlanCard('pro'); // Plan Pro por defecto
     } else {
         if (cardAgente) cardAgente.classList.remove('active');
         if (cardInversionista) cardInversionista.classList.add('active');
-        
-        if (agentPlans) agentPlans.style.display = 'none';
-        if (inversionistaPlans) inversionistaPlans.style.display = 'flex';
-        selectSignupPlanCard('premium'); // Plan Inversionista Premium por defecto
+        if (agentPlans) agentPlans.style.display = 'flex';
+        if (inversionistaPlans) inversionistaPlans.style.display = 'none';
     }
 }
 
@@ -13726,10 +13779,8 @@ function toggleInitSignupBillingCycle(isAnnual) {
 
     // Actualizar precios e indicación de las tarjetas iniciales de membresía
     const cardsPrices = {
-        basico: { gtq: 140, usd: 18, badge: 'INDIVIDUAL', title: 'Agente Individual', colorClass: 'var(--neon-blue)' },
-        pro: { gtq: 240, usd: 31, badge: 'PRO', title: 'Empresa Pro', colorClass: 'var(--cyan)' },
-        vip: { gtq: 640, usd: 82, badge: 'PREMIUM', title: 'Inmobiliaria VIP', colorClass: '#bf5af2' },
-        premium: { gtq: 340, usd: 43.70, badge: 'INVERSIONISTA', title: 'Inversionista Premium', colorClass: '#ffd700' }
+        pro: { gtq: 235, usd: 30, badge: 'PLAN PRO', title: 'Plan Pro', subtitle: 'Motor IA + Catálogo (Sin Billetera XAUt)', colorClass: 'var(--cyan)' },
+        premium: { gtq: 505, usd: 65, badge: 'PLAN PREMIUM GOLD', title: 'Plan Premium', subtitle: 'Todo Pro + Cartera de Oro XAUt & Beneficios Gold', colorClass: '#ffd700' }
     };
 
     Object.keys(cardsPrices).forEach(key => {
@@ -13738,22 +13789,24 @@ function toggleInitSignupBillingCycle(isAnnual) {
         let priceUsd = cardObj.usd;
         if (isAnnual) {
             priceGtq = Math.round(priceGtq * 0.85);
-            priceUsd = Math.round(priceUsd * 0.85);
+            priceUsd = Number((priceUsd * 0.85).toFixed(2));
         }
 
         const card = document.getElementById(`plan-card-signup-${key}`);
         if (card) {
-            // Re-inyectar el contenido con los precios correctos
-            const isPro = key === 'pro';
             const isPremium = key === 'premium';
-            const badgeBorder = isPremium ? 'rgba(255, 215, 0, 0.3)' : (isPro ? 'rgba(0, 240, 255, 0.3)' : (key === 'vip' ? 'rgba(191, 90, 242, 0.3)' : 'rgba(10, 132, 255, 0.3)'));
-            const badgeBg = isPremium ? 'rgba(255, 215, 0, 0.15)' : (isPro ? 'rgba(0, 240, 255, 0.15)' : (key === 'vip' ? 'rgba(191, 90, 242, 0.15)' : 'rgba(10, 132, 255, 0.15)'));
-            
+            const badgeBorder = isPremium ? 'rgba(255, 215, 0, 0.4)' : 'rgba(0, 240, 255, 0.3)';
+            const badgeBg = isPremium ? 'rgba(255, 215, 0, 0.15)' : 'rgba(0, 240, 255, 0.15)';
+
             card.innerHTML = `
-                ${(isPro || isPremium) ? `<div class="active-ribbon" style="font-size: 0.48rem; padding: 1px 6px; top: -6px; right: 8px;">RECOMENDADO</div>` : ''}
+                ${isPremium ? `<div class="active-ribbon" style="font-size: 0.48rem; padding: 2px 8px; top: -6px; right: 8px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-weight: 800;">CON BILLETERA XAUT</div>` : ''}
                 <span class="plan-card-badge" style="background: ${badgeBg}; color: ${cardObj.colorClass}; border: 1px solid ${badgeBorder};">${cardObj.badge}</span>
-                <span style="font-size: 0.78rem; font-weight: bold; margin-top: 4px;">${cardObj.title}</span>
-                <span class="plan-card-price" style="font-size: 0.85rem; font-weight: bold; color: ${cardObj.colorClass}; margin-top: 4px;">Q${priceGtq}<span style="font-size: 0.55rem; color: var(--text-muted); font-weight: normal;">/mes ($${priceUsd} USD)</span></span>
+                <span style="font-size: 0.85rem; font-weight: bold; margin-top: 4px; color: #fff;">${cardObj.title}</span>
+                <span style="font-size: 0.62rem; color: ${isPremium ? '#ffd700' : 'var(--text-muted)'}; margin-top: 2px;">${cardObj.subtitle}</span>
+                <span class="plan-card-price" style="font-size: 0.9rem; font-weight: bold; color: ${cardObj.colorClass}; margin-top: 6px; display: flex; flex-direction: column; gap: 2px;">
+                    <span>Q${priceGtq} / Mes</span>
+                    <span style="font-size: 0.68rem; color: var(--neon-emerald); font-weight: bold;">$${priceUsd} USD / Mes</span>
+                </span>
             `;
         }
     });
@@ -13763,9 +13816,9 @@ function selectSignupPlanCard(planKey) {
     const planSelect = document.getElementById('com-signup-plan');
     if (planSelect) {
         planSelect.value = planKey;
-        planSelect.dispatchEvent(new Event('change'));
     }
-    
+    selectSignupPlan(planKey, planKey === 'premium' ? 65 : 30);
+
     // Lista de todas las tarjetas de plan visuales
     const cards = ['basico', 'pro', 'vip', 'premium'];
     cards.forEach(key => {
@@ -13773,11 +13826,224 @@ function selectSignupPlanCard(planKey) {
         if (card) {
             if (key === planKey) {
                 card.classList.add('active');
+                card.style.borderColor = key === 'premium' ? '#ffd700' : 'var(--cyan)';
+                card.style.boxShadow = key === 'premium' ? '0 0 15px rgba(255, 215, 0, 0.25)' : '0 0 15px rgba(0, 240, 255, 0.25)';
             } else {
                 card.classList.remove('active');
+                card.style.borderColor = key === 'premium' ? 'rgba(255, 215, 0, 0.25)' : 'rgba(255, 255, 255, 0.1)';
+                card.style.boxShadow = 'none';
             }
         }
     });
+}
+
+/**
+ * Abre el modal informativo de las 3 tarjetas interactivas del Home
+ * @param {'innovacion' | 'planes' | 'pagos'} type
+ */
+function openHomeInfoModal(type) {
+    const modal = document.getElementById('home-info-modal');
+    const card = document.getElementById('home-info-modal-card');
+    const body = document.getElementById('home-info-modal-body');
+    if (!modal || !body || !card) return;
+
+    if (type === 'innovacion') {
+        card.style.borderColor = 'rgba(0, 240, 255, 0.45)';
+        card.style.boxShadow = '0 0 40px rgba(0, 240, 255, 0.22)';
+        body.innerHTML = `
+            <div style="border-bottom: 1px dashed rgba(0, 240, 255, 0.25); padding-bottom: 14px; margin-bottom: 20px;">
+                <span class="font-mono" style="font-size: 0.7rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ ARQUITECTURA TECNOLÓGICA VALORGT ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.6rem; color: #fff; margin: 10px 0 4px 0; font-weight: 800;">¿Por qué ValorGT es una Plataforma Innovadora?</h2>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">Integramos Inteligencia Artificial predictiva, telemetría geoespacial y finanzas descentralizadas respaldadas en oro físico dentro de un solo ecosistema inmobiliario.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 22px;">
+                <div style="background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <i data-lucide="brain" style="color: var(--cyan); width: 20px; height: 20px;"></i>
+                        <strong style="color: #fff; font-size: 0.95rem;">1. Valuador Neuronal IA</strong>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Autotasación algorítmica en segundos procesando ubicación, metraje, amenidades y comparables activos por sector.</p>
+                </div>
+
+                <div style="background: rgba(191, 90, 242, 0.05); border: 1px solid rgba(191, 90, 242, 0.25); border-radius: 10px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <i data-lucide="map-pin" style="color: #bf5af2; width: 20px; height: 20px;"></i>
+                        <strong style="color: #fff; font-size: 0.95rem;">2. Radar Geoespacial & Terminal</strong>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Mapas de calor interactivos, índice de liquidez, absorción mensual, ROI de alquiler y plusvalías estilo terminal financiera.</p>
+                </div>
+
+                <div style="background: rgba(0, 255, 128, 0.04); border: 1px solid rgba(0, 255, 128, 0.2); border-radius: 10px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <i data-lucide="pie-chart" style="color: var(--neon-emerald); width: 20px; height: 20px;"></i>
+                        <strong style="color: #fff; font-size: 0.95rem;">3. Portafolio Patrimonial IA</strong>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Simulación de riqueza a 20 años, capacidad crediticia FHA/bancos de Guatemala y asesor estratégico IA en vivo.</p>
+                </div>
+
+                <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <i data-lucide="coins" style="color: #ffd700; width: 20px; height: 20px;"></i>
+                        <strong style="color: #ffd700; font-size: 0.95rem;">4. Bóveda de Oro Digital (XAUt)</strong>
+                    </div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Resguardo de comisiones y patrimonio en Tether Gold (1:1 con oro físico en Suiza), transferencias P2P y retiros a bancos locales.</p>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+                <button class="btn-commercial btn-commercial-cyan" onclick="closeHomeInfoModal(); switchView('dashboard');" style="padding: 10px 20px; font-size: 0.78rem; font-weight: bold;">
+                    <i data-lucide="brain" style="width: 15px; height: 15px;"></i> PROBAR TASADOR IA
+                </button>
+                <button class="btn-commercial btn-commercial-gold" onclick="openHomeInfoModal('planes');" style="padding: 10px 22px; font-size: 0.78rem; font-weight: bold; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000;">
+                    <i data-lucide="award" style="width: 15px; height: 15px;"></i> VER PLANES PRO & PREMIUM
+                </button>
+            </div>
+        `;
+    } else if (type === 'planes') {
+        card.style.borderColor = 'rgba(255, 215, 0, 0.5)';
+        card.style.boxShadow = '0 0 40px rgba(255, 215, 0, 0.22)';
+        body.innerHTML = `
+            <div style="border-bottom: 1px dashed rgba(255, 215, 0, 0.3); padding-bottom: 14px; margin-bottom: 20px;">
+                <span class="font-mono" style="font-size: 0.7rem; background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ COMPARATIVA DE MEMBRESÍAS ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.6rem; color: #fff; margin: 10px 0 4px 0; font-weight: 800;">Plan Pro vs. Plan Premium Gold</h2>
+                <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">Ambos planes te dan acceso total al motor inmobiliario IA. La diferencia es que el <strong style="color: #ffd700;">Plan Premium</strong> desbloquea la <strong>Billetera de Oro Digital (XAUt)</strong> y todos los beneficios de la Cartera Gold.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                <!-- PLAN PRO -->
+                <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <span class="font-mono" style="font-size: 0.72rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 3px 9px; border-radius: 4px; font-weight: bold;">PLAN PRO</span>
+                        <h3 style="font-size: 1.35rem; color: #fff; margin: 10px 0 4px 0; font-weight: bold;">Suscripción Plan Pro</h3>
+                        <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0 0 12px 0;">Ideal para agentes e inversionistas enfocados en análisis IA y catálogo inmobiliario.</p>
+                        
+                        <div class="font-mono" style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                            <span style="font-size: 1.9rem; font-weight: 800; color: var(--cyan);">Q235<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                            <span style="font-size: 1rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 2px 8px; border-radius: 5px;">$30 USD/mes</span>
+                        </div>
+                        <div class="font-mono" style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 14px;">
+                            Ciclo Anual (-15%): <strong style="color: #fff;">Q200/mes ($25.50 USD/mes)</strong>
+                        </div>
+
+                        <ul class="font-mono" style="list-style: none; padding: 0; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.76rem; color: var(--text-secondary);">
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Propiedades Ilimitadas en Catálogo</li>
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Tasa Inteligente (Autotasación IA)</li>
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Radar de Calor & Terminal de Inversión</li>
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Portafolio IA & Simulador Hipotecario</li>
+                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 14px; height: 14px; color: var(--red);"></i> <span style="text-decoration: line-through;">Billetera de Oro Digital (XAUt)</span></li>
+                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 14px; height: 14px; color: var(--red);"></i> <span style="text-decoration: line-through;">Retiros Bancarios XAUt & Airdrops Gold</span></li>
+                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 14px; height: 14px; color: var(--red);"></i> <span style="text-decoration: line-through;">Red de Agentes Referidos & Comisiones</span></li>
+                        </ul>
+                    </div>
+                    <button class="btn-commercial btn-commercial-cyan" onclick="selectPublicPlanForSignup('pro')" style="width: 100%; padding: 11px; font-weight: bold; font-size: 0.8rem;">
+                        ELEGIR PLAN PRO (Q235 / $30 USD)
+                    </button>
+                </div>
+
+                <!-- PLAN PREMIUM -->
+                <div style="background: rgba(255, 215, 0, 0.04); border: 1.5px solid #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                    <div style="position: absolute; top: -10px; right: 14px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 800; padding: 3px 10px; border-radius: 12px;">INCLUYE BILLETERA XAUT</div>
+                    <div>
+                        <span class="font-mono" style="font-size: 0.72rem; background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.45); padding: 3px 9px; border-radius: 4px; font-weight: bold;">PLAN PREMIUM GOLD</span>
+                        <h3 style="font-size: 1.35rem; color: #fff; margin: 10px 0 4px 0; font-weight: bold;">Suscripción Plan Premium</h3>
+                        <p style="font-size: 0.76rem; color: #ffd700; margin: 0 0 12px 0;">Todo el Plan Pro + Billetera de Oro Digital (XAUt) y beneficios de la Cartera Gold.</p>
+                        
+                        <div class="font-mono" style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                            <span style="font-size: 1.9rem; font-weight: 800; color: #ffd700;">Q505<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                            <span style="font-size: 1rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 2px 8px; border-radius: 5px;">$65 USD/mes</span>
+                        </div>
+                        <div class="font-mono" style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 14px;">
+                            Ciclo Anual (-15%): <strong style="color: #ffd700;">Q429/mes ($55.25 USD/mes)</strong>
+                        </div>
+
+                        <ul class="font-mono" style="list-style: none; padding: 0; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.76rem; color: var(--text-secondary);">
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Todo lo incluido en el Plan Pro Ilimitado</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700; font-weight: bold;"><i data-lucide="coins" style="width: 14px; height: 14px; color: #ffd700;"></i> Billetera de Oro Digital (XAUt) Activa</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 14px; height: 14px; color: #ffd700;"></i> Retiros Bancarios XAUt a Bancos Nacionales</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 14px; height: 14px; color: #ffd700;"></i> Transferencias P2P de Oro entre Agentes</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 14px; height: 14px; color: #ffd700;"></i> Participación en Airdrops Mensuales XAUt</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: var(--cyan);"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Red de Agentes Referidos & Comisiones Gold</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #bf5af2;"><i data-lucide="check" style="width: 14px; height: 14px; color: #bf5af2;"></i> 15% Descuento en Pautas & Soporte VIP</li>
+                        </ul>
+                    </div>
+                    <button class="btn-commercial btn-commercial-gold" onclick="selectPublicPlanForSignup('premium')" style="width: 100%; padding: 11px; font-weight: 800; font-size: 0.8rem; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.3);">
+                        ELEGIR PLAN PREMIUM (Q505 / $65 USD)
+                    </button>
+                </div>
+            </div>
+        `;
+    } else if (type === 'pagos') {
+        card.style.borderColor = 'rgba(0, 255, 128, 0.45)';
+        card.style.boxShadow = '0 0 40px rgba(0, 255, 128, 0.2)';
+        body.innerHTML = `
+            <div style="border-bottom: 1px dashed rgba(0, 255, 128, 0.3); padding-bottom: 14px; margin-bottom: 20px;">
+                <span class="font-mono" style="font-size: 0.7rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ PASARELA & ACTIVACIÓN DE SUSCRIPCIÓN ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.6rem; color: #fff; margin: 10px 0 4px 0; font-weight: 800;">Suscripción y Pagos en GTQ / USD</h2>
+                <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">Activa tu cuenta corporativa de Agente o Inversionista en 3 simples pasos con transparencia total en Quetzales y Dólares.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px;">
+                    <span class="font-mono" style="color: var(--cyan); font-size: 0.72rem; font-weight: bold;">PASO 01</span>
+                    <h4 style="color: #fff; margin: 6px 0; font-size: 0.95rem;">Elige Plan y Ciclo</h4>
+                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+                        Selecciona <strong>Plan Pro (Q235 / $30 USD)</strong> o <strong>Plan Premium (Q505 / $65 USD)</strong>. Si eliges ciclo <strong>Anual ahorras 15%</strong> automático.
+                    </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px;">
+                    <span class="font-mono" style="color: #ffd700; font-size: 0.72rem; font-weight: bold;">PASO 02</span>
+                    <h4 style="color: #fff; margin: 6px 0; font-size: 0.95rem;">Transferencia o Tarjeta</h4>
+                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+                        Realiza tu pago vía transferencia bancaria a <strong>Banco Industrial (Monetaria GTQ: 2700030709 - ValorGT)</strong> o mediante pasarela corporativa.
+                    </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px;">
+                    <span class="font-mono" style="color: var(--neon-emerald); font-size: 0.72rem; font-weight: bold;">PASO 03</span>
+                    <h4 style="color: #fff; margin: 6px 0; font-size: 0.95rem;">Activación de Nodo</h4>
+                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+                        Sube tu comprobante desde tu consola comercial y recibe la activación de tu membresía y firma criptográfica de socio.
+                    </p>
+                </div>
+            </div>
+
+            <div class="font-mono" style="background: rgba(0, 240, 255, 0.04); border: 1px dashed rgba(0, 240, 255, 0.3); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <div style="font-size: 0.72rem; color: var(--cyan); font-weight: bold;">RESUMEN DE TARIFAS OFICIALES (GTQ & USD)</div>
+                    <div style="font-size: 0.78rem; color: #fff; margin-top: 4px;">
+                        • <strong>Plan Pro:</strong> Q235/mes ($30 USD) | Anual: Q2,400/año ($306 USD)<br>
+                        • <strong>Plan Premium (Con Billetera XAUt):</strong> Q505/mes ($65 USD) | Anual: Q5,151/año ($663 USD)
+                    </div>
+                </div>
+                <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20suscripci%C3%B3n%20y%20pagos..." target="_blank" style="font-size: 0.75rem; color: #25D366; text-decoration: none; font-weight: bold; border: 1px solid rgba(37, 211, 102, 0.4); background: rgba(37, 211, 102, 0.08); padding: 8px 14px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                    <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Soporte WhatsApp
+                </a>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
+                <button class="btn-commercial btn-commercial-cyan" onclick="closeHomeInfoModal(); switchView('subscriptions');" style="padding: 10px 18px; font-size: 0.78rem; font-weight: bold;">
+                    <i data-lucide="award" style="width: 15px; height: 15px;"></i> VER PÁGINA DE PLANES
+                </button>
+                <button class="btn-commercial btn-commercial-purple" onclick="selectPublicPlanForSignup('premium');" style="padding: 10px 22px; font-size: 0.78rem; font-weight: bold; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); border: none; color: #000;">
+                    <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i> REGISTRARME Y SUSCRIBIRME AHORA
+                </button>
+            </div>
+        `;
+    }
+
+    modal.classList.add('active');
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function closeHomeInfoModal() {
+    const modal = document.getElementById('home-info-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 /**
@@ -13791,12 +14057,12 @@ function sharePropertyLink(event, propId) {
         showCyberToast("ID de propiedad inválido", "x-circle");
         return;
     }
-    
+
     let shareUrl = window.location.origin + window.location.pathname + '?propId=' + encodeURIComponent(propId);
     if (propId.includes('_') || (document.getElementById('view-property-page') && document.getElementById('view-property-page').classList.contains('active'))) {
         shareUrl = window.location.origin + window.location.pathname + '#prop=' + encodeURIComponent(propId);
     }
-    
+
     // API Clipboard del navegador con fallback legacy
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(shareUrl)
@@ -13858,7 +14124,7 @@ function showCyberToast(message, iconName = "info") {
     `;
 
     document.body.appendChild(toast);
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -13941,15 +14207,15 @@ function checkDeepLinkParams() {
 function updateAssistantVisibility() {
     const activeViewEl = document.querySelector('.app-view.active');
     if (!activeViewEl) return;
-    
+
     const viewId = activeViewEl.id.replace('view-', '');
-    
+
     // Si es catalog o disclaimer principal, ocultar por completo
     if (viewId === 'catalog' || viewId === 'disclaimer') {
         hideAssistantWidget();
         return;
     }
-    
+
     // Si la vista es commercial, evaluar si está logueado o en disclaimer
     if (viewId === 'commercial') {
         const loginGate = document.getElementById('commercial-login-gate');
@@ -13957,7 +14223,7 @@ function updateAssistantVisibility() {
             showAssistantWidget();
             return;
         }
-        
+
         // Si está autenticado, revisar si la pestaña disclaimer está activa
         const activeTabEl = document.querySelector('.comm-tab-content:not(.hidden)');
         if (activeTabEl) {
@@ -13968,7 +14234,7 @@ function updateAssistantVisibility() {
             }
         }
     }
-    
+
     showAssistantWidget();
 }
 
@@ -14013,7 +14279,7 @@ function toggleGlobalAssistantSpeech() {
     // Identificar qué sección está activa para leer su explicación
     const activeViewEl = document.querySelector('.app-view.active');
     let viewId = activeViewEl ? activeViewEl.id.replace('view-', '') : 'dashboard';
-    
+
     let explanationKey = viewId;
     if (viewId === 'commercial') {
         const loginGate = document.getElementById('commercial-login-gate');
@@ -14044,20 +14310,20 @@ function toggleGlobalAssistantSpeech() {
     if (window.speechSynthesis) {
         const voices = window.speechSynthesis.getVoices();
         const spanishVoices = voices.filter(v => v.lang.toLowerCase().startsWith('es'));
-        
+
         if (spanishVoices.length > 0) {
             // Nombres conocidos de voces de mujer premium en español
             const femaleVoiceKeywords = [
-                'sabina', 'helena', 'monica', 'paulina', 'marisol', 'laura', 'yolanda', 'maria', 
+                'sabina', 'helena', 'monica', 'paulina', 'marisol', 'laura', 'yolanda', 'maria',
                 'elena', 'angelica', 'dalia', 'hilda', 'sandra', 'ana', 'google español'
             ];
-            
+
             let selectedVoice = null;
             for (const keyword of femaleVoiceKeywords) {
                 selectedVoice = spanishVoices.find(v => v.name.toLowerCase().includes(keyword));
                 if (selectedVoice) break;
             }
-            
+
             // Excluir voces masculinas si no hay match específico
             if (!selectedVoice) {
                 const maleKeywords = ['david', 'julio', 'pablo', 'mateo', 'male', 'hombre', 'jorge', 'raul'];
@@ -14066,12 +14332,12 @@ function toggleGlobalAssistantSpeech() {
                     return !maleKeywords.some(mk => nameLower.includes(mk));
                 });
             }
-            
+
             // Fallback a cualquier voz en español
             if (!selectedVoice) {
                 selectedVoice = spanishVoices[0];
             }
-            
+
             globalAssistantSpeechUtterance.voice = selectedVoice;
             console.log(`[Voz IA Seleccionada] Name: ${selectedVoice.name}, Lang: ${selectedVoice.lang}`);
         }
@@ -14123,7 +14389,7 @@ async function loadTutorials() {
     try {
         const saved = localStorage.getItem('valorgt_deleted_tutorials');
         if (saved) deletedIds = JSON.parse(saved);
-    } catch(e) {}
+    } catch (e) { }
     const deletedSet = new Set(deletedIds);
 
     if (isSupabaseActive && supabaseClient) {
@@ -14132,7 +14398,7 @@ async function loadTutorials() {
                 .from('video_tutorials')
                 .select('*')
                 .order('created_at', { ascending: false });
-                
+
             if (!error && data) {
                 // Combinar datos de Supabase con tutoriales por defecto sin duplicar IDs
                 const dbIds = new Set(data.map(item => item.id));
@@ -14157,10 +14423,10 @@ async function loadTutorials() {
             activeTutorials = [...DEFAULT_TUTORIALS];
         }
     }
-    
+
     // Filtrar los que hayan sido eliminados localmente
     activeTutorials = activeTutorials.filter(t => !deletedSet.has(t.id));
-    
+
     renderTutorials();
 }
 
@@ -14171,21 +14437,21 @@ function renderTutorials() {
     const grid = document.getElementById('tutorials-grid');
     const counter = document.getElementById('tutorials-counter-badge');
     if (!grid) return;
-    
+
     // Obtener texto de búsqueda
     const searchQuery = (document.getElementById('tutorial-search')?.value || '').toLowerCase().trim();
-    
+
     // Filtrar videos
     const filtered = activeTutorials.filter(t => {
         const matchesCategory = activeTutorialFilter === 'all' || t.section_key === activeTutorialFilter;
         const matchesSearch = t.title.toLowerCase().includes(searchQuery) || t.description.toLowerCase().includes(searchQuery);
         return matchesCategory && matchesSearch;
     });
-    
+
     if (counter) {
         counter.innerText = `${filtered.length} Video${filtered.length === 1 ? '' : 's'}`;
     }
-    
+
     if (filtered.length === 0) {
         grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); font-family: monospace;">
@@ -14196,7 +14462,7 @@ function renderTutorials() {
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
     }
-    
+
     const friendlySections = {
         'dashboard': 'Tasación IA',
         'heatmap': 'Radar Calor',
@@ -14206,7 +14472,7 @@ function renderTutorials() {
         'commercial-portfolio': 'Portafolio',
         'novedades': 'Novedades'
     };
-    
+
     grid.innerHTML = '';
     filtered.forEach(t => {
         const card = document.createElement('div');
@@ -14214,13 +14480,13 @@ function renderTutorials() {
         card.addEventListener('click', () => {
             openTutorialVideo(t.youtube_url, t.title);
         });
-        
+
         // Obtener ID de youtube para el thumbnail
         const ytId = getYoutubeVideoId(t.youtube_url) || 'dQw4w9WgXcQ';
         const thumbUrl = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
         const sectionLabel = friendlySections[t.section_key] || 'General';
         const formattedDate = new Date(t.created_at).toLocaleDateString('es-GT', { year: 'numeric', month: 'short', day: 'numeric' });
-        
+
         card.innerHTML = `
             <div class="tutorial-thumb-container">
                 <span class="tutorial-section-badge">${sectionLabel}</span>
@@ -14237,7 +14503,7 @@ function renderTutorials() {
         `;
         grid.appendChild(card);
     });
-    
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -14248,17 +14514,17 @@ function renderTutorials() {
  */
 function setTutorialFilter(category) {
     activeTutorialFilter = category;
-    
+
     // Activar estilo en botón
     document.querySelectorAll('#tutorials-category-filters .tutorial-filter-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     const activeBtn = document.getElementById(`t-filt-${category === 'commercial-oro' ? 'oro' : (category === 'commercial-portfolio' ? 'portfolio' : category)}`);
     if (activeBtn) {
         activeBtn.classList.add('active');
     }
-    
+
     renderTutorials();
 }
 
@@ -14286,18 +14552,18 @@ function openTutorialVideo(url, title) {
     const modal = document.getElementById('tutorial-video-modal');
     const iframe = document.getElementById('tutorial-video-iframe');
     const titleEl = document.getElementById('tutorial-modal-title');
-    
+
     if (!modal || !iframe) return;
-    
+
     const ytId = getYoutubeVideoId(url);
     if (!ytId) {
         alert("⚠️ El formato de la URL de YouTube no es válido.");
         return;
     }
-    
+
     if (titleEl) titleEl.innerText = title;
     iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
-    
+
     // Forzar visibilidad usando estilos inline y removiendo la clase
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
@@ -14321,23 +14587,23 @@ function closeTutorialVideo() {
  */
 async function publishTutorial(event) {
     event.preventDefault();
-    
+
     const title = document.getElementById('admin-tut-title').value.trim();
     const description = document.getElementById('admin-tut-description').value.trim();
     const section = document.getElementById('admin-tut-section').value;
     const url = document.getElementById('admin-tut-url').value.trim();
-    
+
     if (!title || !description || !url) {
         alert("⚠️ Por favor completa todos los campos requeridos.");
         return;
     }
-    
+
     const ytId = getYoutubeVideoId(url);
     if (!ytId) {
         alert("⚠️ Por favor ingresa un enlace válido de YouTube (ej. https://www.youtube.com/watch?v=...)");
         return;
     }
-    
+
     if (isSupabaseActive && supabaseClient) {
         try {
             const { data, error } = await supabaseClient
@@ -14349,13 +14615,13 @@ async function publishTutorial(event) {
                     youtube_url: url
                 }])
                 .select();
-                
+
             if (error) {
                 console.error("Supabase: Error al publicar tutorial:", error);
                 alert("❌ Fallo en la base de datos de Supabase. Revisa los permisos de políticas RLS.");
                 return;
             }
-            
+
             alert("✅ Video Tutorial publicado exitosamente en la base de datos Supabase.");
         } catch (err) {
             console.error("Fallo de red:", err);
@@ -14375,10 +14641,10 @@ async function publishTutorial(event) {
         activeTutorials.unshift(newMock);
         alert("✅ Publicación local exitosa (Modo Offline / Demo)");
     }
-    
+
     // Limpiar formulario
     document.getElementById('admin-tutorial-form').reset();
-    
+
     // Recargar datos y renderizar
     await loadTutorials();
     renderAdminTutorialsTable();
@@ -14386,18 +14652,18 @@ async function publishTutorial(event) {
 
 async function deleteTutorial(id) {
     if (!confirm("¿Estás seguro de que deseas eliminar este video tutorial permanentemente?")) return;
-    
+
     // Guardar en la lista de eliminados localmente para evitar que reaparezcan (especialmente los por defecto/mock)
     let deletedIds = [];
     try {
         const saved = localStorage.getItem('valorgt_deleted_tutorials');
         if (saved) deletedIds = JSON.parse(saved);
-    } catch(e) {}
+    } catch (e) { }
     if (!deletedIds.includes(id)) {
         deletedIds.push(id);
         try {
             localStorage.setItem('valorgt_deleted_tutorials', JSON.stringify(deletedIds));
-        } catch(e) {}
+        } catch (e) { }
     }
 
     if (isSupabaseActive && supabaseClient && !id.startsWith('mock-')) {
@@ -14406,13 +14672,13 @@ async function deleteTutorial(id) {
                 .from('video_tutorials')
                 .delete()
                 .eq('id', id);
-                
+
             if (error) {
                 console.error("Supabase: Error al eliminar:", error);
                 alert("❌ No se pudo eliminar de la base de datos.");
                 return;
             }
-            
+
             alert("✅ Video tutorial eliminado exitosamente de la base de datos.");
         } catch (err) {
             console.error("Error de red:", err);
@@ -14422,7 +14688,7 @@ async function deleteTutorial(id) {
         activeTutorials = activeTutorials.filter(t => t.id !== id);
         alert("✅ Eliminado del inventario local (Modo Offline)");
     }
-    
+
     await loadTutorials();
     renderAdminTutorialsTable();
 }
@@ -14434,11 +14700,11 @@ function renderAdminTutorialsTable() {
     const tableBody = document.getElementById('admin-tutorials-table-body');
     const counterBadge = document.getElementById('admin-tut-count-badge');
     if (!tableBody) return;
-    
+
     if (counterBadge) {
         counterBadge.innerText = `${activeTutorials.length} Video${activeTutorials.length === 1 ? '' : 's'}`;
     }
-    
+
     if (activeTutorials.length === 0) {
         tableBody.innerHTML = `
             <tr>
@@ -14449,7 +14715,7 @@ function renderAdminTutorialsTable() {
         `;
         return;
     }
-    
+
     const friendlySections = {
         'dashboard': 'Tasación IA',
         'heatmap': 'Radar Calor',
@@ -14459,14 +14725,14 @@ function renderAdminTutorialsTable() {
         'commercial-portfolio': 'Portafolio',
         'novedades': 'Novedades'
     };
-    
+
     tableBody.innerHTML = '';
     activeTutorials.forEach(t => {
         const row = document.createElement('tr');
         row.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
-        
+
         const sectionLabel = friendlySections[t.section_key] || 'General';
-        
+
         row.innerHTML = `
             <td style="padding: 10px; color: var(--cyan); font-weight: bold; font-size: 0.68rem; text-transform: uppercase;">
                 ${sectionLabel}
@@ -15068,13 +15334,13 @@ function updateSentimentIndex() {
 
     if (needle) needle.style.transform = `rotate(${rotationDeg}deg)`;
     if (scoreLbl) scoreLbl.innerText = finalScore;
-    
+
     if (statusLbl) {
         statusLbl.innerText = status;
         statusLbl.style.color = statusColor;
     }
     if (descText) descText.innerText = desc;
-    
+
     if (speedVal) speedVal.innerText = `${daysToSell} días promedio`;
     if (pressureVal) {
         pressureVal.innerText = pricePressure;
@@ -15125,7 +15391,7 @@ function initHomeCarousel() {
                 homeCarouselSlides.push({
                     tag: `Sector: ${zoneData.name.split(' (')[0]}`,
                     title: `Conoce las oportunidades en ${zoneData.name.split(' (')[0]}`,
-                    desc: `Tasas de plusvalía atractivas de hasta ${((zoneData.growth5Y || 0)/5).toFixed(1)}% anuales y alta demanda de alquileres.`,
+                    desc: `Tasas de plusvalía atractivas de hasta ${((zoneData.growth5Y || 0) / 5).toFixed(1)}% anuales y alta demanda de alquileres.`,
                     img: coverUrl,
                     action: () => {
                         const zoneSelect = document.getElementById('home-filter-zone');
@@ -15148,7 +15414,7 @@ function initHomeCarousel() {
         slideDiv.className = `home-carousel-slide ${idx === 0 ? 'active' : ''}`;
         slideDiv.style.cursor = 'pointer';
         slideDiv.onclick = slide.action;
-        
+
         slideDiv.innerHTML = `
             <div class="carousel-overlay"></div>
             <div class="carousel-slide-content">
@@ -15180,7 +15446,7 @@ function initHomeCarousel() {
  */
 function moveCarousel(direction) {
     if (homeCarouselSlides.length === 0) return;
-    
+
     let nextIndex = homeCarouselIndex + direction;
     if (nextIndex >= homeCarouselSlides.length) nextIndex = 0;
     if (nextIndex < 0) nextIndex = homeCarouselSlides.length - 1;
@@ -15193,7 +15459,7 @@ function moveCarousel(direction) {
  */
 function setCarouselIndex(index) {
     homeCarouselIndex = index;
-    
+
     const slides = document.querySelectorAll('.home-carousel-slide');
     const dots = document.querySelectorAll('.carousel-dot');
 
@@ -15226,7 +15492,7 @@ function renderHomeCatalog() {
     // Obtener todas las propiedades no de referencia
     let properties = [];
     const zoneSelectVal = document.getElementById('home-filter-zone')?.value || 'todos';
-    
+
     if (zoneSelectVal === 'todos') {
         Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
             properties = properties.concat(PORTFOLIO_DATABASE[zk] || []);
@@ -15258,7 +15524,7 @@ function renderHomeCatalog() {
         if (prop.isAgentUpload !== true) {
             return false;
         }
-        
+
         // Ocultar las de referencia (reservadas para la IA)
         if (prop.isReferenceData === true) {
             return false;
@@ -15347,10 +15613,10 @@ function renderHomeCatalog() {
 
         // Botón de eliminar para admin
         const isAdmin = (loggedInB2bClient && loggedInB2bClient.email && (
-            loggedInB2bClient.email.toLowerCase().includes('admin') || 
+            loggedInB2bClient.email.toLowerCase().includes('admin') ||
             loggedInB2bClient.email.toLowerCase().includes('sgalindo')
         )) || (!loggedInB2bClient && isCommercialAuthenticated);
-        
+
         const deleteButtonHTML = (isAdmin && prop.id) ? `
             <button class="btn-delete-catalog-prop" onclick="event.stopPropagation(); deleteAgentProperty('${prop.id}')" title="Eliminar Propiedad (Admin)" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255, 55, 95, 0.25); border: 1.5px solid #ff375f; color: #ff375f; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 0 10px rgba(255,55,95,0.25);">
                 <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
@@ -15455,21 +15721,21 @@ function loadCatalogPropToValuator(zoneKey, index) {
  */
 function initKpiGlowRotation() {
     let activeIndex = 0;
-    
+
     const rotateGlow = () => {
         const kpiCards = Array.from(document.querySelectorAll('#view-home .kpi-card'));
         if (kpiCards.length === 0) return;
-        
+
         kpiCards.forEach(card => {
             card.classList.remove('highlight-glow');
         });
-        
+
         if (kpiCards[activeIndex]) {
             kpiCards[activeIndex].classList.add('highlight-glow');
         }
         activeIndex = (activeIndex + 1) % kpiCards.length;
     };
-    
+
     // Iniciar con retraso de 1s, luego repetir cada 10s
     setTimeout(rotateGlow, 1000);
     setInterval(rotateGlow, 10000);
@@ -15485,9 +15751,9 @@ function initPautaView() {
     const planLbl = document.getElementById('pauta-agent-plan-lbl');
     const uploadLbl = document.getElementById('pauta-upload-lbl');
     const receiptInput = document.getElementById('pauta-payment-receipt');
-    
+
     if (!propertySelect) return;
-    
+
     selectedPautaReceiptData = null;
     if (receiptInput) receiptInput.value = '';
     if (uploadLbl) {
@@ -15504,19 +15770,19 @@ function initPautaView() {
     }
 
     propertySelect.innerHTML = '<option value="">-- Selecciona una Propiedad --</option>';
-    
+
     let agentProps = [];
     Object.keys(PORTFOLIO_DATABASE).forEach(zoneKey => {
         const list = PORTFOLIO_DATABASE[zoneKey] || [];
         list.forEach(p => {
             const isOwner = loggedInB2bClient && (
-                p.agent_id === loggedInB2bClient.id || 
+                p.agent_id === loggedInB2bClient.id ||
                 (p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) ||
                 (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
             );
-            
+
             const isAdminBypass = (loggedInB2bClient && loggedInB2bClient.email && (
-                loggedInB2bClient.email.toLowerCase().includes('admin') || 
+                loggedInB2bClient.email.toLowerCase().includes('admin') ||
                 loggedInB2bClient.email.toLowerCase().includes('sgalindo')
             )) || (!loggedInB2bClient && isCommercialAuthenticated);
 
@@ -15546,14 +15812,14 @@ function calculatePautaPrice() {
     const discountLbl = document.getElementById('pauta-discount-lbl');
     const durationDiscountLbl = document.getElementById('pauta-duration-discount-lbl');
     const finalPriceLbl = document.getElementById('pauta-final-price-lbl');
-    
+
     if (!formatSelect || !durationSelect) return;
 
     const format = formatSelect.value;
     const basePriceMonthly = format === 'slider' ? 5000 : 3000;
     const months = parseInt(durationSelect.value) || 1;
     const subtotal = basePriceMonthly * months;
-    
+
     // Descuento por membresía B2B
     const ownerPlan = loggedInB2bClient ? (loggedInB2bClient.plan || 'Básico').toLowerCase() : 'básico';
     let membershipDiscountPercent = 0;
@@ -15582,7 +15848,7 @@ function handlePautaReceiptUploaded(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         selectedPautaReceiptData = e.target.result;
         if (uploadLbl) {
             uploadLbl.innerHTML = `
@@ -15600,7 +15866,7 @@ function submitPautaCampaign() {
     const formatSelect = document.getElementById('pauta-format-select');
     const durationSelect = document.getElementById('pauta-duration-select');
     const finalPriceLbl = document.getElementById('pauta-final-price-lbl');
-    
+
     if (!propertySelect || !propertySelect.value) {
         alert("⚠️ Por favor selecciona una propiedad de tu inventario.");
         return;
@@ -15659,14 +15925,14 @@ function submitPautaCampaign() {
 function updateAdminPautasTabNotification() {
     const btn = document.getElementById('admin-tab-btn-pautas');
     if (!btn) return;
-    
+
     let pendingPautas = [];
     try {
         pendingPautas = JSON.parse(localStorage.getItem('admin_pending_pautas') || '[]');
     } catch (e) {
         console.error(e);
     }
-    
+
     const hasPending = pendingPautas.some(p => p.status === 'Pendiente');
     if (hasPending) {
         btn.classList.add('pauta-flash-alert');
@@ -15716,7 +15982,7 @@ function renderAdminPautasTable() {
         const statusColor = campaign.status === 'Pendiente' ? 'var(--yellow)' : (campaign.status === 'Aprobada' ? 'var(--neon-emerald)' : 'var(--red)');
         const formatName = campaign.format === 'slider' ? 'Showcase Slider' : 'Deck Destacados';
         const durationText = `${campaign.duration || 1} ${campaign.duration === 1 ? 'Mes' : 'Meses'}`;
-        
+
         const actionButtons = campaign.status === 'Pendiente' ? `
             <div style="display: flex; gap: 8px; justify-content: flex-end;">
                 <button class="btn-micro-cyber" onclick="approvePautaCampaign('${campaign.id}')" style="background: rgba(52,199,89,0.15); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); padding: 4px 8px; font-size: 0.65rem;">
@@ -15808,7 +16074,7 @@ function approvePautaCampaign(campaignId) {
     }
 
     alert(`✅ Campaña aprobada con éxito. La propiedad "${campaign.propertyTitle}" ahora cuenta con pauta activa.`);
-    
+
     renderAdminPautasTable();
     renderFeaturedProperties('todos');
 }
@@ -15882,7 +16148,7 @@ function showPropertyPage(zoneKey, index) {
         if (prop.hasVisitorBath) tags.push("Baño de Visitas");
         if (prop.study) tags.push("Estudio");
         if (prop.familyRoom) tags.push("Sala Familiar");
-        
+
         if (prop.amenities && prop.amenities.length > 0) {
             prop.amenities.forEach(am => {
                 if (am === "amenity-pool" || am === "pool") tags.push("Piscina / Jacuzzi");
@@ -15914,12 +16180,12 @@ function showPropertyPage(zoneKey, index) {
         // Grilla premium de imágenes (Zillow-style)
         const galleryArea = document.getElementById('page-gallery-grid');
         if (galleryArea) {
-            const photos = (updatedProp.metadata && updatedProp.metadata.photos && updatedProp.metadata.photos.length > 0) 
-                ? updatedProp.metadata.photos 
+            const photos = (updatedProp.metadata && updatedProp.metadata.photos && updatedProp.metadata.photos.length > 0)
+                ? updatedProp.metadata.photos
                 : (updatedProp.photos && updatedProp.photos.length > 0 ? updatedProp.photos : [updatedProp.photo || updatedProp.photoUrl || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80']);
 
             galleryArea.innerHTML = '';
-            
+
             // Crear el layout de grilla premium
             const mainItem = document.createElement('div');
             mainItem.className = 'gallery-item main-item';
@@ -16013,15 +16279,15 @@ function showPropertyPage(zoneKey, index) {
     // --- PRECALCULAR EL SIMULADOR HIPOTECARIO ---
     const downPayment = convertedPrice * 0.20;
     const loanAmount = convertedPrice - downPayment;
-    
+
     // Tasa por defecto: 7.26% (Tasa FHA de Banco Industrial)
     const annualRate = 7.26;
     const termYears = 20;
-    
+
     const monthlyRate = (annualRate / 100) / 12;
     const numberOfPayments = termYears * 12;
     let monthlyPayment = 0;
-    
+
     if (monthlyRate > 0) {
         monthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
     } else {
@@ -16030,10 +16296,10 @@ function showPropertyPage(zoneKey, index) {
 
     const pSimPropVal = document.getElementById('psim-prop-val');
     if (pSimPropVal) pSimPropVal.innerText = `${currencySym}${formatNumber(convertedPrice.toFixed(0))}`;
-    
+
     const pSimDownVal = document.getElementById('psim-down-val');
     if (pSimDownVal) pSimDownVal.innerText = `${currencySym}${formatNumber(downPayment.toFixed(0))} (20%)`;
-    
+
     const pSimMonthlyPayment = document.getElementById('psim-monthly-payment');
     if (pSimMonthlyPayment) pSimMonthlyPayment.innerText = `${currencySym}${formatNumber(monthlyPayment.toFixed(2))}${priceLabel}`;
 
@@ -16045,9 +16311,9 @@ function showPropertyPage(zoneKey, index) {
             document.getElementById('mval-down-slider').value = 20;
             document.getElementById('mval-term-slider').value = 20;
             document.getElementById('mval-rate-slider').value = 7.26;
-            
+
             updateMortgageValues();
-            
+
             document.getElementById('nav-btn-mortgage').click();
             document.querySelector('.top-header').scrollIntoView({ behavior: 'smooth' });
         };
@@ -16095,7 +16361,7 @@ function openImageLightbox(src) {
         img.src = src;
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden'; // Evitar scroll
-        
+
         // Agregar listener para tecla ESC
         window.addEventListener('keydown', handleLightboxEscKey);
     }
@@ -16138,7 +16404,7 @@ async function submitPropertySuggestion(event) {
     }
 
     let targetEmail = propDetails.agentEmail ? propDetails.agentEmail.toLowerCase() : 'admin@valorgt.com';
-    
+
     // Si la propiedad no tiene email pero sí tiene un agent_id (como en las propiedades de Supabase que no guardaron email)
     if ((!propDetails.agentEmail || targetEmail === 'admin@valorgt.com') && propDetails.agentId && isSupabaseActive && supabaseClient) {
         try {
@@ -16148,7 +16414,7 @@ async function submitPropertySuggestion(event) {
                 .select('email')
                 .eq('id', propDetails.agentId)
                 .maybeSingle();
-            
+
             if (!profileErr && profile && profile.email) {
                 targetEmail = profile.email.toLowerCase();
                 console.log(`🎯 [Sugerencias] Email resuelto con éxito: "${targetEmail}"`);
@@ -16313,10 +16579,10 @@ async function dismissSuggestion(id, propId, suggestionText) {
 function copyB2bReferralLink() {
     const codeEl = document.getElementById('b2b-referral-code-val');
     if (!codeEl) return;
-    
+
     const code = codeEl.innerText.trim();
     if (!code || code === 'REF-VGT') return;
-    
+
     // Intentar copiar al portapapeles
     if (navigator.clipboard) {
         navigator.clipboard.writeText(code).then(() => {
@@ -16357,7 +16623,7 @@ function copyB2bCatalogLink() {
     }
     const email = loggedInB2bClient.email.toLowerCase();
     const url = `${window.location.origin}${window.location.pathname}?agent=${encodeURIComponent(email)}`;
-    
+
     if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
             showCyberToast("¡ENLACE DE CATÁLOGO COPIADO!", "check-circle");
@@ -16381,4 +16647,4 @@ function clearHomeAgentFilter() {
     renderHomeCatalog();
 }
 
-
+

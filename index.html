@@ -172,6 +172,80 @@
                         <!-- Las propiedades destacadas patrocinadas se cargarán dinámicamente según la ubicación seleccionada -->
                     </div>
 
+                    <!-- TRES TARJETAS INTERACTIVAS DE INFORMACIÓN Y CONVERSIÓN EN HOME -->
+                    <div class="home-info-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; margin-bottom: 28px; width: 100%;">
+                        
+                        <!-- TARJETA 1: POR QUÉ ES INNOVADORA LA PLATAFORMA -->
+                        <div class="card glassmorphism home-interactive-card" onclick="openHomeInfoModal('innovacion')" style="cursor: pointer; padding: 22px; border: 1px solid rgba(0, 240, 255, 0.25); background: rgba(8, 6, 12, 0.78); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 240, 255, 0.1); border-radius: 12px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 240, 255, 0.28)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 240, 255, 0.1)'; this.style.borderColor='rgba(0, 240, 255, 0.25)';">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--cyan), #bf5af2);"></div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                    <span class="font-mono" style="font-size: 0.65rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 3px 9px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">[ TECNOLOGÍA & ECOSISTEMA ]</span>
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.35); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);">
+                                        <i data-lucide="cpu" style="width: 18px; height: 18px; color: var(--cyan);"></i>
+                                    </div>
+                                </div>
+                                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0 0 8px 0; letter-spacing: 0.3px;">¿Por qué ValorGT es Innovadora?</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 16px 0;">
+                                    El primer nodo inmobiliario que fusiona <strong>Redes Neuronales de Tasación IA</strong>, Radar Geoespacial de Plusvalías y resguardo patrimonial en <strong>Oro Digital (XAUt)</strong>.
+                                </p>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(0, 240, 255, 0.2); padding-top: 12px; margin-top: auto;">
+                                <span class="font-mono" style="font-size: 0.7rem; color: var(--cyan); font-weight: bold; letter-spacing: 0.5px;">DESCUBRIR ARQUITECTURA IA</span>
+                                <span style="width: 26px; height: 26px; border-radius: 6px; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; color: var(--cyan);">
+                                    <i data-lucide="arrow-up-right" style="width: 15px; height: 15px;"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- TARJETA 2: PLAN PRO & PLAN PREMIUM (BILLETERA XAUT) -->
+                        <div class="card glassmorphism home-interactive-card" onclick="openHomeInfoModal('planes')" style="cursor: pointer; padding: 22px; border: 1px solid rgba(255, 215, 0, 0.35); background: rgba(8, 6, 12, 0.78); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.12); border-radius: 12px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 35px rgba(0, 0, 0, 0.5), 0 0 28px rgba(255, 215, 0, 0.3)'; this.style.borderColor='#ffd700';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.12)'; this.style.borderColor='rgba(255, 215, 0, 0.35)';">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--cyan), #ffd700);"></div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                    <span class="font-mono" style="font-size: 0.65rem; background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); padding: 3px 9px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">[ MEMBRESÍAS PRO & PREMIUM ]</span>
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 215, 0, 0.12); border: 1px solid rgba(255, 215, 0, 0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);">
+                                        <i data-lucide="coins" style="width: 18px; height: 18px; color: #ffd700;"></i>
+                                    </div>
+                                </div>
+                                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0 0 8px 0; letter-spacing: 0.3px;">Nuestros Planes: Pro & Premium</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 12px 0;">
+                                    Opera con el motor IA en el <strong>Plan Pro (Q235 / $30 USD)</strong> o desbloquea la <strong>Billetera de Oro Digital XAUt</strong> y beneficios Gold con el <strong>Plan Premium (Q505 / $65 USD)</strong>.
+                                </p>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(255, 215, 0, 0.25); padding-top: 12px; margin-top: auto;">
+                                <span class="font-mono" style="font-size: 0.7rem; color: #ffd700; font-weight: bold; letter-spacing: 0.5px;">COMPARAR PLANES Y BENEFICIOS</span>
+                                <span style="width: 26px; height: 26px; border-radius: 6px; background: rgba(255, 215, 0, 0.15); border: 1px solid #ffd700; display: flex; align-items: center; justify-content: center; color: #ffd700;">
+                                    <i data-lucide="arrow-up-right" style="width: 15px; height: 15px;"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- TARJETA 3: SUSCRIPCIÓN Y PAGOS -->
+                        <div class="card glassmorphism home-interactive-card" onclick="openHomeInfoModal('pagos')" style="cursor: pointer; padding: 22px; border: 1px solid rgba(0, 255, 128, 0.25); background: rgba(8, 6, 12, 0.78); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 255, 128, 0.1); border-radius: 12px; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 255, 128, 0.28)'; this.style.borderColor='var(--neon-emerald)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 255, 128, 0.1)'; this.style.borderColor='rgba(0, 255, 128, 0.25)';">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--neon-emerald), var(--cyan));"></div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                    <span class="font-mono" style="font-size: 0.65rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 3px 9px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">[ ACTIVACIÓN RÁPIDA GTQ / USD ]</span>
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 255, 128, 0.1); border: 1px solid rgba(0, 255, 128, 0.35); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(0, 255, 128, 0.25);">
+                                        <i data-lucide="shield-check" style="width: 18px; height: 18px; color: var(--neon-emerald);"></i>
+                                    </div>
+                                </div>
+                                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0 0 8px 0; letter-spacing: 0.3px;">Suscripción y Pagos</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 16px 0;">
+                                    Activa tu membresía en minutos en <strong>Quetzales (Q) o Dólares ($ USD)</strong>. Ciclo mensual o anual con <strong>15% de ahorro</strong>, transferencia bancaria o tarjeta.
+                                </p>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed rgba(0, 255, 128, 0.2); padding-top: 12px; margin-top: auto;">
+                                <span class="font-mono" style="font-size: 0.7rem; color: var(--neon-emerald); font-weight: bold; letter-spacing: 0.5px;">VER PASOS Y MÉTODOS DE PAGO</span>
+                                <span style="width: 26px; height: 26px; border-radius: 6px; background: rgba(0, 255, 128, 0.12); border: 1px solid var(--neon-emerald); display: flex; align-items: center; justify-content: center; color: var(--neon-emerald);">
+                                    <i data-lucide="arrow-up-right" style="width: 15px; height: 15px;"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
 
 
                     <!-- BUSCADOR DEL CATÁLOGO INTEGRADO -->
@@ -241,6 +315,16 @@
                     <!-- GRILA DE RESULTADOS DEL CATÁLOGO EN HOME -->
                     <div id="home-catalog-grid" class="catalog-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%;">
                         <!-- Carga dinámica de propiedades del catálogo -->
+                    </div>
+
+                    <!-- MODAL INTERACTIVO DE LAS 3 TARJETAS DE HOME -->
+                    <div id="home-info-modal" class="payment-modal-overlay" onclick="if(event.target === this) closeHomeInfoModal();" style="z-index: 10010;">
+                        <div id="home-info-modal-card" class="payment-modal-card glassmorphism" style="width: 840px; max-width: 95vw; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(0, 240, 255, 0.35); box-shadow: 0 0 40px rgba(0, 240, 255, 0.22); background: rgba(5, 6, 8, 0.96); padding: 26px; border-radius: 14px; margin: auto; position: relative; text-align: left;">
+                            <button class="modal-close-btn" onclick="closeHomeInfoModal()" style="font-size: 1.8rem; top: 14px; right: 18px; position: absolute; background: none; border: none; color: var(--text-muted); cursor: pointer;">&times;</button>
+                            <div id="home-info-modal-body">
+                                <!-- Contenido dinámico inyectado por openHomeInfoModal(type) -->
+                            </div>
+                        </div>
                     </div>
                 </section>
                 
@@ -1742,18 +1826,29 @@
                                 </div>
 
                                 <!-- SECTOR PREMIUM DE TARJETAS DE SELECCIÓN DE PLANES -->
-                                <!-- 1. Contenedor de planes de Agente -->
+                                <!-- 1. Contenedor de planes de Agente / Inversionista -->
                                 <div id="agent-plans-container" class="input-group" style="display: flex; flex-direction: column; gap: 10px;">
-                                    <label style="font-size: 0.72rem; margin: 5px 0 2px 0;">Plan de Membresía Incluido</label>
+                                    <label style="font-size: 0.72rem; margin: 5px 0 2px 0;">Selecciona tu Plan de Membresía</label>
                                     
-                                    <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; justify-content: center;">
-                                        <div id="plan-card-signup-pro" class="signup-plan-card active" onclick="selectSignupPlanCard('pro')" style="flex: 1; max-width: 360px;">
-                                            <div class="active-ribbon" style="font-size: 0.5rem; padding: 2px 8px; top: -6px; right: 8px;">PLAN ÚNICO</div>
-                                            <span class="plan-card-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">ACCESO TOTAL</span>
-                                            <span style="font-size: 0.85rem; font-weight: bold; margin-top: 4px;">Suscripción ValorGT Pro</span>
-                                            <span class="plan-card-price" style="font-size: 0.88rem; font-weight: bold; color: var(--cyan); margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
+                                    <div style="display: flex; gap: 12px; width: 100%; box-sizing: border-box; justify-content: center; flex-wrap: wrap;">
+                                        <div id="plan-card-signup-pro" class="signup-plan-card active" onclick="selectSignupPlanCard('pro')" style="flex: 1; min-width: 220px;">
+                                            <span class="plan-card-badge" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">PLAN PRO</span>
+                                            <span style="font-size: 0.85rem; font-weight: bold; margin-top: 4px; color: #fff;">Plan Pro</span>
+                                            <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 2px;">Motor IA + Catálogo (Sin Billetera XAUt)</span>
+                                            <span class="plan-card-price" style="font-size: 0.9rem; font-weight: bold; color: var(--cyan); margin-top: 6px; display: flex; flex-direction: column; gap: 2px;">
                                                 <span>Q235 / Mes</span>
-                                                <span style="font-size: 0.65rem; color: var(--neon-emerald); font-weight: normal;">Equivalente a $30 USD / Mes</span>
+                                                <span style="font-size: 0.68rem; color: var(--neon-emerald); font-weight: bold;">$30 USD / Mes</span>
+                                            </span>
+                                        </div>
+
+                                        <div id="plan-card-signup-premium" class="signup-plan-card" onclick="selectSignupPlanCard('premium')" style="flex: 1; min-width: 220px; border-color: rgba(255, 215, 0, 0.35);">
+                                            <div class="active-ribbon" style="font-size: 0.48rem; padding: 2px 8px; top: -6px; right: 8px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-weight: 800;">CON BILLETERA XAUT</div>
+                                            <span class="plan-card-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4);">PLAN PREMIUM GOLD</span>
+                                            <span style="font-size: 0.85rem; font-weight: bold; margin-top: 4px; color: #fff;">Plan Premium</span>
+                                            <span style="font-size: 0.62rem; color: #ffd700; margin-top: 2px;">Todo Pro + Cartera de Oro XAUt & Beneficios Gold</span>
+                                            <span class="plan-card-price" style="font-size: 0.9rem; font-weight: bold; color: #ffd700; margin-top: 6px; display: flex; flex-direction: column; gap: 2px;">
+                                                <span>Q505 / Mes</span>
+                                                <span style="font-size: 0.68rem; color: var(--neon-emerald); font-weight: bold;">$65 USD / Mes</span>
                                             </span>
                                         </div>
                                     </div>
@@ -1761,7 +1856,8 @@
 
                                 <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
                                 <select id="com-signup-plan" style="display: none;">
-                                    <option value="pro" selected>Suscripción ValorGT Pro (Q235 / mes - $30 USD)</option>
+                                    <option value="pro" selected>Plan Pro (Q235 / mes - $30 USD / mes)</option>
+                                    <option value="premium">Plan Premium con Billetera XAUt (Q505 / mes - $65 USD / mes)</option>
                                 </select>
 
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">
@@ -1801,13 +1897,25 @@
                                 </div>
 
                                 <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="30" data-gtq="235" onclick="selectSignupPlan('pro', 30)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
-                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.65rem; padding: 2px 8px;">ACCESO TOTAL</div>
                                     <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); font-size: 0.8rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PLAN ÚNICO</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Suscripción ValorGT Pro</span>
+                                        <span class="plan-badge" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PLAN PRO</span>
+                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Plan Pro (Sin Billetera XAUt)</span>
                                     </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.35rem; margin: 0; color: var(--cyan); font-weight: bold;">
-                                        <span class="plan-currency-sym" style="font-size: 0.95rem; vertical-align: super;">Q</span><span id="signup-price-pro">235</span><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">/mes <span id="signup-equiv-pro" style="font-size: 0.65rem; color: var(--text-muted); font-weight: normal; margin-left: 2px;">(equiv. $30 USD)</span></span>
+                                    <div class="plan-price font-mono" style="font-size: 1.25rem; margin: 0; color: var(--cyan); font-weight: bold; text-align: right;">
+                                        <span class="plan-currency-sym" style="font-size: 0.9rem; vertical-align: super;">Q</span><span id="signup-price-pro">235</span><span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                        <div id="signup-equiv-pro" style="font-size: 0.72rem; color: var(--neon-emerald); font-weight: bold;">$30 USD / mes</div>
+                                    </div>
+                                </div>
+
+                                <div class="pricing-card" id="signup-plan-premium" data-usd="65" data-gtq="505" onclick="selectSignupPlan('premium', 65)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.35); background: rgba(255, 215, 0, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
+                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.6rem; padding: 2px 8px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-weight: bold;">INCLUYE BILLETERA XAUT</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+                                        <span class="plan-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PLAN PREMIUM GOLD</span>
+                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Plan Premium + Cartera XAUt</span>
+                                    </div>
+                                    <div class="plan-price font-mono" style="font-size: 1.25rem; margin: 0; color: #ffd700; font-weight: bold; text-align: right;">
+                                        <span class="plan-currency-sym" style="font-size: 0.9rem; vertical-align: super;">Q</span><span id="signup-price-premium">505</span><span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mes</span>
+                                        <div id="signup-equiv-premium" style="font-size: 0.72rem; color: var(--neon-emerald); font-weight: bold;">$65 USD / mes</div>
                                     </div>
                                 </div>
                             </div>
@@ -3411,9 +3519,9 @@
                         <!-- Encabezado de Planes Premium Centrado -->
                         <div class="featured-header" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 25px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%;">
 
-                            <h2 class="section-title-premium" style="color: #bf5af2; text-shadow: 0 0 15px rgba(191, 90, 242, 0.4); font-family: var(--font-sans); font-size: 1.8rem; font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Suscripción ValorGT Pro</h2>
-                            <p class="saas-desc font-mono" style="font-size: 0.78rem; color: var(--text-secondary); max-width: 700px; line-height: 1.6; margin: 10px 0 0 0;">
-                                Acceso total e ilimitado a todas las herramientas avanzadas de inteligencia inmobiliaria, autotasación IA, radar predictivo de calor, CRM y red comercial.
+                            <h2 class="section-title-premium" style="color: #bf5af2; text-shadow: 0 0 15px rgba(191, 90, 242, 0.4); font-family: var(--font-sans); font-size: 1.8rem; font-weight: 800; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">Planes de Membresía: Pro & Premium</h2>
+                            <p class="saas-desc font-mono" style="font-size: 0.78rem; color: var(--text-secondary); max-width: 740px; line-height: 1.6; margin: 10px 0 0 0;">
+                                Elige entre el <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD al mes)</strong> con acceso completo al motor de IA inmobiliaria, o el <strong style="color: #ffd700;">Plan Premium (Q505 / $65 USD al mes)</strong> que incorpora la Cartera de Oro Digital (XAUt) y todos los beneficios exclusivos Gold.
                             </p>
                         </div>
 
@@ -5157,7 +5265,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=21.3"></script>
+    <script src="app.v21.js?v=21.4"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
