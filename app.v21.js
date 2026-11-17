@@ -17684,24 +17684,127 @@ function sendHomeAiCustomMessage() {
     input.value = '';
 
     const lower = text.toLowerCase();
-    if (lower.includes('plan') || lower.includes('precio') || lower.includes('costo') || lower.includes('cuanto') || lower.includes('cuánto') || lower.includes('pro') || lower.includes('premium') || lower.includes('oro') || lower.includes('xaut') || lower.includes('billetera')) {
-        askHomeAiConcierge('planes');
-    } else if (lower.includes('pag') || lower.includes('registr') || lower.includes('suscri') || lower.includes('cuenta') || lower.includes('banco') || lower.includes('transfer')) {
-        askHomeAiConcierge('pagos');
-    } else if (lower.includes('innova') || lower.includes('que es') || lower.includes('qué es') || lower.includes('como funciona') || lower.includes('cómo funciona') || lower.includes('nuevo')) {
-        askHomeAiConcierge('innovacion');
-    } else {
+
+    // 1. Preguntas sobre Billetera de Oro / XAUt / Tether Gold
+    if (lower.includes('oro') || lower.includes('xaut') || lower.includes('billetera') || lower.includes('tether') || lower.includes('airdrop') || lower.includes('cartera')) {
         appendHomeAiChatExchange(
             text,
             `
-            ¡Claro! En <strong>ValorGT AI</strong> puedes explorar propiedades en tiempo real abajo en el catálogo, tasar inmuebles con IA o activar tu cuenta en el <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD)</strong> o <strong style="color: #ffd700;">Plan Premium con Billetera XAUt (Q505 / $65 USD)</strong>.<br>
+            La <strong style="color: #ffd700;">Billetera de Oro Digital (XAUt)</strong> es el beneficio estrella del <strong>Plan Premium (Q505/mes o $65 USD/mes)</strong>:<br>
+            • Cada token <strong>XAUt (Tether Gold)</strong> está respaldado 1:1 por una onza troy de oro físico en bóvedas de Suiza.<br>
+            • Te permite resguardar tus comisiones inmobiliarias contra la inflación, transferir oro sin costo entre agentes de la red (P2P), participar en <strong>Airdrops mensuales en oro</strong> y retirar el equivalente directo a tu cuenta bancaria en Quetzales (BI, BAC, Banrural, G&T, BAM).<br>
             <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
-                <a href="#" onclick="askHomeAiConcierge('planes'); return false;" style="color: #ffd700; font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ Ver Planes</a>
-                <a href="#" onclick="askHomeAiConcierge('pagos'); return false;" style="color: var(--neon-emerald); font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ Crear mi Perfil</a>
+                <a href="#" onclick="selectPublicPlanForSignup('premium'); return false;" style="color: #ffd700; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Activar Plan Premium con Billetera XAUt (Q505 / $65 USD)</a>
             </div>
             `
         );
+        return;
     }
+
+    // 2. Preguntas sobre Planes y Precios
+    if (lower.includes('plan') || lower.includes('precio') || lower.includes('costo') || lower.includes('cuanto') || lower.includes('cuánto') || lower.includes('pro') || lower.includes('premium') || lower.includes('membres') || lower.includes('mensual') || lower.includes('anual')) {
+        askHomeAiConcierge('planes');
+        return;
+    }
+
+    // 3. Preguntas sobre Registro, Suscripción y Pagos
+    if (lower.includes('pag') || lower.includes('registr') || lower.includes('suscri') || lower.includes('cuenta') || lower.includes('banco') || lower.includes('transfer') || lower.includes('boleta') || lower.includes('tarjeta')) {
+        askHomeAiConcierge('pagos');
+        return;
+    }
+
+    // 4. Preguntas sobre Tasación / Valuador IA / Avalúos
+    if (lower.includes('tasa') || lower.includes('valua') || lower.includes('avalu') || lower.includes('avalú') || lower.includes('cuanto vale') || lower.includes('cuánto vale') || lower.includes('valor')) {
+        appendHomeAiChatExchange(
+            text,
+            `
+            Nuestro <strong style="color: var(--cyan);">Tasador Inteligente IA</strong> calcula el valor de mercado y la renta mensual estimada de cualquier propiedad en Guatemala en segundos:<br>
+            • Analiza sector/zona, metros cuadrados, habitaciones, baños, parqueos, acabados, estado de conservación y más de 30 amenidades.<br>
+            • Además, puedes hacer clic en el botón <strong>"AUTOTASAR"</strong> de cualquier propiedad del catálogo para cargarla automáticamente en el motor.<br>
+            <div style="margin-top: 8px;">
+                <a href="#" onclick="switchView('dashboard'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ir a Tasa Inteligente IA ahora</a>
+            </div>
+            `
+        );
+        return;
+    }
+
+    // 5. Preguntas sobre Crédito Hipotecario / Bancos / FHA / Cuotas
+    if (lower.includes('hipotec') || lower.includes('fha') || lower.includes('credito') || lower.includes('crédito') || lower.includes('enganche') || lower.includes('cuota') || lower.includes('interes') || lower.includes('interés')) {
+        appendHomeAiChatExchange(
+            text,
+            `
+            En nuestro <strong style="color: var(--cyan);">Simulador Hipotecario</strong> puedes calcular cuotas mensuales exactas, enganche y desglose de intereses con las tasas actualizadas de los bancos de Guatemala:<br>
+            • <strong>Banco Industrial (FHA):</strong> ~7.26% anual | <strong>G&T Continental:</strong> ~7.40% | <strong>BAC Credomatic:</strong> ~7.50% | <strong>Banrural:</strong> ~8.00%.<br>
+            <div style="margin-top: 8px;">
+                <a href="#" onclick="switchView('mortgage'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Abrir Simulador Hipotecario</a>
+            </div>
+            `
+        );
+        return;
+    }
+
+    // 6. Preguntas sobre Zonas, Plusvalía, ROI, Mapa de Calor
+    if (lower.includes('zona') || lower.includes('mapa') || lower.includes('calor') || lower.includes('plusval') || lower.includes('roi') || lower.includes('rentabilidad') || lower.includes('antigua') || lower.includes('caes') || lower.includes('cayala') || lower.includes('cayalá')) {
+        appendHomeAiChatExchange(
+            text,
+            `
+            Con el <strong style="color: var(--cyan);">Radar de Calor</strong> y la <strong style="color: #bf5af2;">Terminal de Inversión</strong> puedes explorar el precio promedio por m², ROI de alquiler, liquidez y plusvalía anual en todas las zonas de Ciudad de Guatemala, CAES, Carretera, Fraijanes, Mixco y Antigua Guatemala.<br>
+            <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
+                <a href="#" onclick="switchView('heatmap'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ver Radar de Calor</a>
+                <a href="#" onclick="switchView('investor'); return false;" style="color: #bf5af2; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Abrir Terminal de Inversión</a>
+            </div>
+            `
+        );
+        return;
+    }
+
+    // 7. Preguntas sobre Publicar Propiedades / Subir Inmuebles / Pauta
+    if (lower.includes('publicar') || lower.includes('subir') || lower.includes('vender') || lower.includes('anunciar') || lower.includes('pauta') || lower.includes('propiedad')) {
+        appendHomeAiChatExchange(
+            text,
+            `
+            Como socio de ValorGT puedes publicar <strong>propiedades ilimitadas</strong> en el catálogo y compartir tu propio enlace exclusivo con tus clientes. Además, en la sección de <strong>Ingreso de Propiedades</strong> contamos con un <strong>Copiloto IA</strong> que te va pidiendo cada dato paso a paso y redacta tu descripción comercial automáticamente.<br>
+            <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
+                <a href="#" onclick="selectPublicPlanForSignup('pro'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Crear mi cuenta para publicar propiedades</a>
+            </div>
+            `
+        );
+        return;
+    }
+
+    // 8. Preguntas sobre Soporte / Contacto / WhatsApp
+    if (lower.includes('whatsapp') || lower.includes('soporte') || lower.includes('contacto') || lower.includes('telefono') || lower.includes('teléfono') || lower.includes('ayuda') || lower.includes('humano')) {
+        appendHomeAiChatExchange(
+            text,
+            `
+            Puedes escribirme cualquier duda por aquí o comunicarte directamente con nuestro equipo de soporte en WhatsApp:<br>
+            <div style="margin-top: 8px;">
+                <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20tengo%20una%20consulta%20sobre%20la%20plataforma..." target="_blank" style="color: #25D366; font-size: 0.88rem; font-weight: 700; text-decoration: none;">💬 Hablar con Soporte por WhatsApp (+502 4041-6471)</a>
+            </div>
+            `
+        );
+        return;
+    }
+
+    // 9. Preguntas sobre Innovación / Qué es ValorGT / Soy nuevo
+    if (lower.includes('innova') || lower.includes('que es') || lower.includes('qué es') || lower.includes('como funciona') || lower.includes('cómo funciona') || lower.includes('nuevo') || lower.includes('hola') || lower.includes('buenos') || lower.includes('buenas')) {
+        askHomeAiConcierge('innovacion');
+        return;
+    }
+
+    // 10. Respuesta general inteligente
+    appendHomeAiChatExchange(
+        text,
+        `
+        ¡Con gusto te ayudo! En <strong>ValorGT AI</strong> tienes acceso a nuestro catálogo inmobiliario abajo, autotasación con IA, mapas de calor de plusvalía y dos planes de membresía: <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD)</strong> y <strong style="color: #ffd700;">Plan Premium con Billetera de Oro XAUt (Q505 / $65 USD)</strong>.<br>
+        <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
+            <a href="#" onclick="askHomeAiConcierge('innovacion'); return false;" style="color: var(--cyan); font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ ¿Por qué somos innovadores?</a>
+            <a href="#" onclick="askHomeAiConcierge('planes'); return false;" style="color: #ffd700; font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ Comparar Planes</a>
+            <a href="#" onclick="askHomeAiConcierge('pagos'); return false;" style="color: var(--neon-emerald); font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ Cómo registrarme</a>
+        </div>
+        `
+    );
 }
 
 
