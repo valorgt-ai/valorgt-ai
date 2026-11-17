@@ -749,6 +749,10 @@ function renderThumbnailsPreview() {
 
         previewContainer.appendChild(card);
     });
+
+    if (typeof updateAiPublishPhotosStatus === 'function') {
+        updateAiPublishPhotosStatus();
+    }
 }
 
 /**
@@ -7800,6 +7804,9 @@ function switchLoginTab(tabName) {
 
         formSignup.classList.remove('hidden');
         formSignin.classList.add('hidden');
+        if (typeof initSignupAiAssistant === 'function') {
+            initSignupAiAssistant(false);
+        }
     }
 }
 
@@ -8575,6 +8582,9 @@ function editAgentProperty(propId) {
 
     // Cambiar a la pestaña de ingreso de propiedades (Terminal de Publicación)
     switchCommercialTab('propiedades');
+    if (typeof switchPublishEntryMode === 'function') {
+        switchPublishEntryMode('manual');
+    }
 
     // Establecer variable de edición
     editingPropertyId = propId;
@@ -10878,6 +10888,9 @@ function switchCommercialTab(tabId) {
         } else if (tabId === 'propiedades') {
             titleEl.innerText = "Publicar Propiedades en ValorGT";
             subtitleEl.innerText = "Cargar nuevos inmuebles al motor de búsqueda inteligente";
+            if (typeof initPublishAiAssistant === 'function') {
+                initPublishAiAssistant(false);
+            }
         } else if (tabId === 'propiedades-list') {
             titleEl.innerText = "Mis Propiedades Publicadas";
             subtitleEl.innerText = "Gestión del inventario y promoción con Inteligencia Artificial";
@@ -16646,5 +16659,944 @@ function clearHomeAgentFilter() {
     window.history.replaceState({}, '', url.toString());
     renderHomeCatalog();
 }
+
+/* ==========================================================================
+   ASISTENTE CONVERSACIONAL IA 1: REGISTRO DE PERFIL PASO A PASO
+   ========================================================================== */
+
+let signupAiState = {
+    initialized: false,
+    step: 1,
+    role: 'agente',
+    name: '',
+    email: '',
+    phone: '',
+    pass: '',
+    plan: 'pro',
+    messages: []
+};
+
+function switchSignupEntryMode(mode) {
+    const aiPanel = document.getElementById('signup-ai-assistant-panel');
+    const manualPanel = document.getElementById('signup-manual-fields-wrapper');
+    const btnAi = document.getElementById('btn-signup-mode-ai');
+    const btnManual = document.getElementById('btn-signup-mode-manual');
+
+    if (!aiPanel || !manualPanel) return;
+
+    if (mode === 'ai') {
+        aiPanel.style.display = 'flex';
+        manualPanel.classList.add('hidden');
+        manualPanel.style.display = 'none';
+        if (btnAi) {
+            btnAi.style.background = 'rgba(0, 240, 255, 0.15)';
+            btnAi.style.borderColor = 'var(--cyan)';
+            btnAi.style.color = '#fff';
+            btnAi.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.2)';
+        }
+        if (btnManual) {
+            btnManual.style.background = 'transparent';
+            btnManual.style.borderColor = 'transparent';
+            btnManual.style.color = 'var(--text-muted)';
+            btnManual.style.boxShadow = 'none';
+        }
+        initSignupAiAssistant(false);
+    } else {
+        aiPanel.style.display = 'none';
+        manualPanel.classList.remove('hidden');
+        manualPanel.style.display = 'flex';
+        if (btnManual) {
+            btnManual.style.background = 'rgba(0, 240, 255, 0.15)';
+            btnManual.style.borderColor = 'var(--cyan)';
+            btnManual.style.color = '#fff';
+            btnManual.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.2)';
+        }
+        if (btnAi) {
+            btnAi.style.background = 'transparent';
+            btnAi.style.borderColor = 'transparent';
+            btnAi.style.color = 'var(--text-muted)';
+            btnAi.style.boxShadow = 'none';
+        }
+    }
+}
+
+function initSignupAiAssistant(forceReset = false) {
+    if (signupAiState.initialized && !forceReset) {
+        renderSignupAiChat();
+        renderSignupAiControls();
+        return;
+    }
+
+    const preselectedPlan = (document.getElementById('com-signup-plan') && document.getElementById('com-signup-plan').value) || 'pro';
+    signupAiState = {
+        initialized: true,
+        step: 1,
+        role: 'agente',
+        name: '',
+        email: '',
+        phone: '',
+        pass: '',
+        plan: preselectedPlan,
+        messages: [
+            {
+                sender: 'ai',
+                text: '¡Hola! Soy tu Asistente IA de ValorGT 🤖. Te ayudaré a crear tu perfil paso a paso en menos de 1 minuto.<br><br><strong>Paso 1:</strong> ¿Cómo deseas operar en la plataforma?'
+            }
+        ]
+    };
+
+    renderSignupAiChat();
+    renderSignupAiControls();
+}
+
+function renderSignupAiChat() {
+    const feed = document.getElementById('signup-ai-chat-feed');
+    const badge = document.getElementById('signup-ai-step-badge');
+    if (!feed) return;
+
+    if (badge) {
+        badge.innerText = `PASO ${Math.min(signupAiState.step, 6)} / 6`;
+    }
+
+    feed.innerHTML = signupAiState.messages.map(m => {
+        if (m.sender === 'ai') {
+            return `
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem;">🤖</div>
+                    <div style="background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.22); border-radius: 0 10px 10px 10px; padding: 10px 14px; font-size: 0.86rem; color: #fff; line-height: 1.5; max-width: 88%;">
+                        ${m.text}
+                    </div>
+                </div>
+            `;
+        } else {
+            return `
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="background: linear-gradient(135deg, rgba(191, 90, 242, 0.25), rgba(0, 240, 255, 0.2)); border: 1px solid rgba(191, 90, 242, 0.45); border-radius: 10px 0 10px 10px; padding: 8px 14px; font-size: 0.85rem; color: #fff; font-weight: 600; max-width: 82%;">
+                        ${m.text}
+                    </div>
+                </div>
+            `;
+        }
+    }).join('');
+
+    setTimeout(() => {
+        feed.scrollTop = feed.scrollHeight;
+    }, 30);
+}
+
+function renderSignupAiControls() {
+    const controls = document.getElementById('signup-ai-controls');
+    if (!controls) return;
+
+    const s = signupAiState.step;
+
+    if (s === 1) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" onclick="answerSignupAiRole('agente')" style="flex: 1; min-width: 190px; padding: 12px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.1); color: #fff; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    💼 Soy Agente Inmobiliario
+                </button>
+                <button type="button" onclick="answerSignupAiRole('inversionista')" style="flex: 1; min-width: 190px; padding: 12px; border-radius: 8px; border: 1px solid #bf5af2; background: rgba(191, 90, 242, 0.12); color: #fff; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    📈 Soy Inversionista
+                </button>
+            </div>
+        `;
+    } else if (s === 2) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="signup-ai-input-name" placeholder="Escribe tu nombre completo (Ej. Carlos Mendoza)..." style="flex: 1; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerSignupAiName();}">
+                <button type="button" onclick="answerSignupAiName()" class="btn-commercial btn-commercial-cyan" style="padding: 0 18px; font-weight: bold; font-size: 0.8rem;">CONTINUAR →</button>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('signup-ai-input-name'); if (el) el.focus(); }, 50);
+    } else if (s === 3) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 8px;">
+                <input type="email" id="signup-ai-input-email" placeholder="Escribe tu correo electrónico (Ej. carlos@correo.com)..." style="flex: 1; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerSignupAiEmail();}">
+                <button type="button" onclick="answerSignupAiEmail()" class="btn-commercial btn-commercial-cyan" style="padding: 0 18px; font-weight: bold; font-size: 0.8rem;">CONTINUAR →</button>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('signup-ai-input-email'); if (el) el.focus(); }, 50);
+    } else if (s === 4) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 8px;">
+                <input type="tel" id="signup-ai-input-phone" placeholder="Tu número de Teléfono / WhatsApp (Ej. 5002-8593)..." style="flex: 1; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerSignupAiPhone();}">
+                <button type="button" onclick="answerSignupAiPhone()" class="btn-commercial btn-commercial-cyan" style="padding: 0 18px; font-weight: bold; font-size: 0.8rem;">CONTINUAR →</button>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('signup-ai-input-phone'); if (el) el.focus(); }, 50);
+    } else if (s === 5) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 8px;">
+                <input type="password" id="signup-ai-input-pass" placeholder="Crea tu clave de acceso (mínimo 6 caracteres)..." style="flex: 1; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerSignupAiPass();}">
+                <button type="button" onclick="answerSignupAiPass()" class="btn-commercial btn-commercial-cyan" style="padding: 0 18px; font-weight: bold; font-size: 0.8rem;">CONTINUAR →</button>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('signup-ai-input-pass'); if (el) el.focus(); }, 50);
+    } else if (s === 6) {
+        const isPrem = signupAiState.plan === 'premium';
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div onclick="selectSignupAiPlan('pro')" style="flex: 1; min-width: 200px; cursor: pointer; padding: 12px; border-radius: 8px; border: 1.5px solid ${!isPrem ? 'var(--cyan)' : 'rgba(255,255,255,0.12)'}; background: ${!isPrem ? 'rgba(0, 240, 255, 0.1)' : 'rgba(0,0,0,0.35)'};">
+                        <div class="font-mono" style="font-size: 0.7rem; color: var(--cyan); font-weight: bold;">🟦 PLAN PRO</div>
+                        <div style="font-size: 0.92rem; color: #fff; font-weight: bold; margin-top: 2px;">Q235/mes ($30 USD)</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Motor IA + Catálogo (Sin Cartera XAUt)</div>
+                    </div>
+                    <div onclick="selectSignupAiPlan('premium')" style="flex: 1; min-width: 200px; cursor: pointer; padding: 12px; border-radius: 8px; border: 1.5px solid ${isPrem ? '#ffd700' : 'rgba(255, 215, 0, 0.25)'}; background: ${isPrem ? 'rgba(255, 215, 0, 0.12)' : 'rgba(0,0,0,0.35)'};">
+                        <div class="font-mono" style="font-size: 0.7rem; color: #ffd700; font-weight: bold;">🟨 PLAN PREMIUM GOLD</div>
+                        <div style="font-size: 0.92rem; color: #ffd700; font-weight: bold; margin-top: 2px;">Q505/mes ($65 USD)</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px;">Todo Pro + Billetera de Oro XAUt</div>
+                    </div>
+                </div>
+                <button type="button" onclick="finishSignupAiWizard()" class="btn-commercial btn-commercial-purple" style="width: 100%; padding: 13px; font-weight: 800; font-size: 0.88rem; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); color: #000; border: none; border-radius: 8px; cursor: pointer;">
+                    🚀 CREAR MI PERFIL Y CONTINUAR AL PAGO
+                </button>
+            </div>
+        `;
+    }
+}
+
+function answerSignupAiRole(role) {
+    signupAiState.role = role;
+    setSignupRole(role);
+    signupAiState.messages.push({
+        sender: 'user',
+        text: role === 'agente' ? '💼 Soy Agente Inmobiliario' : '📈 Soy Inversionista'
+    });
+    signupAiState.messages.push({
+        sender: 'ai',
+        text: `¡Perfecto! Configuré tu perfil como <strong>${role === 'agente' ? 'Agente Inmobiliario' : 'Inversionista'}</strong>.<br><br><strong>Paso 2:</strong> ¿Cuál es tu <strong>Nombre Completo</strong> (o nombre comercial)?`
+    });
+    signupAiState.step = 2;
+    renderSignupAiChat();
+    renderSignupAiControls();
+}
+
+function answerSignupAiName() {
+    const val = (document.getElementById('signup-ai-input-name')?.value || '').trim();
+    if (val.length < 2) {
+        alert('Por favor ingresa tu nombre completo.');
+        return;
+    }
+    signupAiState.name = val;
+    const nameInput = document.getElementById('com-signup-name');
+    if (nameInput) nameInput.value = val;
+
+    signupAiState.messages.push({ sender: 'user', text: val });
+    signupAiState.messages.push({
+        sender: 'ai',
+        text: `Mucho gusto, <strong>${val}</strong> 👋.<br><br><strong>Paso 3:</strong> ¿Cuál es tu <strong>Correo Electrónico</strong> para tu cuenta?`
+    });
+    signupAiState.step = 3;
+    renderSignupAiChat();
+    renderSignupAiControls();
+}
+
+function answerSignupAiEmail() {
+    const val = (document.getElementById('signup-ai-input-email')?.value || '').trim();
+    if (!val.includes('@') || !val.includes('.')) {
+        alert('Por favor ingresa un correo electrónico válido.');
+        return;
+    }
+    signupAiState.email = val;
+    const emailInput = document.getElementById('com-signup-email');
+    if (emailInput) emailInput.value = val;
+
+    signupAiState.messages.push({ sender: 'user', text: val });
+    signupAiState.messages.push({
+        sender: 'ai',
+        text: `Correo registrado ✔️.<br><br><strong>Paso 4:</strong> ¿Cuál es tu número de <strong>Teléfono / WhatsApp</strong> de contacto?`
+    });
+    signupAiState.step = 4;
+    renderSignupAiChat();
+    renderSignupAiControls();
+}
+
+function answerSignupAiPhone() {
+    const val = (document.getElementById('signup-ai-input-phone')?.value || '').trim();
+    if (val.length < 6) {
+        alert('Por favor ingresa un número de teléfono válido.');
+        return;
+    }
+    signupAiState.phone = val;
+    const phoneInput = document.getElementById('com-signup-phone');
+    if (phoneInput) phoneInput.value = val;
+
+    signupAiState.messages.push({ sender: 'user', text: val });
+    signupAiState.messages.push({
+        sender: 'ai',
+        text: `¡Excelente! 📱<br><br><strong>Paso 5:</strong> Escribe una <strong>Contraseña de Acceso</strong> segura (mínimo 6 caracteres) para proteger tu cuenta:`
+    });
+    signupAiState.step = 5;
+    renderSignupAiChat();
+    renderSignupAiControls();
+}
+
+function answerSignupAiPass() {
+    const val = (document.getElementById('signup-ai-input-pass')?.value || '').trim();
+    if (val.length < 6) {
+        alert('La contraseña debe tener al menos 6 caracteres.');
+        return;
+    }
+    signupAiState.pass = val;
+    const passInput = document.getElementById('com-signup-pass');
+    if (passInput) passInput.value = val;
+
+    signupAiState.messages.push({ sender: 'user', text: '•••••••• (Contraseña configurada)' });
+    signupAiState.messages.push({
+        sender: 'ai',
+        text: `¡Listo, <strong>${signupAiState.name}</strong>! 🎉 Ya tengo todos tus datos listos.<br><br><strong>Paso 6:</strong> Confirma qué plan deseas activar (<strong>Plan Pro Q235 / $30 USD</strong> o <strong>Plan Premium Q505 / $65 USD con Billetera XAUt</strong>) y presiona el botón para crear tu perfil:`
+    });
+    signupAiState.step = 6;
+    renderSignupAiChat();
+    renderSignupAiControls();
+}
+
+function selectSignupAiPlan(planKey) {
+    signupAiState.plan = planKey;
+    selectSignupPlanCard(planKey);
+    renderSignupAiControls();
+}
+
+function finishSignupAiWizard() {
+    setSignupRole(signupAiState.role);
+    const nameInput = document.getElementById('com-signup-name');
+    const emailInput = document.getElementById('com-signup-email');
+    const phoneInput = document.getElementById('com-signup-phone');
+    const passInput = document.getElementById('com-signup-pass');
+    if (nameInput) nameInput.value = signupAiState.name;
+    if (emailInput) emailInput.value = signupAiState.email;
+    if (phoneInput) phoneInput.value = signupAiState.phone;
+    if (passInput) passInput.value = signupAiState.pass;
+    selectSignupPlanCard(signupAiState.plan);
+
+    handleRegistrationFormSubmit(new Event('submit'));
+}
+
+
+/* ==========================================================================
+   ASISTENTE CONVERSACIONAL IA 2: INGRESO DE PROPIEDADES PASO A PASO
+   ========================================================================== */
+
+let publishAiState = {
+    initialized: false,
+    step: 1,
+    type: 'Venta',
+    category: 'Apartamento',
+    location: 'zona14',
+    locationLabel: 'Zona 14 (La Cañada / Américas)',
+    title: '',
+    priceCurrency: 'USD',
+    priceInputVal: '',
+    size: '',
+    beds: 3,
+    baths: 2.5,
+    parks: 2,
+    amenities: ['pub-amenity-security'],
+    description: '',
+    messages: []
+};
+
+const PUBLISH_AI_ZONES = [
+    { key: 'zona14', label: 'Zona 14 (Américas / Cañada)' },
+    { key: 'zona10', label: 'Zona 10 (Zona Viva / Reforma)' },
+    { key: 'zona15', label: 'Zona 15 (Vista Hermosa)' },
+    { key: 'zona16', label: 'Zona 16 (Cayalá / Lomas)' },
+    { key: 'carretera', label: 'CAES (Km 10 - Km 17)' },
+    { key: 'carretera_high', label: 'CAES (Km 18 - Km 25)' },
+    { key: 'antigua', label: 'Antigua Guatemala' },
+    { key: 'zona4', label: 'Zona 4 (Cantón Exposición)' },
+    { key: 'zona13', label: 'Zona 13 (Aurora / Hincapié)' },
+    { key: 'zona11', label: 'Zona 11 (Majadas / Charcas)' },
+    { key: 'fraijanes', label: 'Fraijanes (Condominios)' },
+    { key: 'mixco', label: 'Mixco (San Cristóbal)' },
+    { key: 'pinula', label: 'San José Pinula' },
+    { key: 'zona1', label: 'Zona 1 (Centro Histórico)' },
+    { key: 'zona7', label: 'Zona 7 (El Naranjo)' },
+    { key: 'zona9', label: 'Zona 9 (Montúfar)' },
+    { key: 'zona12', label: 'Zona 12 (Reformita)' }
+];
+
+const PUBLISH_AI_AMENITIES = [
+    { id: 'pub-amenity-security', label: '🛡️ Seguridad 24/7' },
+    { id: 'pub-amenity-pool', label: '🏊 Piscina / Jacuzzi' },
+    { id: 'pub-amenity-gym', label: '🏋️ Gimnasio Equipado' },
+    { id: 'pub-amenity-clubhouse', label: '🏛️ Casa Club / Eventos' },
+    { id: 'pub-amenity-view', label: '🌆 Vista Panorámica' },
+    { id: 'pub-amenity-smart', label: '📱 Domótica (Smart Home)' },
+    { id: 'pub-amenity-elevator', label: '🛗 Elevador' },
+    { id: 'pub-area-balcony', label: '🌅 Balcón' },
+    { id: 'pub-area-terrace', label: '🌿 Terraza' },
+    { id: 'pub-room-master-suite', label: '👑 Suite Principal' }
+];
+
+function switchPublishEntryMode(mode) {
+    const aiPanel = document.getElementById('publish-ai-assistant-panel');
+    const manualWrapper = document.getElementById('publish-manual-form-wrapper');
+    const btnAi = document.getElementById('btn-pub-mode-ai');
+    const btnManual = document.getElementById('btn-pub-mode-manual');
+
+    if (!aiPanel || !manualWrapper) return;
+
+    if (mode === 'ai') {
+        aiPanel.style.display = 'flex';
+        manualWrapper.classList.add('hidden');
+        if (btnAi) {
+            btnAi.style.background = 'rgba(0, 240, 255, 0.15)';
+            btnAi.style.borderColor = 'var(--cyan)';
+            btnAi.style.color = '#fff';
+            btnAi.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.2)';
+        }
+        if (btnManual) {
+            btnManual.style.background = 'transparent';
+            btnManual.style.borderColor = 'transparent';
+            btnManual.style.color = 'var(--text-muted)';
+            btnManual.style.boxShadow = 'none';
+        }
+        initPublishAiAssistant(false);
+    } else {
+        aiPanel.style.display = 'none';
+        manualWrapper.classList.remove('hidden');
+        if (btnManual) {
+            btnManual.style.background = 'rgba(0, 240, 255, 0.15)';
+            btnManual.style.borderColor = 'var(--cyan)';
+            btnManual.style.color = '#fff';
+            btnManual.style.boxShadow = '0 0 12px rgba(0, 240, 255, 0.2)';
+        }
+        if (btnAi) {
+            btnAi.style.background = 'transparent';
+            btnAi.style.borderColor = 'transparent';
+            btnAi.style.color = 'var(--text-muted)';
+            btnAi.style.boxShadow = 'none';
+        }
+    }
+}
+
+function initPublishAiAssistant(forceReset = false) {
+    if (publishAiState.initialized && !forceReset) {
+        renderPublishAiSummaryPills();
+        renderPublishAiChat();
+        renderPublishAiControls();
+        return;
+    }
+
+    editingPropertyId = null;
+    publishAiState = {
+        initialized: true,
+        step: 1,
+        type: 'Venta',
+        category: 'Apartamento',
+        location: 'zona14',
+        locationLabel: 'Zona 14 (Américas / Cañada)',
+        title: '',
+        priceCurrency: activeCurrency === 'GTQ' ? 'GTQ' : 'USD',
+        priceInputVal: '',
+        size: '',
+        beds: 3,
+        baths: 2.5,
+        parks: 2,
+        amenities: ['pub-amenity-security'],
+        description: '',
+        messages: [
+            {
+                sender: 'ai',
+                text: '¡Hola! Soy tu Copiloto Inmobiliario IA 🤖. Yo me encargo de armar tu publicación en orden para que quede perfecta en el catálogo.<br><br><strong>Paso 1:</strong> ¿La propiedad está en <strong>Venta</strong> o en <strong>Renta</strong>, y qué <strong>Categoría</strong> es?'
+            }
+        ]
+    };
+
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function renderPublishAiSummaryPills() {
+    const bar = document.getElementById('publish-ai-summary-pills');
+    const badge = document.getElementById('publish-ai-step-badge');
+    if (badge) {
+        badge.innerText = `PASO ${Math.min(publishAiState.step, 8)} / 8`;
+    }
+    if (!bar) return;
+
+    const pills = [];
+    if (publishAiState.step > 1) {
+        pills.push(`<span style="background: rgba(0,240,255,0.12); border: 1px solid rgba(0,240,255,0.3); color: var(--cyan); padding: 3px 8px; border-radius: 6px;">🏠 ${publishAiState.category} en ${publishAiState.type}</span>`);
+    }
+    if (publishAiState.step > 2) {
+        pills.push(`<span style="background: rgba(191,90,242,0.15); border: 1px solid rgba(191,90,242,0.35); color: #e0b0ff; padding: 3px 8px; border-radius: 6px;">📍 ${publishAiState.locationLabel}</span>`);
+    }
+    if (publishAiState.step > 3 && publishAiState.title) {
+        pills.push(`<span style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 3px 8px; border-radius: 6px;">🏷️ ${publishAiState.title}</span>`);
+    }
+    if (publishAiState.step > 4 && publishAiState.priceInputVal) {
+        const sym = publishAiState.priceCurrency === 'GTQ' ? 'Q' : '$';
+        pills.push(`<span style="background: rgba(0,255,128,0.12); border: 1px solid rgba(0,255,128,0.3); color: var(--neon-emerald); padding: 3px 8px; border-radius: 6px;">💰 ${sym}${formatNumber(publishAiState.priceInputVal)} ${publishAiState.priceCurrency}</span>`);
+    }
+    if (publishAiState.step > 5 && publishAiState.size) {
+        pills.push(`<span style="background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.3); color: #ffd700; padding: 3px 8px; border-radius: 6px;">📐 ${publishAiState.size} m²</span>`);
+    }
+    if (publishAiState.step > 6 && publishAiState.category !== 'Terreno' && publishAiState.category !== 'Bodega') {
+        pills.push(`<span style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 3px 8px; border-radius: 6px;">🛏️ ${publishAiState.beds} Hab • 🚿 ${publishAiState.baths} Baños • 🚗 ${publishAiState.parks} Parq</span>`);
+    }
+
+    if (pills.length === 0) {
+        bar.innerHTML = `<span style="color: var(--text-muted);">📋 Ficha en construcción: selecciona el tipo de operación y categoría abajo...</span>`;
+    } else {
+        bar.innerHTML = pills.join('');
+    }
+}
+
+function renderPublishAiChat() {
+    const feed = document.getElementById('publish-ai-chat-feed');
+    if (!feed) return;
+
+    feed.innerHTML = publishAiState.messages.map(m => {
+        if (m.sender === 'ai') {
+            return `
+                <div style="display: flex; gap: 10px; align-items: flex-start;">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem;">🤖</div>
+                    <div style="background: rgba(0, 240, 255, 0.06); border: 1px solid rgba(0, 240, 255, 0.22); border-radius: 0 12px 12px 12px; padding: 12px 16px; font-size: 0.92rem; color: #fff; line-height: 1.55; max-width: 88%;">
+                        ${m.text}
+                    </div>
+                </div>
+            `;
+        } else {
+            return `
+                <div style="display: flex; justify-content: flex-end;">
+                    <div style="background: linear-gradient(135deg, rgba(191, 90, 242, 0.25), rgba(0, 240, 255, 0.2)); border: 1px solid rgba(0, 240, 255, 0.45); border-radius: 12px 0 12px 12px; padding: 10px 16px; font-size: 0.9rem; color: #fff; font-weight: 600; max-width: 82%;">
+                        ${m.text}
+                    </div>
+                </div>
+            `;
+        }
+    }).join('');
+
+    setTimeout(() => {
+        feed.scrollTop = feed.scrollHeight;
+    }, 30);
+}
+
+function renderPublishAiControls() {
+    const controls = document.getElementById('publish-ai-controls');
+    if (!controls) return;
+
+    const s = publishAiState.step;
+
+    if (s === 1) {
+        const types = ['Venta', 'Renta'];
+        const cats = ['Apartamento', 'Casa', 'Local', 'Terreno', 'Bodega'];
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <span class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); font-weight: bold;">1. OPERACIÓN:</span>
+                    ${types.map(t => `
+                        <button type="button" onclick="publishAiState.type='${t}'; renderPublishAiControls();" style="padding: 8px 16px; border-radius: 8px; border: 1px solid ${publishAiState.type === t ? 'var(--cyan)' : 'rgba(255,255,255,0.15)'}; background: ${publishAiState.type === t ? 'rgba(0,240,255,0.18)' : 'rgba(0,0,0,0.4)'}; color: #fff; font-family: var(--font-mono); font-size: 0.82rem; font-weight: bold; cursor: pointer;">
+                            ${t === 'Venta' ? '🏷️ En Venta' : '🔑 En Renta'}
+                        </button>
+                    `).join('')}
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <span class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); font-weight: bold;">2. CATEGORÍA:</span>
+                    ${cats.map(c => `
+                        <button type="button" onclick="publishAiState.category='${c}'; renderPublishAiControls();" style="padding: 8px 14px; border-radius: 8px; border: 1px solid ${publishAiState.category === c ? '#ffd700' : 'rgba(255,255,255,0.15)'}; background: ${publishAiState.category === c ? 'rgba(255,215,0,0.18)' : 'rgba(0,0,0,0.4)'}; color: ${publishAiState.category === c ? '#ffd700' : '#fff'}; font-family: var(--font-mono); font-size: 0.82rem; font-weight: bold; cursor: pointer;">
+                            ${c === 'Local' ? '🏢 Local / Oficina' : c}
+                        </button>
+                    `).join('')}
+                </div>
+                <button type="button" onclick="answerPublishAiStep1()" class="btn-commercial btn-commercial-cyan" style="padding: 11px; font-weight: bold; font-size: 0.85rem; width: 100%;">
+                    CONFIRMAR: ${publishAiState.category.toUpperCase()} EN ${publishAiState.type.toUpperCase()} →
+                </button>
+            </div>
+        `;
+    } else if (s === 2) {
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto; padding: 4px;">
+                    ${PUBLISH_AI_ZONES.map(z => `
+                        <button type="button" onclick="answerPublishAiStep2('${z.key}', '${z.label}')" style="padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(0, 240, 255, 0.3); background: rgba(0, 240, 255, 0.08); color: #fff; font-family: var(--font-mono); font-size: 0.78rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.22)'; this.style.borderColor='var(--cyan)';" onmouseout="this.style.background='rgba(0,240,255,0.08)'; this.style.borderColor='rgba(0,240,255,0.3)';">
+                            📍 ${z.label}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    } else if (s === 3) {
+        const suggestedTitle = `${publishAiState.category === 'Local' ? 'Oficina / Local Comercial' : publishAiState.category} Exclusivo en ${publishAiState.locationLabel.split(' (')[0]}`;
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input type="text" id="publish-ai-input-title" value="${publishAiState.title || suggestedTitle}" placeholder="Ej. Penthouse Moderno en Zona 14 con Terraza..." style="flex: 1; min-width: 220px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.9rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep3();}">
+                    <button type="button" onclick="answerPublishAiStep3()" class="btn-commercial btn-commercial-cyan" style="padding: 0 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
+                </div>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('publish-ai-input-title'); if (el) { el.focus(); el.select(); } }, 50);
+    } else if (s === 4) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <select id="publish-ai-input-currency" onchange="publishAiState.priceCurrency = this.value" style="padding: 11px 12px; border-radius: 8px; border: 1px solid #ffd700; background: rgba(0,0,0,0.6); color: #ffd700; font-family: var(--font-mono); font-size: 0.85rem; font-weight: bold; outline: none;">
+                    <option value="USD" ${publishAiState.priceCurrency === 'USD' ? 'selected' : ''}>USD ($ Dólares)</option>
+                    <option value="GTQ" ${publishAiState.priceCurrency === 'GTQ' ? 'selected' : ''}>GTQ (Q Quetzales)</option>
+                </select>
+                <input type="number" id="publish-ai-input-price" value="${publishAiState.priceInputVal}" placeholder="Ej. 285000" min="1" style="flex: 1; min-width: 180px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.92rem; font-family: var(--font-mono); outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep4();}">
+                <button type="button" onclick="answerPublishAiStep4()" class="btn-commercial btn-commercial-cyan" style="padding: 11px 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('publish-ai-input-price'); if (el) el.focus(); }, 50);
+    } else if (s === 5) {
+        controls.innerHTML = `
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <input type="number" id="publish-ai-input-size" value="${publishAiState.size}" placeholder="Área en Metros Cuadrados (m²), ej. 185" min="1" style="flex: 1; min-width: 200px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.92rem; font-family: var(--font-mono); outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep5();}">
+                <button type="button" onclick="answerPublishAiStep5()" class="btn-commercial btn-commercial-cyan" style="padding: 11px 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
+            </div>
+        `;
+        setTimeout(() => { const el = document.getElementById('publish-ai-input-size'); if (el) el.focus(); }, 50);
+    } else if (s === 6) {
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label class="font-mono" style="font-size: 0.72rem; color: var(--cyan);">🛏️ HABITACIONES</label>
+                        <input type="number" id="publish-ai-input-beds" value="${publishAiState.beds}" min="0" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,0,0,0.5); color: #fff; font-family: var(--font-mono); font-size: 0.92rem; text-align: center;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label class="font-mono" style="font-size: 0.72rem; color: var(--cyan);">🚿 BAÑOS</label>
+                        <input type="number" id="publish-ai-input-baths" value="${publishAiState.baths}" min="0" step="0.5" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,0,0,0.5); color: #fff; font-family: var(--font-mono); font-size: 0.92rem; text-align: center;">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label class="font-mono" style="font-size: 0.72rem; color: var(--cyan);">🚗 PARQUEOS</label>
+                        <input type="number" id="publish-ai-input-parks" value="${publishAiState.parks}" min="0" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,0,0,0.5); color: #fff; font-family: var(--font-mono); font-size: 0.92rem; text-align: center;">
+                    </div>
+                </div>
+                <button type="button" onclick="answerPublishAiStep6()" class="btn-commercial btn-commercial-cyan" style="padding: 11px; font-weight: bold; font-size: 0.84rem; width: 100%;">
+                    GUARDAR DISTRIBUCIÓN Y CONTINUAR →
+                </button>
+            </div>
+        `;
+    } else if (s === 7) {
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    ${PUBLISH_AI_AMENITIES.map(a => {
+                        const active = publishAiState.amenities.includes(a.id);
+                        return `
+                            <button type="button" onclick="togglePublishAiAmenity('${a.id}')" style="padding: 8px 12px; border-radius: 20px; border: 1px solid ${active ? 'var(--neon-emerald)' : 'rgba(255,255,255,0.15)'}; background: ${active ? 'rgba(0, 255, 128, 0.16)' : 'rgba(0,0,0,0.4)'}; color: ${active ? 'var(--neon-emerald)' : 'var(--text-secondary)'}; font-family: var(--font-mono); font-size: 0.76rem; font-weight: bold; cursor: pointer; transition: all 0.2s;">
+                                ${active ? '✔️ ' : ''}${a.label}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+                <button type="button" onclick="answerPublishAiStep7()" class="btn-commercial btn-commercial-cyan" style="padding: 11px; font-weight: bold; font-size: 0.84rem; width: 100%;">
+                    CONTINUAR AL PASO FINAL (DESCRIPCIÓN IA & FOTOS) →
+                </button>
+            </div>
+        `;
+    } else if (s === 8) {
+        const photoCount = uploadedBase64Images ? uploadedBase64Images.length : 0;
+        controls.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label class="font-mono" style="font-size: 0.75rem; color: var(--cyan); font-weight: bold;">✨ DESCRIPCIÓN REDACTADA POR IA (PUEDES EDITARLA):</label>
+                    <textarea id="publish-ai-input-desc" rows="3" style="width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(0, 240, 255, 0.35); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; line-height: 1.45; resize: vertical;">${publishAiState.description}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" onclick="document.getElementById('pub-file-input').click()" style="flex: 1; min-width: 220px; padding: 12px; border-radius: 8px; border: 1.5px dashed #ffd700; background: rgba(255, 215, 0, 0.08); color: #ffd700; font-family: var(--font-mono); font-size: 0.82rem; font-weight: bold; cursor: pointer;">
+                        📸 SUBIR FOTOS DE LA PROPIEDAD <span id="publish-ai-photos-status" style="color: var(--neon-emerald);">(${photoCount} cargadas)</span>
+                    </button>
+                    <button type="button" onclick="syncPublishAiToForm(); switchPublishEntryMode('manual');" style="padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.76rem; cursor: pointer;">
+                        ⚙️ Ver/Editar Parámetros Avanzados
+                    </button>
+                </div>
+
+                <button type="button" onclick="executeAiPropertyPublish()" class="btn-commercial btn-commercial-purple" style="width: 100%; padding: 14px; font-weight: 800; font-size: 0.92rem; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); color: #000; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 255, 128, 0.3);">
+                    🚀 PUBLICAR PROPIEDAD EN INVENTARIO AHORA
+                </button>
+            </div>
+        `;
+    }
+}
+
+function updateAiPublishPhotosStatus() {
+    const statusEl = document.getElementById('publish-ai-photos-status');
+    if (statusEl) {
+        const count = uploadedBase64Images ? uploadedBase64Images.length : 0;
+        statusEl.innerText = `(${count} cargada${count === 1 ? '' : 's'} ✔️)`;
+    }
+}
+
+function answerPublishAiStep1() {
+    const catSelect = document.getElementById('pub-category');
+    const typeSelect = document.getElementById('pub-type');
+    if (catSelect) {
+        catSelect.value = publishAiState.category;
+        catSelect.dispatchEvent(new Event('change'));
+    }
+    if (typeSelect) typeSelect.value = publishAiState.type;
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: `${publishAiState.category} en ${publishAiState.type}`
+    });
+    publishAiState.messages.push({
+        sender: 'ai',
+        text: `¡Excelente! Vamos a publicar un(a) <strong>${publishAiState.category} en ${publishAiState.type}</strong>.<br><br><strong>Paso 2:</strong> ¿En qué <strong>Zona o Sector</strong> se ubica la propiedad? Haz clic en la zona correspondiente:`
+    });
+    publishAiState.step = 2;
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function answerPublishAiStep2(zoneKey, zoneLabel) {
+    publishAiState.location = zoneKey;
+    publishAiState.locationLabel = zoneLabel;
+    const locSelect = document.getElementById('pub-location');
+    if (locSelect) locSelect.value = zoneKey;
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: `📍 ${zoneLabel}`
+    });
+    publishAiState.messages.push({
+        sender: 'ai',
+        text: `Ubicación fijada en <strong>${zoneLabel}</strong>.<br><br><strong>Paso 3:</strong> Te sugerí un <strong>Título Comercial</strong> abajo. Puedes dejarlo así o personalizarlo a tu gusto:`
+    });
+    publishAiState.step = 3;
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function answerPublishAiStep3() {
+    const val = (document.getElementById('publish-ai-input-title')?.value || '').trim();
+    if (val.length < 4) {
+        alert('Por favor ingresa un título descriptivo para la propiedad.');
+        return;
+    }
+    publishAiState.title = val;
+    const titleInput = document.getElementById('pub-title');
+    if (titleInput) titleInput.value = val;
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: `🏷️ "${val}"`
+    });
+    publishAiState.messages.push({
+        sender: 'ai',
+        text: `¡Gran título! 🔥<br><br><strong>Paso 4:</strong> ¿Cuál es el <strong>Precio de Lista</strong>? (Elige si lo ingresas en <strong>USD $</strong> o en <strong>Quetzales Q</strong>):`
+    });
+    publishAiState.step = 4;
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function answerPublishAiStep4() {
+    const curr = document.getElementById('publish-ai-input-currency')?.value || 'USD';
+    const rawVal = parseFloat(document.getElementById('publish-ai-input-price')?.value || '0');
+    if (isNaN(rawVal) || rawVal <= 0) {
+        alert('Por favor ingresa un precio válido mayor a 0.');
+        return;
+    }
+    publishAiState.priceCurrency = curr;
+    publishAiState.priceInputVal = rawVal;
+
+    // Sincronizar con el input #pub-price respetando activeCurrency
+    const priceInput = document.getElementById('pub-price');
+    if (priceInput) {
+        if (curr === activeCurrency) {
+            priceInput.value = Math.round(rawVal);
+        } else if (curr === 'USD' && activeCurrency === 'GTQ') {
+            priceInput.value = Math.round(rawVal * exchangeRate);
+        } else if (curr === 'GTQ' && activeCurrency === 'USD') {
+            priceInput.value = Math.round(rawVal / exchangeRate);
+        }
+    }
+
+    const eqUsd = curr === 'USD' ? rawVal : Math.round(rawVal / exchangeRate);
+    const eqGtq = curr === 'GTQ' ? rawVal : Math.round(rawVal * exchangeRate);
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: `💰 Q${formatNumber(eqGtq)} ($${formatNumber(eqUsd)} USD)`
+    });
+    publishAiState.messages.push({
+        sender: 'ai',
+        text: `Precio configurado: <strong>Q${formatNumber(eqGtq)} ($${formatNumber(eqUsd)} USD)</strong>.<br><br><strong>Paso 5:</strong> ¿Cuántos <strong>Metros Cuadrados (m²)</strong> tiene la propiedad?`
+    });
+    publishAiState.step = 5;
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function answerPublishAiStep5() {
+    const sizeVal = parseFloat(document.getElementById('publish-ai-input-size')?.value || '0');
+    if (isNaN(sizeVal) || sizeVal <= 0) {
+        alert('Por favor ingresa los metros cuadrados (m²) mayores a 0.');
+        return;
+    }
+    publishAiState.size = sizeVal;
+    const sizeInput = document.getElementById('pub-size');
+    if (sizeInput) sizeInput.value = sizeVal;
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: `📐 ${sizeVal} m²`
+    });
+
+    if (publishAiState.category === 'Terreno' || publishAiState.category === 'Bodega') {
+        publishAiState.step = 7;
+        publishAiState.messages.push({
+            sender: 'ai',
+            text: `Anotado: <strong>${sizeVal} m²</strong>.<br><br><strong>Paso 7:</strong> Selecciona con un clic las <strong>Amenidades o Características</strong> que incluye:`
+        });
+    } else {
+        publishAiState.step = 6;
+        publishAiState.messages.push({
+            sender: 'ai',
+            text: `Anotado: <strong>${sizeVal} m²</strong>.<br><br><strong>Paso 6:</strong> ¿Cuántas <strong>Habitaciones, Baños y Parqueos</strong> tiene?`
+        });
+    }
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function answerPublishAiStep6() {
+    const beds = parseInt(document.getElementById('publish-ai-input-beds')?.value || '0', 10);
+    const baths = parseFloat(document.getElementById('publish-ai-input-baths')?.value || '0');
+    const parks = parseInt(document.getElementById('publish-ai-input-parks')?.value || '0', 10);
+
+    publishAiState.beds = isNaN(beds) ? 0 : beds;
+    publishAiState.baths = isNaN(baths) ? 0 : baths;
+    publishAiState.parks = isNaN(parks) ? 0 : parks;
+
+    const bedsInput = document.getElementById('pub-beds');
+    const bathsInput = document.getElementById('pub-baths');
+    const parksInput = document.getElementById('pub-parks');
+    if (bedsInput) bedsInput.value = publishAiState.beds;
+    if (bathsInput) bathsInput.value = publishAiState.baths;
+    if (parksInput) parksInput.value = publishAiState.parks;
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: `🛏️ ${publishAiState.beds} Hab • 🚿 ${publishAiState.baths} Baños • 🚗 ${publishAiState.parks} Parqueos`
+    });
+    publishAiState.messages.push({
+        sender: 'ai',
+        text: `¡Excelente distribución! 🙌<br><br><strong>Paso 7:</strong> Toca las <strong>Amenidades</strong> que tiene la propiedad para sumarlas a la valoración IA:`
+    });
+    publishAiState.step = 7;
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function togglePublishAiAmenity(amenityId) {
+    const idx = publishAiState.amenities.indexOf(amenityId);
+    if (idx >= 0) {
+        publishAiState.amenities.splice(idx, 1);
+    } else {
+        publishAiState.amenities.push(amenityId);
+    }
+    const checkbox = document.getElementById(amenityId);
+    if (checkbox) {
+        checkbox.checked = publishAiState.amenities.includes(amenityId);
+    }
+    renderPublishAiControls();
+}
+
+function answerPublishAiStep7() {
+    // Sincronizar checkboxes de amenidades
+    PUBLISH_AI_AMENITIES.forEach(a => {
+        const cb = document.getElementById(a.id);
+        if (cb) cb.checked = publishAiState.amenities.includes(a.id);
+    });
+
+    const selectedNames = PUBLISH_AI_AMENITIES
+        .filter(a => publishAiState.amenities.includes(a.id))
+        .map(a => a.label.replace(/^[^\s]+\s/, ''));
+
+    const eqUsd = publishAiState.priceCurrency === 'USD'
+        ? publishAiState.priceInputVal
+        : Math.round(publishAiState.priceInputVal / exchangeRate);
+    const eqGtq = publishAiState.priceCurrency === 'GTQ'
+        ? publishAiState.priceInputVal
+        : Math.round(publishAiState.priceInputVal * exchangeRate);
+
+    const distText = (publishAiState.category !== 'Terreno' && publishAiState.category !== 'Bodega')
+        ? ` Cuenta con ${publishAiState.beds} habitaciones, ${publishAiState.baths} baños y ${publishAiState.parks} parqueos.`
+        : '';
+    const amenText = selectedNames.length > 0
+        ? ` Destaca por sus amenidades: ${selectedNames.join(', ')}.`
+        : '';
+
+    publishAiState.description = `${publishAiState.title} disponible en ${publishAiState.type.toLowerCase()} en ${publishAiState.locationLabel.split(' (')[0]} con ${publishAiState.size} m².${distText}${amenText} Precio: Q${formatNumber(eqGtq)} ($${formatNumber(eqUsd)} USD). Excelente oportunidad inmobiliaria con alta plusvalía.`;
+
+    const descInput = document.getElementById('pub-description');
+    if (descInput) descInput.value = publishAiState.description;
+
+    publishAiState.messages.push({
+        sender: 'user',
+        text: selectedNames.length > 0 ? `Amenidades: ${selectedNames.join(', ')}` : 'Continuar sin amenidades adicionales'
+    });
+    publishAiState.messages.push({
+        sender: 'ai',
+        text: `¡Ficha completada! 🎉 He redactado automáticamente una <strong>Descripción Comercial IA</strong> para tu anuncio.<br><br><strong>Paso 8 (Final):</strong> Revisa la descripción, sube tus <strong>Fotos</strong> y haz clic en <strong>PUBLICAR PROPIEDAD EN INVENTARIO AHORA</strong>:`
+    });
+    publishAiState.step = 8;
+    renderPublishAiSummaryPills();
+    renderPublishAiChat();
+    renderPublishAiControls();
+}
+
+function syncPublishAiToForm() {
+    const titleInput = document.getElementById('pub-title');
+    const catSelect = document.getElementById('pub-category');
+    const typeSelect = document.getElementById('pub-type');
+    const locSelect = document.getElementById('pub-location');
+    const priceInput = document.getElementById('pub-price');
+    const sizeInput = document.getElementById('pub-size');
+    const bedsInput = document.getElementById('pub-beds');
+    const bathsInput = document.getElementById('pub-baths');
+    const parksInput = document.getElementById('pub-parks');
+    const descInput = document.getElementById('pub-description');
+    const aiDescEl = document.getElementById('publish-ai-input-desc');
+
+    if (aiDescEl) {
+        publishAiState.description = aiDescEl.value;
+    }
+
+    if (titleInput && publishAiState.title) titleInput.value = publishAiState.title;
+    if (catSelect && publishAiState.category) catSelect.value = publishAiState.category;
+    if (typeSelect && publishAiState.type) typeSelect.value = publishAiState.type;
+    if (locSelect && publishAiState.location) locSelect.value = publishAiState.location;
+
+    if (priceInput && publishAiState.priceInputVal) {
+        if (publishAiState.priceCurrency === activeCurrency) {
+            priceInput.value = Math.round(publishAiState.priceInputVal);
+        } else if (publishAiState.priceCurrency === 'USD' && activeCurrency === 'GTQ') {
+            priceInput.value = Math.round(publishAiState.priceInputVal * exchangeRate);
+        } else if (publishAiState.priceCurrency === 'GTQ' && activeCurrency === 'USD') {
+            priceInput.value = Math.round(publishAiState.priceInputVal / exchangeRate);
+        }
+    }
+
+    if (sizeInput && publishAiState.size) sizeInput.value = publishAiState.size;
+    if (bedsInput) bedsInput.value = publishAiState.beds;
+    if (bathsInput) bathsInput.value = publishAiState.baths;
+    if (parksInput) parksInput.value = publishAiState.parks;
+    if (descInput && publishAiState.description) descInput.value = publishAiState.description;
+}
+
+async function executeAiPropertyPublish() {
+    syncPublishAiToForm();
+    await publishAgentProperty(new Event('submit'));
+    initPublishAiAssistant(true);
+}
+
 
 

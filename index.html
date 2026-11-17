@@ -1778,6 +1778,43 @@
 
                             <!-- FORMULARIO 2: REGISTRO DE NUEVO USUARIO -->
                             <form id="commercial-signup-form" class="commercial-form hidden" onsubmit="handleRegistrationFormSubmit(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                                
+                                <!-- SELECTOR DE MODO: ASISTENTE IA GUIADO VS FORMULARIO MANUAL -->
+                                <div style="display: flex; gap: 8px; background: rgba(0,0,0,0.45); padding: 5px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.25); margin-bottom: 4px;">
+                                    <button type="button" id="btn-signup-mode-ai" onclick="switchSignupEntryMode('ai')" style="flex: 1; padding: 9px 12px; border-radius: 7px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.15); color: #fff; font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); transition: all 0.25s;">
+                                        <i data-lucide="bot" style="width: 15px; height: 15px; color: var(--cyan);"></i> 🤖 ASISTENTE IA (PASO A PASO)
+                                    </button>
+                                    <button type="button" id="btn-signup-mode-manual" onclick="switchSignupEntryMode('manual')" style="flex: 1; padding: 9px 12px; border-radius: 7px; border: 1px solid transparent; background: transparent; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.25s;">
+                                        <i data-lucide="clipboard-list" style="width: 15px; height: 15px;"></i> 📋 FORMULARIO CLÁSICO
+                                    </button>
+                                </div>
+
+                                <!-- PANEL CONVERSACIONAL IA PARA CREAR PERFIL PASO A PASO -->
+                                <div id="signup-ai-assistant-panel" style="display: flex; flex-direction: column; gap: 12px; background: rgba(5, 8, 15, 0.85); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 12px; padding: 16px; box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.05);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(0, 240, 255, 0.2); padding-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--neon-emerald); box-shadow: 0 0 8px var(--neon-emerald);"></span>
+                                            <span class="font-mono" style="font-size: 0.75rem; color: var(--cyan); font-weight: bold;">ASISTENTE DE REGISTRO VALORGT IA</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span id="signup-ai-step-badge" class="font-mono" style="font-size: 0.68rem; color: #ffd700; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); padding: 2px 8px; border-radius: 12px;">PASO 1 / 6</span>
+                                            <button type="button" onclick="initSignupAiAssistant(true)" title="Reiniciar conversación" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary); border-radius: 6px; padding: 3px 8px; font-size: 0.65rem; font-family: var(--font-mono); cursor: pointer;">↺ Reiniciar</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Historial de mensajes del chat de registro -->
+                                    <div id="signup-ai-chat-feed" style="display: flex; flex-direction: column; gap: 10px; max-height: 290px; overflow-y: auto; padding-right: 4px; font-family: 'Inter', sans-serif;">
+                                        <!-- Mensajes dinámicos -->
+                                    </div>
+
+                                    <!-- Controles interactivos del paso actual -->
+                                    <div id="signup-ai-controls" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                                        <!-- Inputs o botones rápidos según el paso -->
+                                    </div>
+                                </div>
+
+                                <!-- CONTENEDOR DEL FORMULARIO MANUAL DE REGISTRO -->
+                                <div id="signup-manual-fields-wrapper" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
                                 <!-- SELECTOR DE PERFIL CON TARJETAS INTERACTIVAS NEÓN (AHORA AL INICIO) -->
                                 <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
                                     <label style="font-size: 0.72rem;">Selecciona tu Tipo de Perfil</label>
@@ -1863,6 +1900,7 @@
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">
                                     <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> REGISTRARSE Y CONTINUAR
                                 </button>
+                                </div> <!-- Cierre de #signup-manual-fields-wrapper -->
                             </form>
 
                             <!-- Pantalla de escaneo de seguridad durante el login -->
@@ -2474,11 +2512,58 @@
                     <div id="comm-tab-content-propiedades" class="comm-tab-content hidden">
                         <!-- TERMINAL DE PUBLICACIÓN (ANCHO COMPLETO) -->
                         <div class="card glassmorphism" style="width: 100%;">
-                            <div class="card-header border-cyan">
-                                <div class="header-icon cyan"><i data-lucide="home"></i></div>
-                                <h2>Terminal de Publicaciones (Subir Propiedad)</h2>
+                            <div class="card-header border-cyan" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="header-icon cyan"><i data-lucide="home"></i></div>
+                                    <h2>Terminal de Publicaciones (Subir Propiedad)</h2>
+                                </div>
+                                <!-- Selector de Modo: Asistente IA vs Formulario Clásico -->
+                                <div style="display: flex; gap: 8px; background: rgba(0,0,0,0.45); padding: 4px; border-radius: 10px; border: 1px solid rgba(0, 240, 255, 0.25);">
+                                    <button type="button" id="btn-pub-mode-ai" onclick="switchPublishEntryMode('ai')" style="padding: 8px 14px; border-radius: 7px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.15); color: #fff; font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); transition: all 0.25s;">
+                                        <i data-lucide="bot" style="width: 15px; height: 15px; color: var(--cyan);"></i> 🤖 ASISTENTE IA GUIADO
+                                    </button>
+                                    <button type="button" id="btn-pub-mode-manual" onclick="switchPublishEntryMode('manual')" style="padding: 8px 14px; border-radius: 7px; border: 1px solid transparent; background: transparent; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.25s;">
+                                        <i data-lucide="sliders" style="width: 15px; height: 15px;"></i> 📋 FORMULARIO COMPLETO
+                                    </button>
+                                </div>
                             </div>
                             <div class="commercial-section-body">
+                                
+                                <!-- ASISTENTE CONVERSACIONAL IA PARA INGRESO DE PROPIEDADES PASO A PASO -->
+                                <div id="publish-ai-assistant-panel" style="display: flex; flex-direction: column; gap: 14px; background: rgba(5, 8, 15, 0.85); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.4), inset 0 0 25px rgba(0, 240, 255, 0.05);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px dashed rgba(0, 240, 255, 0.25); padding-bottom: 10px;">
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);">
+                                                <i data-lucide="bot" style="width: 18px; height: 18px; color: var(--cyan);"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-mono" style="font-size: 0.85rem; color: #fff; font-weight: bold;">COPILOTO INMOBILIARIO VALORGT IA</div>
+                                                <div class="font-mono" style="font-size: 0.68rem; color: var(--cyan);">Respóndeme paso a paso y yo armo tu ficha comercial automáticamente</div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <span id="publish-ai-step-badge" class="font-mono" style="font-size: 0.72rem; color: #ffd700; background: rgba(255, 215, 0, 0.12); border: 1px solid rgba(255, 215, 0, 0.35); padding: 4px 10px; border-radius: 12px; font-weight: bold;">PASO 1 / 8</span>
+                                            <button type="button" onclick="initPublishAiAssistant(true)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; font-family: var(--font-mono); cursor: pointer;">↺ Nueva Propiedad</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Barra de resumen en vivo de los datos capturados por la IA -->
+                                    <div id="publish-ai-summary-pills" class="font-mono" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 12px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); font-size: 0.72rem; color: var(--text-secondary);">
+                                        <span style="color: var(--text-muted);">📋 Ficha en construcción: esperando primer dato...</span>
+                                    </div>
+
+                                    <!-- Historial de conversación del Asistente IA de Propiedades -->
+                                    <div id="publish-ai-chat-feed" style="display: flex; flex-direction: column; gap: 12px; max-height: 360px; overflow-y: auto; padding-right: 6px; font-family: 'Inter', sans-serif;">
+                                        <!-- Mensajes dinámicos -->
+                                    </div>
+
+                                    <!-- Controles de respuesta del paso activo -->
+                                    <div id="publish-ai-controls" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px;">
+                                        <!-- Inputs / Chips / Botones dinámicos -->
+                                    </div>
+                                </div>
+
+                                <div id="publish-manual-form-wrapper" class="hidden">
                                 <form id="publish-property-form" class="commercial-form font-mono" onsubmit="publishAgentProperty(event)">
                                     <div class="form-row-1" style="margin-bottom: 15px; width: 100%;">
                                          <button type="button" class="btn btn-secondary btn-block glowing-effect" onclick="autofillPublishFormFromValuation()" style="background: rgba(0, 240, 255, 0.05); border: 1px dashed var(--cyan); color: var(--cyan); width: 100%; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.5px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
@@ -2774,6 +2859,7 @@
                                         <i data-lucide="plus-circle"></i> Publicar Listado en Inventario
                                     </button>
                                 </form>
+                                </div> <!-- Cierre de #publish-manual-form-wrapper -->
                             </div>
                         </div>
                     </div> <!-- Cierre de #comm-tab-content-propiedades -->
@@ -5265,7 +5351,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=21.6"></script>
+    <script src="app.v21.js?v=21.7"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
