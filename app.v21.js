@@ -13851,52 +13851,52 @@ function openHomeInfoModal(type) {
         card.style.borderColor = 'rgba(0, 240, 255, 0.45)';
         card.style.boxShadow = '0 0 40px rgba(0, 240, 255, 0.22)';
         body.innerHTML = `
-            <div style="border-bottom: 1px dashed rgba(0, 240, 255, 0.25); padding-bottom: 14px; margin-bottom: 20px;">
-                <span class="font-mono" style="font-size: 0.7rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ ARQUITECTURA TECNOLÓGICA VALORGT ]</span>
-                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.6rem; color: #fff; margin: 10px 0 4px 0; font-weight: 800;">¿Por qué ValorGT es una Plataforma Innovadora?</h2>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">Integramos Inteligencia Artificial predictiva, telemetría geoespacial y finanzas descentralizadas respaldadas en oro físico dentro de un solo ecosistema inmobiliario.</p>
+            <div style="border-bottom: 1px dashed rgba(0, 240, 255, 0.25); padding-bottom: 16px; margin-bottom: 22px;">
+                <span class="font-mono" style="font-size: 0.76rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ ARQUITECTURA TECNOLÓGICA VALORGT ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; color: #fff; margin: 12px 0 6px 0; font-weight: 800;">¿Por qué ValorGT es una Plataforma Innovadora?</h2>
+                <p style="font-size: 0.96rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">Integramos Inteligencia Artificial predictiva, telemetría geoespacial y finanzas descentralizadas respaldadas en oro físico dentro de un solo ecosistema inmobiliario.</p>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 22px;">
-                <div style="background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <i data-lucide="brain" style="color: var(--cyan); width: 20px; height: 20px;"></i>
-                        <strong style="color: #fff; font-size: 0.95rem;">1. Valuador Neuronal IA</strong>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-bottom: 24px;">
+                <div style="background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 18px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i data-lucide="brain" style="color: var(--cyan); width: 22px; height: 22px;"></i>
+                        <strong style="color: #fff; font-size: 1.08rem;">1. Valuador Neuronal IA</strong>
                     </div>
-                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Autotasación algorítmica en segundos procesando ubicación, metraje, amenidades y comparables activos por sector.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.55; margin: 0;">Autotasación algorítmica en segundos procesando ubicación, metraje, amenidades y comparables activos por sector.</p>
                 </div>
 
-                <div style="background: rgba(191, 90, 242, 0.05); border: 1px solid rgba(191, 90, 242, 0.25); border-radius: 10px; padding: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <i data-lucide="map-pin" style="color: #bf5af2; width: 20px; height: 20px;"></i>
-                        <strong style="color: #fff; font-size: 0.95rem;">2. Radar Geoespacial & Terminal</strong>
+                <div style="background: rgba(191, 90, 242, 0.05); border: 1px solid rgba(191, 90, 242, 0.25); border-radius: 10px; padding: 18px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i data-lucide="map-pin" style="color: #bf5af2; width: 22px; height: 22px;"></i>
+                        <strong style="color: #fff; font-size: 1.08rem;">2. Radar Geoespacial & Terminal</strong>
                     </div>
-                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Mapas de calor interactivos, índice de liquidez, absorción mensual, ROI de alquiler y plusvalías estilo terminal financiera.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.55; margin: 0;">Mapas de calor interactivos, índice de liquidez, absorción mensual, ROI de alquiler y plusvalías estilo terminal financiera.</p>
                 </div>
 
-                <div style="background: rgba(0, 255, 128, 0.04); border: 1px solid rgba(0, 255, 128, 0.2); border-radius: 10px; padding: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <i data-lucide="pie-chart" style="color: var(--neon-emerald); width: 20px; height: 20px;"></i>
-                        <strong style="color: #fff; font-size: 0.95rem;">3. Portafolio Patrimonial IA</strong>
+                <div style="background: rgba(0, 255, 128, 0.04); border: 1px solid rgba(0, 255, 128, 0.2); border-radius: 10px; padding: 18px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i data-lucide="pie-chart" style="color: var(--neon-emerald); width: 22px; height: 22px;"></i>
+                        <strong style="color: #fff; font-size: 1.08rem;">3. Portafolio Patrimonial IA</strong>
                     </div>
-                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Simulación de riqueza a 20 años, capacidad crediticia FHA/bancos de Guatemala y asesor estratégico IA en vivo.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.55; margin: 0;">Simulación de riqueza a 20 años, capacidad crediticia FHA/bancos de Guatemala y asesor estratégico IA en vivo.</p>
                 </div>
 
-                <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; padding: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <i data-lucide="coins" style="color: #ffd700; width: 20px; height: 20px;"></i>
-                        <strong style="color: #ffd700; font-size: 0.95rem;">4. Bóveda de Oro Digital (XAUt)</strong>
+                <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; padding: 18px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i data-lucide="coins" style="color: #ffd700; width: 22px; height: 22px;"></i>
+                        <strong style="color: #ffd700; font-size: 1.08rem;">4. Bóveda de Oro Digital (XAUt)</strong>
                     </div>
-                    <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.45; margin: 0;">Resguardo de comisiones y patrimonio en Tether Gold (1:1 con oro físico en Suiza), transferencias P2P y retiros a bancos locales.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.55; margin: 0;">Resguardo de comisiones y patrimonio en Tether Gold (1:1 con oro físico en Suiza), transferencias P2P y retiros a bancos locales.</p>
                 </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
-                <button class="btn-commercial btn-commercial-cyan" onclick="closeHomeInfoModal(); switchView('dashboard');" style="padding: 10px 20px; font-size: 0.78rem; font-weight: bold;">
-                    <i data-lucide="brain" style="width: 15px; height: 15px;"></i> PROBAR TASADOR IA
+                <button class="btn-commercial btn-commercial-cyan" onclick="closeHomeInfoModal(); switchView('dashboard');" style="padding: 12px 22px; font-size: 0.85rem; font-weight: bold;">
+                    <i data-lucide="brain" style="width: 16px; height: 16px;"></i> PROBAR TASADOR IA
                 </button>
-                <button class="btn-commercial btn-commercial-gold" onclick="openHomeInfoModal('planes');" style="padding: 10px 22px; font-size: 0.78rem; font-weight: bold; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000;">
-                    <i data-lucide="award" style="width: 15px; height: 15px;"></i> VER PLANES PRO & PREMIUM
+                <button class="btn-commercial btn-commercial-gold" onclick="openHomeInfoModal('planes');" style="padding: 12px 24px; font-size: 0.85rem; font-weight: bold; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000;">
+                    <i data-lucide="award" style="width: 16px; height: 16px;"></i> VER PLANES PRO & PREMIUM
                 </button>
             </div>
         `;
@@ -13904,70 +13904,70 @@ function openHomeInfoModal(type) {
         card.style.borderColor = 'rgba(255, 215, 0, 0.5)';
         card.style.boxShadow = '0 0 40px rgba(255, 215, 0, 0.22)';
         body.innerHTML = `
-            <div style="border-bottom: 1px dashed rgba(255, 215, 0, 0.3); padding-bottom: 14px; margin-bottom: 20px;">
-                <span class="font-mono" style="font-size: 0.7rem; background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ COMPARATIVA DE MEMBRESÍAS ]</span>
-                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.6rem; color: #fff; margin: 10px 0 4px 0; font-weight: 800;">Plan Pro vs. Plan Premium Gold</h2>
-                <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">Ambos planes te dan acceso total al motor inmobiliario IA. La diferencia es que el <strong style="color: #ffd700;">Plan Premium</strong> desbloquea la <strong>Billetera de Oro Digital (XAUt)</strong> y todos los beneficios de la Cartera Gold.</p>
+            <div style="border-bottom: 1px dashed rgba(255, 215, 0, 0.3); padding-bottom: 16px; margin-bottom: 22px;">
+                <span class="font-mono" style="font-size: 0.76rem; background: rgba(255, 215, 0, 0.14); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ COMPARATIVA DE MEMBRESÍAS ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; color: #fff; margin: 12px 0 6px 0; font-weight: 800;">Plan Pro vs. Plan Premium Gold</h2>
+                <p style="font-size: 0.96rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">Ambos planes te dan acceso total al motor inmobiliario IA. La diferencia es que el <strong style="color: #ffd700;">Plan Premium</strong> desbloquea la <strong>Billetera de Oro Digital (XAUt)</strong> y todos los beneficios de la Cartera Gold.</p>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-bottom: 20px;">
                 <!-- PLAN PRO -->
-                <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.35); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <span class="font-mono" style="font-size: 0.72rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 3px 9px; border-radius: 4px; font-weight: bold;">PLAN PRO</span>
-                        <h3 style="font-size: 1.35rem; color: #fff; margin: 10px 0 4px 0; font-weight: bold;">Suscripción Plan Pro</h3>
-                        <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0 0 12px 0;">Ideal para agentes e inversionistas enfocados en análisis IA y catálogo inmobiliario.</p>
+                        <span class="font-mono" style="font-size: 0.76rem; background: rgba(0, 240, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold;">PLAN PRO</span>
+                        <h3 style="font-size: 1.45rem; color: #fff; margin: 12px 0 6px 0; font-weight: bold;">Suscripción Plan Pro</h3>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin: 0 0 14px 0;">Ideal para agentes e inversionistas enfocados en análisis IA y catálogo inmobiliario.</p>
                         
                         <div class="font-mono" style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
-                            <span style="font-size: 1.9rem; font-weight: 800; color: var(--cyan);">Q235<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
-                            <span style="font-size: 1rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 2px 8px; border-radius: 5px;">$30 USD/mes</span>
+                            <span style="font-size: 2rem; font-weight: 800; color: var(--cyan);">Q235<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                            <span style="font-size: 1.05rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 3px 9px; border-radius: 5px;">$30 USD/mes</span>
                         </div>
-                        <div class="font-mono" style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 14px;">
+                        <div class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 16px;">
                             Ciclo Anual (-15%): <strong style="color: #fff;">Q200/mes ($25.50 USD/mes)</strong>
                         </div>
 
-                        <ul class="font-mono" style="list-style: none; padding: 0; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.76rem; color: var(--text-secondary);">
-                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Propiedades Ilimitadas en Catálogo</li>
-                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Tasa Inteligente (Autotasación IA)</li>
-                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Radar de Calor & Terminal de Inversión</li>
-                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Portafolio IA & Simulador Hipotecario</li>
-                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 14px; height: 14px; color: var(--red);"></i> <span style="text-decoration: line-through;">Billetera de Oro Digital (XAUt)</span></li>
-                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 14px; height: 14px; color: var(--red);"></i> <span style="text-decoration: line-through;">Retiros Bancarios XAUt & Airdrops Gold</span></li>
-                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 14px; height: 14px; color: var(--red);"></i> <span style="text-decoration: line-through;">Red de Agentes Referidos & Comisiones</span></li>
+                        <ul class="font-mono" style="list-style: none; padding: 0; margin: 0 0 20px 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem; color: var(--text-secondary);">
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--cyan);"></i> Propiedades Ilimitadas en Catálogo</li>
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--cyan);"></i> Tasa Inteligente (Autotasación IA)</li>
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--cyan);"></i> Radar de Calor & Terminal de Inversión</li>
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--cyan);"></i> Portafolio IA & Simulador Hipotecario</li>
+                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 15px; height: 15px; color: var(--red);"></i> <span style="text-decoration: line-through;">Billetera de Oro Digital (XAUt)</span></li>
+                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 15px; height: 15px; color: var(--red);"></i> <span style="text-decoration: line-through;">Retiros Bancarios XAUt & Airdrops Gold</span></li>
+                            <li style="display: flex; align-items: center; gap: 8px; opacity: 0.45;"><i data-lucide="x" style="width: 15px; height: 15px; color: var(--red);"></i> <span style="text-decoration: line-through;">Red de Agentes Referidos & Comisiones</span></li>
                         </ul>
                     </div>
-                    <button class="btn-commercial btn-commercial-cyan" onclick="selectPublicPlanForSignup('pro')" style="width: 100%; padding: 11px; font-weight: bold; font-size: 0.8rem;">
+                    <button class="btn-commercial btn-commercial-cyan" onclick="selectPublicPlanForSignup('pro')" style="width: 100%; padding: 12px; font-weight: bold; font-size: 0.86rem;">
                         ELEGIR PLAN PRO (Q235 / $30 USD)
                     </button>
                 </div>
 
                 <!-- PLAN PREMIUM -->
-                <div style="background: rgba(255, 215, 0, 0.04); border: 1.5px solid #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
-                    <div style="position: absolute; top: -10px; right: 14px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 800; padding: 3px 10px; border-radius: 12px;">INCLUYE BILLETERA XAUT</div>
+                <div style="background: rgba(255, 215, 0, 0.04); border: 1.5px solid #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.15); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                    <div style="position: absolute; top: -10px; right: 14px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; padding: 3px 10px; border-radius: 12px;">INCLUYE BILLETERA XAUT</div>
                     <div>
-                        <span class="font-mono" style="font-size: 0.72rem; background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.45); padding: 3px 9px; border-radius: 4px; font-weight: bold;">PLAN PREMIUM GOLD</span>
-                        <h3 style="font-size: 1.35rem; color: #fff; margin: 10px 0 4px 0; font-weight: bold;">Suscripción Plan Premium</h3>
-                        <p style="font-size: 0.76rem; color: #ffd700; margin: 0 0 12px 0;">Todo el Plan Pro + Billetera de Oro Digital (XAUt) y beneficios de la Cartera Gold.</p>
+                        <span class="font-mono" style="font-size: 0.76rem; background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.45); padding: 4px 10px; border-radius: 4px; font-weight: bold;">PLAN PREMIUM GOLD</span>
+                        <h3 style="font-size: 1.45rem; color: #fff; margin: 12px 0 6px 0; font-weight: bold;">Suscripción Plan Premium</h3>
+                        <p style="font-size: 0.88rem; color: #ffd700; line-height: 1.5; margin: 0 0 14px 0;">Todo el Plan Pro + Billetera de Oro Digital (XAUt) y beneficios de la Cartera Gold.</p>
                         
                         <div class="font-mono" style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
-                            <span style="font-size: 1.9rem; font-weight: 800; color: #ffd700;">Q505<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
-                            <span style="font-size: 1rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 2px 8px; border-radius: 5px;">$65 USD/mes</span>
+                            <span style="font-size: 2rem; font-weight: 800; color: #ffd700;">Q505<span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">/mes</span></span>
+                            <span style="font-size: 1.05rem; font-weight: bold; color: var(--neon-emerald); background: rgba(0, 255, 128, 0.08); border: 1px solid rgba(0, 255, 128, 0.25); padding: 3px 9px; border-radius: 5px;">$65 USD/mes</span>
                         </div>
-                        <div class="font-mono" style="font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 14px;">
+                        <div class="font-mono" style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 16px;">
                             Ciclo Anual (-15%): <strong style="color: #ffd700;">Q429/mes ($55.25 USD/mes)</strong>
                         </div>
 
-                        <ul class="font-mono" style="list-style: none; padding: 0; margin: 0 0 18px 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.76rem; color: var(--text-secondary);">
-                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Todo lo incluido en el Plan Pro Ilimitado</li>
-                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700; font-weight: bold;"><i data-lucide="coins" style="width: 14px; height: 14px; color: #ffd700;"></i> Billetera de Oro Digital (XAUt) Activa</li>
-                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 14px; height: 14px; color: #ffd700;"></i> Retiros Bancarios XAUt a Bancos Nacionales</li>
-                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 14px; height: 14px; color: #ffd700;"></i> Transferencias P2P de Oro entre Agentes</li>
-                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 14px; height: 14px; color: #ffd700;"></i> Participación en Airdrops Mensuales XAUt</li>
-                            <li style="display: flex; align-items: center; gap: 8px; color: var(--cyan);"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--cyan);"></i> Red de Agentes Referidos & Comisiones Gold</li>
-                            <li style="display: flex; align-items: center; gap: 8px; color: #bf5af2;"><i data-lucide="check" style="width: 14px; height: 14px; color: #bf5af2;"></i> 15% Descuento en Pautas & Soporte VIP</li>
+                        <ul class="font-mono" style="list-style: none; padding: 0; margin: 0 0 20px 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.86rem; color: var(--text-secondary);">
+                            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--cyan);"></i> Todo lo incluido en el Plan Pro Ilimitado</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700; font-weight: bold;"><i data-lucide="coins" style="width: 15px; height: 15px; color: #ffd700;"></i> Billetera de Oro Digital (XAUt) Activa</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 15px; height: 15px; color: #ffd700;"></i> Retiros Bancarios XAUt a Bancos Nacionales</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 15px; height: 15px; color: #ffd700;"></i> Transferencias P2P de Oro entre Agentes</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #ffd700;"><i data-lucide="check" style="width: 15px; height: 15px; color: #ffd700;"></i> Participación en Airdrops Mensuales XAUt</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: var(--cyan);"><i data-lucide="check" style="width: 15px; height: 15px; color: var(--cyan);"></i> Red de Agentes Referidos & Comisiones Gold</li>
+                            <li style="display: flex; align-items: center; gap: 8px; color: #bf5af2;"><i data-lucide="check" style="width: 15px; height: 15px; color: #bf5af2;"></i> 15% Descuento en Pautas & Soporte VIP</li>
                         </ul>
                     </div>
-                    <button class="btn-commercial btn-commercial-gold" onclick="selectPublicPlanForSignup('premium')" style="width: 100%; padding: 11px; font-weight: 800; font-size: 0.8rem; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.3);">
+                    <button class="btn-commercial btn-commercial-gold" onclick="selectPublicPlanForSignup('premium')" style="width: 100%; padding: 12px; font-weight: 800; font-size: 0.86rem; background: linear-gradient(135deg, #ffd700 0%, #bf5af2 100%); border: none; color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.3);">
                         ELEGIR PLAN PREMIUM (Q505 / $65 USD)
                     </button>
                 </div>
@@ -13977,57 +13977,57 @@ function openHomeInfoModal(type) {
         card.style.borderColor = 'rgba(0, 255, 128, 0.45)';
         card.style.boxShadow = '0 0 40px rgba(0, 255, 128, 0.2)';
         body.innerHTML = `
-            <div style="border-bottom: 1px dashed rgba(0, 255, 128, 0.3); padding-bottom: 14px; margin-bottom: 20px;">
-                <span class="font-mono" style="font-size: 0.7rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ PASARELA & ACTIVACIÓN DE SUSCRIPCIÓN ]</span>
-                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.6rem; color: #fff; margin: 10px 0 4px 0; font-weight: 800;">Suscripción y Pagos en GTQ / USD</h2>
-                <p style="font-size: 0.84rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">Activa tu cuenta corporativa de Agente o Inversionista en 3 simples pasos con transparencia total en Quetzales y Dólares.</p>
+            <div style="border-bottom: 1px dashed rgba(0, 255, 128, 0.3); padding-bottom: 16px; margin-bottom: 22px;">
+                <span class="font-mono" style="font-size: 0.76rem; background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); border: 1px solid rgba(0, 255, 128, 0.35); padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px;">[ PASARELA & ACTIVACIÓN DE SUSCRIPCIÓN ]</span>
+                <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; color: #fff; margin: 12px 0 6px 0; font-weight: 800;">Suscripción y Pagos en GTQ / USD</h2>
+                <p style="font-size: 0.96rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">Activa tu cuenta corporativa de Agente o Inversionista en 3 simples pasos con transparencia total en Quetzales y Dólares.</p>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px;">
-                    <span class="font-mono" style="color: var(--cyan); font-size: 0.72rem; font-weight: bold;">PASO 01</span>
-                    <h4 style="color: #fff; margin: 6px 0; font-size: 0.95rem;">Elige Plan y Ciclo</h4>
-                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-bottom: 22px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px;">
+                    <span class="font-mono" style="color: var(--cyan); font-size: 0.8rem; font-weight: bold;">PASO 01</span>
+                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Elige Plan y Ciclo</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
                         Selecciona <strong>Plan Pro (Q235 / $30 USD)</strong> o <strong>Plan Premium (Q505 / $65 USD)</strong>. Si eliges ciclo <strong>Anual ahorras 15%</strong> automático.
                     </p>
                 </div>
 
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px;">
-                    <span class="font-mono" style="color: #ffd700; font-size: 0.72rem; font-weight: bold;">PASO 02</span>
-                    <h4 style="color: #fff; margin: 6px 0; font-size: 0.95rem;">Transferencia o Tarjeta</h4>
-                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px;">
+                    <span class="font-mono" style="color: #ffd700; font-size: 0.8rem; font-weight: bold;">PASO 02</span>
+                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Transferencia o Tarjeta</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
                         Realiza tu pago vía transferencia bancaria a <strong>Banco Industrial (Monetaria GTQ: 2700030709 - ValorGT)</strong> o mediante pasarela corporativa.
                     </p>
                 </div>
 
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px;">
-                    <span class="font-mono" style="color: var(--neon-emerald); font-size: 0.72rem; font-weight: bold;">PASO 03</span>
-                    <h4 style="color: #fff; margin: 6px 0; font-size: 0.95rem;">Activación de Nodo</h4>
-                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0; line-height: 1.45;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px;">
+                    <span class="font-mono" style="color: var(--neon-emerald); font-size: 0.8rem; font-weight: bold;">PASO 03</span>
+                    <h4 style="color: #fff; margin: 8px 0; font-size: 1.08rem;">Activación de Nodo</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
                         Sube tu comprobante desde tu consola comercial y recibe la activación de tu membresía y firma criptográfica de socio.
                     </p>
                 </div>
             </div>
 
-            <div class="font-mono" style="background: rgba(0, 240, 255, 0.04); border: 1px dashed rgba(0, 240, 255, 0.3); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div class="font-mono" style="background: rgba(0, 240, 255, 0.04); border: 1px dashed rgba(0, 240, 255, 0.3); border-radius: 10px; padding: 16px 20px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
                 <div>
-                    <div style="font-size: 0.72rem; color: var(--cyan); font-weight: bold;">RESUMEN DE TARIFAS OFICIALES (GTQ & USD)</div>
-                    <div style="font-size: 0.78rem; color: #fff; margin-top: 4px;">
+                    <div style="font-size: 0.8rem; color: var(--cyan); font-weight: bold;">RESUMEN DE TARIFAS OFICIALES (GTQ & USD)</div>
+                    <div style="font-size: 0.88rem; color: #fff; margin-top: 6px; line-height: 1.55;">
                         • <strong>Plan Pro:</strong> Q235/mes ($30 USD) | Anual: Q2,400/año ($306 USD)<br>
                         • <strong>Plan Premium (Con Billetera XAUt):</strong> Q505/mes ($65 USD) | Anual: Q5,151/año ($663 USD)
                     </div>
                 </div>
-                <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20suscripci%C3%B3n%20y%20pagos..." target="_blank" style="font-size: 0.75rem; color: #25D366; text-decoration: none; font-weight: bold; border: 1px solid rgba(37, 211, 102, 0.4); background: rgba(37, 211, 102, 0.08); padding: 8px 14px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
-                    <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Soporte WhatsApp
+                <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20suscripci%C3%B3n%20y%20pagos..." target="_blank" style="font-size: 0.82rem; color: #25D366; text-decoration: none; font-weight: bold; border: 1px solid rgba(37, 211, 102, 0.4); background: rgba(37, 211, 102, 0.08); padding: 9px 16px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                    <i data-lucide="message-square" style="width: 15px; height: 15px;"></i> Soporte WhatsApp
                 </a>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
-                <button class="btn-commercial btn-commercial-cyan" onclick="closeHomeInfoModal(); switchView('subscriptions');" style="padding: 10px 18px; font-size: 0.78rem; font-weight: bold;">
-                    <i data-lucide="award" style="width: 15px; height: 15px;"></i> VER PÁGINA DE PLANES
+                <button class="btn-commercial btn-commercial-cyan" onclick="closeHomeInfoModal(); switchView('subscriptions');" style="padding: 12px 20px; font-size: 0.85rem; font-weight: bold;">
+                    <i data-lucide="award" style="width: 16px; height: 16px;"></i> VER PÁGINA DE PLANES
                 </button>
-                <button class="btn-commercial btn-commercial-purple" onclick="selectPublicPlanForSignup('premium');" style="padding: 10px 22px; font-size: 0.78rem; font-weight: bold; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); border: none; color: #000;">
-                    <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i> REGISTRARME Y SUSCRIBIRME AHORA
+                <button class="btn-commercial btn-commercial-purple" onclick="selectPublicPlanForSignup('premium');" style="padding: 12px 24px; font-size: 0.85rem; font-weight: bold; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); border: none; color: #000;">
+                    <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i> REGISTRARME Y SUSCRIBIRME AHORA
                 </button>
             </div>
         `;
