@@ -142,8 +142,60 @@
                 <!-- VISTA 0: HOME PRINCIPAL DE INTELIGENCIA INMOBILIARIA -->
                 <section id="view-home" class="app-view active">
                     
-                    <!-- CHAT MINIMALISTA DE BIENVENIDA CON VALORGT IA (ESTILO CHAT AI LIMPIO A TODO EL ANCHO) -->
-                    <div id="home-ai-concierge-card" class="glassmorphism" style="padding: 20px 24px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(10, 12, 18, 0.72); border-radius: 14px; width: 100%; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);">
+                    <!-- CHAT MINIMALISTA DE BIENVENIDA CON VALORGT IA (CON BORDE LUMINOSO CIRCULANTE) -->
+                    <style>
+                        @keyframes aiBorderSpin {
+                            0% { transform: translate(-50%, -50%) rotate(0deg); }
+                            100% { transform: translate(-50%, -50%) rotate(360deg); }
+                        }
+                        .ai-glowing-border-wrapper {
+                            position: relative;
+                            width: 100%;
+                            padding: 2px;
+                            border-radius: 16px;
+                            overflow: hidden;
+                            margin-bottom: 25px;
+                            box-sizing: border-box;
+                            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 22px rgba(0, 240, 255, 0.16);
+                        }
+                        .ai-glowing-border-wrapper::before {
+                            content: '';
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            width: 250%;
+                            height: 600%;
+                            background: conic-gradient(
+                                from 0deg,
+                                transparent 0deg,
+                                transparent 55deg,
+                                #00f0ff 100deg,
+                                #bf5af2 140deg,
+                                #ffd700 175deg,
+                                transparent 200deg,
+                                transparent 235deg,
+                                #00ff80 280deg,
+                                #00f0ff 330deg,
+                                transparent 360deg
+                            );
+                            animation: aiBorderSpin 5s linear infinite;
+                            z-index: 0;
+                            pointer-events: none;
+                        }
+                        .ai-glowing-border-inner {
+                            position: relative;
+                            z-index: 1;
+                            background: rgba(8, 10, 16, 0.94);
+                            backdrop-filter: blur(14px);
+                            -webkit-backdrop-filter: blur(14px);
+                            border-radius: 14px;
+                            padding: 20px 24px;
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+                    </style>
+                    <div class="ai-glowing-border-wrapper">
+                    <div id="home-ai-concierge-card" class="ai-glowing-border-inner">
                         
                         <!-- Flujo de conversación limpio estilo Chat IA -->
                         <div id="home-ai-chat-stream" style="display: flex; flex-direction: column; gap: 14px; max-height: 320px; overflow-y: auto; padding-right: 6px; margin-bottom: 14px; font-family: 'Inter', sans-serif;">
@@ -178,6 +230,7 @@
                                 <i data-lucide="arrow-up" style="width: 18px; height: 18px; stroke-width: 2.5;"></i>
                             </button>
                         </div>
+                    </div>
                     </div>
 
                     <!-- DECK DE PROPIEDADES DESTACADAS (PORTADA PREMIUM) -->
