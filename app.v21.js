@@ -1774,6 +1774,9 @@ function renderFeaturedProperties(zoneKey) {
                     <div class="card-price-hud" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                         <span class="price-val" id="feat-price-${absoluteIndex}">${currencySym}${formatNumber(convertedPrice.toFixed(0))}${priceLabel}</span>
                         <div style="display: flex; align-items: center; gap: 6px;">
+                            <button class="btn-micro-cyber" onclick="event.stopPropagation(); analyzePropertyInHomeAi('${zk}', ${absoluteIndex})" title="Preguntar a la IA sobre esta propiedad" style="border-color: rgba(191, 90, 242, 0.55); color: #e0b0ff; background: rgba(191, 90, 242, 0.14);">
+                                ✦ IA
+                            </button>
                             <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${zk}', ${absoluteIndex})">
                                 <i data-lucide="zap" class="tiny-icon"></i> AUTOTASAR
                             </button>
@@ -2042,7 +2045,10 @@ function renderCatalogProperties() {
                                 <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
                                     <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
                                 </button>
-                                <button class="btn-micro-cyber">
+                                <button class="btn-micro-cyber" onclick="event.stopPropagation(); analyzePropertyInHomeAi('${propZoneKey}', ${absoluteIndex})" title="Preguntar a la IA sobre esta propiedad" style="border-color: rgba(191, 90, 242, 0.55); color: #e0b0ff; background: rgba(191, 90, 242, 0.14);">
+                                    ✦ IA
+                                </button>
+                                <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${propZoneKey}', ${absoluteIndex})">
                                     <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
                                 </button>
                             </div>
@@ -15667,6 +15673,9 @@ function renderHomeCatalog() {
                             <button class="btn-share-prop" onclick="event.stopPropagation(); sharePropertyLink(event, '${prop.id}')" title="Compartir Enlace" style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); color: var(--cyan); width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
                                 <i data-lucide="share-2" style="width: 12px; height: 12px;"></i>
                             </button>
+                            <button class="btn-micro-cyber" onclick="event.stopPropagation(); analyzePropertyInHomeAi('${propZoneKey}', ${absoluteIndex})" title="Dictamen IA de esta Propiedad" style="border-color: rgba(191, 90, 242, 0.55); color: #e0b0ff; background: rgba(191, 90, 242, 0.14);">
+                                ✦ IA
+                            </button>
                             <button class="btn-micro-cyber" onclick="event.stopPropagation(); loadCatalogPropToValuator('${propZoneKey}', ${absoluteIndex})">
                                 <i data-lucide="sparkles" class="tiny-icon"></i> AUTOTASAR
                             </button>
@@ -16803,9 +16812,10 @@ function renderSignupAiControls() {
         `;
     } else if (s === 2) {
         controls.innerHTML = `
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="signup-ai-input-name" placeholder="Escribe tu nombre completo (Ej. Carlos Mendoza)..." style="flex: 1; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerSignupAiName();}">
-                <button type="button" onclick="answerSignupAiName()" class="btn-commercial btn-commercial-cyan" style="padding: 0 18px; font-weight: bold; font-size: 0.8rem;">CONTINUAR →</button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="signup-ai-input-name" placeholder="Escribe o dicta 🎙️ tu nombre completo..." style="flex: 1; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.88rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerSignupAiName();}">
+                <button type="button" id="signup-ai-mic-name" onclick="toggleAiVoiceInput('signup-ai-input-name', 'signup-ai-mic-name')" title="Dictar por voz" style="width: 38px; height: 38px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,240,255,0.1); color: var(--cyan); cursor: pointer;">🎙️</button>
+                <button type="button" onclick="answerSignupAiName()" class="btn-commercial btn-commercial-cyan" style="padding: 11px 18px; font-weight: bold; font-size: 0.8rem;">CONTINUAR →</button>
             </div>
         `;
         setTimeout(() => { const el = document.getElementById('signup-ai-input-name'); if (el) el.focus(); }, 50);
@@ -17225,9 +17235,10 @@ function renderPublishAiControls() {
         const suggestedTitle = `${publishAiState.category === 'Local' ? 'Oficina / Local Comercial' : publishAiState.category} Exclusivo en ${publishAiState.locationLabel.split(' (')[0]}`;
         controls.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <input type="text" id="publish-ai-input-title" value="${publishAiState.title || suggestedTitle}" placeholder="Ej. Penthouse Moderno en Zona 14 con Terraza..." style="flex: 1; min-width: 220px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.9rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep3();}">
-                    <button type="button" onclick="answerPublishAiStep3()" class="btn-commercial btn-commercial-cyan" style="padding: 0 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="publish-ai-input-title" value="${publishAiState.title || suggestedTitle}" placeholder="Escribe o dicta 🎙️ el título del anuncio..." style="flex: 1; min-width: 220px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.9rem; outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep3();}">
+                    <button type="button" id="publish-ai-mic-title" onclick="toggleAiVoiceInput('publish-ai-input-title', 'publish-ai-mic-title')" title="Dictar título por voz" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,240,255,0.1); color: var(--cyan); cursor: pointer;">🎙️</button>
+                    <button type="button" onclick="answerPublishAiStep3()" class="btn-commercial btn-commercial-cyan" style="padding: 11px 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
                 </div>
             </div>
         `;
@@ -17240,6 +17251,7 @@ function renderPublishAiControls() {
                     <option value="GTQ" ${publishAiState.priceCurrency === 'GTQ' ? 'selected' : ''}>GTQ (Q Quetzales)</option>
                 </select>
                 <input type="number" id="publish-ai-input-price" value="${publishAiState.priceInputVal}" placeholder="Ej. 285000" min="1" style="flex: 1; min-width: 180px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.92rem; font-family: var(--font-mono); outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep4();}">
+                <button type="button" id="publish-ai-mic-price" onclick="toggleAiVoiceInput('publish-ai-input-price', 'publish-ai-mic-price')" title="Dictar precio por voz" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,240,255,0.1); color: var(--cyan); cursor: pointer;">🎙️</button>
                 <button type="button" onclick="answerPublishAiStep4()" class="btn-commercial btn-commercial-cyan" style="padding: 11px 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
             </div>
         `;
@@ -17248,6 +17260,7 @@ function renderPublishAiControls() {
         controls.innerHTML = `
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <input type="number" id="publish-ai-input-size" value="${publishAiState.size}" placeholder="Área en Metros Cuadrados (m²), ej. 185" min="1" style="flex: 1; min-width: 200px; padding: 11px 14px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0,0,0,0.5); color: #fff; font-size: 0.92rem; font-family: var(--font-mono); outline: none;" onkeydown="if(event.key==='Enter'){event.preventDefault(); answerPublishAiStep5();}">
+                <button type="button" id="publish-ai-mic-size" onclick="toggleAiVoiceInput('publish-ai-input-size', 'publish-ai-mic-size')" title="Dictar m² por voz" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.35); background: rgba(0,240,255,0.1); color: var(--cyan); cursor: pointer;">🎙️</button>
                 <button type="button" onclick="answerPublishAiStep5()" class="btn-commercial btn-commercial-cyan" style="padding: 11px 20px; font-weight: bold; font-size: 0.82rem;">CONTINUAR →</button>
             </div>
         `;
@@ -17611,6 +17624,8 @@ function appendHomeAiChatExchange(userText, aiHtml) {
     exchange.style.flexDirection = 'column';
     exchange.style.gap = '12px';
 
+    const replyId = 'ai-reply-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
     exchange.innerHTML = `
         <div style="display: flex; justify-content: flex-end;">
             <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 16px 16px 4px 16px; padding: 8px 15px; font-size: 0.92rem; color: #fff; max-width: 80%;">
@@ -17619,8 +17634,11 @@ function appendHomeAiChatExchange(userText, aiHtml) {
         </div>
         <div style="display: flex; gap: 12px; align-items: flex-start;">
             <div style="width: 30px; height: 30px; border-radius: 50%; background: rgba(0, 240, 255, 0.12); border: 1px solid rgba(0, 240, 255, 0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--cyan); font-size: 0.85rem;">✦</div>
-            <div style="font-size: 0.95rem; color: #ebebf5; line-height: 1.6; padding-top: 2px; flex: 1;">
-                ${aiHtml}
+            <div id="${replyId}" style="font-size: 0.95rem; color: #ebebf5; line-height: 1.6; padding-top: 2px; flex: 1;">
+                <span class="font-mono" style="font-size: 0.8rem; color: var(--cyan); display: inline-flex; align-items: center; gap: 6px;">
+                    Analizando telemetría en tiempo real
+                    <span><span class="ai-typing-dot"></span><span class="ai-typing-dot"></span><span class="ai-typing-dot"></span></span>
+                </span>
             </div>
         </div>
     `;
@@ -17628,7 +17646,205 @@ function appendHomeAiChatExchange(userText, aiHtml) {
     stream.appendChild(exchange);
     setTimeout(() => {
         stream.scrollTop = stream.scrollHeight;
-    }, 30);
+    }, 20);
+
+    // Efecto Streaming: revelar la respuesta de la IA tras 520ms
+    setTimeout(() => {
+        const replyEl = document.getElementById(replyId);
+        if (replyEl) {
+            replyEl.style.opacity = '0';
+            replyEl.style.transition = 'opacity 0.28s ease';
+            replyEl.innerHTML = aiHtml;
+            requestAnimationFrame(() => {
+                replyEl.style.opacity = '1';
+            });
+            setTimeout(() => {
+                stream.scrollTop = stream.scrollHeight;
+            }, 30);
+        }
+    }, 520);
+}
+
+/* ==========================================================================
+   A. DICTAMEN INSTANTÁNEO IA DE PROPIEDAD DEL CATÁLOGO (BOTÓN ✦ IA)
+   ========================================================================== */
+
+function analyzePropertyInHomeAi(zoneKey, index) {
+    const zoneList = PORTFOLIO_DATABASE[zoneKey];
+    const prop = zoneList && zoneList[index];
+    if (!prop) return;
+
+    // Si el usuario estaba en otra vista (ej. Catálogo General), llevarlo al Home y subir al Chat IA
+    const homeView = document.getElementById('view-home');
+    if (homeView && !homeView.classList.contains('active')) {
+        switchView('home');
+    }
+
+    const aiCard = document.getElementById('home-ai-concierge-card');
+    if (aiCard) {
+        aiCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const zData = ZONES_DATABASE[zoneKey] || { name: 'Guatemala', basePriceM2: 1800, roi: 7.5, growth5Y: 32 };
+    const zoneName = zData.name.split(' (')[0];
+    const { category, type } = getPropertyCategoryAndType(prop);
+    const isRent = type.toLowerCase() === 'renta';
+
+    const priceUsd = Number(prop.priceUSD) || 150000;
+    const priceGtq = Math.round(priceUsd * exchangeRate);
+    const sizeM2 = Number(prop.size) || 100;
+
+    // 1. Comparativa de Precio por m² vs. Promedio de su Zona
+    let catKey = 'apartamentos';
+    const catLow = category.toLowerCase();
+    if (catLow.includes('casa')) catKey = 'casas';
+    else if (catLow.includes('oficina')) catKey = 'oficinas';
+    else if (catLow.includes('local')) catKey = 'locales';
+    else if (catLow.includes('terreno')) catKey = 'terrenos';
+    else if (catLow.includes('bodega')) catKey = 'bodegas';
+
+    const zoneCatObj = (zData.categories && zData.categories[catKey]) ? zData.categories[catKey] : null;
+    const zoneAvgM2Usd = zoneCatObj ? zoneCatObj.priceM2 : (zData.basePriceM2 || 1800);
+    const zoneAvgM2Gtq = Math.round(zoneAvgM2Usd * exchangeRate);
+    const zoneRoi = (zoneCatObj && zoneCatObj.roi > 0) ? zoneCatObj.roi : (zData.roi || 7.5);
+    const zoneGrowth = zoneCatObj ? zoneCatObj.growth : 6.8;
+
+    const propM2Usd = Math.round(priceUsd / sizeM2);
+    const propM2Gtq = Math.round(priceGtq / sizeM2);
+
+    let m2ComparisonText = '';
+    if (!isRent) {
+        const diffPct = (((propM2Usd - zoneAvgM2Usd) / zoneAvgM2Usd) * 100).toFixed(1);
+        const verdict = diffPct <= -3
+            ? `<strong style="color: var(--neon-emerald);">🔥 OPORTUNIDAD (${Math.abs(diffPct)}% por debajo del promedio de ${zoneName})</strong>`
+            : (diffPct <= 5
+                ? `<strong style="color: var(--cyan);">✅ EN RANGO ÓPTIMO DE MERCADO (${diffPct > 0 ? '+' : ''}${diffPct}% vs promedio de ${zoneName})</strong>`
+                : `<strong style="color: #ffd700);">💎 SEGMENTO PREMIUM (+${diffPct}% sobre el promedio de ${zoneName})</strong>`);
+        m2ComparisonText = `• <strong>1. Precio por m² vs. Zona:</strong> <strong style="color: #fff;">Q${formatNumber(propM2Gtq)}/m² ($${formatNumber(propM2Usd)} USD/m²)</strong> frente al promedio de ${zoneName} de Q${formatNumber(zoneAvgM2Gtq)}/m² ($${formatNumber(zoneAvgM2Usd)} USD/m²) → ${verdict}<br>`;
+    } else {
+        m2ComparisonText = `• <strong>1. Canon de Renta por m²:</strong> <strong style="color: #fff;">Q${formatNumber(propM2Gtq)}/m² al mes ($${formatNumber(propM2Usd)} USD/m²)</strong> en ${zoneName}.<br>`;
+    }
+
+    // 2. Cuota Hipotecaria Estimada en Banco Industrial (FHA ~7.26% anual, 20 años, 20% enganche)
+    let mortgageText = '';
+    if (!isRent) {
+        const downUsd = Math.round(priceUsd * 0.20);
+        const downGtq = Math.round(priceGtq * 0.20);
+        const loanUsd = priceUsd - downUsd;
+        const r = 0.0726 / 12;
+        const n = 20 * 12;
+        const monthlyUsd = Math.round((loanUsd * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+        const monthlyGtq = Math.round(monthlyUsd * exchangeRate);
+        mortgageText = `• <strong>2. Cuota Hipotecaria BI (FHA 7.26% a 20 años, 20% enganche):</strong> Enganche de <strong>Q${formatNumber(downGtq)} ($${formatNumber(downUsd)} USD)</strong> y cuota aproximada de <strong style="color: var(--cyan);">Q${formatNumber(monthlyGtq)}/mes ($${formatNumber(monthlyUsd)} USD/mes)</strong>.<br>`;
+    } else {
+        const annualRentUsd = priceUsd * 12;
+        const annualRentGtq = priceGtq * 12;
+        mortgageText = `• <strong>2. Proyección de Arrendamiento Anual:</strong> Costo anual de <strong>Q${formatNumber(annualRentGtq)}/año ($${formatNumber(annualRentUsd)} USD/año)</strong>.<br>`;
+    }
+
+    // 3. Rentabilidad Anual Estimada (ROI & Plusvalía)
+    const estMonthlyRentUsd = !isRent ? Math.round((priceUsd * (zoneRoi / 100)) / 12) : priceUsd;
+    const estMonthlyRentGtq = Math.round(estMonthlyRentUsd * exchangeRate);
+    const roiText = `• <strong>3. Rentabilidad & Plusvalía Estimada:</strong> ROI proyectado del <strong style="color: var(--neon-emerald);">${zoneRoi}% anual</strong> (renta estimada: <strong>Q${formatNumber(estMonthlyRentGtq)}/mes | $${formatNumber(estMonthlyRentUsd)} USD/mes</strong>) + plusvalía anual de <strong style="color: var(--cyan);">+${zoneGrowth}%</strong> en ${zoneName}.`;
+
+    appendHomeAiChatExchange(
+        `✦ Analizar con IA: "${prop.title}" (${zoneName})`,
+        `
+        <div style="margin-bottom: 6px;">
+            Dictamen patrimonial IA para <strong style="color: #fff;">${prop.title}</strong> (${sizeM2} m² • Precio: <strong style="color: var(--cyan);">Q${formatNumber(priceGtq)}${isRent ? '/mes' : ''} | $${formatNumber(priceUsd)} USD${isRent ? '/mes' : ''}</strong>):
+        </div>
+        ${m2ComparisonText}
+        ${mortgageText}
+        ${roiText}
+        <div style="margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap;">
+            <a href="#" onclick="openPropertyDetailModal('${zoneKey}', ${index}); return false;" style="color: #ffd700; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ver Fotos y Ficha Completa</a>
+            <a href="#" onclick="loadCatalogPropToValuator('${zoneKey}', ${index}); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Abrir en Tasador IA</a>
+            <a href="#" onclick="switchView('mortgage'); return false;" style="color: var(--neon-emerald); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ajustar en Simulador Hipotecario</a>
+        </div>
+        `
+    );
+}
+
+/* ==========================================================================
+   B. MICRÓFONO DE VOZ NATIVO EN EL CHAT IA Y COPILOTO (WEB SPEECH API)
+   ========================================================================== */
+
+let activeAiSpeechRecognition = null;
+let activeAiVoiceBtnId = null;
+
+function toggleAiVoiceInput(inputId, btnId, autoSubmitFnName = null) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+        alert('Tu navegador no soporta dictado por voz directo. Te recomendamos usar Google Chrome o Microsoft Edge.');
+        return;
+    }
+
+    const inputEl = document.getElementById(inputId);
+    const btnEl = document.getElementById(btnId);
+    if (!inputEl) return;
+
+    // Si ya estaba escuchando, detener
+    if (activeAiSpeechRecognition) {
+        try {
+            activeAiSpeechRecognition.stop();
+        } catch (e) {}
+        return;
+    }
+
+    const recognition = new SpeechRec();
+    recognition.lang = 'es-GT';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    activeAiSpeechRecognition = recognition;
+    activeAiVoiceBtnId = btnId;
+
+    const origPlaceholder = inputEl.placeholder;
+    inputEl.placeholder = '🎙️ Escuchando tu voz... habla ahora';
+    if (btnEl) {
+        btnEl.classList.add('ai-mic-listening');
+    }
+
+    recognition.onresult = (event) => {
+        const transcript = (event.results && event.results[0] && event.results[0][0])
+            ? event.results[0][0].transcript.trim()
+            : '';
+        if (transcript) {
+            if (inputEl.type === 'number') {
+                const digits = transcript.replace(/[^\d.]/g, '');
+                if (digits) inputEl.value = digits;
+            } else {
+                inputEl.value = transcript;
+            }
+            if (autoSubmitFnName && typeof window[autoSubmitFnName] === 'function') {
+                setTimeout(() => {
+                    window[autoSubmitFnName]();
+                }, 150);
+            }
+        }
+    };
+
+    recognition.onerror = (event) => {
+        console.warn('Reconocimiento de voz finalizado o cancelado:', event.error);
+    };
+
+    recognition.onend = () => {
+        inputEl.placeholder = origPlaceholder;
+        if (btnEl) {
+            btnEl.classList.remove('ai-mic-listening');
+        }
+        activeAiSpeechRecognition = null;
+        activeAiVoiceBtnId = null;
+    };
+
+    try {
+        recognition.start();
+    } catch (err) {
+        console.error('No se pudo iniciar el micrófono:', err);
+        inputEl.placeholder = origPlaceholder;
+        if (btnEl) btnEl.classList.remove('ai-mic-listening');
+        activeAiSpeechRecognition = null;
+    }
 }
 
 function askHomeAiConcierge(topic) {
