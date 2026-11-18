@@ -239,6 +239,9 @@
                             <button type="button" onclick="askHomeAiConcierge('innovacion')" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.82rem; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.color='#fff'; this.style.background='rgba(0,240,255,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.04)';">
                                 ✨ ¿Por qué es innovadora?
                             </button>
+                            <button type="button" onclick="askHomeAiConcierge('propietario')" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(0, 255, 128, 0.35); background: rgba(0, 255, 128, 0.08); color: var(--neon-emerald); font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--neon-emerald)'; this.style.color='#fff'; this.style.background='rgba(0,255,128,0.18)';" onmouseout="this.style.borderColor='rgba(0,255,128,0.35)'; this.style.color='var(--neon-emerald)'; this.style.background='rgba(0,255,128,0.08)';">
+                                🏠 Soy Propietario: Subir GRATIS (Hasta 2)
+                            </button>
                             <button type="button" onclick="askHomeAiConcierge('planes')" style="cursor: pointer; padding: 6px 13px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.82rem; transition: all 0.2s;" onmouseover="this.style.borderColor='#ffd700'; this.style.color='#fff'; this.style.background='rgba(255,215,0,0.08)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.04)';">
                                 💎 Plan Pro vs. Plan Premium
                             </button>
@@ -1865,22 +1868,28 @@
                                 <!-- SELECTOR DE PERFIL CON TARJETAS INTERACTIVAS NEÓN (AHORA AL INICIO) -->
                                 <div class="input-group" style="display: flex; flex-direction: column; gap: 6px;">
                                     <label style="font-size: 0.72rem;">Selecciona tu Tipo de Perfil</label>
-                                    <div style="display: flex; gap: 12px; width: 100%; box-sizing: border-box;">
-                                        <div id="role-card-agente" class="signup-role-card active" onclick="setSignupRole('agente')">
+                                    <div style="display: flex; gap: 10px; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+                                        <div id="role-card-agente" class="signup-role-card active" onclick="setSignupRole('agente')" style="flex: 1; min-width: 135px;">
                                             <i data-lucide="briefcase" style="width: 18px; height: 18px; color: var(--cyan);"></i>
                                             <span>Agente Inmobiliario</span>
-                                            <span>Listado de propiedades</span>
+                                            <span>Catálogo ilimitado</span>
                                         </div>
-                                        <div id="role-card-inversionista" class="signup-role-card" onclick="setSignupRole('inversionista')">
+                                        <div id="role-card-inversionista" class="signup-role-card" onclick="setSignupRole('inversionista')" style="flex: 1; min-width: 135px;">
                                             <i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
                                             <span>Inversionista</span>
-                                            <span>Portafolio Patrimonial y Radar IA</span>
+                                            <span>Portafolio y Radar IA</span>
+                                        </div>
+                                        <div id="role-card-propietario" class="signup-role-card" onclick="setSignupRole('propietario')" style="flex: 1; min-width: 135px; border-color: rgba(0, 255, 128, 0.35);">
+                                            <i data-lucide="home" style="width: 18px; height: 18px; color: var(--neon-emerald);"></i>
+                                            <span>Propietario (Gratis)</span>
+                                            <span>Hasta 2 propiedades vía ValorGT</span>
                                         </div>
                                     </div>
                                     <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
                                     <select id="com-signup-type" style="display: none;">
                                         <option value="agente" selected>agente</option>
                                         <option value="inversionista">inversionista</option>
+                                        <option value="propietario">propietario</option>
                                     </select>
                                 </div>
 
@@ -1938,10 +1947,27 @@
                                     </div>
                                 </div>
 
+                                <!-- 2. Tarjeta informativa cuando selecciona Propietario (Gratis hasta 2 propiedades) -->
+                                <div id="owner-free-plan-notice" class="hidden" style="background: rgba(0, 255, 128, 0.07); border: 1px solid rgba(0, 255, 128, 0.4); border-radius: 10px; padding: 14px; font-family: 'Inter', sans-serif;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+                                        <span style="font-size: 0.78rem; font-weight: 800; color: var(--neon-emerald);">🏠 PLAN PROPIETARIO GRATUITO (HASTA 2 PROPIEDADES)</span>
+                                        <span style="font-size: 0.75rem; font-weight: 800; background: rgba(0,255,128,0.18); color: #fff; padding: 2px 8px; border-radius: 12px;">Q0 / $0 USD</span>
+                                    </div>
+                                    <p style="font-size: 0.78rem; color: #ebebf5; line-height: 1.5; margin: 0 0 8px 0;">
+                                        Sube hasta <strong style="color: #fff;">2 propiedades sin costo de membresía</strong>. Tu inmueble se publicará y comercializará oficialmente a través de <strong style="color: var(--cyan);">ValorGT Inmobiliaria</strong> (nosotros filtramos interesados y coordinamos visitas).
+                                    </p>
+                                    <div style="background: rgba(0,0,0,0.45); border: 1px dashed rgba(0,255,128,0.45); border-radius: 8px; padding: 8px 10px; font-size: 0.75rem; color: #d1d1d6; line-height: 1.45;">
+                                        🤝 <strong style="color: var(--neon-emerald);">Acuerdo de Corretaje ValorGT (Solo al concretar negocio):</strong><br>
+                                        • <strong style="color: #fff;">En Venta:</strong> Comisión del <strong style="color: var(--neon-emerald);">5%</strong> sobre el valor final de venta.<br>
+                                        • <strong style="color: #fff;">En Alquiler:</strong> Comisión equivalente a <strong style="color: var(--neon-emerald);">1 mes de alquiler</strong> por contrato anual.
+                                    </div>
+                                </div>
+
                                 <!-- Selector nativo oculto para preservar compatibilidad con Supabase/JS -->
                                 <select id="com-signup-plan" style="display: none;">
                                     <option value="pro" selected>Plan Pro (Q235 / mes - $30 USD / mes)</option>
                                     <option value="premium">Plan Premium con Billetera XAUt (Q505 / mes - $65 USD / mes)</option>
+                                    <option value="propietario">Plan Propietario Gratuito (Hasta 2 Propiedades - 5% Venta / 1 Mes Alquiler)</option>
                                 </select>
 
                                 <button type="submit" class="btn-commercial btn-commercial-purple" style="width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">
@@ -5281,7 +5307,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=22.3"></script>
+    <script src="app.v21.js?v=22.4"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {

@@ -345,7 +345,8 @@ function filterAgentProperties() {
             agentUploadedProperties = localProps.filter(p =>
                 p.agent_id === loggedInB2bClient.id ||
                 (p.agentName && loggedInB2bClient.name && p.agentName.toLowerCase() === loggedInB2bClient.name.toLowerCase()) ||
-                (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
+                (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase()) ||
+                (p.ownerEmail && loggedInB2bClient.email && p.ownerEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
             );
         } catch (e) {
             console.error("Error al filtrar propiedades locales para el agente:", e);
@@ -675,12 +676,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupPlanSelect = document.getElementById('com-signup-plan');
     if (signupTypeSelect && signupPlanSelect) {
         signupTypeSelect.addEventListener('change', () => {
-            const currentPlan = signupPlanSelect.value || 'pro';
+            const roleVal = signupTypeSelect.value;
+            const currentPlan = roleVal === 'propietario' ? 'propietario' : ((signupPlanSelect.value && signupPlanSelect.value !== 'propietario') ? signupPlanSelect.value : 'pro');
             signupPlanSelect.innerHTML = `
                 <option value="pro" ${currentPlan === 'pro' ? 'selected' : ''}>Plan Pro (Q235 / mes - $30 USD / mes)</option>
                 <option value="premium" ${currentPlan === 'premium' ? 'selected' : ''}>Plan Premium con Billetera XAUt (Q505 / mes - $65 USD / mes)</option>
+                <option value="propietario" ${currentPlan === 'propietario' ? 'selected' : ''}>Plan Propietario Gratuito (Hasta 2 Propiedades - 5% Venta / 1 Mes Alquiler)</option>
             `;
-            selectSignupPlan(currentPlan, currentPlan === 'premium' ? 65 : 30);
+            if (currentPlan !== 'propietario') {
+                selectSignupPlan(currentPlan, currentPlan === 'premium' ? 65 : 30);
+            }
         });
     }
 });
@@ -1882,7 +1887,7 @@ function renderCatalogProperties() {
         const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
         const propEmail = (prop.agentEmail || '').toLowerCase();
 
-        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com' || prop.isOwnerFreeListing === true;
         if (!hasValidAgent) {
             return false;
         }
@@ -4480,11 +4485,12 @@ function updateB2bPartnerLevelBadge() {
     } else {
         const isPremium = (dbPlan === 'VIP' || dbPlan === 'Premium' || plan === 'premium' || plan === 'vip');
         const isPro = (dbPlan === 'Pro' || plan === 'pro');
+        const isOwner = (client.role || '').toLowerCase() === 'propietario' || plan === 'propietario';
         const isInvestor = (client.role || '').toLowerCase() === 'inversionista';
 
-        partnerLevelEl.innerText = isPremium ?
+        partnerLevelEl.innerText = isOwner ? "Propietario (Vía ValorGT)" : (isPremium ?
             (isInvestor ? "Inversionista Premium" : "Inmobiliaria Premium") :
-            (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+            (isPro ? (isInvestor ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual"));
 
         partnerLevelEl.style.color = "var(--cyan)";
         partnerLevelEl.style.textShadow = "0 0 10px rgba(0, 240, 255, 0.35)";
@@ -5025,6 +5031,9 @@ function renderB2bAgentProfile() {
             planPriceGTQ = 340;
             planPriceUSD = 43.70;
         }
+    } else if (plan === 'propietario' || (client.role || '').toLowerCase() === 'propietario') {
+        planPriceGTQ = 0;
+        planPriceUSD = 0;
     } else if (plan === 'pro') {
         if (isAnnual) {
             planPriceGTQ = Math.round(240 * 12 * 0.85);
@@ -5218,6 +5227,10 @@ function updateSaasMetricsHUD() {
                 billingGTQ = isAnnual ? (250 * 12 * 0.85) : 250;
                 billingUSD = billingGTQ / exchangeRate;
                 planFriendlyName = 'Miembro Fundador';
+            } else if (plan === 'propietario' || (loggedInB2bClient.role || '').toLowerCase() === 'propietario') {
+                billingGTQ = 0;
+                billingUSD = 0;
+                planFriendlyName = 'Propietario (5% Venta / 1 Mes Alquiler)';
             } else if (plan === 'básico' || plan === 'basico') {
                 billingGTQ = 235;
                 billingUSD = 30;
@@ -5644,9 +5657,17 @@ async function publishAgentProperty(event) {
     if (event) event.preventDefault();
 
     // Validar límites de publicación según el plan comercial contratado
+    const isOwnerFreeAccount = (loggedInB2bClient && (
+        (loggedInB2bClient.role || '').toLowerCase() === 'propietario' ||
+        (loggedInB2bClient.plan || '').toLowerCase() === 'propietario'
+    )) || activeB2bPlan === 'propietario';
+
     let maxProperties = 20;
     let planLabel = "Agente Individual";
-    if (activeB2bPlan === 'pro') {
+    if (isOwnerFreeAccount) {
+        maxProperties = 2;
+        planLabel = "Propietario Gratuito (Máx. 2 Propiedades vía ValorGT Inmobiliaria)";
+    } else if (activeB2bPlan === 'pro') {
         maxProperties = 100;
         planLabel = "Inmobiliaria Pro";
     } else if (activeB2bPlan === 'vip' || activeB2bPlan === 'premium') {
@@ -5655,11 +5676,21 @@ async function publishAgentProperty(event) {
     }
 
     const myPropertiesCount = agentUploadedProperties.filter(p =>
-        loggedInB2bClient && (p.agent_id === loggedInB2bClient.id || p.agentName === loggedInB2bClient.name)
+        loggedInB2bClient && (
+            p.agent_id === loggedInB2bClient.id ||
+            p.agentName === loggedInB2bClient.name ||
+            (p.agentEmail && loggedInB2bClient.email && p.agentEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase()) ||
+            (p.ownerEmail && loggedInB2bClient.email && p.ownerEmail.toLowerCase() === loggedInB2bClient.email.toLowerCase())
+        )
     ).length;
 
     if (!editingPropertyId && myPropertiesCount >= maxProperties) {
-        alert(`⚠️ LÍMITE DE PUBLICACIONES ALCANZADO: Tu plan "${planLabel}" posee un límite máximo de ${maxProperties} propiedades publicadas de forma simultánea. Para aumentar tu capacidad e inyectar más nodos, adquiere un plan corporativo superior.`);
+        if (isOwnerFreeAccount) {
+            alert(`⚠️ LÍMITE DE 2 PROPIEDADES GRATUITAS ALCANZADO:\n\nComo Propietario tienes derecho a publicar hasta 2 propiedades GRATIS comercializadas a través de ValorGT Inmobiliaria (Comisión: 5% en Venta / 1 Mes en Alquiler).\n\nSi deseas publicar más propiedades, puedes activar el Plan Pro (Q235/mes | $30 USD/mes) o el Plan Premium (Q505/mes | $65 USD/mes) con propiedades ilimitadas.`);
+            switchCommercialTab('suscripcion');
+        } else {
+            alert(`⚠️ LÍMITE DE PUBLICACIONES ALCANZADO: Tu plan "${planLabel}" posee un límite máximo de ${maxProperties} propiedades publicadas de forma simultánea. Para aumentar tu capacidad e inyectar más nodos, adquiere un plan corporativo superior.`);
+        }
         return;
     }
 
@@ -5673,11 +5704,27 @@ async function publishAgentProperty(event) {
     const bathrooms = parseFloat(document.getElementById('pub-baths').value) || 0;
     const parkings = parseInt(document.getElementById('pub-parks').value) || 0;
     const description = document.getElementById('pub-description') ? document.getElementById('pub-description').value.trim() : '';
-    const agentName = loggedInB2bClient ? loggedInB2bClient.name : 'Asesor Inmobiliario';
-    const agentCompany = loggedInB2bClient ? loggedInB2bClient.company : 'ValorGT Premium Partner';
-    const agentPhone = loggedInB2bClient ? (loggedInB2bClient.whatsapp || loggedInB2bClient.phone) : '50250129482';
-    const agentLogo = loggedInB2bClient ? loggedInB2bClient.logo : '';
-    const agentPlan = loggedInB2bClient ? loggedInB2bClient.plan : 'Básico';
+
+    // Si es Propietario gratuito, la propiedad sale publicada a nombre de ValorGT Inmobiliaria
+    const agentName = isOwnerFreeAccount
+        ? 'ValorGT Inmobiliaria'
+        : (loggedInB2bClient ? loggedInB2bClient.name : 'Asesor Inmobiliario');
+    const agentCompany = isOwnerFreeAccount
+        ? 'ValorGT Inmobiliaria (Corretaje Oficial)'
+        : (loggedInB2bClient ? loggedInB2bClient.company : 'ValorGT Premium Partner');
+    const agentPhone = isOwnerFreeAccount
+        ? '50247996413'
+        : (loggedInB2bClient ? (loggedInB2bClient.whatsapp || loggedInB2bClient.phone) : '50250129482');
+    const agentLogo = isOwnerFreeAccount
+        ? 'logo.png'
+        : (loggedInB2bClient ? loggedInB2bClient.logo : '');
+    const agentPlan = isOwnerFreeAccount
+        ? 'Propietario'
+        : (loggedInB2bClient ? loggedInB2bClient.plan : 'Básico');
+    const ownerName = isOwnerFreeAccount && loggedInB2bClient ? loggedInB2bClient.name : null;
+    const ownerPhone = isOwnerFreeAccount && loggedInB2bClient ? (loggedInB2bClient.whatsapp || loggedInB2bClient.phone) : null;
+    const ownerEmail = isOwnerFreeAccount && loggedInB2bClient ? loggedInB2bClient.email : null;
+    const commissionTerms = isOwnerFreeAccount ? '5% Venta / 1 Mes Alquiler' : null;
 
     const customPhoto = document.getElementById('pub-photo-custom') ? document.getElementById('pub-photo-custom').value.trim() : '';
     let photos = [];
@@ -6037,8 +6084,13 @@ async function publishAgentProperty(event) {
                 agentPhone: agentPhone,
                 agentLogo: agentLogo,
                 agentPlan: agentPlan,
+                isOwnerFreeListing: isOwnerFreeAccount,
+                ownerName: ownerName,
+                ownerPhone: ownerPhone,
+                ownerEmail: ownerEmail,
+                commissionTerms: commissionTerms,
                 youtubeUrl: youtubeUrl,
-                badge: "NUEVO LISTADO",
+                badge: isOwnerFreeAccount ? "EXCLUSIVA VALORGT" : "NUEVO LISTADO",
                 location: locationKey,
                 isAgentUpload: true,
                 sponsored: false,
@@ -6094,7 +6146,12 @@ async function publishAgentProperty(event) {
                                 agentPhone: agentPhone,
                                 agentLogo: agentLogo,
                                 agentPlan: agentPlan,
-                                agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null
+                                agentEmail: loggedInB2bClient ? loggedInB2bClient.email : null,
+                                isOwnerFreeListing: isOwnerFreeAccount,
+                                ownerName: ownerName,
+                                ownerPhone: ownerPhone,
+                                ownerEmail: ownerEmail,
+                                commissionTerms: commissionTerms
                             }
                         }
                     ]).select();
@@ -7829,8 +7886,11 @@ async function handleRegistrationFormSubmit(event) {
     const companyRaw = document.getElementById('com-signup-company') ? document.getElementById('com-signup-company').value.trim() : '';
     const nitRaw = document.getElementById('com-signup-nit') ? document.getElementById('com-signup-nit').value.trim() : '';
 
-    const company = role === 'inversionista' ? 'Inversionista Particular' : (companyRaw || 'Inmobiliaria Personal');
-    const nit = role === 'inversionista' ? 'C/F' : (nitRaw || 'C/F');
+    const isOwnerRole = role === 'propietario';
+    const company = isOwnerRole
+        ? 'Propietario Directo (Vía ValorGT Inmobiliaria)'
+        : (role === 'inversionista' ? 'Inversionista Particular' : (companyRaw || 'Inmobiliaria Personal'));
+    const nit = (role === 'inversionista' || isOwnerRole) ? 'C/F' : (nitRaw || 'C/F');
 
     const phone = document.getElementById('com-signup-phone').value.trim();
     const email = document.getElementById('com-signup-email').value.trim().toLowerCase();
@@ -7860,13 +7920,16 @@ async function handleRegistrationFormSubmit(event) {
 
     const isPromoActive = localStorage.getItem('valorgt_promo_signup_active') === 'true';
     const planSelect = document.getElementById('com-signup-plan');
-    let selectedPlanKey = planSelect ? planSelect.value : 'pro'; // pro | premium
-    if (isPromoActive) {
+    let selectedPlanKey = isOwnerRole ? 'propietario' : (planSelect ? planSelect.value : 'pro'); // pro | premium | propietario
+    if (!isOwnerRole && isPromoActive) {
         selectedPlanKey = 'vip';
     }
-    const selectedPlanName = selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'premium' ? 'Premium' : 'Pro');
+    const selectedPlanName = isOwnerRole
+        ? 'Propietario'
+        : (selectedPlanKey === 'vip' ? 'VIP' : (selectedPlanKey === 'premium' ? 'Premium' : 'Pro'));
 
-    const finalCompany = isPromoActive ? (company ? `${company} (Promo VGT-0626)` : 'Promo VGT-0626') : company;
+    const finalCompany = (!isOwnerRole && isPromoActive) ? (company ? `${company} (Promo VGT-0626)` : 'Promo VGT-0626') : company;
+    const initialStatus = isOwnerRole ? 'Activo' : 'Pendiente';
 
     const newClient = {
         id: 'agent-' + Date.now(),
@@ -7876,12 +7939,13 @@ async function handleRegistrationFormSubmit(event) {
         phone: phone,
         email: email,
         plan: selectedPlanName,
-        isFounderPremium: isPromoActive ? true : false,
-        is_founder_premium: isPromoActive ? true : false,
-        status: 'Pendiente', // Pendiente de pago de transferencia
+        isFounderPremium: (!isOwnerRole && isPromoActive) ? true : false,
+        is_founder_premium: (!isOwnerRole && isPromoActive) ? true : false,
+        status: initialStatus,
         password: pass,
         usdtBalance: 0.00, // Inicializado en cero
-        role: role
+        role: role,
+        commissionTerms: isOwnerRole ? '5% Venta / 1 Mes Alquiler' : null
     };
 
     // Registrar en Supabase Auth y Profiles si está activo
@@ -7914,10 +7978,10 @@ async function handleRegistrationFormSubmit(event) {
                         phone: phone,
                         email: email,
                         plan: selectedPlanName,
-                        status: 'pendiente',
+                        status: initialStatus.toLowerCase(),
                         usdt_balance: 0.00,
                         role: role,
-                        is_founder_premium: isPromoActive ? true : false,
+                        is_founder_premium: (!isOwnerRole && isPromoActive) ? true : false,
                         billing_period: signupBillingPeriod
                     }
                 ]);
@@ -7944,7 +8008,7 @@ async function handleRegistrationFormSubmit(event) {
     localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
 
     if (typeof appendAdminLog === 'function') {
-        appendAdminLog("SAAS", `billing_node: Nuevo suscriptor ${newClient.name} (${newClient.company}) registrado en plan ${selectedPlanName.toUpperCase()} (Estado: Pendiente).`, false);
+        appendAdminLog("SAAS", `billing_node: Nuevo usuario ${newClient.name} (${newClient.company}) registrado en plan ${selectedPlanName.toUpperCase()} (Estado: ${initialStatus}).`, false);
     }
 
     // Auto-login al usuario
@@ -7955,9 +8019,22 @@ async function handleRegistrationFormSubmit(event) {
 
     const partnerLevelEl = document.getElementById('commercial-partner-level');
     if (partnerLevelEl) {
-        const isPremium = selectedPlanName === 'VIP' || selectedPlanName === 'Premium';
-        const isPro = selectedPlanName === 'Pro';
-        partnerLevelEl.innerText = isPremium ? (((newClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (((newClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+        if (isOwnerRole) {
+            partnerLevelEl.innerText = "Propietario (Vía ValorGT)";
+        } else {
+            const isPremium = selectedPlanName === 'VIP' || selectedPlanName === 'Premium';
+            const isPro = selectedPlanName === 'Pro';
+            partnerLevelEl.innerText = isPremium ? (((newClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Premium" : "Inmobiliaria Premium") : (isPro ? (((newClient.role || '').toLowerCase() === 'inversionista') ? "Inversionista Pro" : "Inmobiliaria Pro") : "Agente Individual");
+        }
+    }
+
+    if (isOwnerRole) {
+        alert(`🎉 ¡PERFIL DE PROPIETARIO ACTIVADO GRATIS!\n\nBienvenido(a), ${name}.\n• Puedes subir hasta 2 propiedades sin costo de membresía (Q0 / $0 USD).\n• Tus propiedades se comercializarán oficialmente a través de ValorGT Inmobiliaria.\n• Acuerdo de comisión únicamente al concretar negocio: 5% en Venta | 1 Mes de renta en Alquiler.\n\nTe llevamos directo al Copiloto IA para que subas tu primera propiedad ahora mismo.`);
+        initCommercialView();
+        setTimeout(() => {
+            switchCommercialTab('propiedades');
+        }, 300);
+        return;
     }
 
     alert(`¡REGISTRO EXITOSO!\n\nTu cuenta comercial ha sido creada en estado Pendiente.\nTe dirigiremos de inmediato a nuestra pasarela de pagos por transferencia bancaria para activar tu suscripción del Plan ${selectedPlanName.toUpperCase()}.`);
@@ -9591,7 +9668,10 @@ function renderAdminDashboard() {
         } else if (plan === 'premium') {
             planPriceGTQ = 340;
             planPriceUSD = 43.70;
-        } else if (plan === 'pro') {
+        } else if (plan === 'propietario' || (client.role || '').toLowerCase() === 'propietario') {
+        planPriceGTQ = 0;
+        planPriceUSD = 0;
+    } else if (plan === 'pro') {
             planPriceGTQ = 240;
             planPriceUSD = 31;
         } else if (plan === 'básico' || plan === 'basico') {
@@ -13727,19 +13807,28 @@ function setSignupRole(role) {
 
     const cardAgente = document.getElementById('role-card-agente');
     const cardInversionista = document.getElementById('role-card-inversionista');
+    const cardPropietario = document.getElementById('role-card-propietario');
     const agentPlans = document.getElementById('agent-plans-container');
     const inversionistaPlans = document.getElementById('inversionista-plans-container');
+    const ownerNotice = document.getElementById('owner-free-plan-notice');
+    const planSelect = document.getElementById('com-signup-plan');
 
-    if (role === 'agente') {
-        if (cardAgente) cardAgente.classList.add('active');
-        if (cardInversionista) cardInversionista.classList.remove('active');
-        if (agentPlans) agentPlans.style.display = 'flex';
+    if (cardAgente) cardAgente.classList.toggle('active', role === 'agente');
+    if (cardInversionista) cardInversionista.classList.toggle('active', role === 'inversionista');
+    if (cardPropietario) cardPropietario.classList.toggle('active', role === 'propietario');
+
+    if (role === 'propietario') {
+        if (agentPlans) agentPlans.style.display = 'none';
         if (inversionistaPlans) inversionistaPlans.style.display = 'none';
+        if (ownerNotice) ownerNotice.classList.remove('hidden');
+        if (planSelect) planSelect.value = 'propietario';
     } else {
-        if (cardAgente) cardAgente.classList.remove('active');
-        if (cardInversionista) cardInversionista.classList.add('active');
         if (agentPlans) agentPlans.style.display = 'flex';
         if (inversionistaPlans) inversionistaPlans.style.display = 'none';
+        if (ownerNotice) ownerNotice.classList.add('hidden');
+        if (planSelect && planSelect.value === 'propietario') {
+            planSelect.value = 'pro';
+        }
     }
 }
 
@@ -14846,7 +14935,7 @@ function initPremiumShowcaseSlider(zoneKey, viewType) {
 
         const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
         const propEmail = (prop.agentEmail || '').toLowerCase();
-        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com' || prop.isOwnerFreeListing === true;
         if (!hasValidAgent) return false;
 
         const uniqueId = titleLower.trim();
@@ -15539,7 +15628,7 @@ function renderHomeCatalog() {
         // Validar que la propiedad pertenezca a un agente suscrito activo o a nosotros
         const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
         const propEmail = (prop.agentEmail || '').toLowerCase();
-        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com';
+        const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com' || prop.isOwnerFreeListing === true;
         if (!hasValidAgent) {
             return false;
         }
@@ -16788,12 +16877,15 @@ function renderSignupAiControls() {
 
     if (s === 1) {
         controls.innerHTML = `
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button type="button" onclick="answerSignupAiRole('agente')" style="flex: 1; min-width: 190px; padding: 12px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.1); color: #fff; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="answerSignupAiRole('agente')" style="flex: 1; min-width: 170px; padding: 11px; border-radius: 8px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.1); color: #fff; font-family: var(--font-mono); font-size: 0.78rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                     💼 Soy Agente Inmobiliario
                 </button>
-                <button type="button" onclick="answerSignupAiRole('inversionista')" style="flex: 1; min-width: 190px; padding: 12px; border-radius: 8px; border: 1px solid #bf5af2; background: rgba(191, 90, 242, 0.12); color: #fff; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <button type="button" onclick="answerSignupAiRole('inversionista')" style="flex: 1; min-width: 170px; padding: 11px; border-radius: 8px; border: 1px solid #bf5af2; background: rgba(191, 90, 242, 0.12); color: #fff; font-family: var(--font-mono); font-size: 0.78rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                     📈 Soy Inversionista
+                </button>
+                <button type="button" onclick="answerSignupAiRole('propietario')" style="flex: 1 1 100%; padding: 12px; border-radius: 8px; border: 1.5px solid var(--neon-emerald); background: rgba(0, 255, 128, 0.12); color: var(--neon-emerald); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 12px rgba(0, 255, 128, 0.15);">
+                    🏠 Soy Propietario (Subir Hasta 2 Propiedades GRATIS vía ValorGT)
                 </button>
             </div>
         `;
@@ -16831,39 +16923,72 @@ function renderSignupAiControls() {
         `;
         setTimeout(() => { const el = document.getElementById('signup-ai-input-pass'); if (el) el.focus(); }, 50);
     } else if (s === 6) {
-        const isPrem = signupAiState.plan === 'premium';
-        controls.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <div onclick="selectSignupAiPlan('pro')" style="flex: 1; min-width: 200px; cursor: pointer; padding: 12px; border-radius: 8px; border: 1.5px solid ${!isPrem ? 'var(--cyan)' : 'rgba(255,255,255,0.12)'}; background: ${!isPrem ? 'rgba(0, 240, 255, 0.1)' : 'rgba(0,0,0,0.35)'};">
-                        <div class="font-mono" style="font-size: 0.7rem; color: var(--cyan); font-weight: bold;">🟦 PLAN PRO</div>
-                        <div style="font-size: 0.92rem; color: #fff; font-weight: bold; margin-top: 2px;">Q235/mes ($30 USD)</div>
-                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Motor IA + Catálogo (Sin Cartera XAUt)</div>
+        if (signupAiState.role === 'propietario') {
+            controls.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="background: rgba(0, 255, 128, 0.08); border: 1.5px solid var(--neon-emerald); border-radius: 8px; padding: 12px 14px; font-size: 0.8rem; color: #ebebf5; line-height: 1.5;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <strong style="color: var(--neon-emerald);">🏠 PLAN PROPIETARIO GRATUITO (HASTA 2 PROPIEDADES)</strong>
+                            <strong style="color: #fff; background: rgba(0,255,128,0.2); padding: 2px 8px; border-radius: 10px;">Q0 / $0 USD</strong>
+                        </div>
+                        • Comercialización oficial a través de <strong style="color: var(--cyan);">ValorGT Inmobiliaria</strong>.<br>
+                        • <strong style="color: #fff;">Comisión de corretaje (solo al concretar negocio):</strong> <strong style="color: var(--neon-emerald);">5% en Venta</strong> | <strong style="color: var(--neon-emerald);">1 Mes de Renta en Alquiler</strong>.
                     </div>
-                    <div onclick="selectSignupAiPlan('premium')" style="flex: 1; min-width: 200px; cursor: pointer; padding: 12px; border-radius: 8px; border: 1.5px solid ${isPrem ? '#ffd700' : 'rgba(255, 215, 0, 0.25)'}; background: ${isPrem ? 'rgba(255, 215, 0, 0.12)' : 'rgba(0,0,0,0.35)'};">
-                        <div class="font-mono" style="font-size: 0.7rem; color: #ffd700; font-weight: bold;">🟨 PLAN PREMIUM GOLD</div>
-                        <div style="font-size: 0.92rem; color: #ffd700; font-weight: bold; margin-top: 2px;">Q505/mes ($65 USD)</div>
-                        <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px;">Todo Pro + Billetera de Oro XAUt</div>
-                    </div>
+                    <button type="button" onclick="finishSignupAiWizard()" class="btn-commercial btn-commercial-purple" style="width: 100%; padding: 13px; font-weight: 800; font-size: 0.88rem; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); color: #000; border: none; border-radius: 8px; cursor: pointer;">
+                        🚀 ACEPTAR ACUERDO, CREAR PERFIL GRATIS Y SUBIR PROPIEDAD
+                    </button>
                 </div>
-                <button type="button" onclick="finishSignupAiWizard()" class="btn-commercial btn-commercial-purple" style="width: 100%; padding: 13px; font-weight: 800; font-size: 0.88rem; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); color: #000; border: none; border-radius: 8px; cursor: pointer;">
-                    🚀 CREAR MI PERFIL Y CONTINUAR AL PAGO
-                </button>
-            </div>
-        `;
+            `;
+        } else {
+            const isPrem = signupAiState.plan === 'premium';
+            controls.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div onclick="selectSignupAiPlan('pro')" style="flex: 1; min-width: 200px; cursor: pointer; padding: 12px; border-radius: 8px; border: 1.5px solid ${!isPrem ? 'var(--cyan)' : 'rgba(255,255,255,0.12)'}; background: ${!isPrem ? 'rgba(0, 240, 255, 0.1)' : 'rgba(0,0,0,0.35)'};">
+                            <div class="font-mono" style="font-size: 0.7rem; color: var(--cyan); font-weight: bold;">🟦 PLAN PRO</div>
+                            <div style="font-size: 0.92rem; color: #fff; font-weight: bold; margin-top: 2px;">Q235/mes ($30 USD)</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Motor IA + Catálogo (Sin Cartera XAUt)</div>
+                        </div>
+                        <div onclick="selectSignupAiPlan('premium')" style="flex: 1; min-width: 200px; cursor: pointer; padding: 12px; border-radius: 8px; border: 1.5px solid ${isPrem ? '#ffd700' : 'rgba(255, 215, 0, 0.25)'}; background: ${isPrem ? 'rgba(255, 215, 0, 0.12)' : 'rgba(0,0,0,0.35)'};">
+                            <div class="font-mono" style="font-size: 0.7rem; color: #ffd700; font-weight: bold;">🟨 PLAN PREMIUM GOLD</div>
+                            <div style="font-size: 0.92rem; color: #ffd700; font-weight: bold; margin-top: 2px;">Q505/mes ($65 USD)</div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px;">Todo Pro + Billetera de Oro XAUt</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick="finishSignupAiWizard()" class="btn-commercial btn-commercial-purple" style="width: 100%; padding: 13px; font-weight: 800; font-size: 0.88rem; background: linear-gradient(135deg, var(--neon-emerald) 0%, var(--cyan) 100%); color: #000; border: none; border-radius: 8px; cursor: pointer;">
+                        🚀 CREAR MI PERFIL Y CONTINUAR AL PAGO
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 
 function answerSignupAiRole(role) {
     signupAiState.role = role;
+    if (role === 'propietario') {
+        signupAiState.plan = 'propietario';
+    } else if (signupAiState.plan === 'propietario') {
+        signupAiState.plan = 'pro';
+    }
     setSignupRole(role);
+    const roleLabelMap = {
+        agente: '💼 Soy Agente Inmobiliario',
+        inversionista: '📈 Soy Inversionista',
+        propietario: '🏠 Soy Propietario (Hasta 2 Propiedades Gratis)'
+    };
+    const roleDescMap = {
+        agente: 'Agente Inmobiliario',
+        inversionista: 'Inversionista',
+        propietario: 'Propietario Directo (Hasta 2 Propiedades Gratis vía ValorGT Inmobiliaria — Comisión 5% Venta / 1 Mes Alquiler)'
+    };
     signupAiState.messages.push({
         sender: 'user',
-        text: role === 'agente' ? '💼 Soy Agente Inmobiliario' : '📈 Soy Inversionista'
+        text: roleLabelMap[role] || '💼 Soy Agente Inmobiliario'
     });
     signupAiState.messages.push({
         sender: 'ai',
-        text: `¡Perfecto! Configuré tu perfil como <strong>${role === 'agente' ? 'Agente Inmobiliario' : 'Inversionista'}</strong>.<br><br><strong>Paso 2:</strong> ¿Cuál es tu <strong>Nombre Completo</strong> (o nombre comercial)?`
+        text: `¡Perfecto! Configuré tu perfil como <strong>${roleDescMap[role] || 'Agente Inmobiliario'}</strong>.<br><br><strong>Paso 2:</strong> ¿Cuál es tu <strong>Nombre Completo</strong>?`
     });
     signupAiState.step = 2;
     renderSignupAiChat();
@@ -16941,10 +17066,17 @@ function answerSignupAiPass() {
     if (passInput) passInput.value = val;
 
     signupAiState.messages.push({ sender: 'user', text: '•••••••• (Contraseña configurada)' });
-    signupAiState.messages.push({
-        sender: 'ai',
-        text: `¡Listo, <strong>${signupAiState.name}</strong>! 🎉 Ya tengo todos tus datos listos.<br><br><strong>Paso 6:</strong> Confirma qué plan deseas activar (<strong>Plan Pro Q235 / $30 USD</strong> o <strong>Plan Premium Q505 / $65 USD con Billetera XAUt</strong>) y presiona el botón para crear tu perfil:`
-    });
+    if (signupAiState.role === 'propietario') {
+        signupAiState.messages.push({
+            sender: 'ai',
+            text: `¡Listo, <strong>${signupAiState.name}</strong>! 🎉 Ya tengo tus datos listos.<br><br><strong>Paso 6 (Final):</strong> Revisa y acepta el <strong>Acuerdo de Corretaje de ValorGT Inmobiliaria (5% en Venta / 1 Mes en Alquiler)</strong> para activar tu cuenta gratuita y subir hasta 2 propiedades ahora mismo:`
+        });
+    } else {
+        signupAiState.messages.push({
+            sender: 'ai',
+            text: `¡Listo, <strong>${signupAiState.name}</strong>! 🎉 Ya tengo todos tus datos listos.<br><br><strong>Paso 6:</strong> Confirma qué plan deseas activar (<strong>Plan Pro Q235 / $30 USD</strong> o <strong>Plan Premium Q505 / $65 USD con Billetera XAUt</strong>) y presiona el botón para crear tu perfil:`
+        });
+    }
     signupAiState.step = 6;
     renderSignupAiChat();
     renderSignupAiControls();
@@ -16962,13 +17094,29 @@ function finishSignupAiWizard() {
     const emailInput = document.getElementById('com-signup-email');
     const phoneInput = document.getElementById('com-signup-phone');
     const passInput = document.getElementById('com-signup-pass');
+    const planSelect = document.getElementById('com-signup-plan');
     if (nameInput) nameInput.value = signupAiState.name;
     if (emailInput) emailInput.value = signupAiState.email;
     if (phoneInput) phoneInput.value = signupAiState.phone;
     if (passInput) passInput.value = signupAiState.pass;
-    selectSignupPlanCard(signupAiState.plan);
+    if (signupAiState.role === 'propietario') {
+        if (planSelect) planSelect.value = 'propietario';
+    } else {
+        selectSignupPlanCard(signupAiState.plan);
+    }
 
     handleRegistrationFormSubmit(new Event('submit'));
+}
+
+function startFreeOwnerSignupFromAi() {
+    switchView('commercial');
+    if (isCommercialAuthenticated) {
+        switchCommercialTab('propiedades');
+        return;
+    }
+    switchLoginTab('signup');
+    initSignupAiAssistant(true);
+    answerSignupAiRole('propietario');
 }
 
 
@@ -17863,6 +18011,19 @@ function askHomeAiConcierge(topic) {
             </div>
             `
         );
+    } else if (topic === 'propietario') {
+        appendHomeAiChatExchange(
+            '🏠 Soy propietario: ¿Puedo subir mi propiedad GRATIS?',
+            `
+            ¡Sí! Si eres dueño directo puedes publicar <strong>hasta 2 propiedades 100% GRATIS (Q0 / $0 USD de membresía)</strong> en ValorGT:<br>
+            • <strong style="color: var(--cyan);">Comercialización Oficial:</strong> Tu propiedad se publica y gestiona a través de <strong>ValorGT Inmobiliaria</strong> (nosotros filtramos clientes reales y coordinamos las visitas por ti).<br>
+            • <strong style="color: var(--neon-emerald);">Comisión solo por éxito:</strong> No pagas nada por adelantado. Únicamente aplica comisión de corretaje si vendemos o alquilamos tu inmueble: <strong style="color: #fff;">5% en Venta</strong> o <strong style="color: #fff;">1 mes de renta en Alquiler</strong>.<br>
+            • <em>Si eres corredor o tienes 3 o más propiedades, puedes activar el <strong>Plan Pro (Q235 / $30 USD)</strong> o <strong>Plan Premium (Q505 / $65 USD)</strong> con propiedades ilimitadas y tu propia marca.</em><br>
+            <div style="margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap;">
+                <a href="#" onclick="startFreeOwnerSignupFromAi(); return false;" style="color: var(--neon-emerald); font-size: 0.88rem; font-weight: 700; text-decoration: none;">→ Registrarme Gratis como Propietario y Subir mi Propiedad</a>
+            </div>
+            `
+        );
     } else if (topic === 'pagos') {
         appendHomeAiChatExchange(
             '⚡ ¿Cómo me registro y realizo mi pago?',
@@ -18149,16 +18310,23 @@ function sendHomeAiCustomMessage() {
         return;
     }
 
+    // 7.A Preguntas de Propietarios / Dueños Directos / Subir Gratis
+    if (lower.includes('propietario') || lower.includes('dueño') || lower.includes('dueno') || lower.includes('gratis') || lower.includes('mi casa') || lower.includes('mi apartamento') || lower.includes('mi terreno') || lower.includes('comision') || lower.includes('comisión')) {
+        askHomeAiConcierge('propietario');
+        return;
+    }
+
     // 7.B Preguntas sobre Publicar Propiedades / Subir Inmuebles al Catálogo
     if (lower.includes('publicar') || lower.includes('subir') || lower.includes('vender') || lower.includes('propiedad') || lower.includes('inventario')) {
         appendHomeAiChatExchange(
             text,
             `
-            Como socio de ValorGT puedes publicar <strong>propiedades ilimitadas</strong> en el catálogo general sin costo adicional en tu membresía. En la pestaña <strong>Ingreso de Propiedades</strong> nuestro <strong>Copiloto IA</strong> te pide cada dato paso a paso y redacta la descripción comercial por ti.<br>
-            • Y si además quieres destacar un anuncio en el carrusel de portada, puedes contratar una <strong>Pauta Destacada</strong> desde tu consola.<br>
+            En ValorGT tienes <strong>2 modalidades</strong> para subir propiedades al catálogo con nuestro <strong>Copiloto IA</strong> paso a paso:<br>
+            • <strong style="color: var(--neon-emerald);">1. Si eres Propietario Directo (GRATIS — Hasta 2 Propiedades):</strong> Publicas sin costo mensual a través de <strong>ValorGT Inmobiliaria</strong> (Comisión solo al cerrar negocio: <strong>5% en Venta</strong> / <strong>1 mes en Alquiler</strong>).<br>
+            • <strong style="color: var(--cyan);">2. Si eres Agente o Inmobiliaria (Propiedades Ilimitadas + Tu Propia Marca):</strong> Activas el <strong>Plan Pro (Q235/mes | $30 USD/mes)</strong> o <strong>Plan Premium Gold (Q505/mes | $65 USD/mes)</strong> y recibes el 100% de tus clientes directo a tu WhatsApp.<br>
             <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
-                <a href="#" onclick="selectPublicPlanForSignup('pro'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Crear cuenta o ingresar para subir propiedades</a>
-                <a href="#" onclick="openPautasPortalFromHomeAi(); return false;" style="color: #ffd700; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ver Pautas en Portada</a>
+                <a href="#" onclick="startFreeOwnerSignupFromAi(); return false;" style="color: var(--neon-emerald); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Soy Propietario: Subir Gratis (Hasta 2)</a>
+                <a href="#" onclick="selectPublicPlanForSignup('pro'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Soy Agente: Planes Ilimitados</a>
             </div>
             `
         );
