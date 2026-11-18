@@ -17676,6 +17676,103 @@ function askHomeAiConcierge(topic) {
     }
 }
 
+function detectHomeAiZoneAndCategory(lower) {
+    const zoneMatchers = [
+        { key: 'zona10', terms: ['zona 10', 'zona10', 'z10', 'z.10', 'zona viva', 'reforma'] },
+        { key: 'zona14', terms: ['zona 14', 'zona14', 'z14', 'z.14', 'la cañada', 'cañada', 'las américas', 'las americas'] },
+        { key: 'zona15', terms: ['zona 15', 'zona15', 'z15', 'z.15', 'vista hermosa'] },
+        { key: 'zona16', terms: ['zona 16', 'zona16', 'z16', 'z.16', 'cayalá', 'cayala', 'san isidro'] },
+        { key: 'zona4', terms: ['zona 4', 'zona4', 'z4', 'z.4', 'cantón exposición', 'canton exposicion'] },
+        { key: 'zona13', terms: ['zona 13', 'zona13', 'z13', 'z.13', 'aurora', 'hincapié', 'hincapie'] },
+        { key: 'zona11', terms: ['zona 11', 'zona11', 'z11', 'z.11', 'majadas', 'charcas'] },
+        { key: 'zona12', terms: ['zona 12', 'zona12', 'z12', 'z.12', 'reformita', 'el trébol', 'trebol'] },
+        { key: 'zona9', terms: ['zona 9', 'zona9', 'z9', 'z.9', 'montúfar', 'montufar'] },
+        { key: 'zona7', terms: ['zona 7', 'zona7', 'z7', 'z.7', 'el naranjo', 'naranjo'] },
+        { key: 'zona1', terms: ['zona 1', 'zona1', 'z1', 'z.1', 'centro histórico', 'centro historico'] },
+        { key: 'carretera_high', terms: ['km 18', 'km 19', 'km 20', 'km 21', 'km 22', 'km 23', 'km 24', 'km 25', 'caes alto'] },
+        { key: 'carretera', terms: ['caes', 'carretera a el salvador', 'carretera el salvador', 'km 10', 'km 12', 'km 14', 'km 15', 'km 16'] },
+        { key: 'fraijanes', terms: ['fraijanes'] },
+        { key: 'mixco', terms: ['mixco', 'san cristóbal', 'san cristobal'] },
+        { key: 'pinula', terms: ['san josé pinula', 'san jose pinula', 'pinula'] },
+        { key: 'antigua', terms: ['antigua', 'antigua guatemala', 'sacatepéquez', 'sacatepequez'] }
+    ];
+
+    let detectedZone = null;
+    for (const zm of zoneMatchers) {
+        if (zm.terms.some(t => lower.includes(t))) {
+            detectedZone = zm.key;
+            break;
+        }
+    }
+
+    let detectedCatKey = null; // key en ZONES_DATABASE.categories
+    let detectedFilterCat = null; // value en #home-filter-category
+    let detectedCatLabel = 'Inmuebles';
+    if (lower.includes('apartamento') || lower.includes('apto') || lower.includes('penthouse') || lower.includes('loft')) {
+        detectedCatKey = 'apartamentos';
+        detectedFilterCat = 'apartamento';
+        detectedCatLabel = 'Apartamentos';
+    } else if (lower.includes('casa') || lower.includes('residencia') || lower.includes('condominio')) {
+        detectedCatKey = 'casas';
+        detectedFilterCat = 'casa';
+        detectedCatLabel = 'Casas';
+    } else if (lower.includes('oficina') || lower.includes('corporativ')) {
+        detectedCatKey = 'oficinas';
+        detectedFilterCat = 'oficina';
+        detectedCatLabel = 'Oficinas';
+    } else if (lower.includes('local') || lower.includes('comercial')) {
+        detectedCatKey = 'locales';
+        detectedFilterCat = 'local';
+        detectedCatLabel = 'Locales Comerciales';
+    } else if (lower.includes('terreno') || lower.includes('lote')) {
+        detectedCatKey = 'terrenos';
+        detectedFilterCat = 'terreno';
+        detectedCatLabel = 'Terrenos';
+    } else if (lower.includes('bodega') || lower.includes('nave') || lower.includes('industrial')) {
+        detectedCatKey = 'bodegas';
+        detectedFilterCat = 'bodega';
+        detectedCatLabel = 'Bodegas';
+    }
+
+    let detectedOp = null; // 'venta' | 'renta'
+    if (lower.includes('renta') || lower.includes('alquiler') || lower.includes('alquilar') || lower.includes('arrendar')) {
+        detectedOp = 'renta';
+    } else if (lower.includes('venta') || lower.includes('comprar') || lower.includes('compra')) {
+        detectedOp = 'venta';
+    }
+
+    // Detectar si menciona un metraje específico, ej. "120 m2", "150 metros", "200m2"
+    let detectedSizeM2 = null;
+    const sizeMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:m2|m²|mts2|mts|metros)/i);
+    if (sizeMatch && sizeMatch[1]) {
+        const parsed = parseFloat(sizeMatch[1]);
+        if (parsed >= 15 && parsed <= 50000) {
+            detectedSizeM2 = parsed;
+        }
+    }
+
+    return { detectedZone, detectedCatKey, detectedFilterCat, detectedCatLabel, detectedOp, detectedSizeM2 };
+}
+
+function applyHomeCatalogFilterFromAi(zoneKey, catVal, opVal) {
+    const zoneEl = document.getElementById('home-filter-zone');
+    const catEl = document.getElementById('home-filter-category');
+    const opEl = document.getElementById('home-filter-type');
+    const searchEl = document.getElementById('home-search-input');
+
+    if (searchEl) searchEl.value = '';
+    if (zoneEl) zoneEl.value = zoneKey || 'todos';
+    if (catEl) catEl.value = catVal || 'todos';
+    if (opEl) opEl.value = opVal || 'todos';
+
+    if (typeof filterHomeCatalog === 'function') {
+        filterHomeCatalog();
+    }
+
+    const cards = document.querySelectorAll('#home-catalog-grid .catalog-prop-card, #home-catalog-grid .card');
+    return cards ? cards.length : 0;
+}
+
 function sendHomeAiCustomMessage() {
     const input = document.getElementById('home-ai-chat-input');
     if (!input) return;
@@ -17684,6 +17781,77 @@ function sendHomeAiCustomMessage() {
     input.value = '';
 
     const lower = text.toLowerCase();
+
+    // 0. Detectar consultas en vivo sobre Zonas específicas, Categorías, Precios por m² o Búsqueda en Catálogo
+    const { detectedZone, detectedCatKey, detectedFilterCat, detectedCatLabel, detectedOp, detectedSizeM2 } = detectHomeAiZoneAndCategory(lower);
+
+    if (detectedZone && typeof ZONES_DATABASE !== 'undefined' && ZONES_DATABASE[detectedZone]) {
+        const zData = ZONES_DATABASE[detectedZone];
+        const catObj = (detectedCatKey && zData.categories && zData.categories[detectedCatKey])
+            ? zData.categories[detectedCatKey]
+            : (zData.categories ? zData.categories.apartamentos : null);
+
+        const priceM2Usd = catObj ? catObj.priceM2 : (zData.basePriceM2 || 1800);
+        const priceM2Gtq = Math.round(priceM2Usd * exchangeRate);
+        const roiVal = catObj ? catObj.roi : (zData.roi || 7.5);
+        const growthVal = catObj ? catObj.growth : (zData.growth5Y ? (zData.growth5Y / 5).toFixed(1) : 6.5);
+        const liqVal = catObj ? catObj.liquidity : (zData.liquidityIndex || '8.5/10');
+        const recVal = catObj ? catObj.rec : 'COMPRAR / MANTENER';
+
+        // Filtrar automáticamente el catálogo de abajo con lo que pidió el usuario
+        const matchesCount = applyHomeCatalogFilterFromAi(detectedZone, detectedFilterCat, detectedOp);
+
+        let customValuationHtml = '';
+        if (detectedSizeM2) {
+            const estTotalUsd = Math.round(detectedSizeM2 * priceM2Usd);
+            const estTotalGtq = Math.round(estTotalUsd * exchangeRate);
+            const estRentUsd = Math.round((estTotalUsd * (roiVal / 100)) / 12);
+            const estRentGtq = Math.round(estRentUsd * exchangeRate);
+            customValuationHtml = `
+                <div style="margin: 8px 0; padding: 10px 14px; background: rgba(0, 240, 255, 0.06); border-left: 3px solid var(--cyan); border-radius: 6px;">
+                    📐 <strong>Estimación IA para ${detectedSizeM2} m² en ${zData.name.split(' (')[0]}:</strong><br>
+                    • Valor Comercial Estimado: <strong style="color: var(--cyan);">Q${formatNumber(estTotalGtq)} ($${formatNumber(estTotalUsd)} USD)</strong><br>
+                    ${roiVal > 0 ? `• Renta Mensual Proyectada: <strong style="color: var(--neon-emerald);">Q${formatNumber(estRentGtq)}/mes ($${formatNumber(estRentUsd)} USD/mes)</strong>` : ''}
+                </div>
+            `;
+        }
+
+        appendHomeAiChatExchange(
+            text,
+            `
+            Aquí tienes la telemetría en tiempo real de <strong style="color: var(--cyan);">${zData.name}</strong> (${detectedCatKey ? detectedCatLabel : 'Promedio General'}):<br>
+            • <strong>Precio Promedio por m²:</strong> <strong style="color: #fff;">Q${formatNumber(priceM2Gtq)} / m²</strong> <span style="color: var(--neon-emerald);">($${formatNumber(priceM2Usd)} USD / m²)</span><br>
+            • <strong>Rentabilidad de Alquiler (ROI):</strong> <strong style="color: var(--neon-emerald);">${roiVal}% anual</strong> | <strong>Plusvalía Anual:</strong> <strong style="color: var(--cyan);">+${growthVal}%</strong><br>
+            • <strong>Índice de Liquidez:</strong> ${liqVal} | <strong>Señal IA:</strong> <strong style="color: #ffd700;">${recVal}</strong><br>
+            ${customValuationHtml}
+            • <em>He filtrado automáticamente el catálogo de abajo para <strong>${zData.name.split(' (')[0]}</strong> (${matchesCount} propiedad${matchesCount === 1 ? '' : 'es'} encontrada${matchesCount === 1 ? '' : 's'}).</em>
+            <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
+                <a href="#" onclick="document.getElementById('home-catalog-grid').scrollIntoView({behavior:'smooth'}); return false;" style="color: var(--neon-emerald); font-size: 0.86rem; font-weight: 700; text-decoration: none;">↓ Ver propiedades filtradas abajo (${matchesCount})</a>
+                <a href="#" onclick="switchView('dashboard'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Hacer tasación exacta en Tasador IA</a>
+                <a href="#" onclick="switchView('heatmap'); return false;" style="color: #bf5af2; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ver en Radar de Calor</a>
+            </div>
+            `
+        );
+        return;
+    }
+
+    // 0.5 Si busca un tipo de propiedad o operación (ej. "apartamentos en venta", "casas en renta", "bodegas") sin especificar zona
+    if ((detectedFilterCat || detectedOp) && !lower.includes('publicar') && !lower.includes('subir')) {
+        const matchesCount = applyHomeCatalogFilterFromAi('todos', detectedFilterCat, detectedOp);
+        const filterDesc = `${detectedFilterCat ? detectedCatLabel : 'Propiedades'}${detectedOp ? ` en ${detectedOp.toUpperCase()}` : ''}`;
+        appendHomeAiChatExchange(
+            text,
+            `
+            ¡Listo! He filtrado el catálogo en vivo de abajo para mostrarte <strong style="color: var(--cyan);">${filterDesc}</strong> en todas las zonas (${matchesCount} resultado${matchesCount === 1 ? '' : 's'} disponible${matchesCount === 1 ? '' : 's'}).<br>
+            • Si deseas una zona específica, pregúntame por ejemplo: <em>"Apartamentos en Zona 14"</em> o <em>"¿Cuánto cuesta el m² en Zona 10?"</em>.<br>
+            <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
+                <a href="#" onclick="document.getElementById('home-catalog-grid').scrollIntoView({behavior:'smooth'}); return false;" style="color: var(--neon-emerald); font-size: 0.86rem; font-weight: 700; text-decoration: none;">↓ Bajar a ver los resultados (${matchesCount})</a>
+                <a href="#" onclick="applyHomeCatalogFilterFromAi('todos','todos','todos'); return false;" style="color: var(--text-secondary); font-size: 0.85rem; text-decoration: none;">↺ Mostrar todo el catálogo</a>
+            </div>
+            `
+        );
+        return;
+    }
 
     // 1. Preguntas sobre Billetera de Oro / XAUt / Tether Gold
     if (lower.includes('oro') || lower.includes('xaut') || lower.includes('billetera') || lower.includes('tether') || lower.includes('airdrop') || lower.includes('cartera')) {
@@ -17720,7 +17888,7 @@ function sendHomeAiCustomMessage() {
             `
             Nuestro <strong style="color: var(--cyan);">Tasador Inteligente IA</strong> calcula el valor de mercado y la renta mensual estimada de cualquier propiedad en Guatemala en segundos:<br>
             • Analiza sector/zona, metros cuadrados, habitaciones, baños, parqueos, acabados, estado de conservación y más de 30 amenidades.<br>
-            • Además, puedes hacer clic en el botón <strong>"AUTOTASAR"</strong> de cualquier propiedad del catálogo para cargarla automáticamente en el motor.<br>
+            • También puedes escribirme aquí mismo: <em>"¿Cuánto vale un apartamento de 120 m2 en Zona 14?"</em> y te doy el cálculo al instante.<br>
             <div style="margin-top: 8px;">
                 <a href="#" onclick="switchView('dashboard'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ir a Tasa Inteligente IA ahora</a>
             </div>
@@ -17745,11 +17913,12 @@ function sendHomeAiCustomMessage() {
     }
 
     // 6. Preguntas sobre Zonas, Plusvalía, ROI, Mapa de Calor
-    if (lower.includes('zona') || lower.includes('mapa') || lower.includes('calor') || lower.includes('plusval') || lower.includes('roi') || lower.includes('rentabilidad') || lower.includes('antigua') || lower.includes('caes') || lower.includes('cayala') || lower.includes('cayalá')) {
+    if (lower.includes('zona') || lower.includes('mapa') || lower.includes('calor') || lower.includes('plusval') || lower.includes('roi') || lower.includes('rentabilidad') || lower.includes('invertir') || lower.includes('inversión') || lower.includes('inversion')) {
         appendHomeAiChatExchange(
             text,
             `
-            Con el <strong style="color: var(--cyan);">Radar de Calor</strong> y la <strong style="color: #bf5af2;">Terminal de Inversión</strong> puedes explorar el precio promedio por m², ROI de alquiler, liquidez y plusvalía anual en todas las zonas de Ciudad de Guatemala, CAES, Carretera, Fraijanes, Mixco y Antigua Guatemala.<br>
+            Con el <strong style="color: var(--cyan);">Radar de Calor</strong> y la <strong style="color: #bf5af2;">Terminal de Inversión</strong> puedes explorar el precio promedio por m², ROI de alquiler, liquidez y plusvalía anual en todas las zonas.<br>
+            • Escríbeme cualquier zona (ej. <em>"Zona 10"</em>, <em>"Zona 14"</em>, <em>"Zona 16"</em>, <em>"CAES"</em> o <em>"Antigua Guatemala"</em>) y te doy sus métricas exactas en Quetzales y Dólares.<br>
             <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
                 <a href="#" onclick="switchView('heatmap'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ver Radar de Calor</a>
                 <a href="#" onclick="switchView('investor'); return false;" style="color: #bf5af2; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Abrir Terminal de Inversión</a>
@@ -17793,11 +17962,41 @@ function sendHomeAiCustomMessage() {
         return;
     }
 
-    // 10. Respuesta general inteligente
+    // 10. Si escribió una palabra clave específica (ej. "penthouse", "piscina", "jardín", nombre de colonia), buscarla en el catálogo
+    const searchInputEl = document.getElementById('home-search-input');
+    if (searchInputEl && text.length >= 3) {
+        searchInputEl.value = text;
+        if (typeof filterHomeCatalog === 'function') {
+            filterHomeCatalog();
+        }
+        const cards = document.querySelectorAll('#home-catalog-grid .catalog-prop-card, #home-catalog-grid .card');
+        const matchesCount = cards ? cards.length : 0;
+        if (matchesCount > 0) {
+            appendHomeAiChatExchange(
+                text,
+                `
+                Encontré <strong style="color: var(--neon-emerald);">${matchesCount} propiedad${matchesCount === 1 ? '' : 'es'}</strong> en el catálogo que coinciden con <strong>"${text}"</strong> y ya te las dejé filtradas abajo.<br>
+                <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
+                    <a href="#" onclick="document.getElementById('home-catalog-grid').scrollIntoView({behavior:'smooth'}); return false;" style="color: var(--neon-emerald); font-size: 0.86rem; font-weight: 700; text-decoration: none;">↓ Ver resultados en el catálogo (${matchesCount})</a>
+                    <a href="#" onclick="applyHomeCatalogFilterFromAi('todos','todos','todos'); return false;" style="color: var(--text-secondary); font-size: 0.85rem; text-decoration: none;">↺ Quitar filtro</a>
+                </div>
+                `
+            );
+            return;
+        } else {
+            searchInputEl.value = '';
+            if (typeof filterHomeCatalog === 'function') filterHomeCatalog();
+        }
+    }
+
+    // 11. Respuesta general inteligente
     appendHomeAiChatExchange(
         text,
         `
-        ¡Con gusto te ayudo! En <strong>ValorGT AI</strong> tienes acceso a nuestro catálogo inmobiliario abajo, autotasación con IA, mapas de calor de plusvalía y dos planes de membresía: <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD)</strong> y <strong style="color: #ffd700;">Plan Premium con Billetera de Oro XAUt (Q505 / $65 USD)</strong>.<br>
+        ¡Con gusto te ayudo! Puedes preguntarme:<br>
+        • <strong>Sobre cualquier zona:</strong> <em>"¿Cuánto cuesta el m² en Zona 14?"</em>, <em>"Rentabilidad en Antigua Guatemala"</em> o <em>"¿Cuánto vale un apartamento de 120 m2 en Zona 10?"</em><br>
+        • <strong>Sobre propiedades:</strong> <em>"Apartamentos en venta"</em> o <em>"Casas en CAES"</em>.<br>
+        • <strong>Sobre membresías:</strong> <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD)</strong> y <strong style="color: #ffd700;">Plan Premium con Billetera XAUt (Q505 / $65 USD)</strong>.<br>
         <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
             <a href="#" onclick="askHomeAiConcierge('innovacion'); return false;" style="color: var(--cyan); font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ ¿Por qué somos innovadores?</a>
             <a href="#" onclick="askHomeAiConcierge('planes'); return false;" style="color: #ffd700; font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ Comparar Planes</a>
