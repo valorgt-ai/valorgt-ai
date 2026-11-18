@@ -10571,19 +10571,6 @@ async function _syncSupabaseDataInternal() {
 
                             // Actualizar en el listado local de clientes para mantener consistencia
                             const clientIdx = b2bClients.findIndex(c => c.email && loggedInB2bClient.email && c.email.toLowerCase() === loggedInB2bClient.email.toLowerCase());
-                            if (clientIdx !== -1) {
-                                b2bClients[clientIdx].status = loggedInB2bClient.status;
-                                b2bClients[clientIdx].plan = loggedInB2bClient.plan;
-                                b2bClients[clientIdx].usdtBalance = loggedInB2bClient.usdtBalance;
-                                b2bClients[clientIdx].role = loggedInB2bClient.role;
-                            }
-                            localStorage.setItem('b2b_clients_local', JSON.stringify(b2bClients));
-                            localStorage.setItem('valorgt_active_b2b_client', JSON.stringify(loggedInB2bClient));
-
-                            // Actualizar interfaces
-                            updateSaasMetricsHUD();
-                            updateB2bSubscriptionPendingBanner();
-                            syncCommercialPricingGridUI();
                             renderB2bAgentProfile();
 
                             // Gestionar Overlays de Bloqueo dinámicamente si cambió el estado
@@ -18085,6 +18072,24 @@ function sendHomeAiCustomMessage() {
         return;
     }
 
+    // 1.5 Preguntas específicas sobre Pautar Anuncios / Publicidad en Portada / Patrocinados
+    if (lower.includes('pauta') || lower.includes('anunci') || lower.includes('publicidad') || lower.includes('patrocin') || lower.includes('destaca') || lower.includes('portada') || lower.includes('banner') || lower.includes('slider')) {
+        appendHomeAiChatExchange(
+            text,
+            `
+            Para <strong>pautar un anuncio en la portada principal de ValorGT</strong> contamos con 2 formatos de alto impacto:<br>
+            • <strong style="color: var(--cyan);">1. Showcase Slider Superior (Gran Banner 1200x480 px):</strong> Tu propiedad o desarrollo brilla hasta arriba de la portada con rotación automática y 100% de visibilidad → <strong>Q5,000/mes ($643 USD/mes)</strong>.<br>
+            • <strong style="color: var(--neon-emerald);">2. Deck de Destacados de Portada (Tarjeta "PATROCINADO"):</strong> Tu propiedad aparece destacada con halo neón en la fila superior de oportunidades → <strong>Q3,000/mes ($386 USD/mes)</strong>.<br>
+            • <strong style="color: #ffd700;">Descuentos acumulables:</strong> <strong>15% de descuento</strong> con membresía Premium + <strong>5% adicional</strong> (3 meses) o <strong>10% adicional</strong> (6 meses).<br>
+            <div style="margin-top: 10px; display: flex; gap: 14px; flex-wrap: wrap;">
+                <a href="#" onclick="openPautasPortalFromHomeAi(); return false;" style="color: var(--neon-emerald); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ir al Portal de Pautas y Publicidad</a>
+                <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20quiero%20pautar%20un%20anuncio%20destacado%20en%20la%20portada..." target="_blank" style="color: #ffd700; font-size: 0.86rem; font-weight: 700; text-decoration: none;">💬 Contratar Pauta por WhatsApp</a>
+            </div>
+            `
+        );
+        return;
+    }
+
     // 2. Preguntas sobre Planes y Precios
     if (lower.includes('plan') || lower.includes('precio') || lower.includes('costo') || lower.includes('cuanto') || lower.includes('cuánto') || lower.includes('pro') || lower.includes('premium') || lower.includes('membres') || lower.includes('mensual') || lower.includes('anual')) {
         askHomeAiConcierge('planes');
@@ -18144,14 +18149,16 @@ function sendHomeAiCustomMessage() {
         return;
     }
 
-    // 7. Preguntas sobre Publicar Propiedades / Subir Inmuebles / Pauta
-    if (lower.includes('publicar') || lower.includes('subir') || lower.includes('vender') || lower.includes('anunciar') || lower.includes('pauta') || lower.includes('propiedad')) {
+    // 7.B Preguntas sobre Publicar Propiedades / Subir Inmuebles al Catálogo
+    if (lower.includes('publicar') || lower.includes('subir') || lower.includes('vender') || lower.includes('propiedad') || lower.includes('inventario')) {
         appendHomeAiChatExchange(
             text,
             `
-            Como socio de ValorGT puedes publicar <strong>propiedades ilimitadas</strong> en el catálogo y compartir tu propio enlace exclusivo con tus clientes. Además, en la sección de <strong>Ingreso de Propiedades</strong> contamos con un <strong>Copiloto IA</strong> que te va pidiendo cada dato paso a paso y redacta tu descripción comercial automáticamente.<br>
+            Como socio de ValorGT puedes publicar <strong>propiedades ilimitadas</strong> en el catálogo general sin costo adicional en tu membresía. En la pestaña <strong>Ingreso de Propiedades</strong> nuestro <strong>Copiloto IA</strong> te pide cada dato paso a paso y redacta la descripción comercial por ti.<br>
+            • Y si además quieres destacar un anuncio en el carrusel de portada, puedes contratar una <strong>Pauta Destacada</strong> desde tu consola.<br>
             <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
-                <a href="#" onclick="selectPublicPlanForSignup('pro'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Crear mi cuenta para publicar propiedades</a>
+                <a href="#" onclick="selectPublicPlanForSignup('pro'); return false;" style="color: var(--cyan); font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Crear cuenta o ingresar para subir propiedades</a>
+                <a href="#" onclick="openPautasPortalFromHomeAi(); return false;" style="color: #ffd700; font-size: 0.86rem; font-weight: 700; text-decoration: none;">→ Ver Pautas en Portada</a>
             </div>
             `
         );
@@ -18211,7 +18218,7 @@ function sendHomeAiCustomMessage() {
         `
         ¡Con gusto te ayudo! Puedes preguntarme:<br>
         • <strong>Sobre cualquier zona:</strong> <em>"¿Cuánto cuesta el m² en Zona 14?"</em>, <em>"Rentabilidad en Antigua Guatemala"</em> o <em>"¿Cuánto vale un apartamento de 120 m2 en Zona 10?"</em><br>
-        • <strong>Sobre propiedades:</strong> <em>"Apartamentos en venta"</em> o <em>"Casas en CAES"</em>.<br>
+        • <strong>Sobre propiedades y pautas:</strong> <em>"Apartamentos en venta"</em>, <em>"Casas en CAES"</em> o <em>"Quiero pautar un anuncio"</em>.<br>
         • <strong>Sobre membresías:</strong> <strong style="color: var(--cyan);">Plan Pro (Q235 / $30 USD)</strong> y <strong style="color: #ffd700;">Plan Premium con Billetera XAUt (Q505 / $65 USD)</strong>.<br>
         <div style="margin-top: 8px; display: flex; gap: 14px; flex-wrap: wrap;">
             <a href="#" onclick="askHomeAiConcierge('innovacion'); return false;" style="color: var(--cyan); font-size: 0.85rem; font-weight: 600; text-decoration: none;">→ ¿Por qué somos innovadores?</a>
@@ -18220,6 +18227,15 @@ function sendHomeAiCustomMessage() {
         </div>
         `
     );
+}
+
+function openPautasPortalFromHomeAi() {
+    switchView('commercial');
+    if (isCommercialAuthenticated) {
+        switchCommercialTab('pauta');
+    } else {
+        switchLoginTab('signin');
+    }
 }
 
 
