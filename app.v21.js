@@ -9762,8 +9762,187 @@ function renderAdminDashboard() {
         adminAdPriceInput.value = baseAdPriceGTQ;
     }
 
+    if (typeof renderAdminOwnersDirectory === 'function') {
+        renderAdminOwnersDirectory();
+    }
+
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
+    }
+}
+
+/**
+ * Renderiza en la Consola de Administración el Directorio de Propietarios Directos (Hasta 2 propiedades gratis)
+ * junto con sus datos privados de contacto y el cálculo automático de comisión para ValorGT Inmobiliaria (5% Venta / 1 Mes Alquiler)
+ */
+function renderAdminOwnersDirectory() {
+    const tbody = document.getElementById('admin-owners-table-body');
+    const countEl = document.getElementById('admin-owners-count');
+    const totalCommEl = document.getElementById('admin-owners-total-commission');
+    if (!tbody) return;
+
+    // 1. Identificar propietarios registrados en b2bClients
+    const ownerClients = [];
+    b2bClients.forEach((client, idx) => {
+        const r = (client.role || '').toLowerCase();
+        const p = (client.plan || '').toLowerCase();
+        if (r === 'propietario' || p === 'propietario') {
+            ownerClients.push({ client, clientIdx: idx });
+        }
+    });
+
+    // 2. Recopilar todas las propiedades de PORTFOLIO_DATABASE para cruzarlas con sus propietarios
+    const allProps = [];
+    if (typeof PORTFOLIO_DATABASE !== 'undefined') {
+        Object.keys(PORTFOLIO_DATABASE).forEach(zk => {
+            const list = PORTFOLIO_DATABASE[zk] || [];
+            list.forEach((prop, propIdx) => {
+                if (prop.isReferenceData === true) return;
+                allProps.push({ prop, zoneKey: zk, propIdx });
+            });
+        });
+    }
+
+    if (countEl) {
+        countEl.innerText = `${ownerClients.length} PROPIETARIO${ownerClients.length === 1 ? '' : 'S'}`;
+    }
+
+    if (ownerClients.length === 0) {
+        if (totalCommEl) {
+            totalCommEl.innerText = 'COMISIÓN POTENCIAL: Q0 / $0 USD';
+        }
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 28px; color: var(--text-muted);">
+                    Aún no hay propietarios directos registrados en la plataforma. Cuando un dueño se registre en el Plan Propietario Gratuito (hasta 2 propiedades), aparecerán aquí su teléfono privado, sus inmuebles y tu comisión proyectada (5% Venta / 1 Mes Alquiler).
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    let totalPotentialCommUSD = 0;
+    tbody.innerHTML = '';
+
+    ownerClients.forEach(({ client, clientIdx }) => {
+        const ownerId = client.id ? String(client.id).toLowerCase() : '';
+        const ownerEmail = (client.email || '').toLowerCase();
+        const ownerName = client.name || 'Propietario';
+        const ownerPhone = client.phone || client.whatsapp || 'N/A';
+        const cleanWaPhone = String(ownerPhone).replace(/\D/g, '');
+        const waNumber = cleanWaPhone.length === 8 ? `502${cleanWaPhone}` : (cleanWaPhone || '50247996413');
+
+        const myProps = allProps.filter(({ prop }) => {
+            const pAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+            const pEmail = (prop.agentEmail || '').toLowerCase();
+            const pOwnerEmail = (prop.ownerEmail || '').toLowerCase();
+            return (ownerId && pAgentId === ownerId) ||
+                (ownerEmail && (pEmail === ownerEmail || pOwnerEmail === ownerEmail));
+        });
+
+        let propsListHtml = '';
+        let pricesHtml = '';
+        let commHtml = '';
+        let viewBtnHtml = '';
+
+        if (myProps.length === 0) {
+            propsListHtml = `<span style="color: var(--text-muted); font-size: 0.68rem;">Sin propiedades subidas aún</span>`;
+            pricesHtml = `<span style="color: var(--text-muted);">-</span>`;
+            commHtml = `<span style="color: var(--text-muted);">-</span>`;
+        } else {
+            propsListHtml = myProps.map(({ prop, zoneKey, propIdx }) => {
+                const { category, type } = getPropertyCategoryAndType(prop);
+                const isRent = type.toLowerCase() === 'renta';
+                const zName = (ZONES_DATABASE[zoneKey] && ZONES_DATABASE[zoneKey].name) ? ZONES_DATABASE[zoneKey].name.split(' (')[0] : zoneKey.toUpperCase();
+                return `
+                    <div style="margin-bottom: 4px; line-height: 1.35;">
+                        <a href="#" onclick="openPropertyDetailModal('${zoneKey}', ${propIdx}); return false;" style="color: #fff; font-weight: bold; text-decoration: underline;">${prop.title}</a><br>
+                        <span style="font-size: 0.62rem; color: var(--cyan);">📍 ${zName}</span> • 
+                        <span style="font-size: 0.62rem; padding: 1px 5px; border-radius: 3px; background: ${isRent ? 'rgba(191,90,242,0.18)' : 'rgba(0,255,128,0.15)'}; color: ${isRent ? '#e0b0ff' : 'var(--neon-emerald)'}; font-weight: bold;">${category.toUpperCase()} EN ${type.toUpperCase()}</span>
+                    </div>
+                `;
+            }).join('');
+
+            pricesHtml = myProps.map(({ prop }) => {
+                const { type } = getPropertyCategoryAndType(prop);
+                const isRent = type.toLowerCase() === 'renta';
+                const pUsd = Number(prop.priceUSD) || 0;
+                const pGtq = Math.round(pUsd * exchangeRate);
+                return `
+                    <div style="margin-bottom: 6px; line-height: 1.3;">
+                        <strong style="color: #fff;">Q${formatNumber(pGtq)}${isRent ? '/mes' : ''}</strong><br>
+                        <span style="font-size: 0.64rem; color: var(--cyan);">$${formatNumber(Math.round(pUsd))} USD${isRent ? '/mes' : ''}</span>
+                    </div>
+                `;
+            }).join('');
+
+            commHtml = myProps.map(({ prop }) => {
+                const { type } = getPropertyCategoryAndType(prop);
+                const isRent = type.toLowerCase() === 'renta';
+                const pUsd = Number(prop.priceUSD) || 0;
+                const commUsd = isRent ? pUsd : (pUsd * 0.05);
+                const commGtq = Math.round(commUsd * exchangeRate);
+                totalPotentialCommUSD += commUsd;
+                return `
+                    <div style="margin-bottom: 6px; line-height: 1.3;">
+                        <strong style="color: var(--neon-emerald);">Q${formatNumber(commGtq)}</strong>
+                        <span style="font-size: 0.58rem; color: #ffd700; font-weight: bold;">(${isRent ? '1 MES' : '5%'})</span><br>
+                        <span style="font-size: 0.64rem; color: #ffd700; font-weight: bold;">$${formatNumber(Math.round(commUsd))} USD</span>
+                    </div>
+                `;
+            }).join('');
+
+            const firstProp = myProps[0];
+            viewBtnHtml = `
+                <button class="btn btn-outline font-mono" style="padding: 4px 7px; font-size: 0.58rem; background: rgba(0,240,255,0.08); cursor: pointer; border: 1px solid var(--cyan); color: var(--cyan); border-radius: 4px;" onclick="openPropertyDetailModal('${firstProp.zoneKey}', ${firstProp.propIdx})">
+                    👁️ VER
+                </button>
+            `;
+        }
+
+        const waMsg = encodeURIComponent(`Hola ${ownerName}, te saludamos de ValorGT Inmobiliaria respecto a tu propiedad publicada en nuestra plataforma.`);
+        const quotaColor = myProps.length >= 2 ? '#ffd700' : 'var(--neon-emerald)';
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        tr.innerHTML = `
+            <td style="text-align: left; padding: 10px; vertical-align: middle;">
+                <strong style="color: var(--neon-emerald); font-size: 0.78rem;">${ownerName}</strong><br>
+                <span style="font-size: 0.66rem; color: #fff;">📞 ${ownerPhone}</span><br>
+                <span style="font-size: 0.62rem; color: var(--text-muted); text-decoration: underline;">${client.email || ''}</span>
+            </td>
+            <td style="text-align: center; padding: 10px; vertical-align: middle;">
+                <span style="padding: 3px 8px; border-radius: 10px; border: 1px solid ${quotaColor}; background: rgba(0,255,128,0.08); color: ${quotaColor}; font-weight: bold; font-size: 0.68rem;">
+                    ${myProps.length} / 2
+                </span>
+            </td>
+            <td style="text-align: left; padding: 10px; vertical-align: middle;">
+                ${propsListHtml}
+            </td>
+            <td style="text-align: right; padding: 10px; vertical-align: middle;">
+                ${pricesHtml}
+            </td>
+            <td style="text-align: right; padding: 10px; vertical-align: middle;">
+                ${commHtml}
+            </td>
+            <td style="text-align: right; padding: 10px; vertical-align: middle;">
+                <div style="display: flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap;">
+                    <a href="https://wa.me/${waNumber}?text=${waMsg}" target="_blank" style="padding: 4px 8px; font-size: 0.58rem; background: rgba(37, 211, 102, 0.12); border: 1px solid #25D366; color: #25D366; border-radius: 4px; text-decoration: none; font-weight: bold;">
+                        💬 WHATSAPP DUEÑO
+                    </a>
+                    ${viewBtnHtml}
+                    <button class="btn btn-outline font-mono" style="padding: 4px 7px; font-size: 0.58rem; background: transparent; cursor: pointer; border: 1px solid var(--red); color: var(--red); border-radius: 4px;" onclick="deleteAgent(${clientIdx})">
+                        🗑️
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    if (totalCommEl) {
+        const totalCommGTQ = Math.round(totalPotentialCommUSD * exchangeRate);
+        totalCommEl.innerText = `COMISIÓN POTENCIAL: Q${formatNumber(totalCommGTQ)} / $${formatNumber(Math.round(totalPotentialCommUSD))} USD`;
     }
 }
 

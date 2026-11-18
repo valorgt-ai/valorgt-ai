@@ -4417,6 +4417,45 @@
                         </div>
                     </div>
 
+                    <!-- CARD: DIRECTORIO DE PROPIETARIOS DIRECTOS & CORRETAJE VALORGT (5% VENTA / 1 MES ALQUILER) -->
+                    <div id="admin-owners-directory-card" class="card glassmorphism col-card border-white" style="margin-bottom: 20px; width: 100%; box-shadow: 0 0 20px rgba(0, 255, 128, 0.08) !important; border-color: rgba(0, 255, 128, 0.28) !important;">
+                        <div class="card-header border-white" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="header-icon white" style="box-shadow: 0 0 10px rgba(0, 255, 128, 0.3); border-color: var(--neon-emerald);"><i data-lucide="home" style="color: var(--neon-emerald);"></i></div>
+                                <div style="text-align: left;">
+                                    <h2 style="color: #ffffff !important; font-size: 1.15rem !important; text-shadow: 0 0 8px rgba(0, 255, 128, 0.25); margin: 0;">Directorio de Propietarios Directos & Corretaje ValorGT</h2>
+                                    <span class="sub-title font-mono" style="font-size: 0.62rem; color: var(--neon-emerald);">INVENTARIO CAPTADO GRATIS (MÁX. 2 POR DUEÑO) • COMISIÓN OFICIAL: 5% EN VENTA | 1 MES EN ALQUILER</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <span class="item-count font-mono" id="admin-owners-total-commission" style="color: #ffd700 !important; border: 1px solid rgba(255, 215, 0, 0.45) !important; background: rgba(255, 215, 0, 0.1) !important; font-size: 0.7rem !important; padding: 3px 10px !important; border-radius: 4px;">COMISIÓN POTENCIAL: Q0 / $0 USD</span>
+                                <span class="item-count font-mono border-white" id="admin-owners-count" style="color: var(--neon-emerald) !important; border-color: rgba(0, 255, 128, 0.4) !important; background: rgba(0, 255, 128, 0.1) !important; font-size: 0.7rem !important; padding: 3px 10px !important;">0 PROPIETARIOS</span>
+                            </div>
+                        </div>
+
+                        <div class="commercial-table-wrapper" style="max-height: 360px; overflow-y: auto;">
+                            <table class="commercial-table font-mono" style="font-size: 0.72rem; width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 10px; vertical-align: middle;">PROPIETARIO / CONTACTO PRIVADO</th>
+                                        <th style="text-align: center; padding: 10px; vertical-align: middle;">CUPO</th>
+                                        <th style="text-align: left; padding: 10px; vertical-align: middle;">INMUEBLE SUBIDO (ZONA / OPERACIÓN)</th>
+                                        <th style="text-align: right; padding: 10px; vertical-align: middle; color: var(--cyan);">PRECIO DE LISTA (Q / USD)</th>
+                                        <th style="text-align: right; padding: 10px; vertical-align: middle; color: var(--neon-emerald);">COMISIÓN VALORGT (5% / 1 MES)</th>
+                                        <th style="text-align: right; padding: 10px; vertical-align: middle;">ACCIONES DIRECTAS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-owners-table-body">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 28px; color: var(--text-muted);">
+                                            Aún no hay propietarios directos registrados en la plataforma.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- GRID CENTRAL ADMINISTRATIVO (2 COLUMNAS) -->
                     <div class="portfolio-grid-upper" style="margin-top: 20px;">
                         <!-- COLUMNA 1: AUDITORÍA Y LISTA DE AGENTES -->
@@ -5059,42 +5098,6 @@
             </div>
             
             <div class="modal-header-section" style="text-align: center; margin-bottom: 15px;">
-                <div class="header-icon-wrap" style="width: 48px; height: 48px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);">
-                    <i data-lucide="zap" class="text-cyan" style="width: 24px; height: 24px; color: var(--cyan);"></i>
-                </div>
-                <h3 style="font-size: 1.15rem; font-weight: bold; color: var(--cyan); letter-spacing: 1px;">PAUTA PUBLICITARIA IA</h3>
-                <p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 3px;">Inyección en Portada y Algoritmo Predictivo</p>
-            </div>
-            
-            <div id="pauta-payment-form-view">
-                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); padding: 12px; border-radius: 6px; font-size: 0.68rem; margin-bottom: 15px; color: var(--text-secondary);">
-                    <strong>Propiedad a Promocionar:</strong>
-                    <div id="pauta-property-title-preview" style="color: #fff; font-size: 0.75rem; margin-top: 3px; font-weight: bold;">--</div>
-                </div>
-
-                <form id="pauta-transfer-form" onsubmit="processB2bPautaPayment(event)" style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Selector de Duración -->
-                    <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
-                        <label for="pauta-duration-select" style="font-size: 0.68rem; color: var(--text-secondary);">Duración de la Campaña</label>
-                        <select id="pauta-duration-select" onchange="updatePautaPaymentCalculations()" style="padding: 8px; font-size: 0.75rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255, 215, 0, 0.25); color: #fff; border-radius: 6px; width: 100%;">
-                            <option value="1" selected>1 Mes - Sin descuento de duración</option>
-                            <option value="3">3 Meses - ¡10% de Descuento de Duración!</option>
-                        </select>
-                    </div>
-
-                    <!-- Datos Bancarios Oficiales -->
-                    <div class="bank-details-card" style="border: 1px dashed var(--border-cyan-bright); background: rgba(0, 240, 255, 0.03); border-radius: 6px; padding: 12px; font-size: 0.65rem; display: flex; flex-direction: column; gap: 4px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid rgba(0, 240, 255, 0.15); padding-bottom: 4px;">
-                            <strong style="color: var(--cyan); font-size: 0.7rem;">CUENTA PARA DEPOSITAR / TRANSFERIR</strong>
-                            <i data-lucide="shield-check" style="width: 12px; height: 12px; color: var(--cyan);"></i>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;"><span class="b-lbl">Banco Emisor:</span><span class="b-val" style="color: #fff; font-weight: bold;">Banco Industrial (BI)</span></div>
-                        <div style="display: flex; justify-content: space-between;"><span class="b-lbl">Tipo de Cuenta:</span><span class="b-val" style="color: #fff;">Monetaria Quetzales</span></div>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                    <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);">⚡ INTELIGENCIA INMOBILIARIA DE VANGUARDIA</span>
-                    <button class="btn-commercial btn-commercial-cyan" onclick="closeWelcomeVideoModal()" style="padding: 8px 24px; font-size: 0.75rem; border-radius: 20px;">
-                        INGRESAR A LA PLATAFORMA
                     </button>
                 </div>
             </div>
@@ -5307,7 +5310,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=22.4"></script>
+    <script src="app.v21.js?v=22.5"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
