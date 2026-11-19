@@ -555,15 +555,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initKpiGlowRotation();
 
     // Establecer vista inicial en HOME de forma sincrónica o restaurar panel comercial
-    if (isCommercialAuthenticated) {
+    // Si la URL trae parámetro de Catálogo Exclusivo de Agente (?agent=... o ?aid=...), forzar vista HOME para mostrar su catálogo
+    const initUrlParams = new URLSearchParams(window.location.search);
+    const hasAgentCatalogFilter = Boolean(initUrlParams.get('agent') || initUrlParams.get('agente') || initUrlParams.get('aid') || initUrlParams.get('agent_id'));
+
+    if (isCommercialAuthenticated && !hasAgentCatalogFilter) {
         initCommercialView();
     } else {
         switchView('home');
+        if (hasAgentCatalogFilter) {
+            setTimeout(() => {
+                const bannerEl = document.getElementById('home-catalog-filter-banner') || document.getElementById('home-catalog-grid');
+                if (bannerEl) bannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 350);
+        }
     }
 
     // Sincronizar datos de Supabase si está activo en segundo plano
     if (isSupabaseActive) {
         syncSupabaseData().then(() => {
+            if (hasAgentCatalogFilter) {
+                renderHomeCatalog();
+                const bannerEl = document.getElementById('home-catalog-filter-banner') || document.getElementById('home-catalog-grid');
+                if (bannerEl) bannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
             checkDeepLinkParams();
         }).catch(err => {
             console.error("Error al sincronizar datos:", err);
@@ -571,6 +586,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else {
         filterAgentProperties();
+        if (hasAgentCatalogFilter) {
+            renderHomeCatalog();
+        }
         checkDeepLinkParams();
     }
 
@@ -10757,11 +10775,8 @@ async function _syncSupabaseDataInternal() {
         fetchSystemSettingsFromSupabase().catch(err => console.warn("Fallo al obtener configuraciones en paralelo:", err));
         syncBannersFromSupabase().catch(err => console.warn("Fallo al sincronizar portadas en paralelo:", err));
 
-        // Sincronizar perfiles de agentes para la tabla admin si la vista admin está activa
-        const adminViewEl = document.getElementById('view-admin');
-        if (adminViewEl && adminViewEl.classList.contains('active')) {
-            await syncB2bClientsFromSupabase();
-        }
+        // Sincronizar siempre perfiles de agentes para resolver correctamente autoría, emails y enlaces de Catálogo Exclusivo (?agent=...)
+        await syncB2bClientsFromSupabase();
 
         // 0. Sincronizar el estado, plan y saldo del agente activo desde Supabase de forma asíncrona en tiempo real
         if (loggedInB2bClient) {
@@ -10891,9 +10906,55 @@ async function _syncSupabaseDataInternal() {
 
                 if (remoteProperties.length > 0) {
                     const allRemoteFormatted = [];
+                    // Mapa rápido de agentes por ID y propiedades locales guardadas para enriquecer email, nombre y teléfono del agente
+                    const clientsById = new Map();
+                    if (Array.isArray(b2bClients)) {
+                        b2bClients.forEach(c => {
+                            if (c && c.id) clientsById.set(String(c.id).toLowerCase(), c);
+                        });
+                    }
+                    if (loggedInB2bClient && loggedInB2bClient.id) {
+                        clientsById.set(String(loggedInB2bClient.id).toLowerCase(), loggedInB2bClient);
+                    }
+
+                    const localPropsById = new Map();
+                    try {
+                        const savedLocal = JSON.parse(localStorage.getItem('valorgt_local_properties') || '[]');
+                        if (Array.isArray(savedLocal)) {
+                            savedLocal.forEach(lp => {
+                                if (lp && lp.id) localPropsById.set(String(lp.id), lp);
+                            });
+                        }
+                    } catch (e) {}
+
                     remoteProperties.forEach(prop => {
                         const zoneKey = prop.location_key;
                         const isRef = false; // Forzar a que todos los registros de Supabase sean reales en el cliente
+
+                        const propAgentIdLower = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
+                        const matchedClient = propAgentIdLower ? clientsById.get(propAgentIdLower) : null;
+                        const localMatch = prop.id ? localPropsById.get(String(prop.id)) : null;
+                        const isOwnerListing = (matchedClient && (
+                            (matchedClient.role || '').toLowerCase() === 'propietario' ||
+                            (matchedClient.plan || '').toLowerCase() === 'propietario'
+                        )) || (localMatch && localMatch.isOwnerFreeListing === true);
+
+                        const resolvedAgentName = isOwnerListing
+                            ? 'ValorGT Inmobiliaria'
+                            : (matchedClient?.name || localMatch?.agentName || 'Socio Inmobiliario');
+                        const resolvedAgentCompany = isOwnerListing
+                            ? 'ValorGT Inmobiliaria (Corretaje Oficial)'
+                            : (matchedClient?.company || localMatch?.agentCompany || 'ValorGT Premium Partner');
+                        const resolvedAgentPhone = isOwnerListing
+                            ? '50247996413'
+                            : (matchedClient?.whatsapp || matchedClient?.phone || localMatch?.agentPhone || '50250129482');
+                        const resolvedAgentLogo = isOwnerListing
+                            ? 'logo.png'
+                            : (matchedClient?.logo || localMatch?.agentLogo || '');
+                        const resolvedAgentPlan = isOwnerListing
+                            ? 'Propietario'
+                            : (matchedClient?.plan || localMatch?.agentPlan || 'Pro');
+                        const resolvedAgentEmail = matchedClient?.email || localMatch?.agentEmail || 'admin@valorgt.com';
 
                         // Estructurar al formato interno compatible con mockData.js
                         const formattedProp = {
@@ -10907,22 +10968,26 @@ async function _syncSupabaseDataInternal() {
                             rooms: parseInt(prop.rooms),
                             bathrooms: parseFloat(prop.bathrooms),
                             parkings: parseInt(prop.parkings),
-                            garden: 0,
-                            study: false,
-                            familyRoom: false,
-                            hasMasterSuite: false,
-                            hasVisitorBath: false,
-                            amenities: [],
+                            garden: localMatch?.garden || 0,
+                            study: localMatch?.study || false,
+                            familyRoom: localMatch?.familyRoom || false,
+                            hasMasterSuite: localMatch?.hasMasterSuite || false,
+                            hasVisitorBath: localMatch?.hasVisitorBath || false,
+                            amenities: localMatch?.amenities || [],
                             photo: prop.photo_url,
-                            photos: [prop.photo_url],
-                            description: 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
-                            agentName: 'Socio Inmobiliario',
-                            agentCompany: 'ValorGT Premium Partner',
-                            agentPhone: '50250129482',
-                            agentLogo: '',
-                            agentPlan: 'Básico',
-                            youtubeUrl: '',
-                            badge: prop.sponsored ? "PATROCINADO" : "NUEVO LISTADO",
+                            photos: (localMatch?.photos && localMatch.photos.length > 0) ? localMatch.photos : [prop.photo_url],
+                            description: localMatch?.description || 'Propiedad exclusiva seleccionada por el nodo de inteligencia ValorGT AI.',
+                            agentName: resolvedAgentName,
+                            agentCompany: resolvedAgentCompany,
+                            agentPhone: resolvedAgentPhone,
+                            agentLogo: resolvedAgentLogo,
+                            agentPlan: resolvedAgentPlan,
+                            isOwnerFreeListing: isOwnerListing,
+                            ownerName: isOwnerListing ? (matchedClient?.name || localMatch?.ownerName || null) : null,
+                            ownerPhone: isOwnerListing ? (matchedClient?.phone || localMatch?.ownerPhone || null) : null,
+                            ownerEmail: isOwnerListing ? (matchedClient?.email || localMatch?.ownerEmail || null) : null,
+                            youtubeUrl: localMatch?.youtubeUrl || '',
+                            badge: prop.sponsored ? "PATROCINADO" : (isOwnerListing ? "EXCLUSIVA VALORGT" : "NUEVO LISTADO"),
                             location: zoneKey,
                             isAgentUpload: !isRef,
                             isReferenceData: isRef,
@@ -10930,23 +10995,28 @@ async function _syncSupabaseDataInternal() {
                             lat: parseFloat(prop.latitude),
                             lng: parseFloat(prop.longitude),
                             agent_id: prop.agent_id,
-                            agentEmail: 'admin@valorgt.com'
+                            agentEmail: resolvedAgentEmail
                         };
 
                         allRemoteFormatted.push(formattedProp);
 
-                        // Evitar duplicación de listados
+                        // Evitar duplicación de listados y actualizar datos del agente si ya estaba en caché
                         if (!PORTFOLIO_DATABASE[zoneKey]) {
                             PORTFOLIO_DATABASE[zoneKey] = [];
                         }
 
-                        const exists = PORTFOLIO_DATABASE[zoneKey].some(p => p.id === formattedProp.id);
-                        if (!exists) {
+                        const existingIdx = PORTFOLIO_DATABASE[zoneKey].findIndex(p => p.id === formattedProp.id);
+                        if (existingIdx === -1) {
                             if (formattedProp.sponsored) {
                                 PORTFOLIO_DATABASE[zoneKey].unshift(formattedProp);
                             } else {
                                 PORTFOLIO_DATABASE[zoneKey].push(formattedProp);
                             }
+                        } else {
+                            PORTFOLIO_DATABASE[zoneKey][existingIdx] = {
+                                ...PORTFOLIO_DATABASE[zoneKey][existingIdx],
+                                ...formattedProp
+                            };
                         }
 
                         // Cargar al inventario de pauta si le pertenece al usuario logueado
@@ -15791,6 +15861,36 @@ function renderHomeCatalog() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const agentParam = (urlParams.get('agent') || urlParams.get('agente') || '').trim().toLowerCase();
+    const agentIdParam = (urlParams.get('aid') || urlParams.get('agent_id') || '').trim().toLowerCase();
+    const hasAgentFilter = Boolean(agentParam || agentIdParam);
+
+    // Resolver IDs y perfil del agente buscado en b2bClients y sesión activa
+    const targetAgentIds = new Set();
+    let matchedAgentDisplayName = agentParam || agentIdParam;
+    if (agentIdParam) {
+        targetAgentIds.add(agentIdParam);
+    }
+    const candidateAgents = [];
+    if (loggedInB2bClient) candidateAgents.push(loggedInB2bClient);
+    if (typeof b2bClients !== 'undefined' && Array.isArray(b2bClients)) {
+        candidateAgents.push(...b2bClients);
+    }
+    candidateAgents.forEach(c => {
+        if (!c) return;
+        const cId = c.id ? String(c.id).toLowerCase() : '';
+        const cEmail = (c.email || '').toLowerCase();
+        const cName = (c.name || '').toLowerCase();
+        const isMatch = (agentParam && (cEmail === agentParam || cEmail.includes(agentParam) || cName.includes(agentParam))) ||
+            (agentIdParam && cId === agentIdParam);
+        if (isMatch) {
+            if (cId) targetAgentIds.add(cId);
+            if (c.name) {
+                matchedAgentDisplayName = c.company && c.company !== 'Particular' && c.company !== 'Inversiones VGT'
+                    ? `${c.name} — ${c.company}`
+                    : c.name;
+            }
+        }
+    });
 
     const seen = new Set();
     properties = properties.filter(prop => {
@@ -15807,6 +15907,7 @@ function renderHomeCatalog() {
         // Validar que la propiedad pertenezca a un agente suscrito activo o a nosotros
         const propAgentId = prop.agent_id ? String(prop.agent_id).toLowerCase() : '';
         const propEmail = (prop.agentEmail || '').toLowerCase();
+        const propOwnerEmail = (prop.ownerEmail || '').toLowerCase();
         const hasValidAgent = (propAgentId && activeAgentIds.has(propAgentId)) || (propEmail && activeEmails.has(propEmail)) || propEmail === 'admin@valorgt.com' || prop.isOwnerFreeListing === true;
         if (!hasValidAgent) {
             return false;
@@ -15817,12 +15918,13 @@ function renderHomeCatalog() {
             return false;
         }
 
-        // Filtro por parámetro URL de Agente (?agent=email o ?agente=nombre)
-        if (agentParam) {
+        // Filtro por parámetro URL de Agente (?agent=email, ?agente=nombre o ?aid=id)
+        if (hasAgentFilter) {
             const propName = (prop.agentName || '').toLowerCase();
-            const matchEmail = propEmail === agentParam || propEmail.includes(agentParam);
-            const matchName = propName.includes(agentParam);
-            if (!matchEmail && !matchName) {
+            const matchEmail = agentParam && (propEmail === agentParam || propEmail.includes(agentParam) || propOwnerEmail === agentParam);
+            const matchName = agentParam && propName.includes(agentParam);
+            const matchId = propAgentId && targetAgentIds.has(propAgentId);
+            if (!matchEmail && !matchName && !matchId) {
                 return false;
             }
         }
@@ -15839,10 +15941,10 @@ function renderHomeCatalog() {
     const filterBanner = document.getElementById('home-catalog-filter-banner');
     const filterAgentNameEl = document.getElementById('home-catalog-filter-agent-name');
     if (filterBanner) {
-        if (agentParam) {
+        if (hasAgentFilter) {
             filterBanner.style.display = 'flex';
             if (filterAgentNameEl) {
-                filterAgentNameEl.innerText = agentParam.toUpperCase();
+                filterAgentNameEl.innerText = matchedAgentDisplayName.toUpperCase();
             }
         } else {
             filterBanner.style.display = 'none';
@@ -16899,7 +17001,8 @@ function copyB2bCatalogLink() {
         return;
     }
     const email = loggedInB2bClient.email.toLowerCase();
-    const url = `${window.location.origin}${window.location.pathname}?agent=${encodeURIComponent(email)}`;
+    const aidPart = loggedInB2bClient.id ? `&aid=${encodeURIComponent(loggedInB2bClient.id)}` : '';
+    const url = `${window.location.origin}${window.location.pathname}?agent=${encodeURIComponent(email)}${aidPart}`;
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
@@ -16920,6 +17023,8 @@ function clearHomeAgentFilter() {
     const url = new URL(window.location.href);
     url.searchParams.delete('agent');
     url.searchParams.delete('agente');
+    url.searchParams.delete('aid');
+    url.searchParams.delete('agent_id');
     window.history.replaceState({}, '', url.toString());
     renderHomeCatalog();
 }

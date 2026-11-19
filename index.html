@@ -5031,74 +5031,6 @@
                 <button class="drawer-item" onclick="switchViewMobile('investor')">
                     <i data-lucide="trending-up"></i> <span>Terminal de Inversión</span>
                 </button>
-                <button class="drawer-item" onclick="switchViewMobile('portfolio')">
-                    <i data-lucide="wallet"></i> <span>Portafolio IA</span>
-                </button>
-                <button class="drawer-item" onclick="switchViewMobile('subscriptions')">
-                    <i data-lucide="award"></i> <span>Planes de Suscripción</span>
-                </button>
-                <button class="drawer-item" onclick="switchViewMobile('commercial')">
-                    <i data-lucide="briefcase"></i> <span>Área de Ingreso</span>
-                </button>
-                <button class="drawer-item" onclick="switchViewMobile('disclaimer')">
-                    <i data-lucide="scale"></i> <span>Disclaimer Legal</span>
-                </button>
-                <button class="drawer-item" onclick="switchViewMobile('tutorials')">
-                    <i data-lucide="clapperboard"></i> <span>Video Guías</span>
-                </button>
-                <button id="drawer-btn-admin" class="drawer-item" onclick="switchViewMobile('admin')" style="display: none;">
-                    <i data-lucide="shield-alert"></i> <span>Consola Global Admin</span>
-                </button>
-            </nav>
-            
-            <!-- Perfil del Agente actual para Móvil -->
-            <div class="drawer-profile-section" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
-                <span class="hud-label-small" style="display: block; margin-bottom: 10px; font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.5px;">AGENTE ACTIVO</span>
-                <div class="active-agent-hud" style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--cyan); background: rgba(0, 240, 255, 0.05); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,240,255,0.2); flex-shrink: 0;">
-                        <i data-lucide="user" style="color: var(--cyan); width: 20px; height: 20px;"></i>
-                    </div>
-                    <div style="text-align: left;">
-                        <div id="mobile-agent-name" style="font-weight: bold; color: #fff; font-size: 0.9rem;">Cargando...</div>
-                        <div id="mobile-agent-role" style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">ADMINISTRADOR</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <nav id="mobile-bottom-nav" class="mobile-bottom-nav font-mono">
-        <button id="mobile-nav-btn-home" class="mobile-nav-item active" onclick="switchView('home')">
-            <i data-lucide="home"></i>
-            <span>Home</span>
-        </button>
-        <button id="mobile-nav-btn-heatmap" class="mobile-nav-item" onclick="switchView('heatmap')">
-            <i data-lucide="map-pin"></i>
-            <span>Radar</span>
-        </button>
-        <button id="mobile-nav-btn-catalog" class="mobile-nav-item" onclick="switchView('catalog')">
-            <i data-lucide="compass"></i>
-            <span>Catálogo</span>
-        </button>
-        <button id="mobile-nav-btn-commercial" class="mobile-nav-item" onclick="switchView('commercial')">
-            <i data-lucide="briefcase"></i>
-            <span>Ingreso</span>
-        </button>
-        <button id="mobile-nav-btn-portfolio" class="mobile-nav-item" onclick="switchView('portfolio')">
-            <i data-lucide="wallet"></i>
-            <span>Portafolio</span>
-        </button>
-    </nav>
-
-    <!-- MODAL DE PAGO DE PAUTA PUBLICITARIA B2B -->
-    <div id="commercial-pauta-modal" class="modal-backdrop hidden" style="z-index: 1200; backdrop-filter: blur(10px);">
-        <div class="modal-container glassmorphism border-cyan font-mono" style="max-width: 480px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 25px; border-left: 4px solid var(--cyan) !important;">
-            <div class="modal-close-wrapper">
-                <button class="modal-close" onclick="closeAdPaymentModal()">&times;</button>
-            </div>
-            
-            <div class="modal-header-section" style="text-align: center; margin-bottom: 15px;">
-                    </button>
                 </div>
             </div>
         </div>
@@ -5310,7 +5242,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=22.5"></script>
+    <script src="app.v21.js?v=22.6"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
