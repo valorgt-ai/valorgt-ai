@@ -1987,183 +1987,8 @@
                         </div>
                     </div>
 
-                    <!-- ACCESO B2B: PANTALLA DE PAGO DE SUSCRIPCIÓN (NUEVO USUARIO) -->
-                    <div id="commercial-signup-payment-gate" class="commercial-login-container font-mono hidden" style="flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 30px; min-height: auto;">
-                        <h2 style="font-size: 1.3rem; font-weight: bold; color: var(--cyan); text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); text-align: center; margin-bottom: 5px;">PASARELA DE PAGO CORPORATIVO</h2>
-                        <p class="text-muted" style="font-size: 0.7rem; text-align: center; margin-bottom: 25px;">SELECCIONA UN PLAN Y CONTRASTA TU FIRMA DIGITAL PARA ACTIVAR EL NODO</p>
-                        
-                        <div class="payment-setup-layout" style="display: flex; gap: 30px; width: 100%; max-width: 950px; flex-wrap: wrap; justify-content: center;">
-                            <!-- Selección de Plan -->
-                            <div class="plan-selection-column" style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 15px;">
-                                <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">1. SELECCIONAR NIVEL DE SUSCRIPCIÓN</h3>
-                                
-                                <!-- Switch de Ciclo de Facturación en Registro -->
-                                <div class="billing-cycle-container" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.15);">
-                                    <span class="billing-cycle-label active" id="signup-billing-cycle-mensual-lbl" style="font-size: 0.72rem; opacity: 0.9; cursor: pointer; color: var(--cyan); transition: all 0.3s; font-weight: bold;" onclick="toggleSignupBillingCycle(false)">Mensual</span>
-                                    <label class="billing-cycle-switch" style="position: relative; display: inline-block; width: 34px; height: 18px; margin: 0;">
-                                        <input type="checkbox" id="signup-billing-cycle-checkbox" onchange="toggleSignupBillingCycle(this.checked)" style="opacity: 0; width: 0; height: 0;">
-                                        <span class="billing-cycle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.15); transition: .3s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.1);"></span>
-                                    </label>
-                                    <span class="billing-cycle-label" id="signup-billing-cycle-anual-lbl" style="font-size: 0.72rem; opacity: 0.6; cursor: pointer; color: var(--text-muted); transition: all 0.3s;" onclick="toggleSignupBillingCycle(true)">Anual <span class="billing-cycle-badge" style="background: var(--neon-emerald); color: #000; font-size: 0.55rem; padding: 1px 4px; border-radius: 3px; font-weight: bold; margin-left: 2px;">-15%</span></span>
-                                </div>
-
-                                <div class="pricing-card active-plan" id="signup-plan-pro" data-usd="30" data-gtq="235" onclick="selectSignupPlan('pro', 30)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid var(--cyan); background: rgba(0, 240, 255, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
-                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PLAN PRO</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Plan Pro (Sin Billetera XAUt)</span>
-                                    </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.25rem; margin: 0; color: var(--cyan); font-weight: bold; text-align: right;">
-                                        <span class="plan-currency-sym" style="font-size: 0.9rem; vertical-align: super;">Q</span><span id="signup-price-pro">235</span><span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mes</span>
-                                        <div id="signup-equiv-pro" style="font-size: 0.72rem; color: var(--neon-emerald); font-weight: bold;">$30 USD / mes</div>
-                                    </div>
-                                </div>
-
-                                <div class="pricing-card" id="signup-plan-premium" data-usd="65" data-gtq="505" onclick="selectSignupPlan('premium', 65)" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 18px 22px; border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.35); background: rgba(255, 215, 0, 0.03); cursor: pointer; transition: all 0.3s; width: 100%; box-sizing: border-box; position: relative;">
-                                    <div class="active-ribbon" style="top: -8px; right: 15px; font-size: 0.6rem; padding: 2px 8px; background: linear-gradient(135deg, #ffd700, #bf5af2); color: #000; font-weight: bold;">INCLUYE BILLETERA XAUT</div>
-                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                        <span class="plan-badge" style="background: rgba(255, 215, 0, 0.15); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; letter-spacing: 0.8px;">PLAN PREMIUM GOLD</span>
-                                        <span style="font-size: 0.95rem; font-weight: bold; color: #fff;">Plan Premium + Cartera XAUt</span>
-                                    </div>
-                                    <div class="plan-price font-mono" style="font-size: 1.25rem; margin: 0; color: #ffd700; font-weight: bold; text-align: right;">
-                                        <span class="plan-currency-sym" style="font-size: 0.9rem; vertical-align: super;">Q</span><span id="signup-price-premium">505</span><span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/mes</span>
-                                        <div id="signup-equiv-premium" style="font-size: 0.72rem; color: var(--neon-emerald); font-weight: bold;">$65 USD / mes</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Formulario de Pago y Credit Card Preview -->
-                            <div class="payment-fields-column" style="flex: 1.2; min-width: 380px; display: flex; flex-direction: column; gap: 15px;">
-                                <h3 style="font-size: 0.85rem; font-weight: bold; color: var(--text-primary); border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 5px;">2. DATOS DE FACTURACIÓN Y PASARELA</h3>
-                                
-                                <div class="card glassmorphism" style="padding: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); width: 100%; box-sizing: border-box; position: relative;">
-                                    
-                                    <!-- Formularios Principales del Pago -->
-                                    <div id="signup-payment-form-view">
-                                        <!-- CC Preview Card -->
-                                        <div class="credit-card-preview" style="height: 150px; margin-bottom: 15px;">
-                                            <div class="cc-bg-pattern"></div>
-                                            <div class="cc-header">
-                                                <div class="cc-chip"></div>
-                                                <i data-lucide="wifi" class="cc-wifi"></i>
-                                            </div>
-                                            <div class="cc-number" id="signup-card-num-preview" style="font-size: 0.95rem; margin: 10px 0;">•••• •••• •••• ••••</div>
-                                            <div class="cc-footer">
-                                                <div>
-                                                    <span class="cc-lbl">TARJETAHABIENTE</span>
-                                                    <span class="cc-val" id="signup-card-name-preview" style="font-size: 0.55rem;">NOMBRE APELLIDO</span>
-                                                </div>
-                                                <div>
-                                                    <span class="cc-lbl">VENCE</span>
-                                                    <span class="cc-val" id="signup-card-expiry-preview" style="font-size: 0.55rem;">MM/AA</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <form id="signup-cc-form" onsubmit="processSignupSubscriptionPayment(event)" style="display: flex; flex-direction: column; gap: 10px;">
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
-                                                <label for="signup-cc-num" style="font-size: 0.65rem;">Número de Tarjeta de Crédito / Débito</label>
-                                                <input type="text" id="signup-cc-num" placeholder="4000 1234 5678 9010" maxlength="19" required oninput="formatSignupCardNumber(this)" style="padding: 8px; font-size: 0.75rem;">
-                                            </div>
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
-                                                <label for="signup-cc-name" style="font-size: 0.65rem;">Nombre del Tarjetahabiente (como figura en tarjeta)</label>
-                                                <input type="text" id="signup-cc-name" placeholder="JUAN MENDOZA" required oninput="updateSignupCardName(this)" style="padding: 8px; font-size: 0.75rem;">
-                                            </div>
-                                            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
-                                                    <label for="signup-cc-expiry" style="font-size: 0.65rem;">Fecha de Vencimiento</label>
-                                                    <input type="text" id="signup-cc-expiry" placeholder="MM/AA" maxlength="5" required oninput="formatSignupExpiry(this)" style="padding: 8px; font-size: 0.75rem; text-align: center;">
-                                                </div>
-                                                <div class="input-group" style="display: flex; flex-direction: column; gap: 3px;">
-                                                    <label for="signup-cc-cvv" style="font-size: 0.65rem;">CVV / Clave</label>
-                                                    <input type="password" id="signup-cc-cvv" placeholder="•••" maxlength="4" required style="padding: 8px; font-size: 0.75rem; text-align: center;">
-                                                </div>
-                                            </div>
-
-                                            <!-- Campo de Código Promocional -->
-                                            <div class="input-group" style="display: flex; flex-direction: column; gap: 3px; margin-top: 8px; margin-bottom: 8px;">
-                                                <label for="signup-promo-code" style="font-size: 0.65rem; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="color: var(--text-secondary);">Código Promocional / Descuento</span>
-                                                    <span id="signup-promo-status" style="font-weight: bold; font-family: var(--font-mono); font-size: 0.65rem;"></span>
-                                                </label>
-                                                <div style="display: flex; gap: 8px;">
-                                                    <input type="text" id="signup-promo-code" placeholder="Ej. VGT-XXXX" style="padding: 8px; font-size: 0.75rem; flex: 2; text-transform: uppercase; font-family: var(--font-mono); background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 4px;">
-                                                    <button type="button" class="btn btn-outline" onclick="applySignupPromoCode()" style="flex: 1; padding: 0 10px; font-size: 0.68rem; font-weight: bold; border-color: rgba(0, 240, 255, 0.3); color: var(--cyan); height: 35px; border-radius: 4px; cursor: pointer;">APLICAR</button>
-                                                </div>
-                                            </div>
-
-                                            <div class="payment-summary font-mono" style="margin-top: 10px; padding: 10px; border-radius: 6px;">
-                                                <div class="summary-line">
-                                                    <span>Concepto:</span>
-                                                    <span id="signup-payment-concept-lbl">Suscripción Inmobiliaria Pro</span>
-                                                </div>
-                                                <div class="summary-line font-bold" style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px; margin-top: 5px;">
-                                                    <span>Total a Debitar:</span>
-                                                    <span class="text-cyan" id="signup-payment-total-lbl">Q1,159.00</span>
-                                                </div>
-                                            </div>
-
-                                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                                <button type="button" class="btn btn-outline" onclick="cancelSignupPayment()" style="flex: 1; padding: 10px; font-size: 0.7rem; font-weight: bold; border-color: rgba(255,255,255,0.1); color: var(--text-secondary);">
-                                                    CANCELAR
-                                                </button>
-                                                <button type="submit" class="btn-commercial btn-commercial-cyan" style="flex: 2; padding: 10px; font-size: 0.75rem; font-weight: bold;">
-                                                    AUTORIZAR Y PAGAR
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    <!-- Pantalla de Cargando Transacción -->
-                                    <div id="signup-payment-loading-view" class="payment-state-view hidden">
-                                        <div class="processing-spinner-wrap">
-                                            <div class="neon-spinner" style="filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.4)); border-top-color: var(--cyan);"></div>
-                                            <div class="spinner-core"></div>
-                                        </div>
-                                        <h4 style="margin-top: 20px; font-size: 0.85rem; font-weight: bold; color: var(--cyan);">PROCESANDO SUSCRIPCIÓN</h4>
-                                        <div class="payment-status-console font-mono" id="signup-payment-status-logs" style="width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyan-dim); border-radius: 6px; padding: 10px; font-size: 0.55rem; line-height: 1.5; text-align: left; height: 95px; overflow-y: auto; margin-top: 15px; box-sizing: border-box;">
-                                            <!-- Logs bancarios en tiempo real -->
-                                        </div>
-                                    </div>
-
-                                    <!-- Pantalla de Éxito del Pago -->
-                                    <div id="signup-payment-success-view" class="payment-state-view hidden" style="padding: 15px 5px;">
-                                        <div class="success-icon-badge" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 240, 255, 0.35); margin-bottom: 15px;">
-                                            <i data-lucide="check-circle-2" class="text-cyan" style="width: 28px; height: 28px; color: var(--cyan);"></i>
-                                        </div>
-                                        <h4 style="font-size: 0.85rem; font-weight: bold; color: var(--cyan); letter-spacing: 1px; text-shadow: 0 0 10px rgba(0, 240, 255, 0.25);">SUSCRIPCIÓN ACTIVA</h4>
-                                        <p style="font-size: 0.65rem; color: var(--text-secondary); text-align: center; margin-top: 5px; max-width: 320px;">Tu cuenta ha sido verificada en la red y tu firma criptográfica de socio ha sido firmada digitalmente.</p>
-                                        
-                                        <!-- Recibo Digital -->
-                                        <div class="receipt-card font-mono" style="width: 100%; border: 1px dashed rgba(255,255,255,0.15); border-radius: 6px; padding: 10px; background: rgba(0,0,0,0.2); font-size: 0.6rem; margin-top: 15px; box-sizing: border-box; text-align: left;">
-                                            <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                                                <span class="r-lbl">Código de Autorización:</span>
-                                                <span class="r-val" id="signup-receipt-auth-code" style="color: var(--cyan); font-weight: bold;">#AUT-849204</span>
-                                            </div>
-                                            <div class="receipt-row" style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                                                <span class="r-lbl">Referencia Bancaria:</span>
-                                                <span class="r-val" id="signup-receipt-ref-code">#REF-85028503</span>
-                                            </div>
-                                            <div class="receipt-row" style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px;">
-                                                <span class="r-lbl">Monto Cobrado:</span>
-                                                <span class="r-val text-cyan" id="signup-receipt-amount-val">Q1,159.00</span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Contacto de Soporte Adicional -->
-                                        <div style="text-align: center; margin-top: 12px;">
-                                            <a href="https://wa.me/50247996413?text=Hola%20ValorGT%2C%20tengo%20una%20duda%20o%20necesito%20soporte%20sobre%20mi%20registro/suscripci%C3%B3n%20en%20ValorGT%20AI..." target="_blank" style="font-size: 0.65rem; color: #25D366; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: bold; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-                                                <i data-lucide="message-square" style="width: 11px; height: 11px;"></i> ¿Dudas o necesitas soporte? WhatsApp: +502 4041-6471
-                                            </a>
-                                        </div>
-
-                                        <button class="btn-commercial btn-commercial-cyan" style="width: 100%; margin-top: 20px; font-weight: bold;" onclick="enterPersonalDashboardAfterPayment()">
-                                            <i data-lucide="layout-dashboard"></i> INGRESAR AL DASHBOARD PERSONAL
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- ACCESO B2B: CONTENEDOR DE PASARELA (UNIFICADO CON MODAL OFICIAL DE TRANSFERENCIA BANCARIA) -->
+                    <div id="commercial-signup-payment-gate" class="commercial-login-container font-mono hidden" style="display: none;"></div>
 
                     <!-- MÓDULO INTERNO DEL DASHBOARD COMERCIAL (Se muestra al autenticarse) -->
                     <div id="commercial-dashboard-area" class="hidden">
@@ -2184,7 +2009,7 @@
                                 </div>
                             </div>
                             <div class="ph-right" style="display: none;">
-                                <span id="saas-billing-val" style="display: none;">Q1,159.00</span>
+                                <span id="saas-billing-val" style="display: none;">Q235.00</span>
                                 <span id="saas-listings-count" style="display: none;">0</span>
                                 <span id="saas-impressions-count" style="display: none;">12,450</span>
                             </div>
@@ -2229,7 +2054,7 @@
                                 </div>
                                 <div class="kpi-content">
                                     <span class="kpi-label-text">Facturación</span>
-                                    <span class="kpi-value-text" id="saas-billing-val-card">Q1,159.22</span>
+                                    <span class="kpi-value-text" id="saas-billing-val-card">Q235.00</span>
                                     <span class="kpi-sub-text" id="saas-billing-sub-card">💳 PLAN ACTIVO</span>
                                 </div>
                                 <div class="kpi-glow-bar"></div>
@@ -3555,9 +3380,9 @@
                                     <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                                         <div style="font-family: var(--font-mono);">
                                             <div style="font-size: 0.6rem; color: var(--text-muted);">PRECIO BASE</div>
-                                            <div style="font-size: 1.25rem; font-weight: bold; color: #fff;">Q5,000 <span style="font-size: 0.7rem; color: var(--text-secondary);">/ mes</span></div>
+                                            <div style="font-size: 1.25rem; font-weight: bold; color: #fff;">Q5,000 <span style="font-size: 0.7rem; color: var(--text-secondary);">/ mes</span> <span style="font-size: 0.75rem; color: var(--neon-emerald);">($643 USD)</span></div>
                                         </div>
-                                        <div style="font-size: 0.65rem; background: rgba(52, 199, 89, 0.15); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); font-weight: bold; padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono);">DESCUENTO SEGÚN PLAN</div>
+                                        <div style="font-size: 0.65rem; background: rgba(52, 199, 89, 0.15); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); font-weight: bold; padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono);">-15% PLAN PREMIUM</div>
                                     </div>
                                 </div>
 
@@ -3581,9 +3406,9 @@
                                     <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                                         <div style="font-family: var(--font-mono);">
                                             <div style="font-size: 0.6rem; color: var(--text-muted);">PRECIO BASE</div>
-                                            <div style="font-size: 1.25rem; font-weight: bold; color: #fff;">Q3,000 <span style="font-size: 0.7rem; color: var(--text-secondary);">/ mes</span></div>
+                                            <div style="font-size: 1.25rem; font-weight: bold; color: #fff;">Q3,000 <span style="font-size: 0.7rem; color: var(--text-secondary);">/ mes</span> <span style="font-size: 0.75rem; color: var(--neon-emerald);">($386 USD)</span></div>
                                         </div>
-                                        <div style="font-size: 0.65rem; background: rgba(52, 199, 89, 0.15); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); font-weight: bold; padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono);">DESCUENTO SEGÚN PLAN</div>
+                                        <div style="font-size: 0.65rem; background: rgba(52, 199, 89, 0.15); border: 1px solid var(--neon-emerald); color: var(--neon-emerald); font-weight: bold; padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono);">-15% PLAN PREMIUM</div>
                                     </div>
                                 </div>
                             </div>
@@ -3595,7 +3420,7 @@
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="dashboard-grid-1-1">
                                     <div style="display: flex; flex-direction: column; gap: 15px;">
                                         <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
-                                            <label for="pauta-property-select" style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">SELECCIONAR PROPIEDAD A DESTACO</label>
+                                            <label for="pauta-property-select" style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">SELECCIONAR PROPIEDAD A DESTACAR</label>
                                             <select id="pauta-property-select" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-size: 0.82rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none;">
                                                 <option value="">Cargando tu inventario...</option>
                                             </select>
@@ -3604,8 +3429,8 @@
                                         <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
                                             <label for="pauta-format-select" style="font-size: 0.8rem; color: var(--text-muted); font-weight: bold;">SELECCIONAR FORMATO DE ANUNCIO</label>
                                             <select id="pauta-format-select" onchange="calculatePautaPrice()" style="padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; font-size: 0.82rem; color: #fff; width: 100%; font-family: var(--font-mono); outline: none; cursor: pointer;">
-                                                <option value="slider" selected>Premium Showcase Slider (Q5,000 / mes)</option>
-                                                <option value="deck">Deck de Destacados de Portada (Q3,000 / mes)</option>
+                                                <option value="slider" selected>Premium Showcase Slider (Q5,000 / mes | $643 USD / mes)</option>
+                                                <option value="deck">Deck de Destacados de Portada (Q3,000 / mes | $386 USD / mes)</option>
                                             </select>
                                         </div>
 
@@ -3623,14 +3448,14 @@
                                         <div style="display: flex; flex-direction: column; gap: 8px;">
                                             <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
                                                 <span style="color: var(--text-secondary);">Subtotal (Meses):</span>
-                                                <span id="pauta-subtotal-lbl" style="color: #fff; font-weight: bold;">Q5,000</span>
+                                                <span id="pauta-subtotal-lbl" style="color: #fff; font-weight: bold;">Q5,000 ($643 USD)</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
                                                 <span style="color: var(--text-secondary);">Membresía:</span>
                                                 <span id="pauta-agent-plan-lbl" style="color: var(--cyan); font-weight: bold;">Cargando Plan...</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
-                                                <span style="color: var(--text-secondary);">Desc. Membresía:</span>
+                                                <span style="color: var(--text-secondary);">Desc. Membresía Premium:</span>
                                                 <span id="pauta-discount-lbl" style="color: var(--neon-emerald); font-weight: bold;">-Q0 (0%)</span>
                                             </div>
                                             <div style="display: flex; justify-content: space-between; font-size: 0.82rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
@@ -3640,16 +3465,25 @@
                                         </div>
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                                             <span style="font-size: 0.85rem; color: #fff; font-weight: bold;">PRECIO FINAL:</span>
-                                            <span id="pauta-final-price-lbl" style="font-size: 1.55rem; color: var(--cyan); font-weight: 800; text-shadow: 0 0 10px rgba(0,240,255,0.25);">Q5,000</span>
+                                            <span id="pauta-final-price-lbl" style="font-size: 1.4rem; color: var(--cyan); font-weight: 800; text-shadow: 0 0 10px rgba(0,240,255,0.25);">Q5,000 ($643 USD)</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div id="pauta-payment-section" style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 25px;">
-                                    <h3 style="color: #fff; font-size: 0.95rem; margin-top: 0; margin-bottom: 12px; border-left: 2px solid var(--neon-emerald); padding-left: 8px;">2. PASARELA DE PAGO COMERCIAL (SIMULADA)</h3>
-                                    <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                                        Transfiere el monto cotizado a la cuenta bancaria de **ValorGT S.A. (Banco Industrial Monetaria: 010-098765-2)** y sube la foto de tu boleta o comprobante de transferencia bancaria. Una vez que el administrador lo apruebe, tu propiedad pautada brillará en portada de inmediato.
+                                    <h3 style="color: #fff; font-size: 0.95rem; margin-top: 0; margin-bottom: 12px; border-left: 2px solid var(--neon-emerald); padding-left: 8px;">2. DATOS OFICIALES DE TRANSFERENCIA BANCARIA</h3>
+                                    <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px;">
+                                        Realiza tu transferencia por el monto cotizado a la cuenta oficial de <strong style="color: #fff;">ValorGT</strong> en <strong style="color: var(--cyan);">Banco Industrial</strong> y adjunta la foto de tu comprobante para activar tu pauta en portada:
                                     </p>
+
+                                    <div class="bank-details-card font-mono" style="margin-bottom: 18px; padding: 14px 18px; border: 1px dashed var(--cyan); border-radius: 8px; background: rgba(0,240,255,0.03); text-align: left;">
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 0.84rem;">
+                                            <div><span style="color: var(--text-muted);">Banco:</span> <strong style="color: #fff;">Banco Industrial (BI)</strong></div>
+                                            <div><span style="color: var(--text-muted);">Tipo de Cuenta:</span> <strong style="color: #fff;">Monetaria Quetzales</strong></div>
+                                            <div><span style="color: var(--text-muted);">Número de Cuenta:</span> <strong style="color: var(--cyan);">2700030709</strong></div>
+                                            <div><span style="color: var(--text-muted);">Nombre de Cuenta:</span> <strong style="color: #fff;">ValorGT</strong></div>
+                                        </div>
+                                    </div>
                                     
                                     <div style="display: flex; flex-direction: column; gap: 20px; align-items: center; width: 100%;">
                                         <div style="position: relative; width: 100%;">
@@ -3781,11 +3615,11 @@
                                     </div>
                                     <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem;">
                                         <span style="color: var(--text-muted);">Banco:</span>
-                                        <strong style="color: #fff;">BI Industrial</strong>
+                                        <strong style="color: #fff;">Banco Industrial (BI)</strong>
                                     </div>
                                     <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem;">
                                         <span style="color: var(--text-muted);">Tipo Cuenta:</span>
-                                        <strong style="color: #fff;">Monetarios Quetzales</strong>
+                                        <strong style="color: #fff;">Monetaria Quetzales</strong>
                                     </div>
                                     <div class="bank-row" style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem;">
                                         <span style="color: var(--text-muted);">Número de Cuenta:</span>
@@ -3841,11 +3675,11 @@
                                     </div>
                                     <div class="summary-line font-bold" style="display: flex; justify-content: space-between; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px; margin-top: 6px;">
                                         <span>Total a Transferir:</span>
-                                        <span id="payment-total-label" class="text-cyan" style="text-shadow: 0 0 8px rgba(0,240,255,0.3);">Q240.00</span>
+                                        <span id="payment-total-label" class="text-cyan" style="text-shadow: 0 0 8px rgba(0,240,255,0.3);">Q235.00</span>
                                     </div>
                                     <div class="summary-line" style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.75rem; color: var(--text-muted);">
                                         <span>Equivalente en dólares:</span>
-                                        <span id="payment-total-usd-label">$31.00 USD</span>
+                                        <span id="payment-total-usd-label">$30.00 USD</span>
                                     </div>
                                 </div>
 
@@ -3910,7 +3744,7 @@
                                 </div>
                                 <div class="receipt-row" style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; margin-top: 5px;">
                                     <span class="r-lbl">Monto Reportado:</span>
-                                    <span class="r-val text-cyan" id="receipt-amount-val">Q240.00</span>
+                                    <span class="r-val text-cyan" id="receipt-amount-val">Q235.00 ($30.00 USD)</span>
                                 </div>
                             </div>
 
@@ -5076,7 +4910,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span class="font-sans" style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 500;">Membresía Premium VIP:</span>
                         <div style="text-align: right;">
-                            <span style="font-size: 1.05rem; color: #fff; text-decoration: line-through; margin-right: 8px; opacity: 0.85;">Q640</span>
+                            <span style="font-size: 1.05rem; color: #fff; text-decoration: line-through; margin-right: 8px; opacity: 0.85;">Q505</span>
                             <span class="font-mono" style="font-size: 1.35rem; color: var(--green); font-weight: bold; text-shadow: 0 0 10px rgba(0, 255, 102, 0.2);">Q250<span style="font-size: 0.75rem; font-weight: normal; color: var(--text-secondary);">/mes</span></span>
                         </div>
                     </div>
@@ -5242,7 +5076,7 @@
     <script src="mockData.js?v=12.0"></script>
     <script src="charts.js?v=12.0"></script>
     <script src="map.js?v=13.0"></script>
-    <script src="app.v21.js?v=22.6"></script>
+    <script src="app.v21.js?v=22.7"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
