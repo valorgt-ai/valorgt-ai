@@ -18667,6 +18667,7 @@ function openPautasPortalFromHomeAi() {
  */
 function setHomeHeroMode(mode) {
     const pathwaysSection = document.getElementById('home-pathways-hero-section');
+    const classicSection = document.getElementById('home-classic-experience-wrapper');
     const btnPathways = document.getElementById('btn-home-mode-pathways');
     const btnClassic = document.getElementById('btn-home-mode-classic');
 
@@ -18674,11 +18675,10 @@ function setHomeHeroMode(mode) {
     localStorage.setItem('valorgt_home_hero_mode', activeMode);
 
     if (pathwaysSection) {
-        if (activeMode === 'classic') {
-            pathwaysSection.style.display = 'none';
-        } else {
-            pathwaysSection.style.display = 'block';
-        }
+        pathwaysSection.style.display = (activeMode === 'classic') ? 'none' : 'block';
+    }
+    if (classicSection) {
+        classicSection.style.display = (activeMode === 'classic') ? 'block' : 'none';
     }
 
     if (btnPathways && btnClassic) {
@@ -18841,10 +18841,14 @@ function contactValorgtAdvisorForValuation() {
     window.open(`https://wa.me/50247996413?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-// Restaurar preferencia de versión de portada al cargar
+// Inicializar Portada Distribuidora de 3 Perfiles al cargar (o Catálogo Clásico si viene desde un enlace exclusivo ?agent=)
 document.addEventListener('DOMContentLoaded', () => {
-    const savedHeroMode = localStorage.getItem('valorgt_home_hero_mode') || 'pathways';
-    setHomeHeroMode(savedHeroMode);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('agent') || params.get('aid')) {
+        setHomeHeroMode('classic');
+    } else {
+        setHomeHeroMode('pathways');
+    }
 });
 
 
