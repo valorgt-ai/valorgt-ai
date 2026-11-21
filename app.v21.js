@@ -18662,6 +18662,192 @@ function openPautasPortalFromHomeAi() {
     }
 }
 
+/**
+ * Conmuta entre la nueva Portada de 3 Entradas ('pathways') y la Portada Clásica anterior ('classic')
+ */
+function setHomeHeroMode(mode) {
+    const pathwaysSection = document.getElementById('home-pathways-hero-section');
+    const btnPathways = document.getElementById('btn-home-mode-pathways');
+    const btnClassic = document.getElementById('btn-home-mode-classic');
+
+    const activeMode = (mode === 'classic') ? 'classic' : 'pathways';
+    localStorage.setItem('valorgt_home_hero_mode', activeMode);
+
+    if (pathwaysSection) {
+        if (activeMode === 'classic') {
+            pathwaysSection.style.display = 'none';
+        } else {
+            pathwaysSection.style.display = 'block';
+        }
+    }
+
+    if (btnPathways && btnClassic) {
+        if (activeMode === 'pathways') {
+            btnPathways.style.background = 'rgba(0, 240, 255, 0.16)';
+            btnPathways.style.borderColor = 'rgba(0, 240, 255, 0.45)';
+            btnPathways.style.color = '#fff';
+            btnClassic.style.background = 'transparent';
+            btnClassic.style.borderColor = 'transparent';
+            btnClassic.style.color = 'var(--text-muted)';
+        } else {
+            btnClassic.style.background = 'rgba(0, 240, 255, 0.16)';
+            btnClassic.style.borderColor = 'rgba(0, 240, 255, 0.45)';
+            btnClassic.style.color = '#fff';
+            btnPathways.style.background = 'transparent';
+            btnPathways.style.borderColor = 'transparent';
+            btnPathways.style.color = 'var(--text-muted)';
+        }
+    }
+
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Ejecuta el recorrido personalizado según la puerta seleccionada en la Portada de 3 Entradas
+ */
+function startHomePathway(pathway) {
+    if (pathway === 'propietario') {
+        // 1. Soy propietario -> Entra al Tasador Inteligente
+        switchView('dashboard');
+        setTimeout(() => {
+            const formEl = document.getElementById('valuation-form');
+            if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+    } else if (pathway === 'propietario-publicar') {
+        // Soy propietario -> Ir directo a publicar hasta 2 propiedades gratis
+        switchView('commercial');
+        if (isCommercialAuthenticated) {
+            switchCommercialTab('propiedades');
+        } else {
+            switchLoginTab('signup');
+            if (typeof setSignupRole === 'function') setSignupRole('propietario');
+        }
+    } else if (pathway === 'agente') {
+        // 2. Soy agente -> Accede a las herramientas profesionales B2B
+        switchView('commercial');
+        if (isCommercialAuthenticated) {
+            switchCommercialTab('propiedades');
+        } else {
+            switchLoginTab('signup');
+            if (typeof setSignupRole === 'function') setSignupRole('agente');
+        }
+    } else if (pathway === 'inversionista') {
+        // 3. Soy inversionista -> Entra al Radar de Inversiones / Mapa de Calor
+        switchView('heatmap');
+    }
+}
+
+/**
+ * Conecta el resultado del Tasador Inteligente con la publicación gratuita del Propietario (Hasta 2 propiedades)
+ */
+function publishValuatedPropertyAsOwner() {
+    const typeEl = document.getElementById('prop-type');
+    const locEl = document.getElementById('prop-location');
+    const cityEl = document.getElementById('prop-city');
+    const resEl = document.getElementById('prop-residential');
+    const sizeEl = document.getElementById('prop-size');
+    const roomsEl = document.getElementById('prop-rooms');
+    const bathsEl = document.getElementById('prop-bathrooms');
+    const parksEl = document.getElementById('prop-parkings');
+
+    const categoryMap = {
+        'casa': 'Casa',
+        'apartamento': 'Apartamento',
+        'terreno': 'Terreno',
+        'comercial': 'Local',
+        'oficina': 'Oficina',
+        'bodega': 'Bodega',
+        'finca': 'Terreno'
+    };
+
+    const rawType = typeEl ? typeEl.value : 'casa';
+    const mappedCategory = categoryMap[rawType] || 'Casa';
+    const locationKey = (locEl && locEl.value) ? locEl.value : 'zona14';
+    const zoneName = (typeof ZONES_DATABASE !== 'undefined' && ZONES_DATABASE[locationKey])
+        ? ZONES_DATABASE[locationKey].name.split(' (')[0]
+        : locationKey.toUpperCase();
+    const residential = (resEl && resEl.value.trim()) ? resEl.value.trim() : zoneName;
+    const sizeVal = (sizeEl && sizeEl.value) ? sizeEl.value : 180;
+    const roomsVal = (roomsEl && roomsEl.value) ? roomsEl.value : 3;
+    const bathsVal = (bathsEl && bathsEl.value) ? bathsEl.value : 2.5;
+    const parksVal = (parksEl && parksEl.value) ? parksEl.value : 2;
+    const cityVal = (cityEl && cityEl.value) ? cityEl.value : 'Guatemala';
+
+    // Obtener precio estimado actual en la moneda activa
+    const rate = (typeof exchangeRate === 'number' && exchangeRate > 0) ? exchangeRate : 7.78;
+    const usdVal = (typeof currentValuationUSD === 'number' && currentValuationUSD > 0) ? currentValuationUSD : 220000;
+    const priceForForm = Math.round(activeCurrency === 'GTQ' ? (usdVal * rate) : usdVal);
+
+    // Pre-llenar campos del formulario de publicación
+    const applyPrefill = () => {
+        const pubTitle = document.getElementById('pub-title');
+        const pubCat = document.getElementById('pub-category');
+        const pubLoc = document.getElementById('pub-location');
+        const pubCity = document.getElementById('pub-prop-city');
+        const pubRes = document.getElementById('pub-prop-residential');
+        const pubSize = document.getElementById('pub-size');
+        const pubBeds = document.getElementById('pub-beds');
+        const pubBaths = document.getElementById('pub-baths');
+        const pubParks = document.getElementById('pub-parks');
+        const pubPrice = document.getElementById('pub-price');
+
+        if (pubTitle && !pubTitle.value) pubTitle.value = `${mappedCategory} en ${residential}`;
+        if (pubCat) pubCat.value = mappedCategory;
+        if (pubLoc) pubLoc.value = locationKey;
+        if (pubCity) pubCity.value = cityVal;
+        if (pubRes) pubRes.value = residential;
+        if (pubSize) pubSize.value = sizeVal;
+        if (pubBeds) pubBeds.value = roomsVal;
+        if (pubBaths) pubBaths.value = bathsVal;
+        if (pubParks) pubParks.value = parksVal;
+        if (pubPrice) pubPrice.value = priceForForm;
+    };
+
+    applyPrefill();
+
+    switchView('commercial');
+    if (isCommercialAuthenticated) {
+        switchCommercialTab('propiedades');
+        setTimeout(applyPrefill, 150);
+    } else {
+        switchLoginTab('signup');
+        if (typeof setSignupRole === 'function') setSignupRole('propietario');
+    }
+}
+
+/**
+ * Permite al propietario solicitar un informe más completo o contactar a un asesor de ValorGT tras valorar su inmueble
+ */
+function contactValorgtAdvisorForValuation() {
+    const typeEl = document.getElementById('prop-type');
+    const locEl = document.getElementById('prop-location');
+    const sizeEl = document.getElementById('prop-size');
+    const rate = (typeof exchangeRate === 'number' && exchangeRate > 0) ? exchangeRate : 7.78;
+    const usdVal = (typeof currentValuationUSD === 'number' && currentValuationUSD > 0) ? currentValuationUSD : 220000;
+    const gtqVal = Math.round(usdVal * rate);
+
+    const propType = typeEl ? typeEl.options[typeEl.selectedIndex]?.text : 'Inmueble';
+    const zoneText = (locEl && locEl.value && locEl.selectedIndex >= 0) ? locEl.options[locEl.selectedIndex]?.text : 'Guatemala';
+    const sizeText = (sizeEl && sizeEl.value) ? `${sizeEl.value} m²` : '';
+
+    const msg = `Hola ValorGT Inmobiliaria, acabo de valorar mi propiedad en el Tasador Inteligente:\n` +
+        `• Inmueble: ${propType} (${sizeText})\n` +
+        `• Ubicación: ${zoneText}\n` +
+        `• Valor Estimado IA: Q${gtqVal.toLocaleString('en-US')} ($${Math.round(usdVal).toLocaleString('en-US')} USD)\n\n` +
+        `Me gustaría recibir asesoría para comercializarla o solicitar un informe completo.`;
+
+    window.open(`https://wa.me/50247996413?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// Restaurar preferencia de versión de portada al cargar
+document.addEventListener('DOMContentLoaded', () => {
+    const savedHeroMode = localStorage.getItem('valorgt_home_hero_mode') || 'pathways';
+    setHomeHeroMode(savedHeroMode);
+});
+
+
 
 
 
